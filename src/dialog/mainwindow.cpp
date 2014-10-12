@@ -41,6 +41,7 @@
 #include "uiutils.h"
 #include "serverdialog.h"
 #include "banipdialog.h"
+#include "cardeditor.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>
@@ -1328,4 +1329,14 @@ void MainWindow::on_actionCheckUpdate_triggered()
     dialog->setLayout(layout);
 
     dialog->show();
+}
+
+
+void MainWindow::on_actionCard_editor_triggered()
+{
+    static CardEditor *editor;
+    if (editor == NULL)
+        editor = new CardEditor(this);
+
+    editor->show();
 }

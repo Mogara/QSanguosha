@@ -19,24 +19,34 @@
     *********************************************************************/
 
 #include "cardeditor.h"
-#include "mainwindow.h"
-#include "engine.h"
 #include "settings.h"
+#include "card.h"
+#include "engine.h"
 #include "qsanselectableitem.h"
 
-#include <QFormLayout>
+#include <QPainter>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QGraphicsView>
+#include <QTextDocument>
+#include <QKeyEvent>
+#include <QAction>
+#include <QGraphicsSceneMouseEvent>
+#include <QMenu>
+#include <QGraphicsSceneContextMenuEvent>
+#include <QMenuBar>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QGroupBox>
+#include <QSpinBox>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QCheckBox>
 #include <QLabel>
-#include <QGraphicsSceneMouseEvent>
-#include <QApplication>
-#include <QCursor>
-#include <QKeyEvent>
-#include <QMenu>
-#include <QMenuBar>
-#include <QGraphicsRectItem>
-#include <QInputDialog>
 #include <QBitmap>
+#include <QFontDialog>
+#include <QApplication>
+#include <QInputDialog>
 #include <QClipboard>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
@@ -905,6 +915,7 @@ QMainWindow(parent)
         card_scene->sceneRect().height() + 2);
 
     layout->addWidget(createLeft());
+    layout->addWidget(createMiddle());
     layout->addWidget(view);
 
     QWidget *central_widget = new QWidget;
@@ -1029,7 +1040,7 @@ void CardEditor::setMapping(QFontDialog *dialog, QPushButton *button){
     connect(button, SIGNAL(clicked()), dialog, SLOT(exec()));
 }
 
-QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int skip, BlackEdgeTextItem *item){
+QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int skip, BlackEdgeTextItem *item) {
     QGroupBox *box = new QGroupBox;
 
     QLineEdit *edit = new QLineEdit;
@@ -1064,7 +1075,7 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
     return box;
 }
 
-QLayout *CardEditor::createGeneralLayout(){
+QWidget *CardEditor::createPropertiesBox() {
     kingdom_ComboBox = new QComboBox;
     lord_checkbox = new QCheckBox(tr("Lord"));
     QStringList kingdom_names = Sanguosha->getKingdoms();
@@ -1139,10 +1150,12 @@ QLayout *CardEditor::createGeneralLayout(){
 
     setCardFrame();
 
-    return layout;
+    QGroupBox *box = new QGroupBox(tr("Properties"));
+    box->setLayout(layout);
+    return box;
 }
 
-QWidget *CardEditor::createSkillBox(){
+QWidget *CardEditor::createSkillBox() {
     QGroupBox *box = new QGroupBox(tr("Skill"));
 
     QFormLayout *layout = new QFormLayout;
@@ -1236,8 +1249,17 @@ QWidget *CardEditor::createLeft(){
     box->setTitle(tr("Name"));
     layout->addWidget(box);
 
-    layout->addLayout(createGeneralLayout());
+    QWidget *widget = new QWidget;
+    widget->setLayout(layout);
+    return widget;
+}
+
+QWidget *CardEditor::createMiddle()
+{
+    QVBoxLayout *layout = new QVBoxLayout;
+
     layout->addWidget(createSkillBox());
+    layout->addWidget(createPropertiesBox());
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
@@ -1276,8 +1298,6 @@ void CardEditor::saveImage(){
     }
 }
 
-
-
 void CardEditor::copyPhoto(){
     card_scene->clearFocus();
 
@@ -1303,13 +1323,4 @@ void CardEditor::editSkill(){
         to_edit->text());
     if (!text.isEmpty())
         to_edit->setText(text);
-}
-
-void MainWindow::on_actionCard_editor_triggered()
-{
-    static CardEditor *editor;
-    if (editor == NULL)
-        editor = new CardEditor(this);
-
-    editor->show();
 }
