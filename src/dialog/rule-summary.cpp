@@ -20,16 +20,18 @@
 
 #include "rule-summary.h"
 #include "engine.h"
-#include "scenario.h"
+#include "stylehelper.h"
 
+#include <QHBoxLayout>
 #include <QListWidget>
 #include <QTextEdit>
-#include <QHBoxLayout>
 #include <QFile>
 #include <QTextStream>
+#include <QScrollBar>
+#include <QPushButton>
 
 RuleSummary::RuleSummary(QWidget *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Rule Summary"));
     resize(853, 600);
@@ -38,18 +40,30 @@ RuleSummary::RuleSummary(QWidget *parent)
     list->setMinimumWidth(90);
     list->setMaximumWidth(100);
 
+    QPushButton *closeButton = new QPushButton(tr("Close"));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addWidget(list);
+    vLayout->addWidget(closeButton);
+
     content_box = new QTextEdit;
     content_box->setReadOnly(true);
     content_box->setProperty("description", true);
 
-    QHBoxLayout *layout = new QHBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addWidget(content_box);
+    hLayout->addLayout(vLayout);
 
-    layout->addWidget(content_box);
-    layout->addWidget(list);
-
-    setLayout(layout);
+    layout->addLayout(hLayout);
 
     QStringList names = Sanguosha->getModScenarioNames();
+    for(int i = 0; i < names.size(); ++ i) {
+        QString fileName = QString("rule/%1.html").arg(names.at(i));
+        if (!QFile::exists(fileName))
+            names.removeAt(i);
+    }
+
     names << "hegemony" << "rule1-card" << "rule2-wording" << "rule3-extras";
     foreach(QString name, names) {
         QString text = Sanguosha->translate(name);
@@ -61,6 +75,10 @@ RuleSummary::RuleSummary(QWidget *parent)
 
     if (!names.isEmpty())
         loadContent(0);
+
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    list->verticalScrollBar()->setStyleSheet(style);
+    content_box->verticalScrollBar()->setStyleSheet(style);
 }
 
 void RuleSummary::loadContent(int row) {

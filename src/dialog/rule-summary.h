@@ -21,12 +21,12 @@
 #ifndef _SCENARIO_OVERVIEW_H
 #define _SCENARIO_OVERVIEW_H
 
-#include <QDialog>
+#include "flatdialog.h"
 
 class QListWidget;
 class QTextEdit;
 
-class RuleSummary : public QDialog {
+class RuleSummary : public FlatDialog {
     Q_OBJECT
 
 public:

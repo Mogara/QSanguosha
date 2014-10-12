@@ -3610,9 +3610,14 @@
 <context>
     <name>RuleSummary</name>
     <message>
-        <location filename="../src/dialog/rule-summary.cpp" line="34"/>
+        <location filename="../src/dialog/rule-summary.cpp" line="36"/>
         <source>Rule Summary</source>
         <translation>规则概述</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/rule-summary.cpp" line="43"/>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>
