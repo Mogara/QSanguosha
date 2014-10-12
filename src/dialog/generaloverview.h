@@ -32,7 +32,7 @@ class QCommandLinkButton;
 class Skill;
 class GeneralOverview;
 
-class GeneralSearch : public QDialog {
+class GeneralSearch : public FlatDialog {
     Q_OBJECT
 
 public:

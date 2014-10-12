@@ -45,14 +45,12 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 GeneralSearch::GeneralSearch(GeneralOverview *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Search..."));
 
-    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(createInfoTab());
     layout->addLayout(createButtonLayout());
-    setLayout(layout);
 
     connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
         parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
@@ -204,12 +202,15 @@ QWidget *GeneralSearch::createInfoTab() {
 QLayout *GeneralSearch::createButtonLayout() {
     QHBoxLayout *button_layout = new QHBoxLayout;
 
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     QPushButton *clear_button = new QPushButton(tr("Clear"));
     QPushButton *ok_button = new QPushButton(tr("OK"));
 
+    button_layout->addWidget(cancelButton);
     button_layout->addWidget(clear_button);
     button_layout->addWidget(ok_button);
 
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(clear_button, SIGNAL(clicked()), this, SLOT(clearAll()));
 
