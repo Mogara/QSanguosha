@@ -27,13 +27,13 @@
 #include <QMouseEvent>
 #include <QGraphicsDropShadowEffect>
 
-FlatDialog::FlatDialog(QWidget *parent, bool needTitle)
+FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
     : QDialog(parent, Qt::FramelessWindowHint | Qt::Dialog),
       mousePressed(false)
 {
     setAttribute(Qt::WA_TranslucentBackground);
 
-    if (needTitle) {
+    if (initialLayoutWithTitle) {
         layout = new QVBoxLayout;
         title = new QLabel;
         title->setAlignment(Qt::AlignTop | Qt::AlignLeft);

@@ -209,6 +209,7 @@ void Client::updateCard(const QVariant &val) {
         card->setId(cardId);
         card->setSkillName(skillName);
         card->setObjectName(objectName);
+        card->setTransferable(Sanguosha->getCard(cardId)->isTransferable());
         WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
         Q_ASSERT(wrapped != NULL);
         wrapped->copyEverythingFrom(card);

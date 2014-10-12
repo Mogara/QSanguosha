@@ -601,7 +601,7 @@ function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
 	use.card = card
 end
-sgs.ai_use_value.ThreatenEmperor = 6.6
+sgs.ai_use_value.ThreatenEmperor = 5.85
 sgs.ai_use_priority.ThreatenEmperor = 0
 sgs.ai_keep_value.ThreatenEmperor = 3.2
 
@@ -625,7 +625,7 @@ function SmartAI:useCardImperialOrder(card, use)
 	if not card:isAvailable(self.player) then return end
 	use.card = card
 end
-sgs.ai_use_value.ImperialOrder = 8.2
+sgs.ai_use_value.ImperialOrder = 2.9
 sgs.ai_use_priority.ImperialOrder = 8.9
 sgs.ai_keep_value.ImperialOrder = 0
 

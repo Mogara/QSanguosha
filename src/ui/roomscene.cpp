@@ -72,8 +72,15 @@
 #include <QInputDialog>
 #include <QScrollBar>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QtQuick/QQuickItem>
-#include <QtQuick/QQuickWindow>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QQuickWindow>
+#else
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeComponent>
 #endif
 
 using namespace QSanProtocol;
@@ -762,9 +769,8 @@ void RoomScene::_getSceneSizes(QSize &minSize, QSize &maxSize) {
     }
 }
 
-void RoomScene::adjustItems() {
-    QRectF displayRegion = sceneRect();
-
+void RoomScene::onSceneRectChanged(QRectF displayRegion)
+{
     // switch between default & compact skin depending on scene size
     QSanSkinFactory &factory = QSanSkinFactory::getInstance();
     QString skinName = factory.getCurrentSkinName();
@@ -1366,7 +1372,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_F3: dashboard->beginSorting(); break;
     case Qt::Key_F4: dashboard->reverseSelection(); break;
     case Qt::Key_F5: {
-        adjustItems();
+        onSceneRectChanged(sceneRect());
         break;
     }
     case Qt::Key_F6: {
@@ -3610,11 +3616,6 @@ void RoomScene::speak() {
     chatEdit->clear();
 }
 
-void RoomScene::onSceneRectChanged(const QRectF &)
-{
-    adjustItems();
-}
-
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
     bringToFront(card_container);
     card_container->fillCards(card_ids, disabled_ids);
@@ -3938,9 +3939,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         QQuickWindow *animationWindow = new QQuickWindow;
-        animationWindow->setFlags(Qt::FramelessWindowHint);
-        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(parent());
-        animationWindow->setGeometry(mainWindow->geometry());
+        animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        animationWindow->setGeometry(main_window->geometry());
         animationWindow->setColor(Qt::transparent);
         object->setParentItem(animationWindow->contentItem());
         animationWindow->show();
