@@ -245,6 +245,7 @@ public slots:
     void onPlayerChoosePlayer(const Player *player);
     void onPlayerChooseTriggerOrder(const QString &choice);
     void onPlayerChangeSkin(int skin_id, bool is_head = true);
+    void onPlayerChooseRoom(int room_id);
     void preshow(const QString &skill_name, const bool isPreshowed);
     void trust();
     void addRobot();

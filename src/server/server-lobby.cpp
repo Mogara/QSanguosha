@@ -24,6 +24,10 @@
 #include "clientstruct.h"
 #include "room.h"
 
+//@todo: Remove this after each room has independent configuration.
+#include "settings.h"
+#include "engine.h"
+
 using namespace QSanProtocol;
 
 void Server::initRoomFunctions()
@@ -46,11 +50,10 @@ void Server::cleanupLobbyPlayer()
     LobbyPlayer *player = qobject_cast<LobbyPlayer *>(sender());
     if (player == NULL) return;
 
-    emit serverMessage(tr("%1 Player %2 logged out").arg(player->getSocketName()).arg(player->getScreenName()));
+    if (!player->getSocketName().isEmpty())
+        emit serverMessage(tr("%1 Player %2 logged out").arg(player->getSocketName()).arg(player->getScreenName()));
 
     player->setSocket(NULL);
-    player->disconnect(this);
-    this->disconnect(player);
     lobbyPlayers.removeOne(player);
 }
 
@@ -122,8 +125,17 @@ QVariant Server::getRoomList(int page)
     QSetIterator<Room *> iter1(rooms);
     while (iter1.hasNext()) {
         Room *room = iter1.next();
-        if (i >= offset)
-            data << room->getId();
+        if (i >= offset) {
+            JsonArray item;
+            item << Sanguosha->getSetupString();
+            item << QVariant();//No host address. It's not a remote room.
+            item << room->getPlayers().size();
+            item << room->getId();//room number
+            item << rooms.size();//max room number
+            item << Config.AIDelay;
+            item << Config.RewardTheFirstShowingPlayer;
+            data << QVariant(item);
+        }
         i++;
         if (i >= end)
             return data;

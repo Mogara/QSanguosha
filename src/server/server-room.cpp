@@ -44,7 +44,8 @@ void Server::connectToLobby()
     lobby->connectToHost(Config.LobbyAddress);
 }
 
-Room *Server::createNewRoom() {
+Room *Server::createNewRoom()
+{
     Room *new_room = new Room(this, Config.GameMode);
     current = new_room;
     rooms.insert(current);
@@ -53,6 +54,15 @@ Room *Server::createNewRoom() {
     connect(current, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
 
     return current;
+}
+
+Room *Server::getRoom(int room_id)
+{
+    foreach (Room *room, rooms) {
+        if (room->getId() == room_id)
+            return room;
+    }
+    return NULL;
 }
 
 void Server::processLobbyPacket(const Packet &packet)

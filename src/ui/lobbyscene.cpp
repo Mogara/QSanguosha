@@ -90,6 +90,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     connect(client, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
     connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     connect(this, SIGNAL(roomListRequested(int)), client, SLOT(fetchRoomList(int)));
+    connect(this, SIGNAL(roomSelected(int)), client, SLOT(onPlayerChooseRoom(int)));
 }
 
 LobbyScene::~LobbyScene()
@@ -161,6 +162,7 @@ void LobbyScene::setRoomList(const QVariant &data)
 
     foreach (Tile *tile, roomTiles) {
         removeItem(tile);
+        tile->deleteLater();
     }
     roomTiles.clear();
 
@@ -240,9 +242,12 @@ void LobbyScene::onRoomTileClicked()
     if (index == -1 || index >= rooms.size()) return;
 
     HostInfoStruct *info = rooms.at(index);
-
-    Config.HostAddress = info->HostAddress;
-    emit roomSelected();
+    if (info->HostAddress.isEmpty()) {
+        emit roomSelected(info->RoomNum);
+    } else {
+        Config.HostAddress = info->HostAddress;
+        emit roomSelected();
+    }
 }
 
 void LobbyScene::onCreateRoomClicked()

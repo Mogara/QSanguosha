@@ -40,8 +40,8 @@ public:
     explicit LobbyPlayer(Server *parent = 0);
 
     void setSocket(ClientSocket *new_socket);
-    QString getIP() const { return socket->peerAddress(); }
-    QString getSocketName() const { return socket->peerName(); }
+    QString getIP() const { return socket != NULL ? socket->peerAddress() : QString(); }
+    QString getSocketName() const { return socket != NULL ? socket->peerName() : QString(); }
 
     void notify(QSanProtocol::CommandType command, const QVariant &data = QVariant());
     void unicast(const QByteArray &message) { socket->send(message); }
@@ -64,6 +64,7 @@ protected:
     void speakCommand(const QVariant &message);
     void roomListCommand(const QVariant &data);
     void createRoomCommand(const QVariant &data);
+    void enterRoomCommand(const QVariant &data);
 
     Server *server;
     QString screenName;

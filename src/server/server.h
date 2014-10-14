@@ -53,6 +53,7 @@ public:
 
     void connectToLobby();
     Room *createNewRoom();
+    Room *getRoom(int room_id);
     void signupPlayer(ServerPlayer *player);
 
     void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);

@@ -35,6 +35,7 @@ LobbyPlayer::LobbyPlayer(Server *parent) :
         callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
         callbacks[S_COMMAND_ROOM_LIST] = &LobbyPlayer::roomListCommand;
         callbacks[S_COMMAND_CREATE_ROOM] = &LobbyPlayer::createRoomCommand;
+        callbacks[S_COMMAND_ENTER_ROOM] = &LobbyPlayer::enterRoomCommand;
     }
 }
 
@@ -104,4 +105,28 @@ void LobbyPlayer::createRoomCommand(const QVariant &)
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
+}
+
+void LobbyPlayer::enterRoomCommand(const QVariant &data)
+{
+    int room_id = data.toInt();
+
+    Room *room = server->getRoom(room_id);
+    if (room == NULL || room->isFull() || room->isFinished()) {
+        //@todo: return error messages
+        return;
+    }
+
+    notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+
+    ClientSocket *socket = this->socket;
+    socket->disconnect(this);
+    this->disconnect(socket);
+    this->socket = NULL;
+
+    ServerPlayer *player = room->addSocket(socket);
+    room->signup(player, screenName, avatar, false);
+
+    emit disconnected();
+    deleteLater();
 }

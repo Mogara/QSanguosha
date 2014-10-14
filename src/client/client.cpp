@@ -1133,6 +1133,11 @@ void Client::onPlayerChangeSkin(int skin_id, bool is_head)
     notifyServer(S_COMMAND_CHANGE_SKIN, args);
 }
 
+void Client::onPlayerChooseRoom(int room_id)
+{
+    notifyServer(S_COMMAND_ENTER_ROOM, room_id);
+}
+
 void Client::trust() {
     notifyServer(S_COMMAND_TRUST);
 
