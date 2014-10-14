@@ -32,20 +32,17 @@ Blade::Blade(Card::Suit suit, int number)
 class BladeSkill : public WeaponSkill {
 public:
     BladeSkill() : WeaponSkill("Blade") {
-        events << TargetChosen << CardFinished;
+        events << CardUsed << CardFinished;
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if (triggerEvent == TargetChosen) {
-            if (!WeaponSkill::triggerable(use.from))
+        if (triggerEvent == CardUsed) {
+            if (!WeaponSkill::triggerable(player))
                 return QStringList();
-
-            if (use.to.contains(player) && use.card->isKindOf("Slash") && player->getMark("Equips_of_Others_Nullified_to_You") == 0) {
-                ask_who = use.from;
+            if (use.card->isKindOf("Slash"))
                 return QStringList(objectName());
-            }
         } else {
             if (use.card->isKindOf("Slash")) {
                 foreach (ServerPlayer *p, use.to) {
@@ -65,18 +62,26 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        QStringList blade_use = player->property("blade_use").toStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (blade_use.contains(use.card->toString()))
-            return false;
+        bool play_animation = false;
+        foreach (ServerPlayer *p, use.to) {
+            if (p->getMark("Equips_of_Others_Nullified_to_You") > 0)
+                continue;
+            QStringList blade_use = p->property("blade_use").toStringList();
+            if (blade_use.contains(use.card->toString()))
+                return false;
 
-        blade_use << use.card->toString();
-        room->setPlayerProperty(player, "blade_use", blade_use);
+            blade_use << use.card->toString();
+            room->setPlayerProperty(p, "blade_use", blade_use);
 
-        if (!player->hasShownAllGenerals())
-            room->setEmotion(use.from, "weapon/blade");
+            if (!p->hasShownAllGenerals())
+                play_animation = true;
 
-        room->setPlayerDisableShow(player, "hd", "Blade"); // this effect should always make sense.
+            room->setPlayerDisableShow(p, "hd", "Blade"); // this effect should always make sense.
+        }
+
+        if (play_animation)
+            room->setEmotion(player, "weapon/blade");
 
         return false;
     }
