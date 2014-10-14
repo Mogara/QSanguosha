@@ -1863,7 +1863,7 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
 {
     ServerPlayer *jade_seal_owner = NULL;
     foreach (ServerPlayer *p, room->getAlivePlayers()) {
-        if (p->hasTreasure("JadeSeal")) {
+        if (p->hasTreasure("JadeSeal") && p->hasShownOneGeneral()) {
             jade_seal_owner = p;
             break;
         }
@@ -1904,7 +1904,7 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
         }
     }
     if (jade_seal_owner != NULL) {
-        if (!jade_seal_owner->hasShownOneGeneral() || jade_seal_owner->getRole() == "careerist") {
+        if (jade_seal_owner->getRole() == "careerist") {
             big_n_small["small"] << big_n_small["big"];
             big_n_small["big"].clear();
             big_n_small["big"] << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.

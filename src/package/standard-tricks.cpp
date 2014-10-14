@@ -617,7 +617,7 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
-bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
         return false;
@@ -678,6 +678,8 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void IronChain::onEffect(const CardEffectStruct &effect) const{
+    if (!effect.to->canBeChainedBy(effect.from))
+        return;
     effect.to->setChained(!effect.to->isChained());
 
     Room *room = effect.to->getRoom();
@@ -821,6 +823,28 @@ KnownBoth::KnownBoth(Card::Suit suit, int number)
 {
     setObjectName("known_both");
     can_recast = true;
+}
+
+bool KnownBoth::isAvailable(const Player *player) const{
+    bool can_use = false;
+    foreach (const Player *p, player->getSiblings()) {
+        if (player->isProhibited(p, this))
+            continue;
+        if (p->isKongcheng() && p->hasShownAllGenerals())
+            continue;
+        can_use = true;
+        break;
+    }
+    bool can_rec = true;
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    if (sub.isEmpty() || sub.contains(-1))
+        can_rec = false;
+    return (can_use && !player->isCardLimited(this, Card::MethodUse))
+           || (can_rec && can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
 bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

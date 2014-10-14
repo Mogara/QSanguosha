@@ -766,6 +766,29 @@ void Player::setChained(bool chained) {
     }
 }
 
+bool Player::canBeChainedBy(const Player *_source) const{
+    const Player *source = _source ? _source : this;
+    if (isChained()) {
+        return true;
+    } else {
+        if (hasArmorEffect("IronArmor")) {
+            QHash<QString, QStringList> big_n_small = source->getBigAndSmallKingdoms("IronArmor", MaxCardsType::Normal);
+            if (!big_n_small["big"].isEmpty() && !big_n_small["small"].isEmpty()) {
+                QString kingdom;
+                if (!hasShownOneGeneral())
+                    kingdom = "anjiang";
+                else if (getRole() == "careerist")
+                    kingdom = "careerist";
+                else
+                    kingdom = getKingdom();
+                if (big_n_small["small"].contains(kingdom))
+                    return false;
+            }
+        }
+        return true;
+    }
+}
+
 bool Player::isRemoved() const{
     return removed;
 }

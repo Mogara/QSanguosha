@@ -215,8 +215,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (ArmorSkill::triggerable(player) && damage.damage >= player->getHp()
-            && player->getArmor() && player->canDiscard(player, player->getArmor()->getEffectiveId()))
+        if (ArmorSkill::triggerable(player) && damage.damage >= player->getHp() && player->getArmor())
             return QStringList(objectName());
         return QStringList();
     }
@@ -226,7 +225,8 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        room->throwCard(player->getArmor(), player);
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), QString());
+        room->moveCardTo(player->getArmor(), NULL, Player::DiscardPile, reason, true);
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
         log.type = "#Breastplate";
@@ -410,7 +410,7 @@ JadeSeal::JadeSeal(Card::Suit suit, int number)
 class JadeSealViewAsSkill: public ZeroCardViewAsSkill {
 public:
     JadeSealViewAsSkill(): ZeroCardViewAsSkill("JadeSeal") {
-        response_pattern = "@@JadeSeal";
+        response_pattern = "@@JadeSeal!";
     }
 
     virtual const Card *viewAs() const{
@@ -433,7 +433,11 @@ public:
         if (triggerEvent == DrawNCards) {
             return QStringList(objectName());
         } else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Play) {
-            return QStringList(objectName());
+            KnownBoth *kb = new KnownBoth(Card::NoSuit, 0);
+            kb->setSkillName(objectName());
+            kb->deleteLater();
+            if (kb->isAvailable(player))
+                return QStringList(objectName());
         }
         return QStringList();
     }
@@ -441,7 +445,21 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (triggerEvent == DrawNCards)
             return true;
-        room->askForUseCard(player, "@@JadeSeal", "@JadeSeal");
+        if (!room->askForUseCard(player, "@@JadeSeal!", "@JadeSeal")) {
+            KnownBoth *kb = new KnownBoth(Card::NoSuit, 0);
+            kb->setSkillName(objectName());
+            QList<ServerPlayer *> targets;
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (!player->isProhibited(p, kb) && (!p->isKongcheng() || !p->hasShownAllGenerals()))
+                    targets << p;
+            }
+            if (targets.isEmpty()) {
+                delete kb;
+            } else {
+                ServerPlayer *target = targets.at(qrand() % targets.length());
+                room->useCard(CardUseStruct(kb, player, target), false);
+            }
+        }
         return false;
     }
 
@@ -795,6 +813,8 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
 void FightTogether::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     if (!effect.to->isChained()) {
+        if (!effect.to->canBeChainedBy(effect.from))
+            return;
         effect.to->setChained(true);
         room->setEmotion(effect.to, "chain");
         room->broadcastProperty(effect.to, "chained");

@@ -224,6 +224,7 @@ public:
 
     void setChained(bool chained);
     bool isChained() const;
+    bool canBeChainedBy(const Player *source = NULL) const;
 
     void setRemoved(bool removed);
     bool isRemoved() const;
