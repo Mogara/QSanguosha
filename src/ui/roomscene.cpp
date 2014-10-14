@@ -72,11 +72,11 @@
 #include <QInputDialog>
 #include <QScrollBar>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QQmlEngine>
-#include <QQmlContext>
-#include <QQmlComponent>
-#include <QQuickItem>
-#include <QQuickWindow>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
+#include <QtQml/QQmlComponent>
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
 #else
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeContext>
