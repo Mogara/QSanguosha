@@ -1230,6 +1230,9 @@
     <CustomBuild Include="..\..\src\dialog\serverdialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\mainwindow_nonwin.ui">
+      <Filter>dialog\form</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\swig\sanguosha.i">
@@ -1336,6 +1339,9 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\json.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow_nonwin.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
