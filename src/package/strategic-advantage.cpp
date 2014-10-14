@@ -88,6 +88,112 @@ Halberd::Halberd(Card::Suit suit, int number)
     setObjectName("Halberd");
 }
 
+HalberdCard::HalberdCard() {
+    target_fixed = true;
+    m_skillName = "Halberd";
+}
+
+const Card *HalberdCard::validate(CardUseStruct &card_use) const{
+    ServerPlayer *player = card_use.from;
+    Room *room = player->getRoom();
+    room->setPlayerFlag(player, "HalberdUse");
+    room->setPlayerFlag(player, "HalberdSlashFilter");
+    bool use = room->askForUseCard(player, "slash", "@halberd");
+    if (!use) {
+        room->setPlayerFlag(player, "Global_HalberdFailed");
+        room->setPlayerFlag(player, "-HalberdUse");
+        room->setPlayerFlag(player, "-HalberdSlashFilter");
+        return NULL;
+    }
+    return this;
+}
+
+const Card *HalberdCard::validateInResponse(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    room->setPlayerFlag(player, "HalberdUse");
+    room->setPlayerFlag(player, "HalberdSlashFilter");
+    bool use = room->askForUseCard(player, "slash", "@halberd");
+    if (!use) {
+        room->setPlayerFlag(player, "Global_HalberdFailed");
+        room->setPlayerFlag(player, "-HalberdUse");
+        room->setPlayerFlag(player, "-HalberdSlashFilter");
+        return NULL;
+    }
+    return this;
+}
+
+void HalberdCard::onUse(Room *, const CardUseStruct &) const{
+    // do nothing
+}
+
+class HalberdSkill: public ZeroCardViewAsSkill {
+public:
+    HalberdSkill(): ZeroCardViewAsSkill("Halberd") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasFlag("Global_HalberdFailed")
+            && Slash::IsAvailable(player) && player->getMark("Equips_Nullified_to_Yourself") == 0;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return !player->hasFlag("Global_HalberdFailed") && !player->hasFlag("slashDisableExtraTarget")
+            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+            && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+    }
+
+    virtual const Card *viewAs() const{
+        return new HalberdCard;
+    }
+};
+
+class HalberdTrigger: public WeaponSkill {
+public:
+    HalberdTrigger(): WeaponSkill("Halberd-trigger") {
+        events << SlashMissed << SlashEffected;
+        global = true;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer* &) const{
+        if (triggerEvent == SlashMissed) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.slash->hasFlag("halberd_slash"))
+                effect.slash->setFlags("halberd_slash_missed");
+        } else if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.slash->hasFlag("halberd_slash_missed"))
+                return QStringList(objectName());
+        }
+        return QStringList();
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        LogMessage log;
+        log.type = "#HalberdNullified";
+        log.from = effect.from;
+        log.to << effect.to;
+        log.arg = "Halberd";
+        log.arg2 = effect.slash->objectName();
+        room->sendLog(log);
+        return true;
+    }
+};
+
+class HalberdTargetMod: public TargetModSkill {
+public:
+    HalberdTargetMod(): TargetModSkill("halberd-target") {
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *) const{
+        if (from->hasFlag("HalberdUse"))
+            return from->getMark("halberd_count");
+        else
+            return 0;
+    }
+};
+
 Breastplate::Breastplate(Card::Suit suit, int number)
     : Armor(suit, number)
 {
@@ -295,6 +401,50 @@ JadeSeal::JadeSeal(Card::Suit suit, int number)
     : Treasure(suit, number){
     setObjectName("JadeSeal");
 }
+
+class JadeSealViewAsSkill: public ZeroCardViewAsSkill {
+public:
+    JadeSealViewAsSkill(): ZeroCardViewAsSkill("JadeSeal") {
+        response_pattern = "@@JadeSeal";
+    }
+
+    virtual const Card *viewAs() const{
+        KnownBoth *kb = new KnownBoth(Card::NoSuit, 0);
+        kb->setSkillName(objectName());
+        return kb;
+    }
+};
+
+class JadeSealSkill: public TreasureSkill {
+public:
+    JadeSealSkill(): TreasureSkill("JadeSeal") {
+        events << DrawNCards << EventPhaseStart;
+        view_as_skill = new JadeSealViewAsSkill;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!TreasureSkill::triggerable(player))
+            return QStringList();
+        if (triggerEvent == DrawNCards) {
+            return QStringList(objectName());
+        } else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Play) {
+            return QStringList(objectName());
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        if (triggerEvent == DrawNCards)
+            return true;
+        room->askForUseCard(player, "@@JadeSeal", "@JadeSeal");
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        data = data.toInt() + 1;
+        return false;
+    }
+};
 
 Drowning::Drowning(Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -973,10 +1123,12 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new WoodenOx(Card::Diamond, 5)
         << new Halberd(Card::Diamond, 12);
 
-    skills << new BladeSkill
+    skills << new IronArmorSkill
+           << new BladeSkill
+           << new JadeSealSkill
            << new BreastplateSkill
-           << new IronArmorSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill
+           << new HalberdSkill << new HalberdTrigger << new HalberdTargetMod
            << new LureTigerSkill << new LureTigerProhibit
            << new ThreatenEmperorSkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
@@ -985,6 +1137,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         card->setParent(this);
 
     addMetaObject<WoodenOxCard>();
+    addMetaObject<HalberdCard>();
 }
 
 ADD_PACKAGE(StrategicAdvantage)

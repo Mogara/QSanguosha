@@ -22,6 +22,7 @@
 #define GENERALOVERVIEW_H
 
 #include "flatdialog.h"
+#include <QModelIndex>
 
 class QCheckBox;
 class QLineEdit;

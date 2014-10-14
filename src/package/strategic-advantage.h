@@ -39,6 +39,17 @@ public:
     Q_INVOKABLE Halberd(Card::Suit suit, int number);
 };
 
+class HalberdCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HalberdCard();
+
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
 class Breastplate : public Armor{
     Q_OBJECT
 
