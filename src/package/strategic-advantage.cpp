@@ -428,7 +428,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        if (!TreasureSkill::triggerable(player))
+        if (!TreasureSkill::triggerable(player) || !player->hasShownOneGeneral())
             return QStringList();
         if (triggerEvent == DrawNCards) {
             return QStringList(objectName());
