@@ -733,8 +733,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 		end
 
 		if halberd then
-			if self.player:hasSkill("rende") and self:findFriendsByType(sgs.Friend_Draw) then return halberd end
-			if self:getCardsNum("Slash") == 1 and self.player:getHandcardNum() == 1 then return halberd end
+--@todo
 		end
 
 		if gudingdao then
