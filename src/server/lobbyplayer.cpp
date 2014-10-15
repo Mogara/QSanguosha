@@ -112,21 +112,27 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
     int room_id = data.toInt();
 
     Room *room = server->getRoom(room_id);
-    if (room == NULL || room->isFull() || room->isFinished()) {
-        //@todo: return error messages
+    if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
+        //@todo: return an error message
+        return;
+    } else if (room->isFull()) {
+        //@todo: return an error message
         return;
     }
 
     notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
 
-    ClientSocket *socket = this->socket;
-    socket->disconnect(this);
-    this->disconnect(socket);
-    this->socket = NULL;
-
     ServerPlayer *player = room->addSocket(socket);
-    room->signup(player, screenName, avatar, false);
+    if (player) {
+        socket->disconnect(this);
+        this->disconnect(socket);
+        socket = NULL;
 
-    emit disconnected();
-    deleteLater();
+        room->signup(player, screenName, avatar, false);
+
+        emit disconnected();
+        deleteLater();
+    } else {
+        //@todo: return an error message
+    }
 }

@@ -1949,9 +1949,13 @@ void Room::clearCardFlag(int card_id, ServerPlayer *who) {
 }
 
 ServerPlayer *Room::addSocket(ClientSocket *socket) {
+    signupMutex.lock();
+    if (isFull())
+        return NULL;
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     m_players << player;
+    signupMutex.unlock();
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(roomPacketReceived(QSanProtocol::Packet)), this, SLOT(processClientPacket(QSanProtocol::Packet)));

@@ -510,7 +510,7 @@ private:
     RoomThread *thread;
     QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
-
+    QMutex signupMutex;
 
     static QHash<QSanProtocol::CommandType, Callback> interactions;
     static QHash<QSanProtocol::CommandType, Callback> callbacks;
