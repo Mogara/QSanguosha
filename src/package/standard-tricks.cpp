@@ -617,7 +617,7 @@ QString IronChain::getSubtype() const{
     return "damage_spread";
 }
 
-bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
         return false;
