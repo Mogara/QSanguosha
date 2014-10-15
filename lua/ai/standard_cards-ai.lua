@@ -2874,8 +2874,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 
 		if halberd then
-			if self.player:hasSkill("rende") and self:findFriendsByType(sgs.Friend_Draw) then return halberd end
-			if SelfisCurrent and self:getCardsNum("Slash") == 1 and self.player:getHandcardNum() == 1 then return halberd end
+--@todo
 		end
 
 		if gudingdao then
@@ -3055,6 +3054,7 @@ end
 
 function SmartAI:useCardKnownBoth(KnownBoth, use)
 	self.knownboth_choice = {}
+	if not KnownBoth:isAvailable(self.player) then return false end
 	local targets = sgs.PlayerList()
 	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, KnownBoth)
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -3079,8 +3079,26 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 			end
 		end
 	end
-	use.card = KnownBoth
-	if use.to then use.to = sgs.SPlayerList() end
+	if total_num > targets:length() and not targets:isEmpty() then
+		self:sort(self.friends_noself, "handcard")
+		self.friends_noself = sgs.reverse(self.friends_noself)
+		for _, friend in ipairs(self.friends_noself) do
+			if self:getKnownNum(friend, self.player) ~= friend:getHandcardNum() and card:targetFilter(targets, friend, self.player) and not targets:contains(friend) then
+				targets:append(friend)
+				if use.to then use.to:append(friend) end
+				self.knownboth_choice[friend:objectName()] = "handcards"
+			end
+		end
+	end
+
+	if not use.card then
+		targets = sgs.PlayerList()
+		local canRecast = KnownBoth:targetsFeasible(targets, self.player)
+		if canRecast then
+			use.card = KnownBoth
+			if use.to then use.to = sgs.SPlayerList() end
+		end
+	end
 end
 sgs.ai_skill_choice.known_both = function(self, choices, data)
 	local target = data:toPlayer()

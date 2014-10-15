@@ -644,3 +644,88 @@ sgs.ai_skill_choice.imperial_order = function(self)
 	if self:needToLoseHp() then return "losehp" end
 	return "show"
 end
+
+
+--JadeSeal
+sgs.ai_skill_use["@@JadeSeal!"] = function(self, prompt, method)
+	local card = sgs.cloneCard("known_both")
+	local dummyuse = { isDummy = true, to = sgs.SPlayerList() }
+	self:useCardKnownBoth(card, dummyuse)
+	local tos = {}
+	if dummyuse.card and not dummyuse.to:isEmpty() then
+		for _, to in sgs.qlist(dummyuse.to) do
+			table.insert(tos, to:objectName())
+		end
+		return "known_both:JadeSeal[no_suit:0]=.&->" .. table.concat(tos, "+")
+	end
+	self:sort(self.enemies, "handcard")
+	self.enemies = sgs.reverse(self.enemies)
+	local targets = sgs.PlayerList()
+	for _, enemy in ipairs(self.enemies) do
+		if self:getKnownNum(enemy, self.player) ~= enemy:getHandcardNum() and card:targetFilter(targets, enemy, self.player) and not targets:contains(enemy) then
+			targets:append(enemy)
+			table.insert(tos, enemy:objectName())
+			self.knownboth_choice[enemy:objectName()] = "handcards"
+		end
+	end
+	self:sort(self.friends_noself, "handcard")
+	self.friends_noself = sgs.reverse(self.friends_noself)
+	for _, friend in ipairs(self.friends_noself) do
+		if self:getKnownNum(friend, self.player) ~= friend:getHandcardNum() and card:targetFilter(targets, friend, self.player) and not targets:contains(friend) then
+			targets:append(friend)
+			table.insert(tos, friend:objectName())
+			self.knownboth_choice[friend:objectName()] = "handcards"
+		end
+	end
+
+	local players = sgs.qlist(self.room:getOtherPlayers(self.player))
+	self:sort(players, "handcard")
+	players = sgs.reverse(players)
+	for _, player in ipairs(players) do
+		if card:targetFilter(targets, player, self.player) and not targets:contains(player) then
+			targets:append(player)
+			table.insert(tos, player:objectName())
+			self.knownboth_choice[player:objectName()] = "handcards"
+		end
+	end
+	assert(#tos > 0)
+	return "known_both:JadeSeal[no_suit:0]=.&->" .. table.concat(tos, "+")
+end
+
+sgs.ai_use_priority.JadeSeal = 5.6
+sgs.ai_keep_value.JadeSeal = 2.02
+
+--Halberd
+sgs.ai_view_as.Halberd = function(card, player, card_place)
+	if card_place == sgs.Player_PlaceHand and card:isKindOf("Slash") then
+		local suit = card:getSuitString()
+		local number = card:getNumberString()
+		local card_id = card:getEffectiveId()
+		return ("slash:Halberd[%s:%s]=%d&"):format(suit, number, card_id)
+	end
+end
+
+local Halberd_skill = {}
+Halberd_skill.name = "Halberd"
+table.insert(sgs.ai_skills, Halberd_skill)
+Halberd_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:hasFlag("Global_HalberdFailed") or not self:slashIsAvailable() or self.player:getMark("Equips_Nullified_to_Yourself") > 0 then return end
+
+	local cards = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isKindOf("Slash") then table.insert(cards, c) end
+	end
+
+	if #cards == 0 then return end
+	
+	self:sortByUseValue(cards)
+
+	local card_str = ("slash:Halberd[%s:%s]=%d&"):format(cards[1]:getSuitString(), cards[1]:getNumberString(), cards[1]:getEffectiveId())
+	local slash = sgs.Card_Parse(card_str)
+	assert(slash)
+	return slash
+end
+
+function sgs.ai_weapon_value.Halberd(self, enemy, player)
+	return 2.1
+end

@@ -28,7 +28,7 @@ function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
 	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then
 		return not self:needKongcheng(target, true)
-	elseif target and  not ( target:hasWeapon("crossbow") or target:hasShownSkills("paoxiao|luanji|shuangxiong|qingnang|jizhi|xiaoji")	) then
+	elseif target and  not ( target:hasWeapon("Crossbow") or target:hasShownSkills("paoxiao|luanji|shuangxiong|qingnang|jizhi|xiaoji")	) then
 		return not self:needKongcheng(target, true)
 	else
 		return self:needKongcheng(target, true)

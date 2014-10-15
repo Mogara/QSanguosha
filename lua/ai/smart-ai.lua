@@ -978,13 +978,12 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 end
 
 function SmartAI:getUseValue(card)
-	local class_name = card:getClassName()
+	local class_name = card:isKindOf("LuaSkillCard") and card:objectName() or card:getClassName()
 	local v = sgs.ai_use_value[class_name] or 0
-	if class_name == "LuaSkillCard" and card:isKindOf("LuaSkillCard") then
-		v = sgs.ai_use_value[card:objectName()] or 0
-	end
 
-	if card:getTypeId() == sgs.Card_TypeEquip then
+	if card:getTypeId() == sgs.Card_TypeSkill then
+		return v
+	elseif card:getTypeId() == sgs.Card_TypeEquip then
 		if self.player:hasEquip(card) then
 			if card:isKindOf("OffensiveHorse") and self.player:getAttackRange() > 2 then return 5.5 end
 			if card:isKindOf("DefensiveHorse") and self:hasEightDiagramEffect() then return 5.5 end
@@ -999,11 +998,11 @@ function SmartAI:getUseValue(card)
 		if self.player:hasSkills(sgs.lose_equip_skill) then return 10 end
 	elseif card:getTypeId() == sgs.Card_TypeBasic then
 		if card:isKindOf("Slash") then
-			v = sgs.ai_use_value[class_name] or 0
 			if self.player:hasFlag("TianyiSuccess") or self:hasHeavySlashDamage(self.player, card) then v = 8.7 end
 			if self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and #self.enemies > 0 and self:getCardsNum("Slash") == 1 then v = v + 5 end
 			if self:hasCrossbowEffect() then v = v + 4 end
 			if card:getSkillName() == "Spear" then v = v - 1 end
+			if card:getSkillName() == "Halberd" then v = v + 1 end
 		elseif card:isKindOf("Jink") then
 			if self:getCardsNum("Jink") > 1 then v = v - 6 end
 		elseif card:isKindOf("Peach") then
@@ -1019,7 +1018,6 @@ function SmartAI:getUseValue(card)
 	if self.player:hasSkills(sgs.need_kongcheng) then
 		if self.player:getHandcardNum() == 1 then v = 10 end
 	end
-	if self.player:hasWeapon("Halberd") and card:isKindOf("Slash") and self.player:isLastHandCard(card) then v = 10 end
 	if self.player:getPhase() == sgs.Player_Play then v = self:adjustUsePriority(card, v) end
 	return v
 end
@@ -1728,7 +1726,9 @@ function SmartAI:filterEvent(event, player, data)
 	end
 	if self.player:objectName() == player:objectName() and player:getPhase() ~= sgs.Player_Play and event == sgs.CardsMoveOneTime then
 		local move = data:toMoveOneTime()
-		if move.to and move.to:objectName() == player:objectName() and move.to_place == sgs.Player_PlaceHand and player:getHandcardNum() > 1 then
+		if move.to and move.to:objectName() == player:objectName() and (move.to_place == sgs.Player_PlaceHand or move.to_place == sgs.Player_PlaceEquip) then
+			self:assignKeep()
+		elseif move.from and move.from:objectName() == player:objectName() 	and (move.from_places:contains(sgs.Player_PlaceHand) or move.from_places:contains(sgs.Player_PlaceEquip)) then
 			self:assignKeep()
 		end
 	end
@@ -3552,14 +3552,21 @@ function SmartAI:getCardId(class_name, player, acard)
 	local viewArr, cardArr = {}, {}
 
 	for _, card in ipairs(cards) do
-		local viewas, cardid
 		local card_place = self.room:getCardPlace(card:getEffectiveId())
-		viewas = getSkillViewCard(card, class_name, player, card_place)
-		if viewas then table.insert(viewArr, viewas) end
-		if card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then
+		local viewas = getSkillViewCard(card, class_name, player, card_place)
+		local viewascard
+		if viewas then
+			viewascard = sgs.Card_Parse(viewas)
+			assert(viewascard)
+		end
+		local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial
+		if viewas and isCard and self:adjustUsePriority(viewascard, 0) >= self:adjustUsePriority(card, 0) then
+			table.insert(viewArr, viewas)
+		elseif isCard then
 			table.insert(cardArr, card:getEffectiveId())
 		end
 	end
+
 	if #viewArr > 0 or #cardArr > 0 then
 		local viewas, cardid
 		viewas = #viewArr > 0 and viewArr[1]
@@ -3607,13 +3614,19 @@ function SmartAI:getCards(class_name, flag)
 
 		if card:hasFlag("AI_Using") then
 		elseif class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
-		elseif card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		else
-			card_str = getSkillViewCard(card, class_name, player, card_place)
-			if card_str then
-				card_str = sgs.Card_Parse(card_str)
-				assert(card_str)
-				table.insert(cards, card_str)
+			local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial
+			local viewas = getSkillViewCard(card, class_name, player, card_place)
+			if viewas then
+				viewas = sgs.Card_Parse(viewas)
+				assert(viewas)
+				if isCard and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewas, 0) then
+					table.insert(cards, card)
+				else
+					table.insert(cards, viewas)
+				end
+			elseif isCard then
+				table.insert(cards, card)
 			else
 				table.insert(other, card)
 			end
@@ -3752,7 +3765,11 @@ function getCardsNum(class_name, player, from)
 			elseif player:hasShownSkill("longdan") then
 				slashnum = slashjink + (player:getHandcardNum() - shownum) * 0.72
 			else
-				slashnum = num+(player:getHandcardNum() - shownum) * 0.35
+				slashnum = num + (player:getHandcardNum() - shownum) * 0.35
+			end
+			if player:hasWeapon("Spear") then
+				local slashnum2 = math.floor((player:getHandcardNum() - shownum) / 2) + num
+				return math.max(slashnum, slashnum2)
 			end
 			return slashnum
 		elseif class_name == "Jink" then
@@ -4188,8 +4205,10 @@ function SmartAI:hasTrickEffective(card, to, from)
 	end
 	if to:hasShownSkill("kongcheng") and to:isKongcheng() and card:isKindOf("Duel") then return false end
 
+	if card:isKindOf("IronChain") and not to:canBeChainedBy(from) then return false end
+
 	local nature = sgs.DamageStruct_Normal
-	if card:isKindOf("FireAttack") then nature = sgs.DamageStruct_Fire end
+	if card:isKindOf("FireAttack") or card:isKindOf("BurningCamps") then nature = sgs.DamageStruct_Fire end
 
 	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
 		and not self:damageIsEffective(to, nature, from) then return false end
@@ -4821,9 +4840,9 @@ function SmartAI:doNotSave(player)
 end
 
 function SmartAI:ImitateResult_DrawNCards(player, skills)
-	if not player then return 0 end
+	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if player:isSkipped(sgs.Player_Draw) then return 0 end
-	if not skills or skills:length() == 0 then return 2 end
+	skills = skills or player:getVisibleSkillList(true)
 	local drawSkills = {}
 	for _,skill in sgs.qlist(skills) do
 		if player:hasShownSkill(skill:objectName()) then
@@ -4831,12 +4850,12 @@ function SmartAI:ImitateResult_DrawNCards(player, skills)
 		end
 	end
 	local count = 2
+	if player:hasTreasure("JadeSeal") and player:hasShownOneGeneral() then count = count + 1 end
 	if #drawSkills > 0 then
-		local lost = player:getLostHp()
 		for _,skillname in pairs(drawSkills) do
 			if skillname == "tuxi" then return math.min(2, self.room:getOtherPlayers(player):length())
 			elseif skillname == "shuangxiong" then return 1
-			elseif skillname == "zaiqi" then return math.floor(lost * 3 / 4)
+			elseif skillname == "zaiqi" then return math.floor(player:getLostHp() * 3 / 4)
 			elseif skillname == "luoyi" then count = count - 1
 			elseif skillname == "yingzi" then count = count + 1
 			elseif skillname == "haoshi" then count = count + 2 end
@@ -5140,7 +5159,7 @@ end
 function SmartAI:getBigAndSmallKingdoms()
 	local jade_seal_owner
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:hasTreasure("JadeSeal") then
+		if p:hasTreasure("JadeSeal") and p:hasShownOneGeneral() then
 			jade_seal_owner = p
 			break
 		end
@@ -5183,7 +5202,7 @@ function SmartAI:getBigAndSmallKingdoms()
 	end
 
 	if jade_seal_owner then
-		if not jade_seal_owner:hasShownOneGeneral() or jade_seal_owner:getRole() == "careerist" then
+		if jade_seal_owner:getRole() == "careerist" then
 			table.insertTable(small, big)
 			big = {}
 			table.insert(big, jade_seal_owner:objectName())

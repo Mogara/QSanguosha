@@ -144,7 +144,7 @@ function SmartAI:shouldUseAnaleptic(target, card_use)
 	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
 	if self.player:hasSkill("tieqi") then return true end
 
-	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
+	if self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4 then return true end
 
 	if self.player:hasSkill("wushuang") then
 		if getKnownCard(target, player, "Jink", true, "he") >= 2 then return false end
