@@ -24,6 +24,9 @@
 #include "room.h"
 #include "engine.h"
 
+//@todo: remove this after the user can sends room config
+#include "settings.h"
+
 using namespace QSanProtocol;
 
 QHash<CommandType, LobbyPlayer::Callback> LobbyPlayer::callbacks;
@@ -101,7 +104,7 @@ void LobbyPlayer::createRoomCommand(const QVariant &)
     this->disconnect(socket);
 
     notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
-    Room *room = server->createNewRoom();
+    Room *room = server->createNewRoom(SettingsInstance);
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);

@@ -1,11 +1,13 @@
 #ifndef ROOMINFOSTRUCT_H
 #define ROOMINFOSTRUCT_H
 
-#include "settings.h"
+#include <QStringList>
+
+class Settings;
 
 struct RoomConfig{
     RoomConfig(){}
-    RoomConfig(const Settings &config);
+    RoomConfig(const Settings *config);
 
     bool parse(const QVariant &data);
     QVariant toVariant() const;

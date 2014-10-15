@@ -23,6 +23,7 @@
 
 #include "nativesocket.h"
 #include "protocol.h"
+#include "roomconfig.h"
 
 #include <QObject>
 #include <QStringList>
@@ -52,7 +53,7 @@ public:
     void daemonize() { server->daemonize(); }
 
     void connectToLobby();
-    Room *createNewRoom();
+    Room *createNewRoom(const RoomConfig &config);
     Room *getRoom(int room_id);
     void signupPlayer(ServerPlayer *player);
 

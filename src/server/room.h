@@ -34,6 +34,7 @@ struct LogMessage;
 #include "roomthread.h"
 #include "protocol.h"
 #include "roomstate.h"
+#include "roomconfig.h"
 
 #include <QMutex>
 #include <QStack>
@@ -53,8 +54,9 @@ public:
     typedef void (Room::*Callback)(ServerPlayer *, const QVariant &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);
 
-    explicit Room(QObject *parent, const QString &mode);
+    explicit Room(QObject *parent, const RoomConfig &config = RoomConfig());
     ~Room();
+
     ServerPlayer *addSocket(ClientSocket *socket);
     inline int getId() const{ return _m_Id; }
     bool isFull() const;
@@ -62,6 +64,7 @@ public:
     bool canPause(ServerPlayer *p) const;
     void tryPause();
     int getLack() const;
+    const RoomConfig &getConfig() const {return config;}
     QString getMode() const;
     const Scenario *getScenario() const;
     RoomThread *getThread() const;
@@ -491,7 +494,7 @@ private:
     void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges);
     QStringList _chooseDefaultGenerals(ServerPlayer *player) const;
     bool _setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst);
-    QString mode;
+    RoomConfig config;
     QList<ServerPlayer *> m_players, m_alivePlayers;
     int player_count;
     ServerPlayer *current;

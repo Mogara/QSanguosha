@@ -1291,7 +1291,7 @@ class Room: public QThread {
 public:
     enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
 
-    explicit Room(QObject *parent, const char *mode);
+    explicit Room(QObject *parent);
     ~Room();
     bool isFull() const;
     bool isFinished() const;

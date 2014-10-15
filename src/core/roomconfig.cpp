@@ -20,35 +20,36 @@
 
 #include "roomconfig.h"
 #include "json.h"
+#include "settings.h"
 
-RoomConfig::RoomConfig(const Settings &config)
+RoomConfig::RoomConfig(const Settings *config)
 {
-    ServerName = config.ServerName;
-    OperationTimeout = config.OperationTimeout;
-    OperationNoLimit = config.OperationNoLimit;
-    RandomSeat = config.RandomSeat;
-    EnableCheat = config.EnableCheat;
-    FreeChoose = config.FreeChoose;
-    DisableChat = config.DisableChat;
-    CountDownSeconds = config.CountDownSeconds;
-    NullificationCountDown = config.NullificationCountDown;
-    EnableMinimizeDialog = config.EnableMinimizeDialog;
-    RewardTheFirstShowingPlayer = config.RewardTheFirstShowingPlayer;
-    ForbidAddingRobot = config.ForbidAddingRobot;
-    OriginAIDelay = config.OriginAIDelay;
-    AIDelay = config.AIDelay;
-    AIDelayAD = config.AIDelayAD;
-    AlterAIDelayAD = config.AlterAIDelayAD;
-    DisableLua = config.DisableLua;
-    SurrenderAtDeath = config.SurrenderAtDeath;
-    LuckCardLimitation = config.LuckCardLimitation;
-    GameMode = config.GameMode;
-    PileSwappingLimitation = config.value("PileSwappingLimitation", 5).toInt();
-    HegemonyMaxChoice = config.value("HegemonyMaxChoice", 7).toInt();
-    AIChat = config.value("AIChat", true).toBool();
-    BanPackages = config.BanPackages;
-    EnableLordConvertion = config.value("EnableLordConvertion", true).toBool();
-    CardConversions = config.value("CardConversions").toStringList();
+    ServerName = config->ServerName;
+    OperationTimeout = config->OperationTimeout;
+    OperationNoLimit = config->OperationNoLimit;
+    RandomSeat = config->RandomSeat;
+    EnableCheat = config->EnableCheat;
+    FreeChoose = config->FreeChoose;
+    DisableChat = config->DisableChat;
+    CountDownSeconds = config->CountDownSeconds;
+    NullificationCountDown = config->NullificationCountDown;
+    EnableMinimizeDialog = config->EnableMinimizeDialog;
+    RewardTheFirstShowingPlayer = config->RewardTheFirstShowingPlayer;
+    ForbidAddingRobot = config->ForbidAddingRobot;
+    OriginAIDelay = config->OriginAIDelay;
+    AIDelay = config->AIDelay;
+    AIDelayAD = config->AIDelayAD;
+    AlterAIDelayAD = config->AlterAIDelayAD;
+    DisableLua = config->DisableLua;
+    SurrenderAtDeath = config->SurrenderAtDeath;
+    LuckCardLimitation = config->LuckCardLimitation;
+    GameMode = config->GameMode;
+    PileSwappingLimitation = config->value("PileSwappingLimitation", 5).toInt();
+    HegemonyMaxChoice = config->value("HegemonyMaxChoice", 7).toInt();
+    AIChat = config->value("AIChat", true).toBool();
+    BanPackages = config->BanPackages;
+    EnableLordConvertion = config->value("EnableLordConvertion", true).toBool();
+    CardConversions = config->value("CardConversions").toStringList();
 }
 
 bool RoomConfig::parse(const QVariant &data)

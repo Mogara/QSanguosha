@@ -194,7 +194,7 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
         notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
 
         if (current == NULL || current->isFull() || current->isFinished())
-            createNewRoom();
+            createNewRoom(SettingsInstance);
 
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);

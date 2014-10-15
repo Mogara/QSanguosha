@@ -44,9 +44,9 @@ void Server::connectToLobby()
     lobby->connectToHost(Config.LobbyAddress);
 }
 
-Room *Server::createNewRoom()
+Room *Server::createNewRoom(const RoomConfig &config)
 {
-    Room *new_room = new Room(this, Config.GameMode);
+    Room *new_room = new Room(this, config);
     current = new_room;
     rooms.insert(current);
 
@@ -84,7 +84,7 @@ void Server::cleanupRoom() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
-    Room *new_room = createNewRoom();
+    Room *new_room = createNewRoom(room->getConfig());
     foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         //@todo: move these two statements
         //name2objname.remove(player->screenName(), player->objectName());
