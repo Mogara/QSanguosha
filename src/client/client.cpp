@@ -620,8 +620,8 @@ void Client::fetchRoomList(int page)
 
 void Client::requestNewRoom()
 {
-    //@todo: transfer configurations
-    notifyServer(S_COMMAND_CREATE_ROOM);
+    RoomConfig config(SettingsInstance);
+    notifyServer(S_COMMAND_CREATE_ROOM, config.toVariant());
 }
 
 void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> &targets) {

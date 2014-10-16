@@ -107,7 +107,7 @@ public:
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         QMap<ServerPlayer *, QStringList> trigger_map;
 
-        if (!Config.value("EnableLordConvertion", true).toBool())
+        if (!room->getConfig().EnableLordConvertion)
             return trigger_map;
 
         if (player == NULL) {
@@ -283,7 +283,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             room->setTag("FirstRound", true);
             if (room->getMode() != "custom_scenario")
                 room->drawCards(room->getPlayers(), 4, QString());
-            if (Config.LuckCardLimitation > 0)
+            if (room->getConfig().LuckCardLimitation > 0)
                 room->askForLuckCard();
         }
         return false;
@@ -747,7 +747,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         log.card_str = QString::number(judge->card->getEffectiveId());
         room->sendLog(log);
 
-        int delay = Config.AIDelay;
+        int delay = room->getConfig().AIDelay;
         if (judge->time_consuming) delay /= 1.25;
         Q_ASSERT(room->getThread() != NULL);
         room->getThread()->delay(delay);
@@ -783,7 +783,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
             return true;
         }
-        if (Config.RewardTheFirstShowingPlayer && room->getTag("TheFirstToShowRewarded").isNull()) {
+        if (room->getConfig().RewardTheFirstShowingPlayer && room->getTag("TheFirstToShowRewarded").isNull()) {
             LogMessage log;
             log.type = "#FirstShowReward";
             log.from = player;

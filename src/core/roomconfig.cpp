@@ -47,9 +47,9 @@ RoomConfig::RoomConfig(const Settings *config)
     PileSwappingLimitation = config->value("PileSwappingLimitation", 5).toInt();
     HegemonyMaxChoice = config->value("HegemonyMaxChoice", 7).toInt();
     AIChat = config->value("AIChat", true).toBool();
-    BanPackages = config->BanPackages;
+    BanPackages = config->BanPackages.toSet();
     EnableLordConvertion = config->value("EnableLordConvertion", true).toBool();
-    CardConversions = config->value("CardConversions").toStringList();
+    CardConversions = config->value("CardConversions").toStringList().toSet();
 }
 
 bool RoomConfig::parse(const QVariant &data)
@@ -88,8 +88,16 @@ bool RoomConfig::parse(const QVariant &data)
     getFlag(AIChat);
 #undef getFlag
 
-    BanPackages = config.at(12).toStringList();
-    CardConversions = config.at(13).toStringList();
+    JsonArray ban_packages = config.at(12).value<JsonArray>();
+    foreach (const QVariant &package, ban_packages) {
+        BanPackages << package.toString();
+    }
+
+    JsonArray card_conversions = config.at(13).value<JsonArray>();
+    foreach (const QVariant &conversion, card_conversions) {
+        CardConversions << conversion.toString();
+    }
+
     return true;
 }
 
@@ -124,9 +132,20 @@ QVariant RoomConfig::toVariant() const
     setFlag(SurrenderAtDeath);
     setFlag(EnableLordConvertion);
 #undef setFlag
+    data << flag;
 
-    data << BanPackages;
-    data << CardConversions;
+
+    JsonArray ban_packages;
+    foreach (const QString &package, BanPackages) {
+        ban_packages << package;
+    }
+    data << QVariant(ban_packages);
+
+    JsonArray card_conversions;
+    foreach (const QString conversions, CardConversions) {
+        card_conversions << conversions;
+    }
+    data << QVariant(card_conversions);
 
     return data;
 }

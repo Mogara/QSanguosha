@@ -65,6 +65,7 @@ public:
     void tryPause();
     int getLack() const;
     const RoomConfig &getConfig() const {return config;}
+    QString getSetupString() const;
     QString getMode() const;
     const Scenario *getScenario() const;
     RoomThread *getThread() const;

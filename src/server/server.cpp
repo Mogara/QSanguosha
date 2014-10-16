@@ -182,8 +182,9 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
     if (is_reconnection) {
         foreach (QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
-            if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
-                notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
+            Room *room = player->getRoom();
+            if (player && player->getState() == "offline" && room && !room->isFinished()) {
+                notifyClient(socket, S_COMMAND_SETUP, room->getSetupString());
                 player->getRoom()->reconnect(player, socket);
                 return;
             }
@@ -191,10 +192,9 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
     }
 
     if (role == RoomRole) {
-        notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
-
         if (current == NULL || current->isFull() || current->isFinished())
             createNewRoom(SettingsInstance);
+        notifyClient(socket, S_COMMAND_SETUP, current->getSetupString());
 
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);

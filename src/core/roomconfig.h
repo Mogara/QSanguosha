@@ -1,7 +1,9 @@
 #ifndef ROOMINFOSTRUCT_H
 #define ROOMINFOSTRUCT_H
 
-#include <QStringList>
+#include <QSet>
+#include <QString>
+#include <QVariant>
 
 class Settings;
 
@@ -36,8 +38,8 @@ struct RoomConfig{
     bool DisableLua;
     bool SurrenderAtDeath;
     bool EnableLordConvertion;
-    QStringList BanPackages;
-    QStringList CardConversions;
+    QSet<QString> BanPackages;
+    QSet<QString> CardConversions;
 };
 
 #endif // ROOMINFOSTRUCT_H

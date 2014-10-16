@@ -1463,11 +1463,11 @@ void MainWindow::onCreateRoomClicked()
         }
     }
 
-    if (hasGlobalIp) {
-        ServerDialog *dialog = new ServerDialog(this);
-        if (!dialog->config())
-            return;
+    ServerDialog *dialog = new ServerDialog(this);
+    if (!dialog->config())
+        return;
 
+    if (hasGlobalIp) {
         server = new Server(this);
         if (!server->listen(QHostAddress::Any, 0)) {
             QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));

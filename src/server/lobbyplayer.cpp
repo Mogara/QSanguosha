@@ -98,13 +98,23 @@ void LobbyPlayer::roomListCommand(const QVariant &data)
     notify(S_COMMAND_ROOM_LIST, server->getRoomList(data.toInt()));
 }
 
-void LobbyPlayer::createRoomCommand(const QVariant &)
+void LobbyPlayer::createRoomCommand(const QVariant &data)
 {
     socket->disconnect(this);
     this->disconnect(socket);
 
-    notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
-    Room *room = server->createNewRoom(SettingsInstance);
+    RoomConfig config;
+    if (!config.parse(data))
+        return;
+    if (Config.ForbidAddingRobot)
+        config.ForbidAddingRobot = true;
+    QStringList global_ban_packages(Sanguosha->getBanPackages());
+    foreach (const QString &package, global_ban_packages) {
+        config.BanPackages.insert(package);
+    }
+
+    Room *room = server->createNewRoom(config);
+    notify(S_COMMAND_SETUP, room->getSetupString());
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
@@ -123,7 +133,7 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
         return;
     }
 
-    notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+    notify(S_COMMAND_SETUP, room->getSetupString());
 
     ServerPlayer *player = room->addSocket(socket);
     if (player) {

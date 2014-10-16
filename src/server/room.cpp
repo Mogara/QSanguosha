@@ -1994,6 +1994,45 @@ int Room::getLack() const{
     return player_count - m_players.length();
 }
 
+QString Room::getSetupString() const
+{
+    int timeout = config.OperationNoLimit ? 0 : config.OperationTimeout;
+    QString flags;
+    if (config.RandomSeat)
+        flags.append("R");
+    if (config.EnableCheat)
+        flags.append("C");
+    if (config.EnableCheat && config.FreeChoose)
+        flags.append("F");
+    if (config.ForbidAddingRobot)
+        flags.append("A");
+    if (config.DisableChat)
+        flags.append("M");
+    if (config.RewardTheFirstShowingPlayer)
+        flags.append("S");
+
+    QString ban_packages;
+    if (!config.BanPackages.isEmpty()) {
+        QSetIterator<QString> iter(config.BanPackages);
+        ban_packages = iter.next();
+        while (iter.hasNext()) {
+            ban_packages.append('+');
+            ban_packages.append(iter.next());
+        }
+    }
+
+    QString server_name = config.ServerName;
+    QStringList setup_items;
+    setup_items << server_name
+        << config.GameMode
+        << QString::number(timeout)
+        << QString::number(config.NullificationCountDown)
+        << ban_packages
+        << flags;
+
+    return setup_items.join(":");
+}
+
 QString Room::getMode() const{
     return config.GameMode;
 }

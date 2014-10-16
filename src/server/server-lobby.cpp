@@ -127,13 +127,14 @@ QVariant Server::getRoomList(int page)
         Room *room = iter1.next();
         if (i >= offset) {
             JsonArray item;
-            item << Sanguosha->getSetupString();
+            item << room->getSetupString();
             item << QVariant();//No host address. It's not a remote room.
             item << room->getPlayers().size();
             item << room->getId();//room number
             item << rooms.size();//max room number
-            item << Config.AIDelay;
-            item << Config.RewardTheFirstShowingPlayer;
+            const RoomConfig &config = room->getConfig();
+            item << config.AIDelay;
+            item << config.RewardTheFirstShowingPlayer;
             data << QVariant(item);
         }
         i++;
