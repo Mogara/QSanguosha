@@ -1002,7 +1002,6 @@ function SmartAI:getUseValue(card)
 			if self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and #self.enemies > 0 and self:getCardsNum("Slash") == 1 then v = v + 5 end
 			if self:hasCrossbowEffect() then v = v + 4 end
 			if card:getSkillName() == "Spear" then v = v - 1 end
-			if card:getSkillName() == "Halberd" then v = v + 1 end
 		elseif card:isKindOf("Jink") then
 			if self:getCardsNum("Jink") > 1 then v = v - 6 end
 		elseif card:isKindOf("Peach") then
@@ -1081,9 +1080,14 @@ function SmartAI:adjustUsePriority(card, v)
 			end
 		end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
-
+		if self.slashAvail == 1 then
+			v = v + math.min(sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card) * 0.1, 0.5)
+			v = v + math.min(sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, card) * 0.05, 0.5)
+		end
 	end
-
+	
+	if card:isKindOf("HalberdCard") then v = v + 1 end
+	
 	local suits_value = {}
 	for index, suit in ipairs(suits) do
 		suits_value[suit] = -index
@@ -1460,7 +1464,7 @@ function SmartAI:getEnemies(player)
 end
 
 function SmartAI:sort(players, key)
-	if not players then self.room:writeToConsole(debug.traceback()) end
+	if type(players) ~= "table" then self.room:writeToConsole(debug.traceback()) end
 	if #players == 0 then return end
 	local func
 	if not key or key == "defense" or key == "defenseSlash" then
@@ -3396,6 +3400,7 @@ local function getSkillViewCard(card, class_name, player, card_place)
 				if skill_card_str then
 					local skill_card = sgs.Card_Parse(skill_card_str)
 					assert(skill_card)
+					if skill_card:isKindOf("HalberdCard") and class_name == "Slash" then return skill_card_str end
 					if skill_card:isKindOf(class_name) and not player:isCardLimited(skill_card, skill_card:getHandlingMethod()) then return skill_card_str end
 				end
 			end

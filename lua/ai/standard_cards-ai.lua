@@ -423,6 +423,7 @@ function SmartAI:useCardSlash(card, use)
 	local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, card) > 50
 						or self.player:hasFlag("slashNoDistanceLimit")
 	self.slash_targets = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+	if self.player:hasFlag("HalberdUse") then self.slash_targets = self.slash_targets + 99 end
 	if use.isDummy and use.extra_target then self.slash_targets = self.slash_targets + use.extra_target end
 	if self.player:hasSkill("duanbing") then self.slash_targets = self.slash_targets + 1 end
 	local rangefix = 0
@@ -569,6 +570,11 @@ end
 
 sgs.ai_skill_use.slash = function(self, prompt)
 	local parsedPrompt = prompt:split(":")
+	if prompt == "@halberd" then
+		local ret = sgs.ai_skill_cardask["@halberd"](self)
+		return ret or "."
+	end
+
 	local callback = sgs.ai_skill_cardask[parsedPrompt[1]] -- for askForUseSlashTo
 	if self.player:hasFlag("slashTargetFixToOne") and type(callback) == "function" then
 		local slash
@@ -583,6 +589,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
 		if ret == nil or ret == "." then return "." end
 		slash = sgs.Card_Parse(ret)
 		assert(slash)
+		if slash:isKindOf("HalberdCard") then return ret end
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 		local targets = {}
 		local use = { to = sgs.SPlayerList() }
@@ -2329,7 +2336,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 	-- self.player = killer
 	-- target = user
 	-- target2 = victim
-	if true then return "." end
+
 	if self:isFriend(target) and (target:hasFlag("AI_needCrossbow") or
 			(getCardsNum("Slash", target, self.player) >= 2 and self.player:getWeapon():isKindOf("Crossbow"))) then
 		if target:hasFlag("AI_needCrossbow") then self.room:setPlayerFlag(target, "-AI_needCrossbow") end

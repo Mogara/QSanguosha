@@ -697,11 +697,9 @@ sgs.ai_keep_value.JadeSeal = 2.02
 
 --Halberd
 sgs.ai_view_as.Halberd = function(card, player, card_place)
-	if card_place == sgs.Player_PlaceHand and card:isKindOf("Slash") then
-		local suit = card:getSuitString()
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		return ("slash:Halberd[%s:%s]=%d&"):format(suit, number, card_id)
+	if card_place == sgs.Player_PlaceHand and card:isKindOf("Slash") and not player:hasFlag("Global_HalberdFailed") and not player:hasFlag("slashDisableExtraTarget")
+		and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE and player:getMark("Equips_Nullified_to_Yourself") == 0 then
+		return "@HalberdCard=."
 	end
 end
 
@@ -710,20 +708,55 @@ Halberd_skill.name = "Halberd"
 table.insert(sgs.ai_skills, Halberd_skill)
 Halberd_skill.getTurnUseCard = function(self, inclusive)
 	if self.player:hasFlag("Global_HalberdFailed") or not self:slashIsAvailable() or self.player:getMark("Equips_Nullified_to_Yourself") > 0 then return end
+	if self:getCard("Slash") then
+		local HalberdCard = sgs.Card_Parse("@HalberdCard=.")
+		assert(HalberdCard)
+		return HalberdCard
+	end
+end
 
+sgs.ai_skill_use_func.HalberdCard = function(card, use, self)
+	local slash = self:getCard("Slash")
+	self:useCardSlash(slash, use)
+	if use.card and use.card:isKindOf("Analeptic") then
+		return
+	end
+	use.card = card
+	if use.to then use.to = sgs.SPlayerList() end
+end
+
+
+sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
+
+sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
+
+sgs.ai_skill_cardask["@halberd"] = function(self)
 	local cards = {}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
 		if c:isKindOf("Slash") then table.insert(cards, c) end
 	end
-
-	if #cards == 0 then return end
-	
+	if #cards == 0 then return "." end
 	self:sortByUseValue(cards)
-
-	local card_str = ("slash:Halberd[%s:%s]=%d&"):format(cards[1]:getSuitString(), cards[1]:getNumberString(), cards[1]:getEffectiveId())
-	local slash = sgs.Card_Parse(card_str)
-	assert(slash)
-	return slash
+	local slash = cards[1]
+	local use = { to = sgs.SPlayerList() }
+	local target
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if player:hasFlag("SlashAssignee") then
+			if self.player:canSlash(player, slash) then
+				use.to:append(player)
+				target = player
+				break
+			else
+				return "."
+			end
+		end
+	end
+	self:useCardSlash(slash, use)
+	local targets = {}
+	for _, p in sgs.qlist(use.to) do
+		table.insert(targets, p:objectName())
+	end
+	if #targets > 0 and (not target or table.contains(targets, target:objectName())) then return slash:toString() .. "->" .. table.concat(targets, "+") end
 end
 
 function sgs.ai_weapon_value.Halberd(self, enemy, player)
