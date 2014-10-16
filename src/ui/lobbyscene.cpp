@@ -21,7 +21,7 @@
 #include "lobbyscene.h"
 #include "client.h"
 #include "settings.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "clientstruct.h"
 #include "tile.h"
 
@@ -29,7 +29,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QProcess>
-#include <QApplication>
 
 int LobbyScene::SCENE_PADDING = 20;
 int LobbyScene::SCENE_MARGIN_TOP = 30;

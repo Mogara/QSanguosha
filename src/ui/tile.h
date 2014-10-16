@@ -22,7 +22,7 @@
 #define TILE_H
 
 #include "button.h"
-#include "Title.h"
+#include "title.h"
 
 class Tile : public Button
 {
