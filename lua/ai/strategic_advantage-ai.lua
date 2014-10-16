@@ -731,32 +731,33 @@ sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
 sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
 
 sgs.ai_skill_cardask["@halberd"] = function(self)
-	local cards = {}
-	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:isKindOf("Slash") then table.insert(cards, c) end
-	end
-	if #cards == 0 then return "." end
+	local cards = sgs.QList2Table(self.player:getCards("Slash"))
 	self:sortByUseValue(cards)
-	local slash = cards[1]
-	local use = { to = sgs.SPlayerList() }
-	local target
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:hasFlag("SlashAssignee") then
-			if self.player:canSlash(player, slash) then
-				use.to:append(player)
-				target = player
-				break
-			else
-				return "."
+	for _, slash in ipairs(cards) do
+		if slash:isKindOf("HalberdCard") then continue end
+		local use = { to = sgs.SPlayerList() }
+		local target
+		if self.player:hasFlag("slashTargetFix") then
+			for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if player:hasFlag("SlashAssignee") then
+					if self.player:canSlash(player, slash) then
+						use.to:append(player)
+						target = player
+						break
+					else
+						return "."
+					end
+				end
 			end
 		end
+		self:useCardSlash(slash, use)
+		local targets = {}
+		for _, p in sgs.qlist(use.to) do
+			table.insert(targets, p:objectName())
+		end
+		if #targets > 0 and (not target or table.contains(targets, target:objectName())) then return slash:toString() .. "->" .. table.concat(targets, "+") end
 	end
-	self:useCardSlash(slash, use)
-	local targets = {}
-	for _, p in sgs.qlist(use.to) do
-		table.insert(targets, p:objectName())
-	end
-	if #targets > 0 and (not target or table.contains(targets, target:objectName())) then return slash:toString() .. "->" .. table.concat(targets, "+") end
+	return "."
 end
 
 function sgs.ai_weapon_value.Halberd(self, enemy, player)
