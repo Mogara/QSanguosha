@@ -268,8 +268,10 @@ function sgs.cloneCard(name, suit, number)
 end
 
 function SmartAI:getTurnUse(priority)
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
+	local cards = {}
+	for _ ,c in sgs.qlist(self.player:getHandcards()) do
+		if c:isAvailable(self.player) then table.insert(cards, c) end
+	end
 
 	local turnUse = {}
 	local slash = sgs.cloneCard("slash")
@@ -288,7 +290,6 @@ function SmartAI:getTurnUse(priority)
 	end
 
 	for _, card in ipairs(cards) do
-		if not card:isAvailable(self.player) then continue end
 
 		if priority and self:getDynamicUsePriority(card) < 6 then continue end
 
@@ -1008,6 +1009,7 @@ function SmartAI:getUseValue(card)
 			if self.player:isWounded() then v = v + 6 end
 		end
 	elseif card:getTypeId() == sgs.Card_TypeTrick then
+		if self.player:getPhase() == sgs.Player_Play and not card:isAvailable(self.player) then v = 0 end
 		if self.player:getWeapon() and not self.player:hasSkills(sgs.lose_equip_skill) and card:isKindOf("Collateral") then v = 2 end
 		if card:getSkillName() == "shuangxiong" then v = 6 end
 		if card:isKindOf("Duel") then v = v + self:getCardsNum("Slash") * 2 end

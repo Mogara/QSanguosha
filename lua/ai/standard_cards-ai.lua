@@ -3047,7 +3047,7 @@ function SmartAI:useCardBefriendAttacking(BefriendAttacking, use)
 	end
 end
 sgs.ai_use_priority.BefriendAttacking = 9.28
-sgs.ai_use_value.BefriendAttacking = 9
+sgs.ai_use_value.BefriendAttacking = 8.9
 sgs.ai_keep_value.BefriendAttacking = 3.88
 
 sgs.ai_nullification.BefriendAttacking = function(self, card, from, to, positive)

@@ -179,30 +179,26 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 
-	local cards = self.player:getCards("he")
-	cards = sgs.QList2Table(cards)
-
-	local red_card
-	self:sortByUseValue(cards, true)
-	for _, card in ipairs(cards) do
+	local cards = {}
+	for _, card in sgs.qlist(self.player:getCards("he")) do
 		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
-			and ( (not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll )
-			and (inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
-			red_card = card
-			break
+			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) then
+			local suit = card:getSuitString()
+			local number = card:getNumberString()
+			local card_id = card:getEffectiveId()
+			local card_str = ("slash:wusheng[%s:%s]=%d&wusheng"):format(suit, number, card_id)
+			local slash = sgs.Card_Parse(card_str)
+			assert(slash)
+			if self:slashIsAvailable(self.player, slash) then
+				table.insert(cards, slash)
+			end
 		end
 	end
 
-	if red_card then
-		local suit = red_card:getSuitString()
-		local number = red_card:getNumberString()
-		local card_id = red_card:getEffectiveId()
-		local card_str = ("slash:wusheng[%s:%s]=%d&wusheng"):format(suit, number, card_id)
-		local slash = sgs.Card_Parse(card_str)
+	if #cards == 0 then return end
 
-		assert(slash)
-		return slash
-	end
+	self:sortByUsePriority(cards)
+	return cards[1]
 end
 
 function sgs.ai_cardneed.wusheng(to, card)
