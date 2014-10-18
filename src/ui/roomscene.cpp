@@ -24,7 +24,6 @@
 #include "engine.h"
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
-#include "playercarddialog.h"
 #include "freechoosedialog.h"
 #include "window.h"
 #include "button.h"

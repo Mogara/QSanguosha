@@ -23,7 +23,6 @@
 #include "settings.h"
 #include "client.h"
 #include "standard.h"
-#include "playercarddialog.h"
 #include "roomscene.h"
 #include "heroskincontainer.h"
 #include "graphicspixmaphoveritem.h"

@@ -25,7 +25,6 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "playercarddialog.h"
 #include "rolecombobox.h"
 #include "skinbank.h"
 #include "graphicspixmaphoveritem.h"
