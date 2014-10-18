@@ -2115,16 +2115,18 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				return null_card
 			end
 		elseif trick:isKindOf("Snatch") then
-			if to:containsTrick("indulgence") or to:containsTrick("supply_shortage") and self:isFriend(to) and to:isNude() then return nil end
+			if (to:containsTrick("indulgence") or to:containsTrick("supply_shortage")) and self:isFriend(to) and to:isNude() then return nil end
 			if isEnemyFrom and self:isFriend(to, from) and to:getCards("j"):length() > 0 then
 				return null_card
+			elseif from and self:isFriend(from) and self:isFriend(to) and self:askForCardChosen(to, "ej", "dummyreason") then return false
 			elseif self:isFriend(to) then return null_card
 			end
 		elseif trick:isKindOf("Dismantlement") then
-			if to:containsTrick("indulgence") or to:containsTrick("supply_shortage") and self:isFriend(to) and to:isNude() then return nil end
+			if (to:containsTrick("indulgence") or to:containsTrick("supply_shortage")) and self:isFriend(to) and to:isNude() then return nil end
 			if isEnemyFrom and self:isFriend(to, from) and to:getCards("j"):length() > 0 then
 				return null_card
 			end
+			if from and self:isFriend(from) and self:isFriend(to) and self:askForCardChosen(to, "ej", "dummyreason") then return false end
 			if self:isFriend(to) then
 				if self:getDangerousCard(to) or self:getValuableCard(to) then return null_card end
 				if to:getHandcardNum() == 1 and not self:needKongcheng(to) then
