@@ -75,6 +75,7 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStrin
 
 bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
     if (triggerEvent == EventPhaseStart) {
+        /*
         if (player == room->getTag("Starter").value<ServerPlayer *>()) {
             if (player->getPhase() == Player::Start) {
                 room->setTag("Round", room->getTag("Round").toInt() + 1);
@@ -91,17 +92,21 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 }
             }
         }
+        */
 
         if (player->getPhase() == Player::RoundStart && this->players.first()["beforeNext"] != QString()) {
-            if (player->tag["playerHasPlayed"].toBool())
-                room->gameOver(this->players.first()["beforeNext"]);
+            if (player->tag["playerHasPlayed"].toBool()) {
+                QString role = HegemonyMode::GetMappedRole(this->players.first()["beforeNext"]);
+                room->gameOver(role);
+            }
             else player->tag["playerHasPlayed"] = true;
         }
 
         if (player->getPhase() != Player::NotActive) return false;
         if (player->getState() == "robot" || this->players.first()["singleTurn"] == QString())
             return false;
-        room->gameOver(this->players.first()["singleTurn"]);
+        QString role = HegemonyMode::GetMappedRole(this->players.first()["singleTurn"]);
+        room->gameOver(role);
         return true;
     }
     else if (triggerEvent == FetchDrawPileCard) {
@@ -111,7 +116,8 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 if (drawPile.contains(id))
                     return false;
             }
-            room->gameOver(this->players.first()["endedByPile"]);
+            QString role = HegemonyMode::GetMappedRole(this->players.first()["endedByPile"]);
+            room->gameOver(role);
             return true;
         }
         return false;
@@ -244,10 +250,6 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 room->setTag("Starter", data);
             }
 
-            if (this->players[i]["nationality"] != QString()) {
-                room->setPlayerProperty(sp, "kingdom", this->players.at(i)["nationality"]);
-            }
-
             str = this->players[i]["draw"];
             if (str == QString()) str = "4";
             room->setTag("FirstRound", true);
@@ -274,6 +276,10 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
 
             if (this->players.at(i)["shown_deputy"] != QString())
                 sp->showGeneral(false);
+
+            if (this->players[i]["nationality"] != QString()) {
+                room->setPlayerProperty(sp, "kingdom", this->players.at(i)["nationality"]);
+            }
         }
 
         room->setTag("WaitForPlayer", QVariant(true));

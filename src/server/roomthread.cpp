@@ -584,7 +584,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             if (skill->objectName() == "game_rule" || (room->getScenario()
                                                                        && room->getScenario()->objectName() == skill->objectName())) {
                                 room->tryPause();
-                                continue;
+                                if (skill->objectName() == name)
+                                    continue;
+                                trigger_who[p].append(skill);
                             }
                             else {
                                 room->tryPause();

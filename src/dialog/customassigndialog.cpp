@@ -231,25 +231,22 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     m_endedByPileBox = new QComboBox();
     m_endedByPileCheckBox = new QCheckBox(tr("Ended by pile ends"));
     m_endedByPileCheckBox->setEnabled(m_settedPile.length() > 0);
-    m_endedByPileBox->addItem(tr("Lord"), "lord+loyalist");
-    m_endedByPileBox->addItem(tr("Renegade"), "renegade");
-    m_endedByPileBox->addItem(tr("Rebel"), "rebel");
 
     m_singleTurnText = new QLabel(tr("After this turn "));
     m_singleTurnText2 = new QLabel(tr("win"));
     m_singleTurnBox = new QComboBox();
     m_singleTurnCheckBox = new QCheckBox(tr("After this turn you lose"));
-    m_singleTurnBox->addItem(tr("Lord"), "lord+loyalist");
-    m_singleTurnBox->addItem(tr("Renegade"), "renegade");
-    m_singleTurnBox->addItem(tr("Rebel"), "rebel");
 
     m_beforeNextText = new QLabel(tr("Before next turn "));
     m_beforeNextText2 = new QLabel(tr("win"));
     m_beforeNextBox = new QComboBox();
     m_beforeNextCheckBox = new QCheckBox(tr("Before next turn begin player lose"));
-    m_beforeNextBox->addItem(tr("Lord"), "lord+loyalist");
-    m_beforeNextBox->addItem(tr("Renegade"), "renegade");
-    m_beforeNextBox->addItem(tr("Rebel"), "rebel");
+
+    foreach(QString kingdom, Sanguosha->getKingdoms()) {
+        m_endedByPileBox->addItem(Sanguosha->translate(kingdom), kingdom);
+        m_singleTurnBox->addItem(Sanguosha->translate(kingdom), kingdom);
+        m_beforeNextBox->addItem(Sanguosha->translate(kingdom), kingdom);
+    }
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
