@@ -22,7 +22,6 @@
 #define FLATDIALOG_H
 
 #include <QDialog>
-#include <QColor>
 
 class QLabel;
 class QVBoxLayout;
@@ -33,17 +32,21 @@ class FlatDialog : public QDialog {
 protected:
     FlatDialog(QWidget *parent, bool initialLayoutWithTitle = true);
 
+#ifdef Q_OS_WIN
     virtual void paintEvent(QPaintEvent *);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
+#endif
 
     QVBoxLayout *layout;
 
+#ifdef Q_OS_WIN
 private:
     QLabel *title;
     QPoint mousePressedPoint;
     bool mousePressed;
+#endif
 };
 
 #endif // FLATDIALOG_H

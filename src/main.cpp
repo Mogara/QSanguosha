@@ -176,6 +176,15 @@ int main(int argc, char *argv[]) {
         QTextStream stream(&file);
         styleSheet = stream.readAll();
     }
+
+#ifdef Q_OS_WIN
+    QFile winFile("style-sheet/windows-extra.qss");
+    if (winFile.open(QIODevice::ReadOnly)) {
+        QTextStream winStream(&winFile);
+        styleSheet += winStream.readAll();
+    }
+#endif
+
     qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
 
 #ifdef AUDIO_SUPPORT
