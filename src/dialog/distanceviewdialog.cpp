@@ -28,6 +28,7 @@
 #include <QFormLayout>
 #include <QComboBox>
 #include <QGroupBox>
+#include <QPushButton>
 
 class DistanceViewDialogUI {
 public:
@@ -81,11 +82,11 @@ public:
 };
 
 DistanceViewDialog::DistanceViewDialog(QWidget *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Distance view"));
 
-    QFormLayout *layout = new QFormLayout;
+    QFormLayout *fLayout = new QFormLayout;
 
     ui = new DistanceViewDialogUI;
 
@@ -95,14 +96,14 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     connect(ui->from, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
     connect(ui->to, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
 
-    layout->addRow(tr("From"), ui->from);
-    layout->addRow(tr("To"), ui->to);
-    layout->addRow(tr("Left"), ui->left);
-    layout->addRow(tr("Right"), ui->right);
-    layout->addRow(tr("Minimum"), ui->min);
+    fLayout->addRow(tr("From"), ui->from);
+    fLayout->addRow(tr("To"), ui->to);
+    fLayout->addRow(tr("Left"), ui->left);
+    fLayout->addRow(tr("Right"), ui->right);
+    fLayout->addRow(tr("Minimum"), ui->min);
 
-    QGroupBox *box = new QGroupBox();
-    layout->addRow(tr("Distance correct"), box);
+    QGroupBox *box = new QGroupBox;
+    fLayout->addRow(tr("Distance correct"), box);
 
     QFormLayout *box_layout = new QFormLayout;
     foreach(QLineEdit *edit, ui->distance_edits)
@@ -110,9 +111,14 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
 
     box->setLayout(box_layout);
 
-    layout->addRow(tr("In attack range"), ui->in_attack);
-    layout->addRow(tr("Final"), ui->final);
-    setLayout(layout);
+    fLayout->addRow(tr("In attack range"), ui->in_attack);
+    fLayout->addRow(tr("Final"), ui->final);
+
+    layout->addLayout(fLayout);
+
+    QPushButton *closeButton = new QPushButton(tr("Close"));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    layout->addWidget(closeButton);
 
     showDistance();
 }
