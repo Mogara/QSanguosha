@@ -109,9 +109,6 @@
     <ClCompile Include="..\..\src\dialog\cardoverview.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\playercarddialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\mainwindow.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -496,9 +493,6 @@
     <ClCompile Include="Release\moc_player.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_playercarddialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_recorder.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -646,9 +640,6 @@
     <ClCompile Include="Debug\moc_player.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_playercarddialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_recorder.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -745,15 +736,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\core\version.cpp">
       <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_cardbutton.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_cardbutton.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\dialog\cardbutton.cpp">
-      <Filter>dialog</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\ChooseOptionsBox.cpp">
       <Filter>ui</Filter>
@@ -1015,9 +997,6 @@
     <CustomBuild Include="..\..\src\dialog\mainwindow.h">
       <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\playercarddialog.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\rule-summary.h">
       <Filter>dialog</Filter>
     </CustomBuild>
@@ -1173,9 +1152,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\strategic-advantage.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\cardbutton.h">
-      <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\ChooseOptionsBox.h">
       <Filter>ui</Filter>
