@@ -144,6 +144,7 @@ class RoomScene : public QGraphicsScene {
 
 public:
     RoomScene(QMainWindow *main_window);
+    ~RoomScene();
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
