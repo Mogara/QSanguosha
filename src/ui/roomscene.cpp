@@ -404,6 +404,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_animationEngine = new QQmlEngine(this);
     _m_animationContext = new QQmlContext(_m_animationEngine->rootContext(), this);
     _m_animationComponent = new QQmlComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+
+    m_animationWindow = new QQuickWindow(this);
+    m_animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    m_animationWindow->setGeometry(main_window->geometry());
+    m_animationWindow->setColor(Qt::transparent);
 #endif
 }
 
@@ -3927,17 +3932,11 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
 #else
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
-        QQuickWindow *animationWindow = new QQuickWindow;
-        animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-        animationWindow->setGeometry(main_window->geometry());
-        animationWindow->setColor(Qt::transparent);
-        object->setParentItem(animationWindow->contentItem());
-        animationWindow->show();
-        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(close()));
-        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(deleteLater()));
+        object->setParentItem(m_animationWindow->contentItem());
+        m_animationWindow->show();
+        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(close()));
 #endif
-    }
-    else {
+    } else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);
         QGraphicsTextItem *line = addText(word, font);

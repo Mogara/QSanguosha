@@ -44,6 +44,8 @@ class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class BubbleChatBox;
 class PlayerCardBox;
+class QQuickWindow;
+
 struct RoomLayout;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -368,6 +370,7 @@ private:
     QQmlEngine *_m_animationEngine;
     QQmlContext *_m_animationContext;
     QQmlComponent *_m_animationComponent;
+    QQuickWindow *m_animationWindow;
 #endif
 
     QSet<HeroSkinContainer *> m_heroSkinContainers;
