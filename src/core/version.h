@@ -33,7 +33,7 @@ public:
     };
 
     explicit QSanVersionNumber(const QString &ver_str);
-    QSanVersionNumber(int major, int minor, int sub, VersionType type = offical);
+    QSanVersionNumber(int major, int minor, int sub, VersionType type = offical, int step = 0);
 
     // Actually only these 2 operator overloads take effect here...
     bool operator <(const QSanVersionNumber &arg2) const;
@@ -54,6 +54,7 @@ private:
     int m_minor;
     int m_sub;
     VersionType m_type;
+    int m_step;
 };
 
 struct UpdateInfoStruct {

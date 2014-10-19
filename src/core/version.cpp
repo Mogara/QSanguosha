@@ -27,14 +27,14 @@ QSanVersionNumber::QSanVersionNumber(const QString &str){
         Q_ASSERT(false);
 }
 
-QSanVersionNumber::QSanVersionNumber(int major, int minor, int sub, VersionType type)
-    : m_major(major), m_minor(minor), m_sub(sub), m_type(type){
+QSanVersionNumber::QSanVersionNumber(int major, int minor, int sub, VersionType type, int step)
+    : m_major(major), m_minor(minor), m_sub(sub), m_type(type), m_step(step)
+{
 
 }
 
-
 bool QSanVersionNumber::tryParse(const QString &str){
-    QRegExp regexp("(\\d)\\.(\\d)\\.(\\d)\\-(.+)");
+    QRegExp regexp("(\\d+)\\.(\\d+)\\.(\\d+)\\-([a-z]+)(\\d+)?");
     if (regexp.exactMatch(str)){
         QStringList l = regexp.capturedTexts();
         m_major = l[1].toInt();
@@ -48,6 +48,10 @@ bool QSanVersionNumber::tryParse(const QString &str){
             m_type = offical;
         else
             m_type = other;
+        if (l.length() > 4)
+            m_step = l[5].toInt();
+        else
+            m_step = 0;
 
         return true;
     }
@@ -75,7 +79,11 @@ QString QSanVersionNumber::toString() const{
         type_str = "unknown";
         break;
     }
-    return str.arg(m_major).arg(m_minor).arg(m_sub).arg(type_str);
+    str = str.arg(m_major).arg(m_minor).arg(m_sub).arg(type_str);
+    if (m_step != 0)
+        str.append(m_step);
+
+    return str;
 }
 
 QSanVersionNumber::operator QString() const{
@@ -83,20 +91,27 @@ QSanVersionNumber::operator QString() const{
 }
 
 bool QSanVersionNumber::operator ==(const QSanVersionNumber &arg2) const{
-    return (m_major == arg2.m_major && m_minor == arg2.m_minor && m_sub == arg2.m_sub && m_type == arg2.m_type);
+    return (m_major == arg2.m_major
+            && m_minor == arg2.m_minor
+            && m_sub == arg2.m_sub
+            && m_type == arg2.m_type
+            && m_step == arg2.m_step);
 }
 
 bool QSanVersionNumber::operator <(const QSanVersionNumber &arg2) const{
-    if (m_major < arg2.m_major)
+    if (m_major < arg2.m_major) {
         return true;
-    else if (m_major == arg2.m_major){
-        if (m_minor < arg2.m_minor)
+    } else if (m_major == arg2.m_major) {
+        if (m_minor < arg2.m_minor) {
             return true;
-        else if (m_minor == arg2.m_minor){
-            if (m_sub < arg2.m_sub)
+        } else if (m_minor == arg2.m_minor) {
+            if (m_sub < arg2.m_sub) {
                 return true;
-            else if (m_sub == arg2.m_sub){
-                return m_type < arg2.m_type;
+            } else if (m_sub == arg2.m_sub){
+                if (m_type < arg2.m_type)
+                    return true;
+                else
+                    return m_step < arg2.m_step;
             }
         }
     }
