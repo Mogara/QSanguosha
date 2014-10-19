@@ -44,6 +44,7 @@
 #include "playercardbox.h"
 #include "stylehelper.h"
 #include "heroskincontainer.h"
+#include "flatdialog.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -1578,8 +1579,8 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
 }
 
 void RoomScene::chooseSuit(const QStringList &suits) {
-    QDialog *dialog = new QDialog;
-    QVBoxLayout *layout = new QVBoxLayout;
+    FlatDialog *dialog = new FlatDialog;
+    QVBoxLayout *layout = dialog->mainLayout();
 
     foreach(QString suit, suits) {
         QCommandLinkButton *button = new QCommandLinkButton;
@@ -1593,11 +1594,8 @@ void RoomScene::chooseSuit(const QStringList &suits) {
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
     }
 
-    connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseSuit()));
-
     dialog->setObjectName(".");
     dialog->setWindowTitle(tr("Please choose a suit"));
-    dialog->setLayout(layout);
     delete m_choiceDialog;
     m_choiceDialog = dialog;
 }

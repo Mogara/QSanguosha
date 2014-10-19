@@ -30,7 +30,7 @@ class FlatDialog : public QDialog {
     Q_OBJECT
 
 public:
-    FlatDialog(QWidget *parent, bool initialLayoutWithTitle = true);
+    FlatDialog(QWidget *parent = 0, bool initialLayoutWithTitle = true);
 
     inline QVBoxLayout *mainLayout() const {
         return layout;
