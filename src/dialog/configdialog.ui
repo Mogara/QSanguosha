@@ -63,7 +63,7 @@
         <property name="title">
          <string>Background</string>
         </property>
-        <widget class="QWidget" name="layoutWidget">
+        <widget class="QWidget" name="layoutWidget1">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -250,7 +250,7 @@
         <property name="title">
          <string>Font setup</string>
         </property>
-        <widget class="QWidget" name="layoutWidget">
+        <widget class="QWidget" name="layoutWidget2">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -367,7 +367,7 @@
        <attribute name="title">
         <string>Audio</string>
        </attribute>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget3">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -573,7 +573,7 @@
        <attribute name="title">
         <string>Game</string>
        </attribute>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget4">
         <property name="geometry">
          <rect>
           <x>11</x>
