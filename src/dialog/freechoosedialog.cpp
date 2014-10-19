@@ -29,9 +29,10 @@
 #include <QCheckBox>
 #include <QTabWidget>
 #include <QMessageBox>
+#include <QButtonGroup>
 
 FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
-    : QDialog(parent), type(type)
+    : FlatDialog(parent), type(type)
 {
     setWindowTitle(tr("Free choose generals"));
 
@@ -73,11 +74,8 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
 
-    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(tab_widget);
     layout->addLayout(button_layout);
-
-    setLayout(layout);
 
     if (type == Exclusive)
         group->buttons().first()->click();

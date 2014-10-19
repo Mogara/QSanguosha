@@ -21,12 +21,13 @@
 #ifndef FREECHOOSEDIALOG_H
 #define FREECHOOSEDIALOG_H
 
-#include <QDialog>
-#include <QButtonGroup>
+#include "flatdialog.h"
 
 class General;
+class QButtonGroup;
+class QAbstractButton;
 
-class FreeChooseDialog : public QDialog {
+class FreeChooseDialog : public FlatDialog {
     Q_OBJECT
     Q_ENUMS(ButtonGroupType)
 
