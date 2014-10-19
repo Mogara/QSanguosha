@@ -18,8 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _UPDATE_CHECKER
-#define _UPDATE_CHECKER
+#ifndef UPDATECHECKER_H
+#define UPDATECHECKER_H
 
 #include <QWidget>
 
@@ -44,4 +44,4 @@ private:
     QTextEdit *page;
 };
 
-#endif
+#endif // UPDATECHECKER_H

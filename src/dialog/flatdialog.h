@@ -29,8 +29,16 @@ class QVBoxLayout;
 class FlatDialog : public QDialog {
     Q_OBJECT
 
-protected:
+public:
     FlatDialog(QWidget *parent, bool initialLayoutWithTitle = true);
+
+    inline QVBoxLayout *mainLayout() const {
+        return layout;
+    }
+
+    bool addCloseButton(QString name = QString());
+
+protected:
 
 #ifdef Q_OS_WIN
     virtual void paintEvent(QPaintEvent *);

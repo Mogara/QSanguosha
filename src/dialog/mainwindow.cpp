@@ -42,29 +42,23 @@
 #include "serverdialog.h"
 #include "banipdialog.h"
 #include "cardeditor.h"
+#include "flatdialog.h"
+#include "connectiondialog.h"
+#include "configdialog.h"
+#include "window.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>
-#include <QGraphicsItem>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsTextItem>
-#include <QVariant>
 #include <QMessageBox>
-#include <QTime>
 #include <QProcess>
-#include <QCheckBox>
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QSystemTrayIcon>
-#include <QInputDialog>
 #include <QLabel>
-#include <QStatusBar>
-#include <QGroupBox>
-#include <QToolButton>
-#include <QCommandLinkButton>
-#include <QFormLayout>
-#include <QNetworkReply>
 #include <QBitmap>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -73,7 +67,6 @@
 #include <QtOpenGL/QGLWidget>
 #endif
 #endif
-
 
 class FitView : public QGraphicsView {
 public:
@@ -1322,15 +1315,14 @@ void MainWindow::onChangeLogGotten()
 
 void MainWindow::on_actionCheckUpdate_triggered()
 {
-    QDialog *dialog = new QDialog(this);
+    FlatDialog *dialog = new FlatDialog(this);
     dialog->setWindowTitle(tr("Check Update"));
 
-    QHBoxLayout *layout = new QHBoxLayout;
     UpdateChecker *widget = new UpdateChecker;
-    connect(dialog, SIGNAL(finished(int)), widget, SLOT(deleteLater()));
     widget->fill(updateInfomation);
-    layout->addWidget(widget);
-    dialog->setLayout(layout);
+    dialog->mainLayout()->addWidget(widget);
+
+    dialog->addCloseButton();
 
     dialog->show();
 }

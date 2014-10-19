@@ -26,6 +26,7 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 #include <QGraphicsDropShadowEffect>
+#include <QPushButton>
 
 FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
     : QDialog(parent), mousePressed(false)
@@ -59,6 +60,20 @@ FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
         setLayout(layout);
     }
 #endif
+}
+
+bool FlatDialog::addCloseButton(QString name)
+{
+    if (layout == NULL)
+        return false;
+
+    if (name.isEmpty())
+        name = tr("Close");
+
+    QPushButton *closeButton = new QPushButton(name);
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    layout->addWidget(closeButton);
+    return true;
 }
 
 #ifdef Q_OS_WIN

@@ -18,19 +18,13 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _MAIN_WINDOW_H
-#define _MAIN_WINDOW_H
-
-#include "engine.h"
-#include "connectiondialog.h"
-#include "configdialog.h"
-#include "window.h"
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSettings>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QSpinBox>
+#include <QDialog>
+
+#include "version.h"
 
 namespace Ui {
     class MainWindow;
@@ -41,9 +35,10 @@ class QGraphicsScene;
 class QSystemTrayIcon;
 class Server;
 class QTextEdit;
-class QGroupBox;
-class RoomItem;
 class QNetworkReply;
+class ConnectionDialog;
+class ConfigDialog;
+class Window;
 
 class BroadcastBox : public QDialog {
     Q_OBJECT
@@ -164,5 +159,5 @@ signals:
     void about_to_close();
 };
 
-#endif
+#endif //MAINWINDOW_H
 

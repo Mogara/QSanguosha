@@ -21,18 +21,20 @@
 #include "updatechecker.h"
 #include "engine.h"
 #include "version.h"
+#include "stylehelper.h"
 
 #include <QLabel>
 #include <QTextEdit>
 #include <QFormLayout>
 #include <QFile>
+#include <QScrollBar>
 
 UpdateChecker::UpdateChecker()
 {
     state_label = new QLabel(this);
     address_label = new QLabel(this);
     page = new QTextEdit(this);
-    page->setObjectName("whatsnew");
+    page->setProperty("description", true);
     page->setReadOnly(true);
 
     QFormLayout *layout = new QFormLayout;
@@ -41,6 +43,10 @@ UpdateChecker::UpdateChecker()
     layout->addRow(tr("What's New"), page);
 
     setLayout(layout);
+
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    page->horizontalScrollBar()->setStyleSheet(style);
+    page->verticalScrollBar()->setStyleSheet(style);
 }
 
 void UpdateChecker::fill(UpdateInfoStruct info)
@@ -53,16 +59,15 @@ void UpdateChecker::fill(UpdateInfoStruct info)
             state = tr("New Patch Available") + postfix;
         else
             state = tr("New Client Available") + postfix;
-    }
-    else {
+    } else {
         state = tr("Lastest Version Already");
         lastest = true;
     }
     state_label->setText(state);
 
-    if (lastest)
+    if (lastest) {
         address_label->setText(tr("Lastest Version Already"));
-    else {
+    } else {
         address_label->setOpenExternalLinks(true);
         address_label->setText(QString("<a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(info.address));
     }
@@ -73,9 +78,9 @@ void UpdateChecker::fill(UpdateInfoStruct info)
         stream.setCodec("UTF-8");
         QString content = stream.readAll();
         page->setHtml(content);
-    }
-    else
+    } else {
         page->setText(tr("Lastest Version Already"));
+    }
 }
 
 void UpdateChecker::clear()
