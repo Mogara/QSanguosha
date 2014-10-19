@@ -405,11 +405,16 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_animationContext = new QQmlContext(_m_animationEngine->rootContext(), this);
     _m_animationComponent = new QQmlComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
 
-    m_animationWindow = new QQuickWindow(this);
+    m_animationWindow = new QQuickWindow;
     m_animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     m_animationWindow->setGeometry(main_window->geometry());
     m_animationWindow->setColor(Qt::transparent);
 #endif
+}
+
+RoomScene::~RoomScene()
+{
+    m_animationWindow->deleteLater();
 }
 
 void RoomScene::handleGameEvent(const QVariant &args) {
