@@ -198,7 +198,7 @@ end
 
 sgs.dynamic_value.benefit.Analeptic = true
 
-sgs.ai_use_value.Analeptic = 5.98
+sgs.ai_use_value.Analeptic = 6.2
 sgs.ai_keep_value.Analeptic = 4.1
 sgs.ai_use_priority.Analeptic = 3.0
 
@@ -260,7 +260,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 	end
 end
 
-sgs.ai_use_value.SupplyShortage = 7
+sgs.ai_use_value.SupplyShortage = 6.5
 sgs.ai_keep_value.SupplyShortage = 3.48
 sgs.ai_use_priority.SupplyShortage = 0.5
 sgs.ai_card_intention.SupplyShortage = 120

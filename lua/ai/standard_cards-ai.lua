@@ -932,7 +932,7 @@ sgs.ai_card_intention.Peach = function(self, card, from, tos)
 	end
 end
 
-sgs.ai_use_value.Peach = 6
+sgs.ai_use_value.Peach = 7
 sgs.ai_keep_value.Peach = 7
 sgs.ai_use_priority.Peach = 0.9
 
@@ -1496,7 +1496,7 @@ sgs.ai_skill_cardask["archery-attack-jink"] = function(self, data, pattern, targ
 end
 
 sgs.ai_keep_value.Nullification = 3.8
-sgs.ai_use_value.Nullification = 8
+sgs.ai_use_value.Nullification = 7.8
 
 function SmartAI:useCardAmazingGrace(card, use)
 	-- if (self.role == "lord" or self.role == "loyalist") and sgs.turncount <= 2 and self.player:getSeat() <= 3 and self.player:aliveCount() > 5 then return end
@@ -2523,7 +2523,7 @@ function SmartAI:useCardIndulgence(card, use)
 	end
 end
 
-sgs.ai_use_value.Indulgence = 8
+sgs.ai_use_value.Indulgence = 7.7
 sgs.ai_use_priority.Indulgence = 0.5
 sgs.ai_card_intention.Indulgence = 120
 sgs.ai_keep_value.Indulgence = 3.5
