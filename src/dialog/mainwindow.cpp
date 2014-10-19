@@ -67,7 +67,11 @@
 #include <QBitmap>
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+#include <QtOpenGL/QOpenGLWidget>
+#else
 #include <QtOpenGL/QGLWidget>
+#endif
 #endif
 
 
