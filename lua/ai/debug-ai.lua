@@ -23,7 +23,7 @@
 		-- sgs.debugFunc(player)
 	 -- end
 -- end
-
+--[[
 sgs.ai_debug_func[sgs.CardUsed].debugfunc = function(self, player, data)
 	local use = data:toCardUse()
 	if not use.from or use.from:objectName() ~= player:objectName() then return end
@@ -32,7 +32,7 @@ sgs.ai_debug_func[sgs.CardUsed].debugfunc = function(self, player, data)
 	elseif use.card:isKindOf("Slash") then
 		sgs.debugFunc(player, 4)
 	end
-end
+end]]
 
 function sgs.debugFunc(player, debugType)
 	local owner = global_room:getOwner()

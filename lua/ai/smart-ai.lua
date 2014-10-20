@@ -603,7 +603,7 @@ function sgs.updateIntention(from, to, intention)
 end
 
 function sgs.outputKingdomValues(player, level, sendLog)
-	local name = player:getGeneralName() .. "/" .. player:getGeneral2Name()
+	--[[local name = player:getGeneralName() .. "/" .. player:getGeneral2Name()
 	if name == "anjiang/anjiang" then name = "SEAT" .. player:getSeat() end
 	local msg = name .. " " .. level .. " "
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
@@ -614,13 +614,14 @@ function sgs.outputKingdomValues(player, level, sendLog)
 		msg = msg .. sgs.current_mode_players[kingdom]
 	end
 	global_room:writeToConsole(msg)
+
 	if sendLog then
 		local log = sgs.LogMessage()
 		log.type = "#AI_evaluateKingdom"
 		log.arg = sgs.recorder:evaluateKingdom(player)
 		log.from = player
 		global_room:sendLog(log)
-	end
+	end]]
 end
 
 function SmartAI:updatePlayers(update)
@@ -1721,7 +1722,7 @@ function SmartAI:filterEvent(event, player, data)
 	end
 
 	if event == sgs.BuryVictim then
-		if self == sgs.recorder then sgs.updateAlivePlayerRoles() sgs.debugFunc(player, 3) end
+		if self == sgs.recorder then sgs.updateAlivePlayerRoles() end
 	end
 
 	if self.player:objectName() == player:objectName() and event == sgs.AskForPeaches then
@@ -1939,7 +1940,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			if player:getAI() then player:setSkillsPreshowed("hd", true) end
 			-- sgs.printFEList(player)
-			sgs.debugFunc(player, 3)
+			-- sgs.debugFunc(player, 3)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
 		end
