@@ -1325,7 +1325,7 @@ function SmartAI:sortByUseValue(cards, inverse)
 	table.sort(cards, compare_func)
 end
 
-function SmartAI:sortByUsePriority(cards, player)
+function SmartAI:sortByUsePriority(cards)
 	local compare_func = function(a, b)
 		local value1 = self:getUsePriority(a)
 		local value2 = self:getUsePriority(b)
@@ -2601,7 +2601,9 @@ end
 
 function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	from = from or self.room:getCurrent()
-	slash = slash or self:getCard("Slash", from)
+	if not slash or not slash:isKindOf("Slash") then
+		slash = self.player:objectName() == from:objectName() and self:getCard("Slash") or sgs.cloneCard("slash")
+	end
 	to = to or self.player
 	if not from or not to then self.room:writeToConsole(debug.traceback()) return false end
 	if to:hasArmorEffect("SilverLion") and not IgnoreArmor(from, to) then
@@ -3397,14 +3399,14 @@ end
 local function getSkillViewCard(card, class_name, player, card_place)
 	for _, skill in ipairs(getPlayerSkillList(player)) do
 		local askill = skill:objectName()
-		if player:hasShownSkill(askill) or player:hasLordSkill(askill) then
+		if player:hasSkill(askill) or player:hasLordSkill(askill) then
 			local callback = sgs.ai_view_as[askill]
 			if type(callback) == "function" then
 				local skill_card_str = callback(card, player, card_place, class_name)
 				if skill_card_str then
 					local skill_card = sgs.Card_Parse(skill_card_str)
 					assert(skill_card)
-					if skill_card:isKindOf("HalberdCard") and class_name == "Slash" then return skill_card_str end
+					if skill_card:isKindOf("HalberdCard") and not player:isCardLimited(skill_card, skill_card:getHandlingMethod()) and class_name == "Slash" then return skill_card_str end
 					if skill_card:isKindOf(class_name) and not player:isCardLimited(skill_card, skill_card:getHandlingMethod()) then return skill_card_str end
 				end
 			end
@@ -3543,34 +3545,37 @@ function getKnownCard(player, from, class_name, viewas, flags)
 	return known
 end
 
-function SmartAI:getCardId(class_name, player, acard)
-	player = player or self.player
+function SmartAI:getCardId(class_name, acard)
 	local cards
 	if acard then cards = { acard }
 	else
-		cards = player:getCards("he")
-		for _, key in sgs.list(player:getPileNames()) do
-			for _, id in sgs.qlist(player:getPile(key)) do
+		cards = self.player:getCards("he")
+		for _, key in sgs.list(self.player:getPileNames()) do
+			for _, id in sgs.qlist(self.player:getPile(key)) do
 				cards:append(sgs.Sanguosha:getCard(id))
 			end
 		end
 		cards = sgs.QList2Table(cards)
 	end
-	self:sortByUsePriority(cards, player)
+	self:sortByUsePriority(cards)
 
 	local viewArr, cardArr = {}, {}
 
 	for _, card in ipairs(cards) do
 		local card_place = self.room:getCardPlace(card:getEffectiveId())
-		local viewas = getSkillViewCard(card, class_name, player, card_place)
+		local viewas = getSkillViewCard(card, class_name, self.player, card_place)
 		local viewascard
 		if viewas then
 			viewascard = sgs.Card_Parse(viewas)
 			assert(viewascard)
 		end
-		local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial
-		if viewas and isCard and self:adjustUsePriority(viewascard, 0) >= self:adjustUsePriority(card, 0) then
-			table.insert(viewArr, viewas)
+		local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, self.player) and card_place ~= sgs.Player_PlaceSpecial
+		if viewas then
+			if isCard and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewascard, 0) then
+				table.insert(cardArr, card:getEffectiveId())
+			else
+				table.insert(viewArr, viewas)
+			end
 		elseif isCard then
 			table.insert(cardArr, card:getEffectiveId())
 		end
@@ -3587,29 +3592,27 @@ function SmartAI:getCardId(class_name, player, acard)
 		end
 		if cardid or viewCard then return cardid or viewas end
 	end
-	local cardsView = cardsView(self, class_name, player)
+	local cardsView = cardsView(self, class_name, self.player)
 	if #cardsView > 0 then return cardsView[1] end
 	return
 end
 
-function SmartAI:getCard(class_name, player)
-	player = player or self.player
-	local card_id = self:getCardId(class_name, player)
+function SmartAI:getCard(class_name)
+	local card_id = self:getCardId(class_name)
 	if card_id then return sgs.Card_Parse(card_id) end
 end
 
 function SmartAI:getCards(class_name, flag)
-	local player = self.player
 	local room = self.room
 	if flag and type(flag) ~= "string" then room:writeToConsole(debug.traceback()) return {} end
 
 	local private_pile
 	if not flag then private_pile = true end
 	flag = flag or "he"
-	local all_cards = player:getCards(flag)
+	local all_cards = self.player:getCards(flag)
 	if private_pile then
-		for _, key in sgs.list(player:getPileNames()) do
-			for _, id in sgs.qlist(player:getPile(key)) do
+		for _, key in sgs.list(self.player:getPileNames()) do
+			for _, id in sgs.qlist(self.player:getPile(key)) do
 				all_cards:append(sgs.Sanguosha:getCard(id))
 			end
 		end
@@ -3624,8 +3627,8 @@ function SmartAI:getCards(class_name, flag)
 		if card:hasFlag("AI_Using") then
 		elseif class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		else
-			local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial
-			local viewas = getSkillViewCard(card, class_name, player, card_place)
+			local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, self.player) and card_place ~= sgs.Player_PlaceSpecial
+			local viewas = getSkillViewCard(card, class_name, self.player, card_place)
 			if viewas then
 				viewas = sgs.Card_Parse(viewas)
 				assert(viewas)
@@ -3642,7 +3645,7 @@ function SmartAI:getCards(class_name, flag)
 		end
 	end
 
-	card_str = cardsView(self, class_name, player, other)
+	card_str = cardsView(self, class_name, self.player, other)
 	if #card_str > 0 then
 		for _, str in ipairs(card_str) do
 			local c = sgs.Card_Parse(str)

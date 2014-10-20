@@ -365,7 +365,7 @@ function SmartAI:useCardLureTiger(card, use)
 
 			for _, to in sgs.qlist(dummyuse.to) do
 				if self.player:distanceTo(to) > self.player:getAttackRange() and self.player:distanceTo(to, -total_num) <= self.player:getAttackRange() then
-					local sps = getPlayersFromTo(one)
+					local sps = getPlayersFromTo(to)
 					if sps then
 						sgs.ai_use_priority.LureTiger = 3
 						use.card = card
@@ -678,7 +678,7 @@ sgs.ai_skill_use["@@JadeSeal!"] = function(self, prompt, method)
 		end
 	end
 
-	local players = sgs.qlist(self.room:getOtherPlayers(self.player))
+	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 	self:sort(players, "handcard")
 	players = sgs.reverse(players)
 	for _, player in ipairs(players) do

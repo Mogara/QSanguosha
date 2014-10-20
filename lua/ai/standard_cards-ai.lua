@@ -371,10 +371,15 @@ end
 
 function SmartAI:slashIsAvailable(player, slash) -- @todo: param of slashIsAvailable
 	player = player or self.player
-	slash = slash or self:getCard("Slash", player)
-	if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
-	assert(slash)
-	return slash:isAvailable(player)
+	if player:objectName() == self.player:objectName() then
+		slash = slash or self:getCard("Slash")
+		if not slash or not slash:isKindOf("Slash") then slash = self:getCard("Slash") or sgs.cloneCard("slash") end
+		assert(slash)
+		return slash:isAvailable(self.player)
+	else
+		if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
+		return slash:isAvailable(player)
+	end
 end
 
 function SmartAI:findWeaponToUse(enemy)
