@@ -3934,10 +3934,10 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         bringToFront(object);
 #else
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
-        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
+        //connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         object->setParentItem(m_animationWindow->contentItem());
         m_animationWindow->show();
-        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(close()));
+        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(hide()));
 #endif
     } else {
         QFont font = Config.BigFont;
