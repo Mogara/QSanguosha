@@ -182,7 +182,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(triggers_got(QString,QStringList,bool)), this, SLOT(chooseTriggerOrder(QString,QStringList,bool)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer *>)), SLOT(arrangeSeats(QList<const ClientPlayer *>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status, Client::Status)), this, SLOT(updateStatus(Client::Status, Client::Status)));
-    connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
+    connect(ClientInstance, SIGNAL(avatars_hidden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString, int, DamageStruct::Nature, bool)), SLOT(changeHp(QString, int, DamageStruct::Nature, bool)));
     connect(ClientInstance, SIGNAL(maxhp_changed(QString, int)), SLOT(changeMaxHp(QString, int)));
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));

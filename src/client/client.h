@@ -323,7 +323,7 @@ signals:
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);
-    void avatars_hiden();
+    void avatars_hidden();
     void pile_reset();
     void player_killed(const QString &who);
     void player_revived(const QString &who);

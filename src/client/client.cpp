@@ -658,7 +658,7 @@ void Client::startInXs(const QVariant &left_seconds) {
 
     emit start_in_xs();
     if (seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL) {
-        emit avatars_hiden();
+        emit avatars_hidden();
     }
 }
 
