@@ -370,7 +370,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         // retrieve menu and create a new pile if necessary
         QPushButton *button;
         if (!_m_privatePiles.contains(pile_name)) {
-            button = new QPushButton;
+            button = new QPushButton(_m_privatePileArea->widget());
             button->setObjectName(pile_name);
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
@@ -770,6 +770,8 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = _m_selectedFrame2 = NULL;
+    _m_privatePileArea = new QGraphicsProxyWidget;
+    _m_privatePileArea->setWidget(new QWidget(NULL, Qt::Tool));
 
     leftDisableShowLock = rightDisableShowLock = NULL;
 
