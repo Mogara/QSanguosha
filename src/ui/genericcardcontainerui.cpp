@@ -763,8 +763,11 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = _m_selectedFrame2 = NULL;
-    _m_privatePileArea = new QGraphicsProxyWidget;
-    _m_privatePileArea->setWidget(new QWidget(NULL, Qt::Tool));
+    _m_privatePileArea = new QGraphicsProxyWidget(this);
+    QWidget *pileArea = new QWidget(NULL, Qt::Tool);//It currently needn't to be visible.
+    pileArea->setAttribute(Qt::WA_TranslucentBackground);
+    pileArea->resize(1, 1);
+    _m_privatePileArea->setWidget(pileArea);
 
     leftDisableShowLock = rightDisableShowLock = NULL;
 
