@@ -370,7 +370,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         // retrieve menu and create a new pile if necessary
         QPushButton *button;
         if (!_m_privatePiles.contains(pile_name)) {
-            button = new QPushButton;
+            button = new QPushButton(_m_privatePileArea->widget());
             button->setObjectName(pile_name);
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
@@ -396,14 +396,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
     QPoint start = _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
-    QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
-    foreach (QGraphicsProxyWidget *widget, widgets) {
-        if (widget->objectName() == treasure_name)
-            widgets_t << widget;
-        else
-            widgets_p << widget;
-    }
-    widgets = widgets_t + widgets_p;
+    QList<QGraphicsProxyWidget *> widgets = _m_privatePiles.values();
     for (int i = 0; i < widgets.length(); i++) {
         QGraphicsProxyWidget *widget = widgets[i];
         widget->setPos(start + i * step);
@@ -770,6 +763,11 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = _m_selectedFrame2 = NULL;
+    _m_privatePileArea = new QGraphicsProxyWidget(this);
+    QWidget *pileArea = new QWidget(NULL, Qt::Tool);//It currently needn't to be visible.
+    pileArea->setAttribute(Qt::WA_TranslucentBackground);
+    pileArea->resize(1, 1);
+    _m_privatePileArea->setWidget(pileArea);
 
     leftDisableShowLock = rightDisableShowLock = NULL;
 
