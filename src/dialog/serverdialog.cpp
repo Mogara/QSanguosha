@@ -182,9 +182,6 @@ QWidget *ServerDialog::createAdvancedTab() {
     free_choose_checkbox->setChecked(Config.FreeChoose);
     free_choose_checkbox->setVisible(Config.EnableCheat);
 
-    updateButtonEnablility(mode_group->checkedButton());
-    connect(mode_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(updateButtonEnablility(QAbstractButton *)));
-
     connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_choose_checkbox, SLOT(setVisible(bool)));
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
@@ -331,16 +328,6 @@ QWidget *ServerDialog::createMiscTab() {
     return widget;
 }
 
-void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
-    if (!button) return;
-
-    if (button->objectName().contains("scenario")) {
-        mini_scene_button->setEnabled(true);
-    } else {
-        mini_scene_button->setEnabled(false);
-    }
-}
-
 QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_box->setParent(this);
@@ -373,22 +360,6 @@ QGroupBox *ServerDialog::createGameModeBox() {
         jiange_defense->setChecked(true);
 
     item_list << jiange_defense;
-
-    //mini scenes
-    QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
-    mini_scenes->setObjectName("custom_scenario");
-    mode_group->addButton(mini_scenes);
-
-    if (Config.GameMode == "custom_scenario")
-        mini_scenes->setChecked(true);
-
-    mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
-    connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
-
-    mini_scene_button->setEnabled(mode_group->checkedButton() ? mode_group->checkedButton()->objectName() == "mini" : false);
-
-    item_list << mini_scenes;
-    item_list << mini_scene_button;
 
     // ============
 
@@ -455,10 +426,6 @@ void ServerDialog::onOkButtonClicked() {
     accept();
 }
 
-void ServerDialog::doCustomAssign() {
-    CustomAssignDialog *dialog = new CustomAssignDialog(this);
-    dialog->exec();
-}
 
 bool ServerDialog::config() {
     exec();
