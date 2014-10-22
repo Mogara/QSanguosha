@@ -414,7 +414,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
 RoomScene::~RoomScene()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     m_animationWindow->deleteLater();
+#endif
 }
 
 void RoomScene::handleGameEvent(const QVariant &args) {
