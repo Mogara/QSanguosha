@@ -29,11 +29,12 @@
 #include <QPushButton>
 
 FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
-    : QDialog(parent), mousePressed(false)
+    : QDialog(parent)
 {
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     setAttribute(Qt::WA_TranslucentBackground);
+    mousePressed = false;
 
     if (initialLayoutWithTitle) {
         layout = new QVBoxLayout;
