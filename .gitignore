@@ -16,13 +16,13 @@ lib/jsoncpp.lib
 lib/lua.lib
 lib/breakpad.lib
 /tools/
-builds/vs201[023]/Win32/
-builds/vs201[023]/x64/
+builds/vs201[023]*/Win32/
+builds/vs201[023]*/x64/
 Bin/
 *.sdf
 *.suo
-/builds/vs201[023]/*.user
-/builds/vs201[023]/ipch
+/builds/vs201[023]*/*.user
+/builds/vs201[023]*/ipch
 *.opensdf
 /QSanSMTPClient_build/QSanSMTPClient/*.user
 /QSanSMTPClient_build/QSanSMTPClient/ipch
@@ -69,3 +69,5 @@ libGLESv2.dll
 /etc/customScenes/custom_scenario.txt
 /etc
 OGLdpf.log
+QtQuick.2/
+
