@@ -254,7 +254,7 @@ function SmartAI:initialize(player)
 	sgs.ai_NeedPeach[player:objectName()] = 0
 
 	sgs.updateAlivePlayerRoles()
-	self:updatePlayers()
+	self:updatePlayers(true, true)
 	self:assignKeep(true)
 end
 
@@ -624,8 +624,8 @@ function sgs.outputKingdomValues(player, level, sendLog)
 	end]]
 end
 
-function SmartAI:updatePlayers(update)
-	if self.player:isDead() then return end
+function SmartAI:updatePlayers(update, resetAI)
+	if not resetAI and self.player:isDead() then return end
 	if update ~= false then update = true end
 
 	self.friends = {}
