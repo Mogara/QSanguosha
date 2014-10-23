@@ -519,7 +519,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	end
 end
 
-function sgs.ai_slash_prohibit.xiangle(self, from, to)
+function sgs.ai_slash_prohibit.xiangle(self, from, to, card)
 	if self:isFriend(to, from) then return false end
 	local slash_num, analeptic_num, jink_num
 	if from:objectName() == self.player:objectName() then
@@ -531,6 +531,14 @@ function sgs.ai_slash_prohibit.xiangle(self, from, to)
 		analeptic_num = getCardsNum("Analpetic", from, self.player)
 		jink_num = getCardsNum("Jink", from, self.player)
 	end
+	if card then
+		if card:isVirtualCard() then
+			slash_num = slash_num - card:getSubcards():length()
+		else
+			slash_num = slash_num - 1
+		end
+	end
+
 	if self.player:getHandcardNum() == 2 then
 		local needkongcheng = self:needKongcheng()
 		if needkongcheng then return slash_num + analeptic_num + jink_num < 2 end
