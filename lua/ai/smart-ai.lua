@@ -30,7 +30,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20141004 (V0.261 Alpha)"
+version = "QSanguosha AI 20141024 (V0.262 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -1662,7 +1662,6 @@ end
 function SmartAI:filterEvent(event, player, data)
 	if not sgs.recorder then
 		sgs.recorder = self
-		self.player:speak(version)
 	end
 	if player:objectName() == self.player:objectName() then
 		if sgs.debugmode and type(sgs.ai_debug_func[event]) == "table" then
