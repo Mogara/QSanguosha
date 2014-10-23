@@ -3935,7 +3935,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         bringToFront(object);
 #else
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
-        //connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
+        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         m_animationWindow->setGeometry(main_window->geometry());
         object->setParentItem(m_animationWindow->contentItem());
         m_animationWindow->show();
