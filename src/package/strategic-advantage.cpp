@@ -1122,12 +1122,12 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         // -- heart
         << new AllianceFeast()
         << new LureTiger(Card::Heart, 2)
-        << new BurningCamps(Card::Heart, 12)
+        << new BurningCamps(Card::Heart, 12, true) //transfer
         << new Drowning(Card::Heart, 13)
         // -- club
         << new ImperialOrder(Card::Club, 3)
         << new FightTogether(Card::Club, 10)
-        << new BurningCamps(Card::Club, 11)
+        << new BurningCamps(Card::Club, 11, true) //transfer
         << new Drowning(Card::Club, 12)
         << new HegNullification(Card::Club, 13)
         // -- diamond
