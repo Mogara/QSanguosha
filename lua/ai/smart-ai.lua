@@ -3385,7 +3385,7 @@ end
 local function cardsView(self, class_name, player, cards)
 	for _, skill in ipairs(getPlayerSkillList(player)) do
 		local askill = skill:objectName()
-		if player:hasShownSkill(askill) or player:hasLordSkill(askill) then
+		if player:hasSkill(askill) or player:hasLordSkill(askill) then
 			local callback = sgs.ai_cardsview[askill]
 			if type(callback) == "function" then
 				local ret = callback(self, class_name, player, cards)

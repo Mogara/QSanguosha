@@ -344,7 +344,7 @@ function SmartAI:useCardLureTiger(card, use)
 				nextp = self.room:nextPlayer(one)
 				while true do
 					if card:targetFilter(targets2, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
-						if self.plaeyr:objectName() ~= nextp:objectName() then
+						if self.player:objectName() ~= nextp:objectName() then
 							targets2:append(nextp)
 						else
 							break
@@ -599,6 +599,7 @@ end
 --ThreatenEmperor
 function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
+	if self:getHandcardNum() < 2 then return end
 	use.card = card
 end
 sgs.ai_use_value.ThreatenEmperor = 8
@@ -615,6 +616,7 @@ sgs.ai_nullification.ThreatenEmperor = function(self, card, from, to, positive)
 end
 
 sgs.ai_skill_cardask["@threaten_emperor"] = function(self)
+	if self.player:isKongcheng() then return "." end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	return cards[1]:getEffectiveId()
