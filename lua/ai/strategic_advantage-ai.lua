@@ -429,92 +429,94 @@ function SmartAI:useCardFightTogether(card, use)
 	if not card:isAvailable(self.player) then return end
 
 	--@todo: consider hongfa
-	local big_k, small_k = self:getBigAndSmallKingdoms()
-	local big_p, small_p = {}, {}
+
+	local big_kingdoms = self.player:getBigKingdoms("AI")
+	local bigs, smalls = {}, {}
 	local isBig, isSmall
-	for _,p in sgs.qlist(self.room:getAllPlayers()) do
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
 		if self:hasTrickEffective(card, p, self.player) then
 			local kingdom = p:objectName()
-			if #big_k == 1 and big_k[1]:startsWith("sgs") then
-				if table.contains(big_k, kingdom) then
-					if self:isFriend(p) then isBig = true end
-					table.insert(big_p, p)
+			if #big_kingdoms == 1 and big_kingdoms[1]:startsWith("sgs") then
+				if table.contains(big_kingdoms, kingdom) then
+					table.insert(bigs, p)
+					if p:objectName() == self.player:objectName() then isBig = true end
 				else
-					if self:isFriend(p) then isSmall = true end
-					table.insert(small_p, p)
+					table.insert(smalls, p)
+					if p:objectName() == self.player:objectName() then isSmall = true end
 				end
 			else
 				if not p:hasShownOneGeneral() then
-					kingdom = "anjiang"
+					if p:objectName() == self.player:objectName() then isSmall = true end
+					table.insert(smalls, p)
+					continue
 				elseif p:getRole() == "careerist" then
 					kingdom = "careerist"
 				else
 					kingdom = p:getKingdom()
 				end
+				if table.contains(big_kingdoms, kingdom) then
 
-				if table.contains(big_k, kingdom) then
-					if self:isFriend(p) then isBig = true end
-					table.insert(big_p, p)
-				elseif table.contains(small_k, kingdom) then
-					if self:isFriend(p) then isSmall = true end
-					table.insert(small_p, p)
+					table.insert(bigs, p)
+				else
+					if p:objectName() == self.player:objectName() then isSmall = true end
+					table.insert(smalls, p)
 				end
 			end
 		end
 	end
 
 	local choices = {}
-	if #big_p > 0 then table.insert(choices, "big") end
-	if #small_p > 0 then table.insert(choices, "small") end
-	if #choices == 0 then return end
+	if #bigs > 0 then table.insert(choices, "big") end
+	if #smalls > 0 then table.insert(choices, "small") end
 
-	local v_big, v_small = 0, 0
-	for _, p in ipairs(big_p) do
-		v_big = v_big + (p:isChained() and -1 or 1)
-	end
-	if isBig then v_big = -v_big end
-	for _, p in ipairs(small_p) do
-		v_small = v_small + (p:isChained() and -1 or 1)
-	end
-	if isSmall then v_small = -v_small end
-
-	local x = self:getOverflow() > 0 and -1 or 0
-	if #choices == 1 then
-		if table.contains(choices, "big") then
-			if v_big > x then self.FightTogether_choice = "big" end
-		else
-			if v_small > x then self.FightTogether_choice = "small" end
+	if #choices > 0 then
+		local v_big, v_small = 0, 0
+		for _, p in ipairs(bigs) do
+			v_big = v_big + (p:isChained() and -1 or 1)
 		end
-	else
-		if isBig then
-			if v_big > x and v_big == #big_p then self.FightTogether_choice = "big"
-			elseif v_small > x then self.FightTogether_choice = "small"
-			elseif v_big > x then self.FightTogether_choice = "big"
-			end
-		elseif isSmall then
-			if v_small > x and v_small == #small_p then self.FightTogether_choice = "small"
-			elseif v_big >= x then self.FightTogether_choice = "big"
-			elseif v_small > x then self.FightTogether_choice = "small"
+		if isBig then v_big = -v_big end
+		for _, p in ipairs(smalls) do
+			v_small = v_small + (p:isChained() and -1 or 1)
+		end
+		if isSmall then v_small = -v_small end
+
+		if #choices == 1 then
+			if table.contains(choices, "big") then
+				if v_big > 0 then self.FightTogether_choice = "big" end
+			else
+				if v_small > 0 then self.FightTogether_choice = "small" end
 			end
 		else
-			if v_big > x and v_big > v_small then self.FightTogether_choice = "big"
-			elseif v_small > x and v_small > v_big then self.FightTogether_choice = "small"
-			elseif  v_big == v_small and v_big >= x then
-				if #big_p > #small_p then return "big"
-				elseif #big_p < #small_p then return "small"
-				else
-					return math.random(1, 2) == 1 and "big" or "small"
+			if isBig then
+				if v_big > 0 and v_big == #bigs then self.FightTogether_choice = "big"
+				elseif v_small > 0 then self.FightTogether_choice = "small"
+				elseif v_big > 0 then self.FightTogether_choice = "big"
+				end
+			elseif isSmall then
+				if v_small > 0 and v_small == #smalls then self.FightTogether_choice = "small"
+				elseif v_big >= 0 then self.FightTogether_choice = "big"
+				elseif v_small > 0 then self.FightTogether_choice = "small"
+				end
+			else
+				if v_big > v_small and v_big > 0 then self.FightTogether_choice = "big"
+				elseif v_small > v_big and v_small > 0 then self.FightTogether_choice = "small"
+				elseif v_big == v_small and v_big > 0 then
+					if #bigs > #smalls then return "big"
+					elseif #bigs < #smalls then return "small"
+					else
+						return math.random(1, 2) == 1 and "big" or "small"
+					end
 				end
 			end
 		end
 	end
 
+	if not self.FightTogether_choice and not self.player:isCardLimited(card, sgs.Card_MethodRecast) then
+		self.FightTogether_choice = "recast"
+	end
 	if self.FightTogether_choice then
 		use.card = card
-	elseif card:canRecast() then
-		use.card = card
 	end
-
 end
 
 sgs.ai_skill_choice["fight_together"] = function(self, choices)
@@ -522,7 +524,7 @@ sgs.ai_skill_choice["fight_together"] = function(self, choices)
 	if self.FightTogether_choice and table.contains(choices, self.FightTogether_choice) then
 		return self.FightTogether_choice
 	end
-	return choices[1]
+	return choices[#choices]
 end
 
 sgs.ai_nullification.FightTogether = function(self, card, from, to, positive)

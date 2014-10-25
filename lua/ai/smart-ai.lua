@@ -5215,67 +5215,6 @@ function SmartAI:isFriendWith(player)
 	return false
 end
 
-function SmartAI:getBigAndSmallKingdoms()
-	local jade_seal_owner
-	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:hasTreasure("JadeSeal") and p:hasShownOneGeneral() then
-			jade_seal_owner = p
-			break
-		end
-	end
-
-	local kingdom_map = {}
-	local kingdoms = sgs.Sanguosha:getKingdoms()
-	table.insert(kingdoms, "careerist")
-	for _, k in ipairs(kingdoms) do
-		if k == "god" then continue end
-		kingdom_map[k] = self.player:getPlayerNumWithSameKingdom("AI", k)
-	end
-	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if not p:hasShownOneGeneral() then
-			kingdom_map.anjiang = 1
-			break
-		end
-	end
-	local big, small = {}, {}
-
-	local num = 0
-	for kingdom, v in pairs(kingdom_map) do
-		if v == 0 then continue end
-		if #big == 0 then
-			num = v
-			table.insert(big, kingdom)
-			continue
-		end
-
-		if v > num then
-			num = v
-			table.insertTable(small, big)
-			big = {}
-			table.insert(big, kingdom)
-		elseif v == num then
-			table.insert(big, kingdom)
-		else
-			table.insert(small, kingdom)
-		end
-	end
-
-	if jade_seal_owner then
-		if jade_seal_owner:getRole() == "careerist" then
-			table.insertTable(small, big)
-			big = {}
-			table.insert(big, jade_seal_owner:objectName())
-		else
-			local kingdom = jade_seal_owner:getKingdom()
-			table.insertTable(small, big)
-			big = {}
-			table.removeOne(small, kingdom)
-			table.insert(big, kingdom)
-		end
-	end
-	return big, small
-end
-
 function sgs.PlayerList2SPlayerList(playerList)
 	local splist = sgs.SPlayerList()
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
