@@ -293,6 +293,8 @@ sgs.longdan_keep_value = {
 }
 
 sgs.ai_skill_invoke.tieqi = function(self, data)
+	if not self:willShowForAttack() then return false end
+
 	local target = data:toPlayer()
 	if self:isFriend(target) then return false end
 
@@ -301,6 +303,10 @@ sgs.ai_skill_invoke.tieqi = function(self, data)
 	return true
 end
 
+sgs.ai_skill_invoke.jizhi = function(self, data)
+	if not ( self:willShowForAttack() or self:willShowForDefence() or getCardsNum("TrickCard", player, self.player) > 2 ) then return false end
+	return true
+end
 
 function sgs.ai_cardneed.jizhi(to, card)
 	return card:getTypeId() == sgs.Card_TypeTrick
@@ -325,6 +331,7 @@ sgs.jizhi_keep_value = {
 
 
 sgs.ai_skill_invoke.liegong = function(self, data)
+	if not self:willShowForAttack() then return false end
 	local target = data:toPlayer()
 	return not self:isFriend(target)
 end

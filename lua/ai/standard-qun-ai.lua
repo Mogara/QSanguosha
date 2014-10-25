@@ -557,6 +557,7 @@ sgs.ai_skill_invoke.wansha = function(self, data)
 end
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
+	if not self:willShowForAttack() then return false end
 	local effect = data:toSlashEffect()
 	if self:isEnemy(effect.to) then
 		if self:doNotDiscard(effect.to) then
