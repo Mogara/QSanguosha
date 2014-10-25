@@ -740,7 +740,7 @@ sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
 sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
 
 sgs.ai_skill_cardask["@halberd"] = function(self)
-	local cards = sgs.QList2Table(self.player:getCards("Slash"))
+	local cards = self:getCards("Slash")
 	self:sortByUseValue(cards)
 	for _, slash in ipairs(cards) do
 		if slash:isKindOf("HalberdCard") then continue end
