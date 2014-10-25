@@ -992,7 +992,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         ask_who->removeMark("ThreatenEmperorExtraTurn");
-        return room->askForCard(ask_who, ".", "@threaten_emperor", data, objectName());
+        return room->askForCard(ask_who, "..", "@threaten_emperor", data, objectName());
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
