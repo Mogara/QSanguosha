@@ -28,10 +28,6 @@ QTextEdit[description="true"] {
 	background-color: white;
 }
 
-QTextEdit#whatsnew {
-	background-image: url(image/system/simpleBg/whatsnew.png);
-}
-
 QLineEdit#chat_edit {
     background-color: rgba(0, 0, 0, 200);
     color: white;
