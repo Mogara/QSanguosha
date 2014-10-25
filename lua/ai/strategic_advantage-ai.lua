@@ -124,7 +124,7 @@ end
 
 sgs.ai_skill_choice.drowning = function(self, choices, data)
 	local effect = data:toCardEffect()
-	if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, effect.from)
+	if not self:damageIsEffective(self.player, sgs.DamageStruct_Thunder, effect.from)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
 
