@@ -736,11 +736,27 @@ FightTogether::FightTogether(Card::Suit suit, int number)
     : GlobalEffect(suit, number)
 {
     setObjectName("fight_together");
+    can_recast = true;
 }
 
 bool FightTogether::isAvailable(const Player *player) const{
     if (player->hasFlag("Global_FightTogetherFailed"))
         return false;
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    foreach (int id, sub) {
+        if (player->getPile("wooden_ox").contains(id)) {
+            rec = false;
+            break;
+        }
+    }
+
+    if (rec && !player->isCardLimited(this, Card::MethodRecast))
+        return true;
     QStringList big_kingdoms = player->getBigKingdoms(objectName());
     return (!big_kingdoms.isEmpty() || (player->hasLordSkill("hongfa") && !player->getPile("heavenly_army").isEmpty())) // HongfaTianbing
         && GlobalEffect::isAvailable(player);
@@ -750,7 +766,32 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
     QStringList big_kingdoms = source->getBigKingdoms(objectName(), MaxCardsType::Normal);
     if (big_kingdoms.isEmpty()) {
-        room->setPlayerFlag(source, "Global_FightTogetherFailed");
+        if (!source->isCardLimited(this, Card::MethodRecast)) {
+            CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+            reason.m_skillName = getSkillName();
+            room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+            card_use.from->broadcastSkillInvoke("@recast");
+
+            LogMessage log;
+            log.type = "#Card_Recast";
+            log.from = card_use.from;
+            log.card_str = card_use.card->toString();
+            room->sendLog(log);
+
+            QString skill_name = card_use.card->showSkill();
+            if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
+            QList<int> table_cardids = room->getCardIdsOnTable(this);
+            if (!table_cardids.isEmpty()) {
+                DummyCard dummy(table_cardids);
+                room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+            }
+
+            card_use.from->drawCards(1);
+            return;
+        } else
+            room->setPlayerFlag(source, "Global_FightTogetherFailed");
         return;
     }
     QList<ServerPlayer *> bigs, smalls;
@@ -797,10 +838,37 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
         choices << "big";
     if (!smalls.isEmpty())
         choices << "small";
+    if (!source->isCardLimited(this, Card::MethodRecast))
+        choices << "recast";
 
     Q_ASSERT(!choices.isEmpty());
 
     QString choice = room->askForChoice(source, objectName(), choices.join("+"));
+    if (choice == "recast") {
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
+        QList<int> table_cardids = room->getCardIdsOnTable(this);
+        if (!table_cardids.isEmpty()) {
+            DummyCard dummy(table_cardids);
+            room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+
+        card_use.from->drawCards(1);
+        return;
+    }
 
     CardUseStruct use = card_use;
     if (choice == "big")
