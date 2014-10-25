@@ -179,8 +179,12 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 
+	local hecards = self.player:getCards("he")
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		hecards:prepend(sgs.Sanguosha:getCard(id))
+	end
 	local cards = {}
-	for _, card in sgs.qlist(self.player:getCards("he")) do
+	for _, card in sgs.qlist(hecards) do
 		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
 			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) then
 			local suit = card:getSuitString()
@@ -405,11 +409,14 @@ huoji_skill.name = "huoji"
 table.insert(sgs.ai_skills, huoji_skill)
 huoji_skill.getTurnUseCard = function(self)
 	local cards = self.player:getCards("h")
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		cards:prepend(sgs.Sanguosha:getCard(id))
+	end
 	cards = sgs.QList2Table(cards)
 
 	local card
 
-	self:sortByUseValue(cards,true)
+	self:sortByUseValue(cards, true)
 
 	for _,acard in ipairs(cards) do
 		if acard:isRed() and not isCard("Peach", acard, self.player) and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then

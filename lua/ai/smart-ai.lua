@@ -272,6 +272,10 @@ function SmartAI:getTurnUse(priority)
 	for _ ,c in sgs.qlist(self.player:getHandcards()) do
 		if c:isAvailable(self.player) then table.insert(cards, c) end
 	end
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		local c = sgs.Sanguosha:getCard(id)
+		if c:isAvailable(self.player) then table.insert(cards, c) end
+	end
 
 	local turnUse = {}
 	local slash = sgs.cloneCard("slash")
@@ -918,11 +922,15 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 			if card:isKindOf("Armor") then value = self:isWeak() and 5.2 or 3.2
 			elseif card:isKindOf("DefensiveHorse") then value = self:isWeak() and 4.3 or 3.19
 			elseif card:isKindOf("Weapon") then value = self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and 3.39 or 3.2
+			elseif card:isKindOf("WoodenOx") then
+				value = 3.19
+				for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+					local c = sgs.Sanguosha:getCard(id)
+					value = value + (sgs.ai_keep_value[c:getClassName()] or 0)
+				end
 			else value = 3.19
 			end
-			if mostvaluable_class ~= card:getClassName() then
-				value = value + maxvalue
-			end
+			if not card:isKindOf(mostvaluable_class) then
 			return value
 		elseif cardPlace == sgs.Player_PlaceHand then
 			local value_suit, value_number, newvalue = 0, 0, 0
@@ -1090,6 +1098,10 @@ function SmartAI:adjustUsePriority(card, v)
 	end
 	
 	if card:isKindOf("HalberdCard") then v = v + 1 end
+	
+	if self.player:getPile("wooden_ox"):contains(card:getEffectiveId()) then
+		v = v + 0.1
+	end
 	
 	local suits_value = {}
 	for index, suit in ipairs(suits) do
@@ -2389,6 +2401,9 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 	else
 		local dangerous = self:getDangerousCard(who)
 		if flags:match("e") and dangerous and (not isDiscard or self.player:canDiscard(who, dangerous)) then return dangerous end
+		if flags:match("e") and who:getTreasure() and who:getPile("wooden_ox"):length() > 1 and (not isDiscard or self.player:canDiscard(who, who:getTreasure():getId())) then
+			return who:getTreasure():getId()
+		end
 		if flags:match("e") and who:hasArmorEffect("EightDiagram") and (not isDiscard or self.player:canDiscard(who, who:getArmor():getId())) then return who:getArmor():getId() end
 		if flags:match("e") and who:hasShownSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if who:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getDefensiveHorse():getEffectiveId())) then return who:getDefensiveHorse():getEffectiveId() end
@@ -3499,6 +3514,9 @@ function SmartAI:getKnownNum(player)
 		return self.player:getHandcardNum()
 	else
 		local cards = player:getHandcards()
+		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
+			cards:append(sgs.Sanguosha:getCard(id))
+		end
 		local known = 0
 		for _, card in sgs.qlist(cards) do
 			local flag=string.format("%s_%s_%s","visible",global_room:getCurrent():objectName(),player:objectName())
@@ -3513,6 +3531,9 @@ end
 function getKnownNum(player, anotherplayer)
 	if not player then global_room:writeToConsole(debug.traceback()) return end
 	local cards = player:getHandcards()
+	for _, id in sgs.qlist(player:getPile("wooden_ox")) do
+		cards:append(sgs.Sanguosha:getCard(id))
+	end
 	local known = 0
 	anotherplayer = anotherplayer or global_room:getCurrent()
 	for _, card in sgs.qlist(cards) do
@@ -3530,6 +3551,11 @@ function getKnownCard(player, from, class_name, viewas, flags)
 	player = findPlayerByObjectName(player:objectName())
 	from = from or global_room:getCurrent()
 	local cards = player:getCards(flags)
+	if flags:match("h") then
+		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
+			cards:append(sgs.Sanguosha:getCard(id))
+		end
+	end
 	local known = 0
 	local suits = {["club"] = 1, ["spade"] = 1, ["diamond"] = 1, ["heart"] = 1}
 	for _, card in sgs.qlist(cards) do
@@ -3557,7 +3583,11 @@ function SmartAI:getCardId(class_name, acard)
 		end
 		cards = sgs.QList2Table(cards)
 	end
-	self:sortByUsePriority(cards)
+
+	local cardask
+	local reason = sgs.Sanguosha:getCurrentCardUseReason()
+	cardask = reason and reason == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE
+	self:sortByUsePriority(cards, cardask)
 
 	local viewArr, cardArr = {}, {}
 
@@ -3610,6 +3640,10 @@ function SmartAI:getCards(class_name, flag)
 			for _, id in sgs.qlist(self.player:getPile(key)) do
 				all_cards:append(sgs.Sanguosha:getCard(id))
 			end
+		end
+	elseif flag:match("h") then
+		for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+			all_cards:append(sgs.Sanguosha:getCard(id))
 		end
 	end
 
@@ -3666,6 +3700,9 @@ function getCardsNum(class_name, player, from)
 	end
 
 	local cards = sgs.QList2Table(player:getHandcards())
+	for _, id in sgs.qlist(player:getPile("wooden_ox")) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
 	local num = 0
 	local shownum = 0
 	local redpeach = 0
@@ -4465,6 +4502,9 @@ function SmartAI:useEquipCard(card, use)
 		if tiaoxin and self.lua_ai:useCard(card) then
 			use.card = card
 		end
+	elseif card:isKindOf("Treasure") then
+		-- @todo
+		use.card = card
 	elseif self.lua_ai:useCard(card) then
 		use.card = card
 	end

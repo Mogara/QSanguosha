@@ -772,3 +772,33 @@ end
 function sgs.ai_weapon_value.Halberd(self, enemy, player)
 	return 2.1
 end
+
+local wooden_ox_skill = {}
+wooden_ox_skill.name = "WoodenOx"
+table.insert(sgs.ai_skills, wooden_ox_skill)
+wooden_ox_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("WoodenOxCard") or self.player:isKongcheng() or not self.player:hasTreasure("WoodenOx") then return end
+	self.wooden_ox_assist = nil
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards, true)
+	local card, friend = self:getCardNeedPlayer(cards)
+	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
+		self.wooden_ox_assist = friend
+		return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
+	end
+	if self:getOverflow() > 0 or (self:needKongcheng() and #cards == 1) then
+		return sgs.Card_Parse("@WoodenOxCard=" .. cards[1]:getEffectiveId())
+	end
+end
+
+sgs.ai_skill_use_func.WoodenOxCard = function(card, use, self)
+	use.card = card
+end
+
+sgs.ai_skill_playerchosen.WoodenOx = function(self, targets)
+	return self.wooden_ox_assist
+end
+
+sgs.ai_playerchosen_intention.WoodenOx = -10
+
+sgs.ai_use_priority.WoodenOxCard = 0

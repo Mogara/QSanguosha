@@ -140,6 +140,9 @@ sgs.ai_skill_cardask["@guicai-card"] = function(self, data)
 	local judge = data:toJudge()
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		table.insert(cards, 1, sgs.Sanguosah:getCard(id))
+	end
 	if judge.reason == "tieqi" then
 		local target
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -951,7 +954,9 @@ duanliang_skill.getTurnUseCard = function(self)
 
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
-
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
 	local card
 
 	self:sortByUseValue(cards, true)
