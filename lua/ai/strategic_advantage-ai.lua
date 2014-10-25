@@ -511,7 +511,7 @@ function SmartAI:useCardFightTogether(card, use)
 
 	if self.FightTogether_choice then
 		use.card = card
-	else card:canRecast() then
+	elseif card:canRecast() then
 		use.card = card
 	end
 
