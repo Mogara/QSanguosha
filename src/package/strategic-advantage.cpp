@@ -741,16 +741,15 @@ FightTogether::FightTogether(Card::Suit suit, int number)
 bool FightTogether::isAvailable(const Player *player) const{
     if (player->hasFlag("Global_FightTogetherFailed"))
         return false;
-    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName());
-    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
-    return (invoke || (player->hasLordSkill("hongfa") && !player->getPile("heavenly_army").isEmpty())) // HongfaTianbing
+    QStringList big_kingdoms = player->getBigKingdoms(objectName());
+    return (!big_kingdoms.isEmpty() || (player->hasLordSkill("hongfa") && !player->getPile("heavenly_army").isEmpty())) // HongfaTianbing
         && GlobalEffect::isAvailable(player);
 }
 
 void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
-    QHash<QString, QStringList> kingdoms = source->getBigAndSmallKingdoms(objectName(), MaxCardsType::Normal);
-    if (kingdoms["big"].isEmpty() || kingdoms["small"].isEmpty()) {
+    QStringList big_kingdoms = source->getBigKingdoms(objectName(), MaxCardsType::Normal);
+    if (big_kingdoms.isEmpty()) {
         room->setPlayerFlag(source, "Global_FightTogetherFailed");
         return;
     }
@@ -773,21 +772,23 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
             continue;
         }
         QString kingdom = p->objectName();
-        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) { // for JadeSeal
-            if (kingdoms["big"].contains(kingdom))
+        if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) { // for JadeSeal
+            if (big_kingdoms.contains(kingdom))
                 bigs << p;
             else
                 smalls << p;
         } else {
-            if (!p->hasShownOneGeneral())
-                kingdom = "anjiang";
-            else if (p->getRole() == "careerist")
+            if (!p->hasShownOneGeneral()) {
+                smalls << p;
+                continue;
+            }
+            if (p->getRole() == "careerist")
                 kingdom = "careerist";
             else
                 kingdom = p->getKingdom();
-            if (kingdoms["big"].contains(kingdom))
+            if (big_kingdoms.contains(kingdom))
                 bigs << p;
-            else if (kingdoms["small"].contains(kingdom))
+            else
                 smalls << p;
         }
     }
@@ -948,14 +949,14 @@ void ThreatenEmperor::onUse(Room *room, const CardUseStruct &card_use) const{
 bool ThreatenEmperor::isAvailable(const Player *player) const{
     if (!player->hasShownOneGeneral())
         return false;
-    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName(), MaxCardsType::Max);
-    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
+    QStringList big_kingdoms = player->getBigKingdoms(objectName(), MaxCardsType::Max);
+    bool invoke = !big_kingdoms.isEmpty();
     if (invoke) {
-        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) // for JadeSeal
-            invoke = kingdoms["big"].contains(player->objectName());
+        if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) // for JadeSeal
+            invoke = big_kingdoms.contains(player->objectName());
         else {
             QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
-            invoke = kingdoms["big"].contains(kingdom);
+            invoke = big_kingdoms.contains(kingdom);
         }
     }
     return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);

@@ -1859,7 +1859,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     }
 }
 
-QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount _type) const
+QStringList ServerPlayer::getBigKingdoms(const QString &reason, MaxCardsType::MaxCardsCount _type) const
 {
     ServerPlayer *jade_seal_owner = NULL;
     foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -1883,40 +1883,32 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
             break;
         }
     }
-    QHash<QString, QStringList> big_n_small;
-    big_n_small.insert("big", QStringList());
-    big_n_small.insert("small", QStringList());
+    QStringList big_kingdoms;
     foreach (QString key, kingdom_map.keys()) {
-        if (kingdom_map[key] == 0)
+        if (kingdom_map[key] <= 1)
             continue;
-        if (big_n_small["big"].isEmpty()) {
-            big_n_small["big"] << key;
+        if (big_kingdoms.isEmpty()) {
+            big_kingdoms << key;
             continue;
         }
-        if (kingdom_map[key] == kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["big"] << key;
-        } else if (kingdom_map[key] > kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["big"] << key;
-        } else if (kingdom_map[key] < kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["small"] << key;
+        if (kingdom_map[key] == kingdom_map[big_kingdoms.first()]) {
+            big_kingdoms << key;
+        } else if (kingdom_map[key] > kingdom_map[big_kingdoms.first()]) {
+            big_kingdoms.clear();
+            big_kingdoms << key;
         }
     }
     if (jade_seal_owner != NULL) {
         if (jade_seal_owner->getRole() == "careerist") {
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["big"] << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
+            big_kingdoms.clear();
+            big_kingdoms << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
         } else { // has shown one general but isn't careerist
             QString kingdom = jade_seal_owner->getKingdom();
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["small"].removeOne(kingdom);
-            big_n_small["big"] << kingdom;
+            big_kingdoms.clear();
+            big_kingdoms << kingdom;
         }
     }
-    return big_n_small;
+    return big_kingdoms;
 }
 
 void ServerPlayer::changeToLord() {

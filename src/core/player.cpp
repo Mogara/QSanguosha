@@ -772,16 +772,16 @@ bool Player::canBeChainedBy(const Player *_source) const{
         return true;
     } else {
         if (hasArmorEffect("IronArmor")) {
-            QHash<QString, QStringList> big_n_small = source->getBigAndSmallKingdoms("IronArmor", MaxCardsType::Normal);
-            if (!big_n_small["big"].isEmpty() && !big_n_small["small"].isEmpty()) {
+            QStringList big_kingdoms = source->getBigKingdoms("IronArmor", MaxCardsType::Normal);
+            if (!big_kingdoms.isEmpty()) {
                 QString kingdom;
                 if (!hasShownOneGeneral())
-                    kingdom = "anjiang";
-                else if (getRole() == "careerist")
-                    kingdom = "careerist";
+                    return false;
+                if (getRole() == "careerist")
+                    kingdom = objectName();
                 else
                     kingdom = getKingdom();
-                if (big_n_small["small"].contains(kingdom))
+                if (!big_kingdoms.contains(kingdom))
                     return false;
             }
         }
