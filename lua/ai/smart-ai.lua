@@ -3722,6 +3722,7 @@ function getCardsNum(class_name, player, from)
 	local blacknull = 0
 	local equipnull = 0
 	local equipcard = 0
+    local trickcard = 0
 	local heartslash = 0
 	local heartpeach = 0
 	local spadenull = 0
@@ -3744,6 +3745,9 @@ function getCardsNum(class_name, player, from)
 			end
 			if card:isKindOf("EquipCard") then
 				equipcard = equipcard + 1
+			end
+			if card:isKindOf("TrickCard") then
+				trickcard = trickcard + 1
 			end
 			if card:isKindOf("Slash") or card:isKindOf("Jink") then
 				slashjink = slashjink + 1
