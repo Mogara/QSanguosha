@@ -114,7 +114,7 @@ end
 
 sgs.ai_card_intention.Drowning = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, from)
+		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Thunder, from)
 			or self:needToThrowArmor(to) then
 		else
 			sgs.updateIntention(from, to, 80)
