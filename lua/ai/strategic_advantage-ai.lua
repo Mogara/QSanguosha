@@ -92,7 +92,7 @@ function SmartAI:useCardDrowning(card, use)
 	local players = sgs.PlayerList()
 	for _, enemy in ipairs(self.enemies) do
 		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
-			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy) and self:canAttack(enemy)
+			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy, sgs.DamageStruct_Thunder, self.player) and self:canAttack(enemy)
 			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) then
 			players:append(enemy)
 			if use.to then use.to:append(enemy) end
@@ -511,6 +511,8 @@ function SmartAI:useCardFightTogether(card, use)
 
 	if self.FightTogether_choice then
 		use.card = card
+	else card:canRecast() then
+		use.card = card
 	end
 
 end
@@ -599,7 +601,7 @@ end
 --ThreatenEmperor
 function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
-	if self:getHandcardNum() < 2 then return end
+	if self.player:getHandcardNum() < 2 then return end
 	use.card = card
 end
 sgs.ai_use_value.ThreatenEmperor = 8
@@ -720,10 +722,15 @@ end
 sgs.ai_skill_use_func.HalberdCard = function(card, use, self)
 	local slash = self:getCard("Slash")
 	self:useCardSlash(slash, use)
-	if use.card and use.card:isKindOf("Analeptic") then
-		return
+	if use.card then
+		if use.card:isKindOf("Analeptic") then
+			return
+		elseif not use.card:isKindOf("Slash") then
+			use.card = nil
+		else
+			use.card = card
+		end
 	end
-	use.card = card
 	if use.to then use.to = sgs.SPlayerList() end
 end
 

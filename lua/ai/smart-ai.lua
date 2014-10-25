@@ -3585,12 +3585,7 @@ function SmartAI:getCardId(class_name, acard)
 		local viewas, cardid
 		viewas = #viewArr > 0 and viewArr[1]
 		cardid = #cardArr > 0 and cardArr[1]
-		local viewCard
-		if viewas then
-			viewCard = sgs.Card_Parse(viewas)
-			assert(viewCard)
-		end
-		if cardid or viewCard then return cardid or viewas end
+		if cardid or viewas then return cardid or viewas end
 	end
 	local cardsView = cardsView(self, class_name, self.player)
 	if #cardsView > 0 then return cardsView[1] end
@@ -4220,7 +4215,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if card:isKindOf("IronChain") and not to:canBeChainedBy(from) then return false end
 
 	local nature = sgs.DamageStruct_Normal
-	if card:isKindOf("FireAttack") or card:isKindOf("BurningCamps") then nature = sgs.DamageStruct_Fire end
+	if card:isKindOf("FireAttack") or card:isKindOf("BurningCamps") then nature = sgs.DamageStruct_Fire
+	elseif card:isKindOf("Drownning") then nature = sgs.DamageStruct_Thunder end
 
 	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
 		and not self:damageIsEffective(to, nature, from) then return false end
