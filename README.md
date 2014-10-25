@@ -1,11 +1,16 @@
 Open Source Sanguosha
 ==========
-[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
 
 | Homepage:      | http://qsanguosha.org                        |
 |----------------|-----------------------------------------------|
 | API reference: | http://gaodayihao.github.com/QSanguosha/api   |
 | Documentation: | https://github.com/gaodayihao/QSanguosha/wiki (Chinese) |
+
+Third party evaluations of development process
+---------
+[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
+[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/pr?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
+[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/issue?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
 
 Lisense
 ------------
