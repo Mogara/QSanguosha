@@ -44,19 +44,7 @@ class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class BubbleChatBox;
 class PlayerCardBox;
-class QQuickWindow;
-
 struct RoomLayout;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-class QQmlEngine;
-class QQmlContext;
-class QQmlComponent;
-#else
-class QDeclarativeEngine;
-class QDeclarativeContext;
-class QDeclarativeComponent;
-#endif
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -70,7 +58,11 @@ class QDeclarativeComponent;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-
+#ifndef Q_OS_WINRT
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeComponent>
+#endif
 class ScriptExecutor : public QDialog {
     Q_OBJECT
 
@@ -144,7 +136,6 @@ class RoomScene : public QGraphicsScene {
 
 public:
     RoomScene(QMainWindow *main_window);
-    ~RoomScene();
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
@@ -362,16 +353,11 @@ private:
 
     QRectF _m_infoPlane;
 
+#ifndef Q_OS_WINRT
     // for animation effects
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QDeclarativeEngine *_m_animationEngine;
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
-#else
-    QQmlEngine *_m_animationEngine;
-    QQmlContext *_m_animationContext;
-    QQmlComponent *_m_animationComponent;
-    QQuickWindow *m_animationWindow;
 #endif
 
     QSet<HeroSkinContainer *> m_heroSkinContainers;

@@ -71,17 +71,6 @@
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <QScrollBar>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QQmlEngine>
-#include <QQmlContext>
-#include <QQmlComponent>
-#include <QQuickItem>
-#include <QQuickWindow>
-#else
-#include <QtDeclarative/QDeclarativeEngine>
-#include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative/QDeclarativeComponent>
-#endif
 
 using namespace QSanProtocol;
 
@@ -397,25 +386,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#ifndef Q_OS_WINRT
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation-qt4.qml"), this);
-#else
-    _m_animationEngine = new QQmlEngine(this);
-    _m_animationContext = new QQmlContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QQmlComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
-
-    m_animationWindow = new QQuickWindow;
-    m_animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    m_animationWindow->setColor(Qt::transparent);
-#endif
-}
-
-RoomScene::~RoomScene()
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    m_animationWindow->deleteLater();
+    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
 #endif
 }
 
@@ -3918,8 +3892,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
             connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
         }
     }
+#ifndef Q_OS_WINRT
     else if (word.startsWith("skill=")) {
-        removeItem(lightbox);
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
 
@@ -3928,20 +3902,13 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         _m_animationContext->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
         _m_animationContext->setContextProperty("hero", hero);
         _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         addItem(object);
         bringToFront(object);
-#else
-        QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
-        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
-        m_animationWindow->setGeometry(main_window->geometry());
-        object->setParentItem(m_animationWindow->contentItem());
-        m_animationWindow->show();
-        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(hide()));
+    }
 #endif
-    } else {
+    else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);
         QGraphicsTextItem *line = addText(word, font);
