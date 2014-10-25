@@ -736,22 +736,62 @@ FightTogether::FightTogether(Card::Suit suit, int number)
     : GlobalEffect(suit, number)
 {
     setObjectName("fight_together");
+    can_recast = true;
 }
 
 bool FightTogether::isAvailable(const Player *player) const{
     if (player->hasFlag("Global_FightTogetherFailed"))
         return false;
-    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName());
-    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
-    return (invoke || (player->hasLordSkill("hongfa") && !player->getPile("heavenly_army").isEmpty())) // HongfaTianbing
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    foreach (int id, sub) {
+        if (player->getPile("wooden_ox").contains(id)) {
+            rec = false;
+            break;
+        }
+    }
+
+    if (rec && !player->isCardLimited(this, Card::MethodRecast))
+        return true;
+    QStringList big_kingdoms = player->getBigKingdoms(objectName());
+    return (!big_kingdoms.isEmpty() || (player->hasLordSkill("hongfa") && !player->getPile("heavenly_army").isEmpty())) // HongfaTianbing
         && GlobalEffect::isAvailable(player);
 }
 
 void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
-    QHash<QString, QStringList> kingdoms = source->getBigAndSmallKingdoms(objectName(), MaxCardsType::Normal);
-    if (kingdoms["big"].isEmpty() || kingdoms["small"].isEmpty()) {
-        room->setPlayerFlag(source, "Global_FightTogetherFailed");
+    QStringList big_kingdoms = source->getBigKingdoms(objectName(), MaxCardsType::Normal);
+    if (big_kingdoms.isEmpty()) {
+        if (!source->isCardLimited(this, Card::MethodRecast)) {
+            CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+            reason.m_skillName = getSkillName();
+            room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+            card_use.from->broadcastSkillInvoke("@recast");
+
+            LogMessage log;
+            log.type = "#Card_Recast";
+            log.from = card_use.from;
+            log.card_str = card_use.card->toString();
+            room->sendLog(log);
+
+            QString skill_name = card_use.card->showSkill();
+            if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
+            QList<int> table_cardids = room->getCardIdsOnTable(this);
+            if (!table_cardids.isEmpty()) {
+                DummyCard dummy(table_cardids);
+                room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+            }
+
+            card_use.from->drawCards(1);
+            return;
+        } else
+            room->setPlayerFlag(source, "Global_FightTogetherFailed");
         return;
     }
     QList<ServerPlayer *> bigs, smalls;
@@ -773,21 +813,23 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
             continue;
         }
         QString kingdom = p->objectName();
-        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) { // for JadeSeal
-            if (kingdoms["big"].contains(kingdom))
+        if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) { // for JadeSeal
+            if (big_kingdoms.contains(kingdom))
                 bigs << p;
             else
                 smalls << p;
         } else {
-            if (!p->hasShownOneGeneral())
-                kingdom = "anjiang";
-            else if (p->getRole() == "careerist")
+            if (!p->hasShownOneGeneral()) {
+                smalls << p;
+                continue;
+            }
+            if (p->getRole() == "careerist")
                 kingdom = "careerist";
             else
                 kingdom = p->getKingdom();
-            if (kingdoms["big"].contains(kingdom))
+            if (big_kingdoms.contains(kingdom))
                 bigs << p;
-            else if (kingdoms["small"].contains(kingdom))
+            else
                 smalls << p;
         }
     }
@@ -796,10 +838,37 @@ void FightTogether::onUse(Room *room, const CardUseStruct &card_use) const{
         choices << "big";
     if (!smalls.isEmpty())
         choices << "small";
+    if (!source->isCardLimited(this, Card::MethodRecast))
+        choices << "recast";
 
     Q_ASSERT(!choices.isEmpty());
 
     QString choice = room->askForChoice(source, objectName(), choices.join("+"));
+    if (choice == "recast") {
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
+        QList<int> table_cardids = room->getCardIdsOnTable(this);
+        if (!table_cardids.isEmpty()) {
+            DummyCard dummy(table_cardids);
+            room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+
+        card_use.from->drawCards(1);
+        return;
+    }
 
     CardUseStruct use = card_use;
     if (choice == "big")
@@ -948,14 +1017,14 @@ void ThreatenEmperor::onUse(Room *room, const CardUseStruct &card_use) const{
 bool ThreatenEmperor::isAvailable(const Player *player) const{
     if (!player->hasShownOneGeneral())
         return false;
-    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName(), MaxCardsType::Max);
-    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
+    QStringList big_kingdoms = player->getBigKingdoms(objectName(), MaxCardsType::Max);
+    bool invoke = !big_kingdoms.isEmpty();
     if (invoke) {
-        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) // for JadeSeal
-            invoke = kingdoms["big"].contains(player->objectName());
+        if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) // for JadeSeal
+            invoke = big_kingdoms.contains(player->objectName());
         else {
             QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
-            invoke = kingdoms["big"].contains(kingdom);
+            invoke = big_kingdoms.contains(kingdom);
         }
     }
     return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);
@@ -991,7 +1060,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         ask_who->removeMark("ThreatenEmperorExtraTurn");
-        return room->askForCard(ask_who, ".", "@threaten_emperor", data, objectName());
+        return room->askForCard(ask_who, "..", "@threaten_emperor", data, objectName());
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{

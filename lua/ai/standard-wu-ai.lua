@@ -1602,7 +1602,7 @@ sgs.ai_skill_use_func.DimengCard = function(card,use,self)
 		end
 	end
 	if #mycards == 0 then return end
-	self:sortByKeepValue(mycards) --桃的keepValue是5，useValue是6；顺手牵羊的keepValue是1.9，useValue是9
+	self:sortByKeepValue(mycards)
 
 	self:sort(self.enemies,"handcard")
 	local friends = {}

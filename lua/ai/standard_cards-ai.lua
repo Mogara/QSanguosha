@@ -180,7 +180,7 @@ function sgs.getDefenseSlash(player, self)
 
 	if player:hasShownSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
 
-	if player:getHandcardNum() == 0 and not player:hasShownSkill("kongcheng") then
+	if player:getHandcardNum() == 0 and player:getPile("wooden_ox"):isEmpty() and not player:hasShownSkills("kongcheng") then
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
 		if not hasEightDiagram then defense = defense - 2 end
@@ -937,6 +937,7 @@ sgs.dynamic_value.benefit.Peach = true
 
 sgs.ai_keep_value.Weapon = 2.08
 sgs.ai_keep_value.Armor = 2.06
+sgs.ai_keep_value.Treasure = 2.05
 sgs.ai_keep_value.Horse = 2.04
 
 sgs.weapon_range.Weapon = 1
@@ -1234,6 +1235,14 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 				if visible and c:isKindOf("Slash") then continue end
 				table.insert(cards, c)
 			end
+			for _, id in sgs.qlist(player:getPile("wooden_ox")) do
+				c = sgs.Sanguosha:getCard(id)
+				local visible = self.player:objectName() == player:objectName()
+									or c:hasFlag("visible")
+									or c:hasFlag(string.format("visible_%s_%s", self.player:objectName(), player:objectName()))
+				if visible and c:isKindOf("Slash") then continue end
+				table.insert(cards, c)
+			end
 		end
 		if #cards < 2 then return {} end
 
@@ -1263,9 +1272,12 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 end
 
 function turnUse_spear(self, inclusive, skill_name)
-	local cards = self.player:getCards("he")
-	cards = sgs.QList2Table(cards)
-	if skill_name ~= "fuhun" or self.player:hasSkill("wusheng") then
+	if self.player:hasSkill("wusheng") then
+		local cards = self.player:getCards("he")
+		cards = sgs.QList2Table(cards)
+		for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+			table.insert(cards, sgs.Sanguosha:getCard(id))
+		end
 		for _, acard in ipairs(cards) do
 			if isCard("Slash", acard, self.player) then return end
 		end
@@ -1803,6 +1815,12 @@ function SmartAI:getValuableCard(who)
 		end
 		if offhorse and who:distanceTo(friend) > 1 then
 			return offhorse:getEffectiveId()
+		end
+	end
+
+	if treasure then
+		if treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
+			return treasure:getEffectiveId()
 		end
 	end
 

@@ -52,7 +52,6 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	local firstShow = ("luanji|qianhuan"):split("|")
 	local bothShow = ("luanji+shuangxiong|luanji+huoshui"):split("|")
 	local needShowForAttack = ("chuanxin|suishi"):split("|")
-	local needShowForHelp = ("sushen|cunsi|yicheng|qianhuan"):split("|")
 	local needShowForLead = ("yicheng|qianhuan"):split("|")
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local followShow = ("qianhuan|duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
@@ -114,7 +113,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	if shown == 0 and self.player:getJudgingArea():isEmpty() then
 		for _, skill in ipairs(firstShow) do
-			if self.player:hasSkill(skill) then
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
 					return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
@@ -126,19 +125,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	if shown > 0 and eAtt > 0 and e - f < 3 and self.player:getJudgingArea():isEmpty() then
 		for _, skill in ipairs(needShowForAttack) do
-			if self.player:hasSkill(skill) then
-				if self.player:inHeadSkills(skill) and canShowHead then
-					return "GameRule_AskForGeneralShowHead"
-				elseif canShowDeputy then
-					return "GameRule_AskForGeneralShowDeputy"
-				end
-			end
-		end
-	end
-
-	if shown > 1 and f > 0 and e > 0 then
-		for _, skill in ipairs(needShowForHelp) do
-			if self.player:hasSkill(skill) then
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
 					return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
@@ -150,7 +137,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	if shown > 0 and notshown > self.room:alivePlayerCount()/2 then
 		for _, skill in ipairs(needShowForLead) do
-			if self.player:hasSkill(skill) then
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
 					return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
@@ -162,7 +149,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	if self.player:getLostHp() >= 2 then
 		for _, skill in ipairs(woundedShow) do
-			if self.player:hasSkill(skill) then
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
 					return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
@@ -175,8 +162,8 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	for _, skill in ipairs(followShow) do
 		if self.player:hasSkill(skill) then
 			for _, skill in ipairs(needShowForLead) do
-				if self.player:hasSkill(skill) then
-					if canShowHead then
+				if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
+					if self.player:inHeadSkills(skill) and canShowHead then
 						return "GameRule_AskForGeneralShowHead"
 					elseif canShowDeputy then
 						return "GameRule_AskForGeneralShowDeputy"
@@ -202,17 +189,6 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
-		end
-	end
-
-	if notshown == 1 and not self.player:hasShownOneGeneral() then
-		if canShowHead and canShowDeputy  then
-			local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
-			return cho[math.random(1, #cho)]
-		elseif canShowHead then
-			return "GameRule_AskForGeneralShowHead"
-		elseif canShowDeputy then
-			return "GameRule_AskForGeneralShowDeputy"
 		end
 	end
 

@@ -351,6 +351,8 @@ public:
     Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
     QList<const Player *> getFormation() const;
+
+    virtual QStringList getBigKingdoms(const char *reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
 };
 
 %extend Player {
@@ -477,6 +479,8 @@ public:
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const HegemonyMode::ArrayType type);
+
+    virtual QStringList getBigKingdoms(const char *reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
 };
 
 %extend ServerPlayer {
@@ -501,6 +505,8 @@ public:
     virtual void addKnownHandCard(const Card *card);
     virtual bool isLastHandCard(const Card *card, bool contain = false) const;
     virtual void setMark(const char *mark, int value);
+
+    virtual QStringList getBigKingdoms(const char *reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
 };
 
 extern ClientPlayer *Self;
