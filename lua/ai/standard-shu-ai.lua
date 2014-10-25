@@ -304,7 +304,7 @@ sgs.ai_skill_invoke.tieqi = function(self, data)
 end
 
 sgs.ai_skill_invoke.jizhi = function(self, data)
-	if not ( self:willShowForAttack() or self:willShowForDefence() or getCardsNum("TrickCard", player, self.player) > 2 ) then return false end
+	if not ( self:willShowForAttack() or self:willShowForDefence() or self:getCardsNum("TrickCard") > 2 ) then return false end
 	return true
 end
 

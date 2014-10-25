@@ -170,8 +170,8 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 					end
 				end
 			end
-			if (shown > 0 and e < notshown-1 ) or ( self.player:hasShownOneGeneral()) then
-				if canShowHead then
+			if (shown > 0 and e < notshown-1 ) or (self.player:hasShownOneGeneral()) then
+				if self.player:inHeadSkills(skill) and canShowHead then
 					return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
 					return "GameRule_AskForGeneralShowDeputy"
