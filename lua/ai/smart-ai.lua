@@ -931,6 +931,8 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 			else value = 3.19
 			end
 			if not card:isKindOf(mostvaluable_class) then
+				value = value + maxvalue
+			end
 			return value
 		elseif cardPlace == sgs.Player_PlaceHand then
 			local value_suit, value_number, newvalue = 0, 0, 0
