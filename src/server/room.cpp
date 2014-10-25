@@ -1625,7 +1625,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
         else {
             bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->getGeneralName(), true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
-            if (success && JsonUtils::isString(clientReply[0]))
+            if (success && clientReply.size() > 0 && JsonUtils::isString(clientReply[0]))
                 card = Card::Parse(clientReply[0].toString());
             if (card == NULL)
                 card = player->getRandomHandCard();
@@ -5280,7 +5280,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     bool success = doRequest(player, S_COMMAND_PINDIAN, JsonArray() << from->objectName() << to->objectName(), true);
 
     JsonArray clientReply = player->getClientReply().value<JsonArray>();
-    if (!success || !JsonUtils::isString(clientReply[0])) {
+    if (!success || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0])) {
         int card_id = player->getRandomHandCardId();
         return Sanguosha->getCard(card_id);
     }
@@ -5348,7 +5348,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     foreach(ServerPlayer *player, players) {
         const Card *c = NULL;
         JsonArray clientReply = player->getClientReply().value<JsonArray>();
-        if (!player->m_isClientResponseReady || !JsonUtils::isString(clientReply[0])) {
+        if (!player->m_isClientResponseReady || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0])) {
             int card_id = player->getRandomHandCardId();
             c = Sanguosha->getCard(card_id);
         }

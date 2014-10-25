@@ -51,7 +51,7 @@ return {
 	["#lure_tiger-prohibit"] = "调虎离山",
 
 	["fight_together"] = "勠力同心",
-	[":fight_together"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有大势力角色或所有小势力角色。\n作用效果：若目标角色：不处于连环状态，其横置；处于连换状态，其摸一张牌。",
+	[":fight_together"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有大势力角色或所有小势力角色。\n作用效果：若目标角色：不处于连环状态，其横置；处于连环状态，其摸一张牌。",
 	["fight_together:big"] = "大势力",
 	["fight_together:small"] = "小势力",
 

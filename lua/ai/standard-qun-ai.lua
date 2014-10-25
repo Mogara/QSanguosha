@@ -557,6 +557,7 @@ sgs.ai_skill_invoke.wansha = function(self, data)
 end
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
+	if not self:willShowForAttack() then return false end
 	local effect = data:toSlashEffect()
 	if self:isEnemy(effect.to) then
 		if self:doNotDiscard(effect.to) then
@@ -572,6 +573,9 @@ end
 sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local judge = data:toJudge()
 	local all_cards = self.player:getCards("he")
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		all_cards:prepend(sgs.Sanguosah:getCard(id))
+	end
 	if all_cards:isEmpty() then return "." end
 
 	local needTokeep = judge.card:getSuit() ~= sgs.Card_Spade

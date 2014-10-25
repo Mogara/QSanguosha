@@ -92,7 +92,7 @@ function SmartAI:useCardDrowning(card, use)
 	local players = sgs.PlayerList()
 	for _, enemy in ipairs(self.enemies) do
 		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
-			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy) and self:canAttack(enemy)
+			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy, sgs.DamageStruct_Thunder, self.player) and self:canAttack(enemy)
 			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) then
 			players:append(enemy)
 			if use.to then use.to:append(enemy) end
@@ -114,7 +114,7 @@ end
 
 sgs.ai_card_intention.Drowning = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, from)
+		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Thunder, from)
 			or self:needToThrowArmor(to) then
 		else
 			sgs.updateIntention(from, to, 80)
@@ -124,7 +124,7 @@ end
 
 sgs.ai_skill_choice.drowning = function(self, choices, data)
 	local effect = data:toCardEffect()
-	if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, effect.from)
+	if not self:damageIsEffective(self.player, sgs.DamageStruct_Thunder, effect.from)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
 
@@ -344,7 +344,7 @@ function SmartAI:useCardLureTiger(card, use)
 				nextp = self.room:nextPlayer(one)
 				while true do
 					if card:targetFilter(targets2, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
-						if self.plaeyr:objectName() ~= nextp:objectName() then
+						if self.player:objectName() ~= nextp:objectName() then
 							targets2:append(nextp)
 						else
 							break
@@ -365,7 +365,7 @@ function SmartAI:useCardLureTiger(card, use)
 
 			for _, to in sgs.qlist(dummyuse.to) do
 				if self.player:distanceTo(to) > self.player:getAttackRange() and self.player:distanceTo(to, -total_num) <= self.player:getAttackRange() then
-					local sps = getPlayersFromTo(one)
+					local sps = getPlayersFromTo(to)
 					if sps then
 						sgs.ai_use_priority.LureTiger = 3
 						use.card = card
@@ -429,90 +429,94 @@ function SmartAI:useCardFightTogether(card, use)
 	if not card:isAvailable(self.player) then return end
 
 	--@todo: consider hongfa
-	local big_k, small_k = self:getBigAndSmallKingdoms()
-	local big_p, small_p = {}, {}
+
+	local big_kingdoms = self.player:getBigKingdoms("AI")
+	local bigs, smalls = {}, {}
 	local isBig, isSmall
-	for _,p in sgs.qlist(self.room:getAllPlayers()) do
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
 		if self:hasTrickEffective(card, p, self.player) then
 			local kingdom = p:objectName()
-			if #big_k == 1 and big_k[1]:startsWith("sgs") then
-				if table.contains(big_k, kingdom) then
-					if self:isFriend(p) then isBig = true end
-					table.insert(big_p, p)
+			if #big_kingdoms == 1 and big_kingdoms[1]:startsWith("sgs") then
+				if table.contains(big_kingdoms, kingdom) then
+					table.insert(bigs, p)
+					if p:objectName() == self.player:objectName() then isBig = true end
 				else
-					if self:isFriend(p) then isSmall = true end
-					table.insert(small_p, p)
+					table.insert(smalls, p)
+					if p:objectName() == self.player:objectName() then isSmall = true end
 				end
 			else
 				if not p:hasShownOneGeneral() then
-					kingdom = "anjiang"
+					if p:objectName() == self.player:objectName() then isSmall = true end
+					table.insert(smalls, p)
+					continue
 				elseif p:getRole() == "careerist" then
 					kingdom = "careerist"
 				else
 					kingdom = p:getKingdom()
 				end
+				if table.contains(big_kingdoms, kingdom) then
 
-				if table.contains(big_k, kingdom) then
-					if self:isFriend(p) then isBig = true end
-					table.insert(big_p, p)
-				elseif table.contains(small_k, kingdom) then
-					if self:isFriend(p) then isSmall = true end
-					table.insert(small_p, p)
+					table.insert(bigs, p)
+				else
+					if p:objectName() == self.player:objectName() then isSmall = true end
+					table.insert(smalls, p)
 				end
 			end
 		end
 	end
 
 	local choices = {}
-	if #big_p > 0 then table.insert(choices, "big") end
-	if #small_p > 0 then table.insert(choices, "small") end
-	if #choices == 0 then return end
+	if #bigs > 0 then table.insert(choices, "big") end
+	if #smalls > 0 then table.insert(choices, "small") end
 
-	local v_big, v_small = 0, 0
-	for _, p in ipairs(big_p) do
-		v_big = v_big + (p:isChained() and -1 or 1)
-	end
-	if isBig then v_big = -v_big end
-	for _, p in ipairs(small_p) do
-		v_small = v_small + (p:isChained() and -1 or 1)
-	end
-	if isSmall then v_small = -v_small end
-
-	local x = self:getOverflow() > 0 and -1 or 0
-	if #choices == 1 then
-		if table.contains(choices, "big") then
-			if v_big > x then self.FightTogether_choice = "big" end
-		else
-			if v_small > x then self.FightTogether_choice = "small" end
+	if #choices > 0 then
+		local v_big, v_small = 0, 0
+		for _, p in ipairs(bigs) do
+			v_big = v_big + (p:isChained() and -1 or 1)
 		end
-	else
-		if isBig then
-			if v_big > x and v_big == #big_p then self.FightTogether_choice = "big"
-			elseif v_small > x then self.FightTogether_choice = "small"
-			elseif v_big > x then self.FightTogether_choice = "big"
-			end
-		elseif isSmall then
-			if v_small > x and v_small == #small_p then self.FightTogether_choice = "small"
-			elseif v_big >= x then self.FightTogether_choice = "big"
-			elseif v_small > x then self.FightTogether_choice = "small"
+		if isBig then v_big = -v_big end
+		for _, p in ipairs(smalls) do
+			v_small = v_small + (p:isChained() and -1 or 1)
+		end
+		if isSmall then v_small = -v_small end
+
+		if #choices == 1 then
+			if table.contains(choices, "big") then
+				if v_big > 0 then self.FightTogether_choice = "big" end
+			else
+				if v_small > 0 then self.FightTogether_choice = "small" end
 			end
 		else
-			if v_big > x and v_big > v_small then self.FightTogether_choice = "big"
-			elseif v_small > x and v_small > v_big then self.FightTogether_choice = "small"
-			elseif  v_big == v_small and v_big >= x then
-				if #big_p > #small_p then return "big"
-				elseif #big_p < #small_p then return "small"
-				else
-					return math.random(1, 2) == 1 and "big" or "small"
+			if isBig then
+				if v_big > 0 and v_big == #bigs then self.FightTogether_choice = "big"
+				elseif v_small > 0 then self.FightTogether_choice = "small"
+				elseif v_big > 0 then self.FightTogether_choice = "big"
+				end
+			elseif isSmall then
+				if v_small > 0 and v_small == #smalls then self.FightTogether_choice = "small"
+				elseif v_big >= 0 then self.FightTogether_choice = "big"
+				elseif v_small > 0 then self.FightTogether_choice = "small"
+				end
+			else
+				if v_big > v_small and v_big > 0 then self.FightTogether_choice = "big"
+				elseif v_small > v_big and v_small > 0 then self.FightTogether_choice = "small"
+				elseif v_big == v_small and v_big > 0 then
+					if #bigs > #smalls then return "big"
+					elseif #bigs < #smalls then return "small"
+					else
+						return math.random(1, 2) == 1 and "big" or "small"
+					end
 				end
 			end
 		end
 	end
 
+	if not self.FightTogether_choice and not self.player:isCardLimited(card, sgs.Card_MethodRecast) then
+		self.FightTogether_choice = "recast"
+	end
 	if self.FightTogether_choice then
 		use.card = card
 	end
-
 end
 
 sgs.ai_skill_choice["fight_together"] = function(self, choices)
@@ -520,7 +524,7 @@ sgs.ai_skill_choice["fight_together"] = function(self, choices)
 	if self.FightTogether_choice and table.contains(choices, self.FightTogether_choice) then
 		return self.FightTogether_choice
 	end
-	return choices[1]
+	return choices[#choices]
 end
 
 sgs.ai_nullification.FightTogether = function(self, card, from, to, positive)
@@ -599,6 +603,7 @@ end
 --ThreatenEmperor
 function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
+	if self.player:getHandcardNum() < 2 then return end
 	use.card = card
 end
 sgs.ai_use_value.ThreatenEmperor = 8
@@ -615,6 +620,7 @@ sgs.ai_nullification.ThreatenEmperor = function(self, card, from, to, positive)
 end
 
 sgs.ai_skill_cardask["@threaten_emperor"] = function(self)
+	if self.player:isKongcheng() then return "." end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	return cards[1]:getEffectiveId()
@@ -678,7 +684,7 @@ sgs.ai_skill_use["@@JadeSeal!"] = function(self, prompt, method)
 		end
 	end
 
-	local players = sgs.qlist(self.room:getOtherPlayers(self.player))
+	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 	self:sort(players, "handcard")
 	players = sgs.reverse(players)
 	for _, player in ipairs(players) do
@@ -718,10 +724,15 @@ end
 sgs.ai_skill_use_func.HalberdCard = function(card, use, self)
 	local slash = self:getCard("Slash")
 	self:useCardSlash(slash, use)
-	if use.card and use.card:isKindOf("Analeptic") then
-		return
+	if use.card then
+		if use.card:isKindOf("Analeptic") then
+			return
+		elseif not use.card:isKindOf("Slash") then
+			use.card = nil
+		else
+			use.card = card
+		end
 	end
-	use.card = card
 	if use.to then use.to = sgs.SPlayerList() end
 end
 
@@ -731,7 +742,7 @@ sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
 sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
 
 sgs.ai_skill_cardask["@halberd"] = function(self)
-	local cards = sgs.QList2Table(self.player:getCards("Slash"))
+	local cards = self:getCards("Slash")
 	self:sortByUseValue(cards)
 	for _, slash in ipairs(cards) do
 		if slash:isKindOf("HalberdCard") then continue end
@@ -763,3 +774,33 @@ end
 function sgs.ai_weapon_value.Halberd(self, enemy, player)
 	return 2.1
 end
+
+local wooden_ox_skill = {}
+wooden_ox_skill.name = "WoodenOx"
+table.insert(sgs.ai_skills, wooden_ox_skill)
+wooden_ox_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("WoodenOxCard") or self.player:isKongcheng() or not self.player:hasTreasure("WoodenOx") then return end
+	self.wooden_ox_assist = nil
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards, true)
+	local card, friend = self:getCardNeedPlayer(cards)
+	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
+		self.wooden_ox_assist = friend
+		return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
+	end
+	if self:getOverflow() > 0 or (self:needKongcheng() and #cards == 1) then
+		return sgs.Card_Parse("@WoodenOxCard=" .. cards[1]:getEffectiveId())
+	end
+end
+
+sgs.ai_skill_use_func.WoodenOxCard = function(card, use, self)
+	use.card = card
+end
+
+sgs.ai_skill_playerchosen.WoodenOx = function(self, targets)
+	return self.wooden_ox_assist
+end
+
+sgs.ai_playerchosen_intention.WoodenOx = -10
+
+sgs.ai_use_priority.WoodenOxCard = 0

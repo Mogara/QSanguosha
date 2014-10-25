@@ -1291,11 +1291,8 @@ void MainWindow::onVersionInfomationGotten()
                 setWindowTitle(tr("New Version Available") + "  " + windowTitle());
         } else if ("Address" == key) {
             updateInfomation.address = value;
-        } else if ("StrategicAdvantageKey" == key) {
-            Config.setValue(key, value);
         }
-        if (!updateInfomation.address.isNull()
-                && !updateInfomation.version_number.isNull())
+        if (!updateInfomation.address.isNull() && !updateInfomation.version_number.isNull())
             ui->actionCheckUpdate->setEnabled(true);
     }
     versionInfomationReply->deleteLater();

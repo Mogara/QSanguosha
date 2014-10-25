@@ -408,14 +408,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_animationWindow = new QQuickWindow;
     m_animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    m_animationWindow->setGeometry(main_window->geometry());
     m_animationWindow->setColor(Qt::transparent);
 #endif
 }
 
 RoomScene::~RoomScene()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     m_animationWindow->deleteLater();
+#endif
 }
 
 void RoomScene::handleGameEvent(const QVariant &args) {
@@ -3935,9 +3936,10 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
 #else
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
+        m_animationWindow->setGeometry(main_window->geometry());
         object->setParentItem(m_animationWindow->contentItem());
         m_animationWindow->show();
-        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(close()));
+        connect(object, SIGNAL(animationCompleted()), m_animationWindow, SLOT(hide()));
 #endif
     } else {
         QFont font = Config.BigFont;

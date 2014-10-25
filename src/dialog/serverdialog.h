@@ -148,10 +148,6 @@ private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void editBanlist();
-
-    void doCustomAssign();
-
-    void updateButtonEnablility(QAbstractButton *button);
 };
 
 #endif // SERVERDIALOG_H

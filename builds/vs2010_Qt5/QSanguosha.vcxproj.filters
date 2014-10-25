@@ -62,11 +62,6 @@
     <Filter Include="Swig Files">
       <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
     </Filter>
-    <Filter Include="dialog\form">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\swig\sanguosha_wrap.cxx">
@@ -763,12 +758,6 @@
     <ClCompile Include="..\..\src\ui\GraphicsBox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_GraphicsBox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_GraphicsBox.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\GuanxingBox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -778,13 +767,10 @@
     <ClCompile Include="Release\moc_GuanxingBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scenario\jiange-defense-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_jiange-defense-scenario.cpp">
+    <ClCompile Include="Debug\moc_GraphicsBox.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_jiange-defense-scenario.cpp">
+    <ClCompile Include="Release\moc_GraphicsBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\jiange-defense.cpp">
@@ -796,14 +782,23 @@
     <ClCompile Include="Release\moc_jiange-defense.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\scenario\jiange-defense-scenario.cpp">
+      <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_jiange-defense-scenario.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_jiange-defense-scenario.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\Title.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
     <ClCompile Include="Debug\moc_Title.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_Title.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\Title.cpp">
-      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\BubbleChatBox.cpp">
       <Filter>ui</Filter>
@@ -827,7 +822,7 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\json.cpp">
-      <Filter>Generated Files\Debug</Filter>
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dialog\FreeChooseDialog.cpp">
       <Filter>dialog</Filter>
@@ -847,6 +842,9 @@
     <ClCompile Include="Release\moc_FlatDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\dialog\UdpDetectorDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\dialog\AvatarModel.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -856,13 +854,19 @@
     <ClCompile Include="Release\moc_AvatarModel.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\UdpDetectorDialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_UdpDetectorDialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_UdpDetectorDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\GeneralModel.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GeneralModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GeneralModel.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\GraphicsPixmapHoverItem.cpp">
@@ -883,15 +887,6 @@
     <ClCompile Include="Release\moc_HeroSkinContainer.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\GeneralModel.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_GeneralModel.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_GeneralModel.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\SkinItem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -904,26 +899,26 @@
     <ClCompile Include="..\..\src\dialog\banipdialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\dialog\banlistdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\serverdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
     <ClCompile Include="Debug\moc_banipdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_banlistdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_serverdialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_banipdialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\banlistdialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_banlistdialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_banlistdialog.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\dialog\serverdialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_serverdialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_serverdialog.cpp">
       <Filter>Generated Files\Release</Filter>
@@ -1089,9 +1084,6 @@
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\RoomState.h">
-      <Filter>core</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
     </CustomBuild>
@@ -1143,6 +1135,21 @@
     <CustomBuild Include="..\..\src\dialog\UpdateChecker.h">
       <Filter>dialog</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\configdialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\connectiondialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\generaloverview.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\mainwindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\package\strategic-advantage.h">
       <Filter>package</Filter>
     </CustomBuild>
@@ -1158,11 +1165,11 @@
     <CustomBuild Include="..\..\src\ui\GuanxingBox.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\jiange-defense-scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\jiange-defense.h">
       <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\scenario\jiange-defense-scenario.h">
+      <Filter>scenario</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\Title.h">
       <Filter>ui</Filter>
@@ -1185,14 +1192,14 @@
     <CustomBuild Include="..\..\src\dialog\UdpDetectorDialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\GeneralModel.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\GraphicsPixmapHoverItem.h">
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\HeroSkinContainer.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\GeneralModel.h">
-      <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\SkinItem.h">
       <Filter>ui</Filter>
@@ -1206,17 +1213,73 @@
     <CustomBuild Include="..\..\src\dialog\serverdialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\mainwindow_nonwin.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\swig\sanguosha.i">
-      <Filter>Swig Files</Filter>
-    </None>
-    <None Include="..\sanguosha.ts">
-      <Filter>Translation Files</Filter>
-    </None>
+    <ResourceCompile Include="..\..\resource\icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\core\banpair.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\version.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_cardoverview.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_configdialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_connectiondialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_generaloverview.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\audio.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\compiler-specific.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\namespace.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\protocol.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\structs.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\util.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\package\exppattern.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\scenario\scenerule.h">
+      <Filter>scenario</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\SkinBank.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\uiUtils.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\RoomState.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\StyleHelper.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\json.h">
+      <Filter>core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\swig\ai.i">
       <Filter>Swig Files</Filter>
     </None>
@@ -1238,87 +1301,13 @@
     <None Include="..\..\swig\qvariant.i">
       <Filter>Swig Files</Filter>
     </None>
+    <None Include="..\..\swig\sanguosha.i">
+      <Filter>Swig Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\configdialog.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\connectiondialog.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\generaloverview.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\mainwindow.ui">
-      <Filter>dialog\form</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\resource\icon.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_cardoverview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_configdialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_connectiondialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_generaloverview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\audio.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\package\exppattern.h">
-      <Filter>package</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scenario\scenerule.h">
-      <Filter>scenario</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\protocol.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\structs.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ui\SkinBank.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\compiler-specific.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ui\uiUtils.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\namespace.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\util.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\banpair.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\version.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ui\StyleHelper.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\json.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_mainwindow_nonwin.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
+    <Text Include="..\sanguosha.ts">
+      <Filter>Translation Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

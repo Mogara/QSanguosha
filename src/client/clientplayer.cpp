@@ -268,50 +268,37 @@ void ClientPlayer::setMark(const QString &mark, int value) {
         emit duanchang_invoked();
 }
 
-QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &, MaxCardsType::MaxCardsCount type) const
+QStringList ClientPlayer::getBigKingdoms(const QString &, MaxCardsType::MaxCardsCount type) const
 {
     QMap<QString, int> kingdom_map;
     kingdom_map.insert("wei", 0);
     kingdom_map.insert("shu", 0);
     kingdom_map.insert("wu", 0);
     kingdom_map.insert("qun", 0);
-    kingdom_map.insert("careerist", 0);
     QList<const Player *> players = getAliveSiblings();
     players.prepend(this);
     foreach (const Player *p, players) {
-        if (!p->hasShownOneGeneral()) {
-            kingdom_map.insert("anjiang", 1);
+        if (!p->hasShownOneGeneral())
             continue;
-        }
         QString key = p->getRole() == "careerist" ? "careerist" : p->getKingdom();
         ++kingdom_map[key];
     }
     if (type == MaxCardsType::Max && hasLordSkill("hongfa") && !getPile("heavenly_army").isEmpty())
         kingdom_map["qun"] += getPile("heavenly_army").length();
-    QHash<QString, QStringList> big_n_small;
-    big_n_small.insert("big", QStringList());
-    big_n_small.insert("small", QStringList());
-    if (kingdom_map["careerist"] > 0)
-        big_n_small["small"] << "careerist";
-    kingdom_map.remove("careerist");
+    QStringList big_kingdoms;
     foreach (QString key, kingdom_map.keys()) {
         if (kingdom_map[key] == 0)
             continue;
-        if (big_n_small["big"].isEmpty()) {
-            if (kingdom_map[key] == 1)
-                big_n_small["small"] << key;
-            else
-                big_n_small["big"] << key;
+        if (big_kingdoms.isEmpty()) {
+            if (kingdom_map[key] > 1)
+                big_kingdoms << key;
             continue;
         }
-        if (kingdom_map[key] == kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["big"] << key;
-        } else if (kingdom_map[key] > kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["big"] << key;
-        } else if (kingdom_map[key] < kingdom_map[big_n_small["big"].first()]) {
-            big_n_small["small"] << key;
+        if (kingdom_map[key] == kingdom_map[big_kingdoms.first()]) {
+            big_kingdoms << key;
+        } else if (kingdom_map[key] > kingdom_map[big_kingdoms.first()]) {
+            big_kingdoms.clear();
+            big_kingdoms << key;
         }
     }
     const Player *jade_seal_owner = NULL;
@@ -323,18 +310,15 @@ QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &
     }
     if (jade_seal_owner != NULL) {
         if (jade_seal_owner->getRole() == "careerist") {
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["big"] << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
+            big_kingdoms.clear();
+            big_kingdoms << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
         } else { // has shown one general but isn't careerist
             QString kingdom = jade_seal_owner->getKingdom();
-            big_n_small["small"] << big_n_small["big"];
-            big_n_small["big"].clear();
-            big_n_small["small"].removeOne(kingdom);
-            big_n_small["big"] << kingdom;
+            big_kingdoms.clear();
+            big_kingdoms << kingdom;
         }
     }
-    return big_n_small;
+    return big_kingdoms;
 }
 
 void ClientPlayer::setHeadSkinId(int id)

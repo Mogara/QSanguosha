@@ -455,13 +455,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
                             will_trigger.append(skill);
-                            trigger_who[target].append(skill);
-                        }
-                        else if (skill->getPriority() != will_trigger.last()->getPriority())
+                            trigger_who[NULL].append(skill);// Don't assign game rule to some player.
+                        } else if (skill->getPriority() != will_trigger.last()->getPriority())
                             break;
                         triggered.prepend(skill);
-                    }
-                    else {
+                    } else {
                         room->tryPause();
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
@@ -527,11 +525,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (name.isEmpty()) {
                             if (p && !p->hasShownAllGenerals())
                                 p->setFlags("Global_askForSkillCost");           // TriggerOrder need protect
-                            if (names.contains("game_rule"))
-                                name = "game_rule";
-                            else if (names.contains("custom_scenario"))
-                                name = "custom_scenario";
-                            else if (names.length() == 1) {
+                            if (names.length() == 1) {
                                 name = names.first();
                                 if (name.contains("AskForGeneralShow") && p != NULL) {
                                     SPlayerDataMap map;
@@ -584,11 +578,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             if (skill->objectName() == "game_rule" || (room->getScenario()
                                                                        && room->getScenario()->objectName() == skill->objectName())) {
                                 room->tryPause();
-                                if (skill->objectName() == name)
-                                    continue;
-                                trigger_who[p].append(skill);
-                            }
-                            else {
+                                continue; // dont assign them to some person.
+                            } else {
                                 room->tryPause();
                                 if (skill->getPriority() == triggered.first()->getPriority()) {
                                     QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
@@ -602,19 +593,18 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                             }
                                         }
                                     }
-                                }
-                                else
+                                } else
                                     break;
                             }
                         }
 
-                        foreach(const TriggerSkill* s, already_triggered)
+                        foreach(const TriggerSkill *s, already_triggered)
                             if (trigger_who[p].contains(s))
                                 trigger_who[p].removeOne(s);
 
-                        if (has_compulsory){
+                        if (has_compulsory) {
                             has_compulsory = false;
-                            foreach(const TriggerSkill *s, trigger_who[p]){
+                            foreach (const TriggerSkill *s, trigger_who[p]) {
                                 if (s->getFrequency() == Skill::Compulsory && p->hasShownSkill(skill)) {
                                     has_compulsory = true;
                                     break;
@@ -626,10 +616,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (broken) break;
                 }
                 // @todo_Slob: for drawing cards when game starts -- stupid design of triggering no player!
-                // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 444 to Line. 481
+                // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 449 to Line. 485
                 if (!broken) {
-                    if (!trigger_who[NULL].isEmpty()){
-                        foreach(const TriggerSkill *skill, trigger_who[NULL]){
+                    if (!trigger_who[NULL].isEmpty()) {
+                        foreach(const TriggerSkill *skill, trigger_who[NULL]) {
                             if (skill->cost(triggerEvent, room, target, data, NULL)) {
                                 broken = skill->effect(triggerEvent, room, target, data, NULL);
                                 if (broken) break;

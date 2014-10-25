@@ -35,6 +35,7 @@ public:
         m_step(0), m_max(0), m_val(0), m_mutex(QMutex::Recursive)
     {
         this->setTextVisible(false);
+        this->setWindowFlags(Qt::Tool);
     }
     inline void setTimerEnabled(bool enabled) {
         m_mutex.lock();

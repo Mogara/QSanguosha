@@ -179,8 +179,12 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 
+	local hecards = self.player:getCards("he")
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		hecards:prepend(sgs.Sanguosha:getCard(id))
+	end
 	local cards = {}
-	for _, card in sgs.qlist(self.player:getCards("he")) do
+	for _, card in sgs.qlist(hecards) do
 		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
 			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) then
 			local suit = card:getSuitString()
@@ -289,6 +293,8 @@ sgs.longdan_keep_value = {
 }
 
 sgs.ai_skill_invoke.tieqi = function(self, data)
+	if not self:willShowForAttack() then return false end
+
 	local target = data:toPlayer()
 	if self:isFriend(target) then return false end
 
@@ -297,6 +303,10 @@ sgs.ai_skill_invoke.tieqi = function(self, data)
 	return true
 end
 
+sgs.ai_skill_invoke.jizhi = function(self, data)
+	if not ( self:willShowForAttack() or self:willShowForDefence() or self:getCardsNum("TrickCard") > 2 ) then return false end
+	return true
+end
 
 function sgs.ai_cardneed.jizhi(to, card)
 	return card:getTypeId() == sgs.Card_TypeTrick
@@ -321,6 +331,7 @@ sgs.jizhi_keep_value = {
 
 
 sgs.ai_skill_invoke.liegong = function(self, data)
+	if not self:willShowForAttack() then return false end
 	local target = data:toPlayer()
 	return not self:isFriend(target)
 end
@@ -405,11 +416,14 @@ huoji_skill.name = "huoji"
 table.insert(sgs.ai_skills, huoji_skill)
 huoji_skill.getTurnUseCard = function(self)
 	local cards = self.player:getCards("h")
+	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+		cards:prepend(sgs.Sanguosha:getCard(id))
+	end
 	cards = sgs.QList2Table(cards)
 
 	local card
 
-	self:sortByUseValue(cards,true)
+	self:sortByUseValue(cards, true)
 
 	for _,acard in ipairs(cards) do
 		if acard:isRed() and not isCard("Peach", acard, self.player) and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
@@ -519,7 +533,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	end
 end
 
-function sgs.ai_slash_prohibit.xiangle(self, from, to)
+function sgs.ai_slash_prohibit.xiangle(self, from, to, card)
 	if self:isFriend(to, from) then return false end
 	local slash_num, analeptic_num, jink_num
 	if from:objectName() == self.player:objectName() then
@@ -531,6 +545,14 @@ function sgs.ai_slash_prohibit.xiangle(self, from, to)
 		analeptic_num = getCardsNum("Analpetic", from, self.player)
 		jink_num = getCardsNum("Jink", from, self.player)
 	end
+	if card then
+		if card:isVirtualCard() then
+			slash_num = slash_num - card:getSubcards():length()
+		else
+			slash_num = slash_num - 1
+		end
+	end
+
 	if self.player:getHandcardNum() == 2 then
 		local needkongcheng = self:needKongcheng()
 		if needkongcheng then return slash_num + analeptic_num + jink_num < 2 end
