@@ -40,7 +40,6 @@
 #include <QDir>
 #include <QFile>
 #include <QApplication>
-#include <QCryptographicHash>
 
 Engine *Sanguosha = NULL;
 
@@ -92,20 +91,8 @@ Engine::Engine()
     }
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
-    foreach(QString name, package_names) {
-        if ("StrategicAdvantage" == name) {
-            QByteArray byteArray;
-            byteArray.append("StrategicAdvantage");
-            QByteArray md5 = QCryptographicHash::hash(byteArray, QCryptographicHash::Md5);
-            QByteArray sha1 = QCryptographicHash::hash(byteArray, QCryptographicHash::Sha1);
-            byteArray = md5 + sha1;
-            byteArray = QCryptographicHash::hash(byteArray, QCryptographicHash::Md5);
-            if (byteArray.toHex() == Config.value("StrategicAdvantageKey").toString())
-                addPackage(name);
-        } else {
-            addPackage(name);
-        }
-    }
+    foreach(QString name, package_names)
+        addPackage(name);
 
     metaobjects.insert("TransferCard", &TransferCard::staticMetaObject);
 
