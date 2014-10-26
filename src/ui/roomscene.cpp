@@ -2975,15 +2975,21 @@ void RoomScene::onGameOver() {
 
     Sanguosha->playSystemAudioEffect(win_effect);
 #endif
-    QDialog *dialog = new QDialog(main_window);
+    FlatDialog *dialog = new FlatDialog(main_window);
     dialog->resize(800, 600);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
 
     QGroupBox *winner_box = new QGroupBox(tr("Winner(s)"));
     QGroupBox *loser_box = new QGroupBox(tr("Loser(s)"));
 
+    QString style = StyleHelper::styleSheetOfScrollBar();
+
     QTableWidget *winner_table = new QTableWidget;
+    winner_table->verticalScrollBar()->setStyleSheet(style);
+    winner_table->horizontalScrollBar()->setStyleSheet(style);
     QTableWidget *loser_table = new QTableWidget;
+    loser_table->verticalScrollBar()->setStyleSheet(style);
+    loser_table->horizontalScrollBar()->setStyleSheet(style);
 
     QVBoxLayout *winner_layout = new QVBoxLayout;
     winner_layout->addWidget(winner_table);
@@ -2993,10 +2999,9 @@ void RoomScene::onGameOver() {
     loser_layout->addWidget(loser_table);
     loser_box->setLayout(loser_layout);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout *layout = dialog->mainLayout();
     layout->addWidget(winner_box);
     layout->addWidget(loser_box);
-    dialog->setLayout(layout);
 
     QList<const ClientPlayer *> winner_list, loser_list;
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {
