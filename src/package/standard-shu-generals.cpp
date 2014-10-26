@@ -1200,7 +1200,6 @@ void FangquanCard::onEffect(const CardEffectStruct &effect) const{
 
     LogMessage log;
     log.type = "#Fangquan";
-    log.from = liushan;
     log.to << player;
     room->sendLog(log);
 

@@ -1063,7 +1063,13 @@ public:
         return room->askForCard(ask_who, "..", "@threaten_emperor", data, objectName());
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+
+        LogMessage l;
+        l.type = "#Fangquan";
+        l.to << ask_who;
+        room->sendLog(l);
+
         ask_who->gainAnExtraTurn();
         return false;
     }
