@@ -88,8 +88,15 @@ void ResponseSkill::setRequest(const Card::HandlingMethod request) {
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
     if (request != Card::MethodNone && player->isCardLimited(card, request))
         return false;
-
-    return pattern && pattern->match(player, card);
+    if (pattern) {
+        QString pat = pattern->getPatternString();
+        if ((request == Card::MethodUse || request == Card::MethodResponse) && pat.contains("hand")) {
+            pat.replace("hand", "hand,wooden_ox");
+        }
+        ExpPattern exp_pattern(pat);
+        return exp_pattern.match(player, card);
+    }
+    return false;
 }
 
 bool ResponseSkill::viewFilter(const Card *card) const{
