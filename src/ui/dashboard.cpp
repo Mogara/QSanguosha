@@ -369,7 +369,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     if (!card_item->isEnabled())
         card_item->setEnabled(true);
 
-    if (ClientInstance->getStatus() == Client::Playing) {
+    if (ClientInstance->getStatus() == Client::Playing && card_item->getCard()) {
         const bool frozen = !card_item->getCard()->isAvailable(Self);
         card_item->setFrozen(frozen, false);
         if (!frozen && Config.EnableSuperDrag)
