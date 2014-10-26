@@ -974,6 +974,8 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     AI *ai = player->getAI();
     if (ai) {
         invoked = ai->askForSkillInvoke(skill_name, data);
+        if (skill_name.endsWith("!"))
+            invoked = false;
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (invoked && !(skill && skill->getFrequency() != Skill::NotFrequent))
             thread->delay();
@@ -990,10 +992,8 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             skillCommand << skill_name << data_str;
         }
 
-        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true)
-            || skill_name.endsWith("!")) {
+        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true) || skill_name.endsWith("!"))
             invoked = false;
-        }
         else {
             const QVariant &clientReply = player->getClientReply();
             if (JsonUtils::isBool(clientReply))
