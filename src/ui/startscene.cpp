@@ -241,7 +241,7 @@ void StartScene::printServerInfo() {
 
         if ((ipv4 & 0xFF000000) == 0x0A000000 || (ipv4 & 0xFFF00000) == 0xAC100000 || (ipv4 & 0xFFFF0000) == 0xC0A80000)
             serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(address.toString()));
-        else if (address.isLoopback())
+        else if ((ipv4 & 0xFF000000) == 0x7F000000)
             serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(address.toString()));
         else if ((ipv4 & 0xFF000000) == 0x05000000 || (ipv4 & 0xFF000000) == 0x19000000)
             serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(address.toString()));

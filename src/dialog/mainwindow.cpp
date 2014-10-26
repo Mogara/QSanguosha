@@ -1416,7 +1416,7 @@ void MainWindow::onCreateRoomClicked()
     QList<QHostAddress> addresses(QNetworkInterface::allAddresses());
     foreach (const QHostAddress &address, addresses) {
         quint32 ip = address.toIPv4Address();
-        if (ip && !address.isLoopback() && (ip & 0xFFFF0000) != 0xA9FE0000) {
+        if (ip && ((ip & 0xFF000000) != 0x7F000000) && (ip & 0xFFFF0000) != 0xA9FE0000) {
             if ((ip & 0xFF000000) != 0x0A000000 && (ip & 0xFFF00000) != 0xAC100000 && (ip & 0xFFFF0000) != 0xC0A80000) {
                 hasGlobalIp = true;
                 break;
