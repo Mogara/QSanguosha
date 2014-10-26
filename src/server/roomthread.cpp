@@ -414,6 +414,7 @@ void RoomThread::run() {
     try {
         trigger(GameStart, room, NULL);
         constructTriggerTable();
+        // delay(3000);
         actionNormal(game_rule);
     }
     catch (TriggerEvent triggerEvent) {
