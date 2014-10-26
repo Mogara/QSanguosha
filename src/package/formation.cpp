@@ -1320,6 +1320,9 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        if (!room->getMode().endsWith('p'))
+            return false;
+
         ServerPlayer *dfowner = NULL;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
             if (p->hasWeapon("DragonPhoenix")) {
