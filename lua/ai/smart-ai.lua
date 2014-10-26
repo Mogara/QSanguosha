@@ -384,7 +384,7 @@ function SmartAI:objectiveLevel(player)
 		end
 	end
 
-	local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
+	local upperlimit = player:getLord() and 99 or math.floor(self.room:getPlayers():length() / 2)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
@@ -1766,6 +1766,8 @@ function SmartAI:filterEvent(event, player, data)
 
 	if event == sgs.GeneralShown then
 		self:updatePlayerKingdom(player, data)
+	elseif event == sgs.GeneralHidden then
+		if player:getAI() then player:setSkillsPreshowed("hd", true) end
 	elseif event == sgs.TargetConfirmed then
 		local struct = data:toCardUse()
 		local from = struct.from
@@ -1889,69 +1891,7 @@ function SmartAI:filterEvent(event, player, data)
 
 			if player:hasFlag("AI_Playing") and player:hasShownSkill("leiji") and player:getPhase() == sgs.Player_Discard and isCard("Jink", card, player)
 				and player:getHandcardNum() >= 2 and reason.m_reason == sgs.CardMoveReason_S_REASON_RULEDISCARD then sgs.card_lack[player:objectName()]["Jink"] = 2 end
-
-			if player:hasFlag("AI_Playing") and sgs.turncount <= 3 and player:getPhase() == sgs.Player_Discard
-				and reason.m_reason == sgs.CardMoveReason_S_REASON_RULEDISCARD and sgs.isAnjiang(player) then
-
-				for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
-					if isCard("Slash", card, player) then
-						local has_slash_prohibit_skill = false
-						for _, askill in sgs.qlist(target:getVisibleSkillList(true)) do
-							local s_name = askill:objectName()
-							local filter = sgs.ai_slash_prohibit[s_name]
-							if filter and type(filter) == "function" and not (s_name == "tiandu" or s_name == "hujia" or s_name == "huilei" or s_name == "weidi") then
-								if s_name == "xiangle" then
-									local basic_num = 0
-									for _, c_id in sgs.qlist(move.card_ids) do
-										local c = sgs.Sanguosha:getCard(c_id)
-										if c:isKindOf("BasicCard") then
-											basic_num = basic_num + 1
-										end
-									end
-									if basic_num < 2 then has_slash_prohibit_skill = true break end
-								else
-									has_slash_prohibit_skill = true
-									break
-								end
-							end
-						end
-
-						if target:hasShownSkill("fangzhu") and target:getLostHp() < 2 then
-							has_slash_prohibit_skill = true
-						end
-
-						if player:canSlash(target, card, true) and self:slashIsEffective(card, target) and not has_slash_prohibit_skill and sgs.isGoodTarget(target,self.enemies, self) then
-							sgs.updateIntention(player, target, -35)
-						end
-					elseif isCard("Indulgence", card, player) then
-						local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
-						if not (zhanghe and sgs.ai_explicit[target:objectName()] == "wei" and self:playerGetRound(zhanghe) <= self:playerGetRound(target)) then
-							for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
-								if not target:containsTrick("indulgence") and not target:hasShownSkill("qiaobian") and not sgs.isAnjiang(target) then
-									local aplayer = self:exclude( {target}, card, player)
-									if #aplayer == 1 then
-										sgs.updateIntention(player, target, -35)
-									end
-								end
-							end
-						end
-					elseif isCard("SupplyShortage", card, player) then
-						local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
-						if not (zhanghe and sgs.ai_explicit[target:objectName()] == "wei" and self:playerGetRound(zhanghe) <= self:playerGetRound(target)) then
-							for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
-								if not target:containsTrick("supply_shortage") and not target:hasShownSkill("qiaobian") and not sgs.isAnjiang(target) then
-									local aplayer = self:exclude( {target}, card, player)
-									if #aplayer == 1 then
-										sgs.updateIntention(player, target, -35)
-									end
-								end
-							end
-						end
-					end
-				end
-			end
 		end
-
 	elseif event == sgs.EventPhaseEnd and player:getPhase() == sgs.Player_Player then
 		player:setFlags("AI_Playing")
 	elseif event == sgs.EventPhaseStart then

@@ -1764,13 +1764,11 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     switch (type) {
     case Siege: {
         if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
-        QString prompt = "SiegeSummon";
         bool failed = true;
         if (!isFriendWith(getNextAlive())) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
             if (!target->hasShownOneGeneral()) {
-                if (!target->willBeFriendWith(this))
-                    prompt += "!";
+                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
                 log.type = "#SummonResult";
@@ -1786,8 +1784,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
         if (!isFriendWith(getLastAlive())) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
             if (!target->hasShownOneGeneral()) {
-                if (!target->willBeFriendWith(this))
-                    prompt += "!";
+                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
                 log.type = "#SummonResult";
@@ -1812,10 +1809,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
             if (isFriendWith(target))
                 continue;
             else if (!target->hasShownOneGeneral()) {
-                QString prompt = "FormationSummon";
-                if (!target->willBeFriendWith(this))
-                    prompt += "!";
-
+                QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
                 log.type = "#SummonResult";
@@ -1845,10 +1839,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                 continue;
             else {
                 if (!target->hasShownOneGeneral()) {
-                    QString prompt = "FormationSummon";
-                    if (!target->willBeFriendWith(this))
-                        prompt += "!";
-
+                    QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
                     bool success = room->askForSkillInvoke(target, prompt);
                     LogMessage log;
                     log.type = "#SummonResult";

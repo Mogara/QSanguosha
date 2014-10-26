@@ -235,12 +235,12 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 		if canShowHead then
 			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
 			for _, p in ipairs(self.enemies) do
-				if p:hasShownSkill("mingshi") then return "GameRule_AskForGeneralShowHead" end
+				if p:hasShownSkills("mingshi|huoshui") then return "GameRule_AskForGeneralShowHead" end
 			end
 		elseif canShowDeputy then
 			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowDeputy" end
 			for _, p in ipairs(self.enemies) do
-				if p:hasShownSkill("mingshi") then return "GameRule_AskForGeneralShowDeputy" end
+				if p:hasShownSkills("mingshi|huoshui") then return "GameRule_AskForGeneralShowDeputy" end
 			end
 		end
 
@@ -261,9 +261,9 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 			end
 			if reward then
 				if math.random(1, 2) == 1 and canShowHead then
-					return "GameRule_AskForGeneralShowDeputy"
-				elseif canShowDeputy then
 					return "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then
+					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
@@ -276,5 +276,7 @@ sgs.ai_skill_invoke.GameRule_AskForArraySummon = function(self, data)
 end
 
 sgs.ai_skill_invoke.SiegeSummon = true
+sgs.ai_skill_invoke["SiegeSummon!"] = false
 
 sgs.ai_skill_invoke.FormationSummon = true
+sgs.ai_skill_invoke["FormationSummon!"] = false
