@@ -6026,3 +6026,45 @@ void Room::sortByActionOrder(QList<ServerPlayer *> &players) {
     if (players.length() > 1)
         qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 }
+
+void Room::cancelTarget(CardUseStruct &use, const QString &name) {
+    if (use.to.isEmpty())
+        return;
+    cancelTarget(use, use.to.first()->getRoom()->findPlayer(name)); // use.from can be NULL, but use.to must not have a value that is NULL
+}
+
+void Room::cancelTarget(CardUseStruct &use, ServerPlayer *player) {
+    if (player == NULL)
+        return;
+
+    Room *room = player->getRoom();
+    LogMessage log;
+    if (use.from) {
+        log.type = "$CancelTarget";
+        log.from = use.from;
+    }
+    else {
+        log.type = "$CancelTargetNoUser";
+    }
+    log.to << player;
+    log.arg = use.card->objectName();
+    room->sendLog(log);
+
+    room->setEmotion(player, "cancel");
+
+    use.to.removeOne(player);
+
+    if (use.card != NULL && use.card->isKindOf("Slash")) {
+        player->removeQinggangTag(use.card);
+
+        QStringList blade_use = player->property("blade_use").toStringList();
+
+        if (blade_use.contains(use.card->toString())) {
+            blade_use.removeOne(use.card->toString());
+            room->setPlayerProperty(player, "blade_use", blade_use);
+
+            if (blade_use.isEmpty())
+                room->removePlayerDisableShow(player, "Blade");
+        }
+    }
+}

@@ -563,21 +563,9 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(player, objectName());
-        LogMessage log;
-        if (use.from) {
-            log.type = "$CancelTarget";
-            log.from = use.from;
-        }
-        else {
-            log.type = "$CancelTargetNoUser";
-        }
-        log.to << player;
-        log.arg = use.card->objectName();
-        room->sendLog(log);
+        
+        room->cancelTarget(use, player); // Room::cancelTarget(use, player);
 
-        room->setEmotion(player, "cancel");
-
-        use.to.removeOne(player);
         data = QVariant::fromValue(use);
         return false;
     }

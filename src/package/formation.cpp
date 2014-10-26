@@ -882,21 +882,8 @@ public:
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
 
-            LogMessage log;
-            if (use.from) {
-                log.type = "$CancelTarget";
-                log.from = use.from;
-            }
-            else {
-                log.type = "$CancelTargetNoUser";
-            }
-            log.to = use.to;
-            log.arg = use.card->objectName();
-            room->sendLog(log);
+            room->cancelTarget(use, use.to.first()); // Room::cancelTarget(use, player);
 
-            room->setEmotion(use.to.first(), "cancel");
-
-            use.to.clear();
             data = QVariant::fromValue(use);
         }
 

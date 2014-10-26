@@ -275,20 +275,9 @@ public:
         log2.from = player;
         log2.arg = objectName();
         room->sendLog(log2);
-        LogMessage log;
-        if (use.from) {
-            log.type = "$CancelTarget";
-            log.from = use.from;
-        } else {
-            log.type = "$CancelTargetNoUser";
-        }
-        log.to << player;
-        log.arg = use.card->objectName();
-        room->sendLog(log);
 
-        room->setEmotion(player, "cancel");
+        room->cancelTarget(use, player); // Room::cancelTarget(use, player);
 
-        use.to.removeOne(player);
         data = QVariant::fromValue(use);
         return false;
     }

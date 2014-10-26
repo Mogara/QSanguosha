@@ -1500,6 +1500,10 @@ public:
     inline void resetCard(int cardId);
     void updateCardsOnLose(const CardsMoveStruct &move);
     void updateCardsOnGet(const CardsMoveStruct &move);
+
+    // these 2 functions puts here, for convenience
+    static void cancelTarget(CardUseStruct &use, const char *name);
+    static void cancelTarget(CardUseStruct &use, ServerPlayer *player);
 };
 
 %extend Room {

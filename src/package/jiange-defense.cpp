@@ -657,20 +657,9 @@ public:
         room->notifySkillInvoked(player, objectName());
 
         CardUseStruct use = data.value<CardUseStruct>();
-        LogMessage log2;
-        if (use.from) {
-            log2.type = "$CancelTarget";
-            log2.from = use.from;
-        }
-        else {
-            log2.type = "$CancelTargetNoUser";
-        }
-        log2.to << player;
-        log2.arg = use.card->objectName();
-        room->sendLog(log2);
-        room->setEmotion(player, "cancel");
 
-        use.to.removeOne(player);
+        room->cancelTarget(use, player); // Room::cancelTarget(use, player);
+
         data = QVariant::fromValue(use);
         return false;
     }
