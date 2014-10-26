@@ -34,6 +34,7 @@ struct LogMessage;
 #include "roomthread.h"
 #include "protocol.h"
 #include "roomstate.h"
+#include "roomconfig.h"
 
 #include <QMutex>
 #include <QStack>
@@ -53,8 +54,9 @@ public:
     typedef void (Room::*Callback)(ServerPlayer *, const QVariant &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);
 
-    explicit Room(QObject *parent, const QString &mode);
+    explicit Room(QObject *parent, const RoomConfig &config = RoomConfig());
     ~Room();
+
     ServerPlayer *addSocket(ClientSocket *socket);
     inline int getId() const{ return _m_Id; }
     bool isFull() const;
@@ -62,6 +64,8 @@ public:
     bool canPause(ServerPlayer *p) const;
     void tryPause();
     int getLack() const;
+    const RoomConfig &getConfig() const {return config;}
+    QString getSetupString() const;
     QString getMode() const;
     const Scenario *getScenario() const;
     RoomThread *getThread() const;
@@ -365,6 +369,7 @@ public:
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     //notification callbacks
+    void restartCommand(ServerPlayer *player, const QVariant &);
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
     void speakCommand(ServerPlayer *player, const QVariant &message);
     void trustCommand(ServerPlayer *player, const QVariant &arg = QVariant());
@@ -377,7 +382,7 @@ public:
     void processClientReply(ServerPlayer *player, const QSanProtocol::Packet &packet);
 
     //cheat commands executed via speakCommand
-    QHash<QString, Callback> cheatCommands;
+    static QHash<QString, Callback> cheatCommands;
     void broadcastRoles(ServerPlayer *, const QVariant &target);
     void showHandCards(ServerPlayer *player, const QVariant &target);
     void showPrivatePile(ServerPlayer *player, const QVariant &args);
@@ -490,7 +495,7 @@ private:
     void _moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges);
     QStringList _chooseDefaultGenerals(ServerPlayer *player) const;
     bool _setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst);
-    QString mode;
+    RoomConfig config;
     QList<ServerPlayer *> m_players, m_alivePlayers;
     int player_count;
     ServerPlayer *current;
@@ -509,11 +514,11 @@ private:
     RoomThread *thread;
     QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
+    QMutex signupMutex;
 
-
-    QHash<QSanProtocol::CommandType, Callback> interactions;
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
-    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
+    static QHash<QSanProtocol::CommandType, Callback> interactions;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
 
     QTime _m_timeSinceLastSurrenderRequest; // Timer used to ensure that surrender polls are not initiated too frequently
@@ -544,7 +549,6 @@ private:
     void chooseGenerals();
     AI *cloneAI(ServerPlayer *player);
     void broadcast(const QByteArray &message, ServerPlayer *except = NULL);
-    void initCallbacks();
     QString askForOrder(ServerPlayer *player);
 
     //process client requests
@@ -579,6 +583,7 @@ signals:
     void room_message(const QString &msg);
     void game_start();
     void game_over(const QString &winner);
+    void game_over();
 };
 
 typedef Room *RoomStar;

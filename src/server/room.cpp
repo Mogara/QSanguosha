@@ -55,8 +55,13 @@
 
 using namespace QSanProtocol;
 
-Room::Room(QObject *parent, const QString &mode)
-    : QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
+QHash<CommandType, CommandType> Room::m_requestResponsePair;
+QHash<CommandType, Room::Callback> Room::callbacks;
+QHash<CommandType, Room::Callback> Room::interactions;
+QHash<QString, Room::Callback> Room::cheatCommands;
+
+Room::Room(QObject *parent, const RoomConfig &config)
+    : QThread(parent), config(config), current(NULL), pile1(Sanguosha->getRandomCards()),
     m_drawPile(&pile1), m_discardPile(&pile2),
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     _m_semRaceRequest(0), _m_semRoomMutex(1),
@@ -67,10 +72,52 @@ Room::Room(QObject *parent, const QString &mode)
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
     _m_lastMovementId = 0;
-    player_count = Sanguosha->getPlayerCount(mode);
-    scenario = Sanguosha->getScenario(mode);
+    player_count = Sanguosha->getPlayerCount(config.GameMode);
+    scenario = Sanguosha->getScenario(config.GameMode);
 
-    initCallbacks();
+    if (m_requestResponsePair.isEmpty()) {
+        // init request response pair
+        m_requestResponsePair[S_COMMAND_PLAY_CARD] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_NULLIFICATION] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_SHOW_CARD] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_ASK_PEACH] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
+        m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
+        m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
+    }
+
+    if (interactions.isEmpty()) {
+        // client request handlers
+        interactions[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
+        interactions[S_COMMAND_CHEAT] = &Room::processRequestCheat;
+        interactions[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+    }
+
+    if (callbacks.isEmpty()) {
+        // Client notifications
+        callbacks[S_COMMAND_SIGNUP] = &Room::restartCommand;
+        callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
+        callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
+        callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
+        callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
+        callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
+        callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
+        callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
+        callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
+        callbacks[S_COMMAND_CHANGE_SKIN] = &Room::changeSkinCommand;
+    }
+
+    if (cheatCommands.isEmpty()) {
+        // Cheat commands
+        cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
+        cheatCommands[".ShowHandCards"] = &Room::showHandCards;
+        cheatCommands[".ShowPrivatePile"] = &Room::showPrivatePile;
+        cheatCommands[".SetAIDelay"] = &Room::setAIDelay;
+        cheatCommands[".SetGameMode"] = &Room::setGameMode;
+        cheatCommands[".Pause"] = &Room::pause;
+        cheatCommands[".Resume"] = &Room::resume;
+    }
 
     L = CreateLuaState();
 
@@ -79,49 +126,17 @@ Room::Room(QObject *parent, const QString &mode)
         "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
     m_generalSelector = GeneralSelector::getInstance();
+
+    if (scenario && scenario->objectName() == "jiange_defense") {
+        for (int i = 0; i < 4; ++i)
+            addRobotCommand(NULL);
+    }
 }
 
 Room::~Room(){
     lua_close(L);
     if (thread != NULL)
         delete thread;
-}
-
-void Room::initCallbacks() {
-    // init request response pair
-    m_requestResponsePair[S_COMMAND_PLAY_CARD] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_NULLIFICATION] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_SHOW_CARD] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_ASK_PEACH] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
-    m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
-    m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
-
-    // client request handlers
-    interactions[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
-    interactions[S_COMMAND_CHEAT] = &Room::processRequestCheat;
-    interactions[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
-
-    // Client notifications
-    callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
-    callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
-    callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
-    callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
-    callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
-    callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
-    callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
-    callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
-    callbacks[S_COMMAND_CHANGE_SKIN] = &Room::changeSkinCommand;
-
-    // Cheat commands
-    cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
-    cheatCommands[".ShowHandCards"] = &Room::showHandCards;
-    cheatCommands[".ShowPrivatePile"] = &Room::showPrivatePile;
-    cheatCommands[".SetAIDelay"] = &Room::setAIDelay;
-    cheatCommands[".SetGameMode"] = &Room::setGameMode;
-    cheatCommands[".Pause"] = &Room::pause;
-    cheatCommands[".Resume"] = &Room::resume;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -404,9 +419,9 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
                 }
             }
 
-            if (Config.AlterAIDelayAD)
-                Config.AIDelay = Config.AIDelayAD;
-            if (victim->isOnline() && Config.SurrenderAtDeath && askForSkillInvoke(victim, "surrender", "yes"))
+            if (config.AlterAIDelayAD)
+                config.AIDelay = config.AIDelayAD;
+            if (victim->isOnline() && config.SurrenderAtDeath && askForSkillInvoke(victim, "surrender", "yes"))
                 makeSurrender(victim);
         }
     }
@@ -498,7 +513,7 @@ void Room::gameOver(const QString &winner) {
 
     emit game_over(winner);
 
-    if (mode.contains("_mini_")) {
+    if (config.GameMode.contains("_mini_")) {
         ServerPlayer *playerWinner = NULL;
         QStringList winners = winner.split("+");
         foreach(ServerPlayer *sp, m_players) {
@@ -511,24 +526,24 @@ void Room::gameOver(const QString &winner) {
         }
 
         if (playerWinner) {
-            QString id = Config.GameMode;
+            QString id = config.GameMode;
             id.replace("_mini_", "");
-            int stage = Config.value("MiniSceneStage", 1).toInt();
+            int stage = tag.value("MiniSceneStage", 1).toInt();
             int current = id.toInt();
             if (current < Sanguosha->getMiniSceneCounts()) {
-                if (current + 1 > stage) Config.setValue("MiniSceneStage", current + 1);
+                if (current + 1 > stage) tag["MiniSceneStage"] = current + 1;
                 QString mode = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(current + 1));
-                Config.setValue("GameMode", mode);
-                Config.GameMode = mode;
+                //config.setValue("GameMode", mode);
+                config.GameMode = mode;
             }
         }
     }
-    Config.AIDelay = Config.OriginAIDelay;
+    config.AIDelay = config.OriginAIDelay;
 
     if (!getTag("NextGameMode").toString().isNull()) {
         QString name = getTag("NextGameMode").toString();
-        Config.GameMode = name;
-        Config.setValue("GameMode", name);
+        config.GameMode = name;
+        //config.setValue("GameMode", name);
         removeTag("NextGameMode");
     }
 
@@ -772,7 +787,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
         time_t timeRemain = timeOut - timer.elapsed();
         if (timeRemain < 0) timeRemain = 0;
         bool tryAcquireResult = true;
-        if (Config.OperationNoLimit)
+        if (config.OperationNoLimit)
             _m_semRaceRequest.acquire();
         else
             tryAcquireResult = _m_semRaceRequest.tryAcquire(1, timeRemain);
@@ -873,7 +888,7 @@ bool Room::getResult(ServerPlayer *player, time_t timeOut) {
     if (player->isOnline()) {
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
 
-        if (Config.OperationNoLimit)
+        if (config.OperationNoLimit)
             player->acquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         else
             player->tryAcquireLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE, timeOut);
@@ -1934,9 +1949,13 @@ void Room::clearCardFlag(int card_id, ServerPlayer *who) {
 }
 
 ServerPlayer *Room::addSocket(ClientSocket *socket) {
+    signupMutex.lock();
+    if (isFull())
+        return NULL;
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     m_players << player;
+    signupMutex.unlock();
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
     connect(player, SIGNAL(roomPacketReceived(QSanProtocol::Packet)), this, SLOT(processClientPacket(QSanProtocol::Packet)));
@@ -1975,8 +1994,47 @@ int Room::getLack() const{
     return player_count - m_players.length();
 }
 
+QString Room::getSetupString() const
+{
+    int timeout = config.OperationNoLimit ? 0 : config.OperationTimeout;
+    QString flags;
+    if (config.RandomSeat)
+        flags.append("R");
+    if (config.EnableCheat)
+        flags.append("C");
+    if (config.EnableCheat && config.FreeChoose)
+        flags.append("F");
+    if (config.ForbidAddingRobot)
+        flags.append("A");
+    if (config.DisableChat)
+        flags.append("M");
+    if (config.RewardTheFirstShowingPlayer)
+        flags.append("S");
+
+    QString ban_packages;
+    if (!config.BanPackages.isEmpty()) {
+        QSetIterator<QString> iter(config.BanPackages);
+        ban_packages = iter.next();
+        while (iter.hasNext()) {
+            ban_packages.append('+');
+            ban_packages.append(iter.next());
+        }
+    }
+
+    QString server_name = config.ServerName;
+    QStringList setup_items;
+    setup_items << server_name
+        << config.GameMode
+        << QString::number(timeout)
+        << QString::number(config.NullificationCountDown)
+        << ban_packages
+        << flags;
+
+    return setup_items.join(":");
+}
+
 QString Room::getMode() const{
-    return mode;
+    return config.GameMode;
 }
 
 const Scenario *Room::getScenario() const{
@@ -1999,7 +2057,7 @@ void Room::swapPile() {
     int times = tag.value("SwapPile", 0).toInt();
     setTag("SwapPile", ++times);
 
-    int limit = Config.value("PileSwappingLimitation", 5).toInt() + 1;
+    int limit = config.PileSwappingLimitation + 1;
     if (limit > 0 && times == limit)
         gameOver(".");
 
@@ -2149,7 +2207,7 @@ int Room::drawCard() {
 
 void Room::prepareForStart() {
     if (scenario) {
-        if (scenario->isRandomSeat() && Config.RandomSeat && mode != "custom_scenario")
+        if (scenario->isRandomSeat() && config.RandomSeat && config.GameMode != "custom_scenario")
             qShuffle(m_players);
         QStringList generals, generals2, kingdoms;
         scenario->assign(generals, generals2, kingdoms, this);
@@ -2167,7 +2225,7 @@ void Room::prepareForStart() {
                 foreach(ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general");
                 notifyProperty(player, player, "general", generals[i]);
-                if (generals[i] != generals2[i] || mode == "custom_scenario") {
+                if (generals[i] != generals2[i] || config.GameMode == "custom_scenario") {
                     player->setGeneral2Name("anjiang");
                     player->setActualGeneral2Name(generals2[i]);
                     notifyProperty(player, player, "actual_general2");
@@ -2182,7 +2240,7 @@ void Room::prepareForStart() {
         }
     }
     else {
-        if (Config.RandomSeat)
+        if (config.RandomSeat)
             qShuffle(m_players);
         assignRoles();
     }
@@ -2290,7 +2348,7 @@ void Room::pauseCommand(ServerPlayer *player, const QVariant &arg) {
 }
 
 void Room::processRequestCheat(ServerPlayer *player, const QVariant &arg) {
-    if (!Config.EnableCheat || !arg.canConvert<JsonArray>()) return;
+    if (!config.EnableCheat || !arg.canConvert<JsonArray>()) return;
 
     JsonArray args = arg.value<JsonArray>();
     if(!JsonUtils::isNumber(args[0])) return;
@@ -2394,7 +2452,7 @@ void Room::reportInvalidPacket(const QByteArray &message) {
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QVariant &) {
-    if (Config.ForbidAddingRobot || isFull()) return;
+    if (config.ForbidAddingRobot || isFull()) return;
     if (player && !player->isOwner()) return;
 
     static QStringList names;
@@ -2480,6 +2538,18 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
+void Room::restartCommand(ServerPlayer *player, const QVariant &)
+{
+    player->notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+    notifyProperty(player, player, "objectName");
+    notifyProperty(player, player, "owner");
+
+    foreach (ServerPlayer *p, m_players) {
+        if (p != player)
+            p->introduceTo(player);
+    }
+}
+
 void Room::toggleReadyCommand(ServerPlayer *, const QVariant &) {
     if (!game_started && isFull())
         start();
@@ -2509,7 +2579,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         player->startNetworkDelayTest();
 
         // introduce all existing player to the new joined
-        foreach(ServerPlayer *p, m_players) {
+        foreach (ServerPlayer *p, m_players) {
             if (p != player)
                 p->introduceTo(player);
         }
@@ -2527,7 +2597,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
             existed << player->getGeneral2Name();
     }
 
-    const int max_choice = Config.value("HegemonyMaxChoice", 7).toInt();
+    const int max_choice = config.HegemonyMaxChoice;
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
@@ -2612,7 +2682,7 @@ void Room::chooseGenerals() {
 void Room::run() {
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    Config.AIDelay = Config.OriginAIDelay;
+    config.AIDelay = config.OriginAIDelay;
 
     foreach(ServerPlayer *player, m_players) {
         //Ensure that the game starts with all player's mutex locked
@@ -2622,36 +2692,32 @@ void Room::run() {
 
     prepareForStart();
 
+#ifdef QT_NO_DEBUG
     bool using_countdown = true;
     if (_virtual || !property("to_test").toString().isEmpty())
         using_countdown = false;
-
-#ifndef QT_NO_DEBUG
-    using_countdown = false;
+#else
+    bool using_countdown = false;
 #endif
 
     if (using_countdown) {
-        for (int i = Config.CountDownSeconds; i >= 0; i--) {
+        for (int i = config.CountDownSeconds; i >= 0; i--) {
             doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(i));
             sleep(1);
         }
-    }
-    else
+    } else
         doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
 
-    if (scenario && !scenario->generalSelection())
-        startGame();
-    else {
+    if (scenario == NULL || scenario->generalSelection())
         chooseGenerals();
-        startGame();
-    }
+    startGame();
 }
 
 void Room::assignRoles() {
     int n = m_players.count();
 
-    QStringList roles = Sanguosha->getRoleList(mode);
+    QStringList roles = Sanguosha->getRoleList(config.GameMode);
     qShuffle(roles);
 
     for (int i = 0; i < n; i++) {
@@ -2754,7 +2820,7 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
     const General *general = Sanguosha->getGeneral(generalName);
     if (general == NULL)
         return false;
-    else if (!Config.FreeChoose && !player->getSelected().contains(generalName))
+    else if (!config.FreeChoose && !player->getSelected().contains(generalName))
         return false;
 
     if (isFirst) {
@@ -2769,7 +2835,7 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
 }
 
 void Room::speakCommand(ServerPlayer *player, const QVariant &message) {
-    if (player && Config.EnableCheat) {
+    if (player && config.EnableCheat) {
         QString sentence = message.toString();
         if (sentence.at(0) == '.') {
             int split = sentence.indexOf('=');
@@ -2889,8 +2955,8 @@ void Room::setAIDelay(ServerPlayer *, const QVariant &delay)
     bool ok = false;
     int miliseconds = delay.toInt(&ok);
     if (ok) {
-        Config.AIDelay = Config.OriginAIDelay = miliseconds;
-        Config.setValue("OriginAIDelay", miliseconds);
+        config.AIDelay = config.OriginAIDelay = miliseconds;
+        //config.setValue("OriginAIDelay", miliseconds);
     }
 }
 
@@ -3435,7 +3501,7 @@ void Room::startGame() {
         m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
 
-    foreach(ServerPlayer *player, m_players) {
+    foreach (ServerPlayer *player, m_players) {
         QStringList generals = getTag(player->objectName()).toStringList();
         const General *general1 = Sanguosha->getGeneral(generals.first());
         const General *general2 = Sanguosha->getGeneral(generals.last());
@@ -3485,6 +3551,7 @@ void Room::startGame() {
 
     thread = new RoomThread(this);
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
+    connect(thread, SIGNAL(finished()), this, SIGNAL(game_over()));
 
     if (!_virtual) thread->start();
 }
@@ -4388,7 +4455,7 @@ void Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
 }
 
 void Room::doLightbox(const QString &lightboxName, int duration) {
-    if (Config.AIDelay == 0)
+    if (config.AIDelay == 0)
         return;
 
     doAnimate(S_ANIMATE_LIGHTBOX, lightboxName, QString::number(duration));
@@ -4396,7 +4463,7 @@ void Room::doLightbox(const QString &lightboxName, int duration) {
 }
 
 void Room::doSuperLightbox(const QString &heroName, const QString &skillName) {
-    if (Config.AIDelay == 0)
+    if (config.AIDelay == 0)
         return;
 
     doAnimate(S_ANIMATE_LIGHTBOX, "skill=" + heroName, skillName);
@@ -4635,7 +4702,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
         card_use.from = player;
         ai->activate(card_use);
 
-        qint64 diff = Config.AIDelay - timer.elapsed();
+        qint64 diff = config.AIDelay - timer.elapsed();
         if (diff > 0) thread->delay(diff);
     }
     else {
@@ -4648,7 +4715,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
                 return activate(player, card_use);
         }
         else {
-            if (Config.EnableCheat && makeCheat(player)) {
+            if (config.EnableCheat && makeCheat(player)) {
                 if (player->isAlive()) return activate(player, card_use);
                 return;
             }
@@ -4682,7 +4749,7 @@ void Room::askForLuckCard() {
     }
 
     int n = 0;
-    while (n < Config.LuckCardLimitation) {
+    while (n < config.LuckCardLimitation) {
         if (players.isEmpty())
             return;
 
@@ -5472,7 +5539,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
                 break;
             }
         }
-        if (!success || !JsonUtils::isString(clientResponse) || (!Config.FreeChoose && !valid))
+        if (!success || !JsonUtils::isString(clientResponse) || (!config.FreeChoose && !valid))
             return default_choice;
         else
             return clientResponse.toString();

@@ -131,6 +131,8 @@ private:
     QLabel *luck_card_label;
     QSpinBox *luck_card_spinbox;
     QCheckBox *disable_lua_checkbox;
+    QLineEdit *lobby_address_edit;
+    QCheckBox *connect_to_lobby_checkbox;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;

@@ -31,7 +31,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-    : confirm_button(new Button(tr("confirm"), 0.6, true)),
+    : confirm_button(new Button(tr("confirm"), 0.6)),
       scene_width(0), itemCount(0)
 {
     confirm_button->setParentItem(this);

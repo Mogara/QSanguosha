@@ -32,6 +32,8 @@ public:
     NativeServerSocket();
 
     virtual bool listen();
+    virtual bool listen(const QHostAddress &address, ushort port = 0);
+    virtual ushort serverPort() const;
     virtual void daemonize();
 
 private slots:
@@ -52,7 +54,7 @@ public:
     NativeClientSocket(QTcpSocket *socket);
 
     virtual void connectToHost();
-    virtual void connectToHost(const QHostAddress &address);
+    virtual void connectToHost(QString address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
     virtual void send(const QByteArray &message);

@@ -26,17 +26,16 @@
 #include <QGraphicsObject>
 #include <QGraphicsRotation>
 
-class Title;
 class QGraphicsDropShadowEffect;
 
 class Button : public QGraphicsObject{
     Q_OBJECT
 
 public:
-    explicit Button(const QString &label, qreal scale = 1.0, bool compact = false);
-    explicit Button(const QString &label, const QSizeF &size, bool compact = false);
-    void setFontName(const QString &name);
-    void setFontSize(const int &size);
+    explicit Button(const QString &label, qreal scale = 1.0);
+    explicit Button(const QString &label, const QSizeF &size);
+    inline void setFontName(const QString &name) { this->font_name = name; }
+    inline void setFontSize(const int &size) { this->font_size = size; }
     inline void setText(const QString &text) { label = text; }
 
     virtual QRectF boundingRect() const;
@@ -44,45 +43,17 @@ public:
     static QFont defaultFont();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-
-private:
-
-    enum MouseArea {
-        Right,
-        Left,
-        Top,
-        Bottom,
-        Center,
-
-        Outside
-    };
+    void init();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mousePressEvent(QGraphicsSceneMouseEvent *);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     QString label;
     QSizeF size;
     QString font_name;
     int font_size;
-    bool compact;
-    bool down;
-    MouseArea mouse_area;
-
-    QGraphicsRotation *rotation;
-    QGraphicsScale *scale;
-    Title *title;
-
-    QGraphicsDropShadowEffect *frame;
-
-    QPixmap icon;
-
-    void init();
-    void doTransform(const QPointF &pos);
-    void reset();
-    MouseArea getMouseArea(const QPointF &pos) const;
 
 signals:
     void clicked();

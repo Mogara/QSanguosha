@@ -22,6 +22,7 @@
 #include "startscene.h"
 #include "roomscene.h"
 #include "server.h"
+#include "lobbyscene.h"
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
@@ -59,6 +60,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkInterface>
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -563,6 +565,10 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
             about_window->deleteLater();
             about_window = NULL;
         }
+
+        QString parentScene = this->scene->metaObject()->className();
+        if (parentScene != scene->metaObject()->className())
+            sceneHistory.push(parentScene);
     }
 
     this->scene = scene;
@@ -595,6 +601,9 @@ void MainWindow::on_actionStart_Server_triggered() {
         return;
     }
 
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
+
     server->daemonize();
 
     ui->actionStart_Game->disconnect();
@@ -624,7 +633,8 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 
     if (server_version == client_version) {
         client->signup();
-        connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+        connect(client, SIGNAL(roomServerConnected()), SLOT(enterRoom()));
+        connect(client, SIGNAL(lobbyServerConnected()), SLOT(enterLobby()));
         return;
     }
 
@@ -644,8 +654,8 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 void MainWindow::startConnection() {
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
-    connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
+    connect(client, SIGNAL(version_checked(QString, QString)), this, SLOT(checkVersion(QString, QString)));
+    connect(client, SIGNAL(error_message(QString)), this, SLOT(networkError(QString)));
 }
 
 void MainWindow::on_actionReplay_triggered() {
@@ -671,7 +681,7 @@ void MainWindow::on_actionReplay_triggered() {
     Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
-    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+    connect(client, SIGNAL(roomServerConnected()), SLOT(enterRoom()));
     client->signup();
 }
 
@@ -740,55 +750,90 @@ void MainWindow::enterRoom() {
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    connect(room_scene, SIGNAL(restart()), ClientInstance, SLOT(restart()));
+    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(exitScene()));
 
     gotoScene(room_scene);
 }
 
-void MainWindow::gotoStartScene() {
-    if (server != NULL){
-        server->deleteLater();
+void MainWindow::enterLobby() {
+    // add current ip to history
+    if (!Config.HistoryIPs.contains(Config.HostAddress)) {
+        Config.HistoryIPs << Config.HostAddress;
+        Config.HistoryIPs.sort();
+        Config.setValue("HistoryIPs", Config.HistoryIPs);
+    }
+
+    LobbyScene *scene = new LobbyScene(this);
+    connect(scene, SIGNAL(createRoomClicked()), SLOT(onCreateRoomClicked()));
+    connect(scene, SIGNAL(roomSelected()), SLOT(startConnection()));
+    connect(scene, SIGNAL(exit()), SLOT(exitScene()));
+
+    gotoScene(scene);
+}
+
+void MainWindow::exitScene() {
+    if (server != NULL) {
+        delete server;
         server = NULL;
     }
 
-    if (Self) {
-        delete Self;
-        Self = NULL;
+    QString previousScene = sceneHistory.pop();
+    if (previousScene == "LobbyScene") {
+        //@todo: add a loading animation here
+        scene->deleteLater();
+        view->setScene(NULL);
+        scene = NULL;
+
+        if (ClientInstance) {
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
+            Self = NULL;
+        }
+
+        Config.HostAddress = Config.value("HostAddress").toString();
+        if (!Config.HostAddress.isEmpty()) {
+            startConnection();
+        }
+
+    } else {
+        StartScene *start_scene = new StartScene(this);
+
+        QList<QAction *> actions;
+        actions << ui->actionStart_Game
+            << ui->actionStart_Server
+            << ui->actionPC_Console_Start
+            << ui->actionReplay
+            << ui->actionConfigure
+            << ui->actionGeneral_Overview
+            << ui->actionCard_Overview
+            << ui->actionAbout;
+
+        foreach(QAction *action, actions)
+            start_scene->addButton(action);
+
+        setCentralWidget(view);
+
+        ui->menuCheat->setEnabled(false);
+        ui->actionDeath_note->disconnect();
+        ui->actionDamage_maker->disconnect();
+        ui->actionRevive_wand->disconnect();
+        ui->actionSend_lowlevel_command->disconnect();
+        ui->actionExecute_script_at_server_side->disconnect();
+        gotoScene(start_scene);
+
+        addAction(ui->actionShow_Hide_Menu);
+        addAction(ui->actionFullscreen);
+
+        if (ClientInstance) {
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
+            Self = NULL;
+        }
     }
-
-    StartScene *start_scene = new StartScene(this);
-
-    QList<QAction *> actions;
-    actions << ui->actionStart_Game
-        << ui->actionStart_Server
-        << ui->actionPC_Console_Start
-        << ui->actionReplay
-        << ui->actionConfigure
-        << ui->actionGeneral_Overview
-        << ui->actionCard_Overview
-        << ui->actionAbout;
-
-    foreach(QAction *action, actions)
-        start_scene->addButton(action);
-
-    setCentralWidget(view);
-
-    ui->menuCheat->setEnabled(false);
-    ui->actionDeath_note->disconnect();
-    ui->actionDamage_maker->disconnect();
-    ui->actionRevive_wand->disconnect();
-    ui->actionSend_lowlevel_command->disconnect();
-    ui->actionExecute_script_at_server_side->disconnect();
-    gotoScene(start_scene);
-
-    addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);
 
     delete systray;
     systray = NULL;
-    if (ClientInstance)
-        delete ClientInstance;
 }
 
 void MainWindow::startGameInAnotherInstance() {
@@ -1011,15 +1056,17 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
 
     server = new Server(this);
-    if (!server->listen()) {
+    ushort port = Config.ServerPort;
+    if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
 
     server->daemonize();
-    server->createNewRoom();
 
-    Config.HostAddress = "127.0.0.1";
+    Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
     startConnection();
 }
 
@@ -1335,4 +1382,65 @@ void MainWindow::on_actionCard_editor_triggered()
         editor = new CardEditor(this);
 
     editor->show();
+}
+
+void MainWindow::on_actionStart_Lobby_triggered()
+{
+    Server *server = new Server(this, Server::LobbyRole);
+    if (!server->listen()) {
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        return;
+    }
+
+    server->daemonize();
+
+    ui->actionStart_Game->disconnect();
+#ifdef QT_NO_PROCESS
+    ui->actionStart_Game->setEnabled(false);
+#else
+    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+#endif
+    StartScene *start_scene = qobject_cast<StartScene *>(scene);
+    if (start_scene) {
+        start_scene->switchToServer(server);
+        if (Config.value("EnableMinimizeDialog", false).toBool())
+            this->on_actionMinimize_to_system_tray_triggered();
+    }
+}
+
+void MainWindow::onCreateRoomClicked()
+{
+    //@todo: Server address may be in the same local network
+    bool hasGlobalIp = false;
+    QList<QHostAddress> addresses(QNetworkInterface::allAddresses());
+    foreach (const QHostAddress &address, addresses) {
+        quint32 ip = address.toIPv4Address();
+        if (ip && !address.isLoopback() && (ip & 0xFFFF0000) != 0xA9FE0000) {
+            if ((ip & 0xFF000000) != 0x0A000000 && (ip & 0xFFF00000) != 0xAC100000 && (ip & 0xFFFF0000) != 0xC0A80000) {
+                hasGlobalIp = true;
+                break;
+            }
+        }
+    }
+
+    ServerDialog *dialog = new ServerDialog(this);
+    if (!dialog->config())
+        return;
+
+    if (hasGlobalIp) {
+        server = new Server(this);
+        if (!server->listen(QHostAddress::Any, 0)) {
+            QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+            return;
+        }
+        server->connectToLobby();
+        server->daemonize();
+
+        Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
+        startConnection();
+    } else {
+        if (ClientInstance)
+            ClientInstance->requestNewRoom();
+    }
 }

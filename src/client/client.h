@@ -157,6 +157,8 @@ public:
     void setCardFlag(const QVariant &pattern_str);
     void updateCard(const QVariant &val);
     void mirrorGuanxingStep(const QVariant &args);
+    void enterLobby(const QVariant &);
+    void updateRoomList(const QVariant &data);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_var);
@@ -234,6 +236,8 @@ public:
 
 public slots:
     void signup();
+    void restart();
+    void toggleReady();
     void onPlayerChooseGeneral(const QString &_name);
     void onPlayerMakeChoice(const QString &choice);
     void onPlayerChooseCard(int card_id = -2);
@@ -241,11 +245,14 @@ public slots:
     void onPlayerChoosePlayer(const Player *player);
     void onPlayerChooseTriggerOrder(const QString &choice);
     void onPlayerChangeSkin(int skin_id, bool is_head = true);
+    void onPlayerChooseRoom(int room_id);
     void preshow(const QString &skill_name, const bool isPreshowed);
     void trust();
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);
+    void fetchRoomList(int page = 0);
+    void requestNewRoom();
 
     void onPlayerReplyGongxin(int card_id = -1);
 
@@ -262,8 +269,8 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QSanProtocol::CommandType, Callback> interactions;
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> interactions;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;
@@ -295,7 +302,8 @@ private slots:
 
 signals:
     void version_checked(const QString &version_number, const QString &mod_name);
-    void server_connected();
+    void roomServerConnected();
+    void lobbyServerConnected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);
@@ -315,7 +323,7 @@ signals:
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);
-    void avatars_hiden();
+    void avatars_hidden();
     void pile_reset();
     void player_killed(const QString &who);
     void player_revived(const QString &who);
@@ -374,6 +382,8 @@ signals:
     void deputy_preshowed();
 
     void update_handcard_num();
+
+    void roomListChanged(const QVariant &list);
 };
 
 extern Client *ClientInstance;

@@ -48,7 +48,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 ServerDialog::ServerDialog(QWidget *parent)
     : FlatDialog(parent)
 {
-    setWindowTitle(tr("Start server"));
+    setWindowTitle(tr("Start room server"));
 
     QTabWidget *tab_widget = new QTabWidget;
     tab_widget->addTab(createBasicTab(), tr("Basic"));
@@ -195,14 +195,33 @@ QWidget *ServerDialog::createAdvancedTab() {
     hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
+    lobby_address_edit = new QLineEdit;
+    lobby_address_edit->setText(Config.LobbyAddress);
+
+    connect_to_lobby_checkbox = new QCheckBox(tr("Connect"));
+    connect_to_lobby_checkbox->setChecked(Config.ConnectToLobby);
+
+    connect(connect_to_lobby_checkbox, SIGNAL(toggled(bool)), lobby_address_edit, SLOT(setEnabled(bool)));
+    lobby_address_edit->setEnabled(connect_to_lobby_checkbox->isChecked());
+
+    QLayout *lobby_layout = new QHBoxLayout;
+    lobby_layout->addWidget(new QLabel(tr("Lobby Address")));
+    lobby_layout->addWidget(lobby_address_edit);
+    lobby_layout->addWidget(connect_to_lobby_checkbox);
+
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
 #if QT_VERSION >= 0x040700
     address_edit->setPlaceholderText(tr("Public IP or domain"));
 #endif
 
-    QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
+    QPushButton *detect_button = new QPushButton(tr("Detect"));
     connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+
+    QLayout *address_layout = new QHBoxLayout;
+    address_layout->addWidget(new QLabel(tr("Address")));
+    address_layout->addWidget(address_edit);
+    address_layout->addWidget(detect_button);
 
     port_edit = new QLineEdit;
     port_edit->setText(QString::number(Config.ServerPort));
@@ -214,8 +233,8 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
-    layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
-    layout->addWidget(detect_button);
+    layout->addLayout(lobby_layout);
+    layout->addLayout(address_layout);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
     layout->addStretch();
 
@@ -455,6 +474,8 @@ bool ServerDialog::config() {
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
     Config.LuckCardLimitation = luck_card_spinbox->value();
+    Config.LobbyAddress = lobby_address_edit->text();
+    Config.ConnectToLobby = connect_to_lobby_checkbox->isChecked();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -485,6 +506,8 @@ bool ServerDialog::config() {
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
+    Config.setValue("LobbyAddress", Config.LobbyAddress);
+    Config.setValue("ConnectToLobby", Config.ConnectToLobby);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
@@ -498,6 +521,8 @@ bool ServerDialog::config() {
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
+
+    //QStringList general_conversions;
     Config.setValue("EnableLordConvertion", convert_lord->isChecked());
 
     QStringList card_conversions;

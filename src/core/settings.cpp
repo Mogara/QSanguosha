@@ -21,7 +21,6 @@
 #include "settings.h"
 #include "photo.h"
 #include "card.h"
-#include "engine.h"
 
 #include <QFontDatabase>
 #include <QStringList>
@@ -114,6 +113,9 @@ void Settings::init() {
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
+    LobbyAddress = value("LobbyAddress").toString();
+    ConnectToLobby = value("ConnectToLobby", false).toBool();
+
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     //Set Cao Cao as default avatar to pay tribute to Moligaloo, the founder of QSanguosha.
     UserAvatar = value("UserAvatar", "caocao").toString();
@@ -149,10 +151,6 @@ void Settings::init() {
     BubbleChatBoxKeepSeconds = value("BubbleChatBoxKeepSeconds", 2).toInt();
 
     IgnoreOthersSwitchesOfSkin = value("IgnoreOthersSwitchesOfSkin", false).toBool();
-
-    lua_State *lua = Sanguosha->getLuaState();
-    Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
-    Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
 
     QStringList forbid_packages = value("ForbidPackages").toStringList();
     if (forbid_packages.isEmpty()) {

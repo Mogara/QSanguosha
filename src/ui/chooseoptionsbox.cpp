@@ -73,7 +73,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     const int buttonWidth = getButtonWidth();
     foreach (QString option, options) {
         Button *button = new Button(translate(option), QSizeF(buttonWidth,
-                                                      defaultButtonHeight), true);
+                                                      defaultButtonHeight));
         button->setFlag(QGraphicsItem::ItemIsFocusable);
         button->setObjectName(option);
         buttons << button;

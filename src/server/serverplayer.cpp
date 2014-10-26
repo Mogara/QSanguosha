@@ -279,8 +279,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(getMessage(QByteArray)));
         connect(this, SIGNAL(message_ready(QByteArray)), this, SLOT(sendMessage(QByteArray)));
-    }
-    else {
+    } else {
         if (this->socket) {
             this->disconnect(this->socket);
             this->socket->disconnect(this);
@@ -292,6 +291,19 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     }
 
     this->socket = socket;
+}
+
+ClientSocket *ServerPlayer::takeSocket()
+{
+    if (socket == NULL)
+        return NULL;
+
+    socket->disconnect(this);
+    this->disconnect(socket);
+
+    ClientSocket *result = socket;
+    socket = NULL;
+    return result;
 }
 
 void ServerPlayer::kick(){
@@ -939,7 +951,7 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if (getState() == "online")
         return NULL;
-    else if (getState() == "robot" || Config.EnableCheat)
+    else if (getState() == "robot" || room->getConfig().EnableCheat)
         return ai;
     else
         return trust_ai;

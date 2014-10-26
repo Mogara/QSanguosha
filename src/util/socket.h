@@ -32,6 +32,8 @@ class ServerSocket : public QObject {
 
 public:
     virtual bool listen() = 0;
+    virtual bool listen(const QHostAddress &address, ushort port = 0) = 0;
+    virtual ushort serverPort() const = 0;
     virtual void daemonize() = 0;
 
 signals:
@@ -43,7 +45,7 @@ class ClientSocket : public QObject {
 
 public:
     virtual void connectToHost() = 0;
-    virtual void connectToHost(const QHostAddress &address) = 0;
+    virtual void connectToHost(QString address) = 0;
     virtual void connectToHost(const QHostAddress &address, ushort port) = 0;
     virtual void disconnectFromHost() = 0;
     virtual void send(const QByteArray &message) = 0;

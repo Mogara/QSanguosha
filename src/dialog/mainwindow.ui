@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -44,6 +44,7 @@
      <addaction name="actionStart_Server"/>
      <addaction name="actionPC_Console_Start"/>
      <addaction name="actionReplay"/>
+     <addaction name="actionStart_Lobby"/>
      <addaction name="actionExit"/>
     </widget>
     <widget class="QMenu" name="menuView">
@@ -425,6 +426,11 @@
   <action name="actionSound_Test">
    <property name="text">
     <string>Sound Test</string>
+   </property>
+  </action>
+  <action name="actionStart_Lobby">
+   <property name="text">
+    <string>Start lobby</string>
    </property>
   </action>
  </widget>

@@ -555,41 +555,6 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(const QVariant &var) {
     return false;
 }
 
-// Load pixmap from a file and map it to the given key.
-QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) {
-    static QPixmap empty;
-    QPixmap pixmap;
-    if (QPixmapCache::find(key, &pixmap)) {
-        return pixmap;
-    }
-
-    if (fileName == "deprecated") {
-        QPixmapCache::insert(key, empty);
-    } else {
-        bool success = !fileName.isEmpty() && pixmap.load(fileName);
-        if (!success) {
-            /*qWarning("Unable to open resource file \"%s\" for key \"%s\"\n",
-                     fileName.toLatin1().constData(),
-                     key.toLatin1().constData());*/
-            QPixmapCache::insert(key, empty); // make Qt happy
-        } else {
-            QPixmapCache::insert(key, pixmap);
-            return pixmap;
-        }
-    }
-
-    return empty;
-}
-
-// Load pixmap from a file.
-QPixmap QSanPixmapCache::getPixmap(const QString &fileName) {
-    return getPixmap(fileName, fileName);
-}
-
-bool QSanPixmapCache::contains(const QString &key) {
-    return QPixmapCache::find(key);
-}
-
 bool IQSanComponentSkin::_loadImageConfig(const QVariant &config) {
     if (!config.canConvert<JsonObject>())
         return false;
@@ -787,7 +752,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
     }
 
     if (!S_IMAGE_KEY2PIXMAP.contains(totalKey)) {
-        QPixmap pixmap = QSanPixmapCache::getPixmap(fileName);
+        QPixmap pixmap = getPixmapFromFileName(fileName);
         if (clipping) {
             QRect actualClip = clipRegion;
             if (actualClip.right() > pixmap.width())
@@ -822,7 +787,17 @@ QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const{
 }
 
 QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const{
-    return QSanPixmapCache::getPixmap(fileName, fileName);
+    static QPixmap empty(1, 1);
+
+    if (fileName == "deprecated")
+        return empty;
+
+    QPixmap pixmap;
+    bool success = !fileName.isEmpty() && pixmap.load(fileName);
+    if (success)
+        return pixmap;
+
+    return empty;
 }
 
 bool QSanRoomSkin::_loadAnimationConfig(const QVariant &) {

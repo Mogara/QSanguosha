@@ -27,6 +27,7 @@ SOURCES += \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/record-analysis.cpp \
+    src/core/roomconfig.cpp \
     src/core/roomstate.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
@@ -78,8 +79,11 @@ SOURCES += \
     src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
-    src/server/server.cpp \
     src/server/serverplayer.cpp \
+    src/server/server.cpp \
+    src/server/server-lobby.cpp \
+    src/server/server-room.cpp \
+    src/server/lobbyplayer.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
@@ -114,6 +118,8 @@ SOURCES += \
     src/ui/graphicspixmaphoveritem.cpp \
     src/ui/heroskincontainer.cpp \
     src/ui/skinitem.cpp \
+    src/ui/lobbyscene.cpp \
+    src/ui/tile.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -135,6 +141,7 @@ HEADERS += \
     src/core/player.h \
     src/core/protocol.h \
     src/core/record-analysis.h \
+    src/core/roomconfig.h \
     src/core/roomstate.h \
     src/core/settings.h \
     src/core/skill.h \
@@ -186,8 +193,9 @@ HEADERS += \
     src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
-    src/server/server.h \
     src/server/serverplayer.h \
+    src/server/server.h \
+    src/server/lobbyplayer.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \
     src/ui/carditem.h \
@@ -222,6 +230,8 @@ HEADERS += \
     src/ui/graphicspixmaphoveritem.h \
     src/ui/heroskincontainer.h \
     src/ui/skinitem.h \
+    src/ui/lobbyscene.h \
+    src/ui/tile.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

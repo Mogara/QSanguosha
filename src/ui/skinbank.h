@@ -38,15 +38,6 @@
 #include <QGraphicsPixmapItem>
 #include <QAbstractAnimation>
 
-class QSanPixmapCache {
-public:
-    // Load pixmap from a file and map it to the given key.
-    static QPixmap getPixmap(const QString &key, const QString &fileName);
-    // Load pixmap from a existing key.
-    static QPixmap getPixmap(const QString &key);
-    static bool contains(const QString &key);
-};
-
 class IQSanComponentSkin { // interface class
 public:
     class QSanSimpleTextFont {

@@ -69,9 +69,6 @@ static bool callback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINT
 
 int main(int argc, char *argv[]) {
     bool noGui = argc > 1 && strcmp(argv[1], "-server") == 0;
-
-
-
     if (noGui)
         new QCoreApplication(argc, argv);
     else
@@ -99,7 +96,6 @@ int main(int argc, char *argv[]) {
     showSplashMessage(QSplashScreen::tr("Loading BreakPad..."));
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
 #endif
-
 
 
 #if defined(Q_OS_MAC) && defined(QT_NO_DEBUG)
@@ -149,13 +145,13 @@ int main(int argc, char *argv[]) {
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
-    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
-    new Settings;
-    Sanguosha = new Engine;
-
     showSplashMessage(QSplashScreen::tr("Loading user's configurations..."));
+    new Settings;
     Config.init();
     qApp->setFont(Config.AppFont);
+
+    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
+    new Engine;
 
     if (qApp->arguments().contains("-server")) {
         Server *server = new Server(qApp);

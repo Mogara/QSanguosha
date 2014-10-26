@@ -171,7 +171,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(triggers_got(QString,QStringList,bool)), this, SLOT(chooseTriggerOrder(QString,QStringList,bool)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer *>)), SLOT(arrangeSeats(QList<const ClientPlayer *>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status, Client::Status)), this, SLOT(updateStatus(Client::Status, Client::Status)));
-    connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
+    connect(ClientInstance, SIGNAL(avatars_hidden()), this, SLOT(hideAvatars()));
     connect(ClientInstance, SIGNAL(hp_changed(QString, int, DamageStruct::Nature, bool)), SLOT(changeHp(QString, int, DamageStruct::Nature, bool)));
     connect(ClientInstance, SIGNAL(maxhp_changed(QString, int)), SLOT(changeMaxHp(QString, int)));
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));
@@ -333,14 +333,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     return_to_start_scene = NULL;
     if (!ServerInfo.ForbidAddingRobot) {
         control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
-        control_panel->hide();
+        control_panel->setVisible(Self->isOwner());
 
-        add_robot = new Button(tr("Add a robot"), 1.0, true);
+        add_robot = new Button(tr("Add a robot"), 1.0);
         add_robot->setParentItem(control_panel);
         add_robot->setTransform(QTransform::fromTranslate(-add_robot->boundingRect().width() / 2, -add_robot->boundingRect().height() / 2), true);
         add_robot->setPos(0, -add_robot->boundingRect().height() - 10);
 
-        fill_robots = new Button(tr("Fill robots"), 1.0, true);
+        fill_robots = new Button(tr("Fill robots"), 1.0);
         fill_robots->setParentItem(control_panel);
         fill_robots->setTransform(QTransform::fromTranslate(-fill_robots->boundingRect().width() / 2, -fill_robots->boundingRect().height() / 2), true);
 
@@ -350,7 +350,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     } else {
         control_panel = NULL;
     }
-    return_to_start_scene = new Button(tr("Return to main menu"), 1.0, true);
+    return_to_start_scene = new Button(tr("Return"), 1.0);
     addItem(return_to_start_scene);
     return_to_start_scene->setZValue(10000);
     return_to_start_scene->setTransform(QTransform::fromTranslate(-return_to_start_scene->boundingRect().width() / 2, -return_to_start_scene->boundingRect().height() / 2), true);
@@ -391,6 +391,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
     _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
 #endif
+}
+
+RoomScene::~RoomScene()
+{
+    //in case it's destroyed via QObject::deleteLater()
+    if (RoomSceneInstance == this) {
+        RoomSceneInstance = NULL;
+    }
 }
 
 void RoomScene::handleGameEvent(const QVariant &args) {
@@ -3015,7 +3023,7 @@ void RoomScene::addRestartButton(QDialog *dialog) {
 
     QPushButton *restart_button;
     restart_button = new QPushButton(tr("Restart Game"));
-    QPushButton *return_button = new QPushButton(tr("Return to main menu"));
+    QPushButton *return_button = new QPushButton(tr("Return"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(restart_button);
@@ -3030,7 +3038,7 @@ void RoomScene::addRestartButton(QDialog *dialog) {
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
-    connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+    connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
@@ -4108,7 +4116,7 @@ void RoomScene::startArrange(const QString &) {
         arrange_rects << rect_item;
     }
 
-    arrange_button = new Button(tr("Complete"), 0.8, true);
+    arrange_button = new Button(tr("Complete"), 0.8);
     arrange_button->setParentItem(selector_box);
     arrange_button->setPos(600, 330);
     connect(arrange_button, SIGNAL(clicked()), this, SLOT(finishArrange()));

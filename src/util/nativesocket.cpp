@@ -37,6 +37,16 @@ bool NativeServerSocket::listen() {
     return server->listen(QHostAddress::Any, Config.ServerPort);
 }
 
+bool NativeServerSocket::listen(const QHostAddress &address, ushort port)
+{
+    return server->listen(address, port);
+}
+
+ushort NativeServerSocket::serverPort() const
+{
+    return server->serverPort();
+}
+
 void NativeServerSocket::daemonize() {
     daemon = new QUdpSocket(this);
     daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);
@@ -102,9 +112,16 @@ void NativeClientSocket::connectToHost() {
     socket->connectToHost(address, port);
 }
 
-void NativeClientSocket::connectToHost(const QHostAddress &address)
+void NativeClientSocket::connectToHost(QString address)
 {
-    ushort port = Config.value("ServerPort", 9527u).toUInt();
+    ushort port;
+    if (address.contains(':')) {
+        QStringList texts = address.split(':');
+        address = texts.first();
+        port = texts.at(1).toUInt();
+    } else {
+        port = Config.value("ServerPort", 9527u).toUInt();
+    }
     socket->connectToHost(address, port);
 }
 

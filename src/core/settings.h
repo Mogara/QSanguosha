@@ -83,12 +83,11 @@ public:
     ushort ServerPort;
     bool DisableLua;
 
-    QStringList ExtraHiddenGenerals;
-    QStringList RemovedHiddenGenerals;
-
     bool RewardTheFirstShowingPlayer;
 
     // client side
+    QString LobbyAddress;
+    bool ConnectToLobby;
     QString HostAddress;
     QString UserName;
     QString UserAvatar;
