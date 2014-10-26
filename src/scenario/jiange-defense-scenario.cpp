@@ -64,6 +64,10 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
                 for (int j = 0; j < 5; j++)
                     weijiangs << wei_generals.takeFirst();
                 QStringList answer = room->askForGeneral(players[i], weijiangs, QString(), false).split("+");
+                if (answer.size() < 2) {
+                    weijiangs.removeOne(answer.first());
+                    answer.append(weijiangs.at(qrand() % weijiangs.size()));
+                }
                 answer.prepend("wei");
                 human_map.insert(players[i], answer);
             } else if (choice == "shu") {
@@ -71,6 +75,10 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
                 for (int j = 0; j < 5; j++)
                     shujiangs << shu_generals.takeFirst();
                 QStringList answer = room->askForGeneral(players[i], shujiangs, QString(), false).split("+");
+                if (answer.size() < 2) {
+                    shujiangs.removeOne(answer.first());
+                    answer.append(shujiangs.at(qrand() % shujiangs.size()));
+                }
                 answer.prepend("shu");
                 human_map.insert(players[i], answer);
             }
