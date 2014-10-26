@@ -1397,16 +1397,16 @@ public:
     }
 
     void doHuoshui(Room *room, ServerPlayer *zoushi, bool set) const{
-        if (set && zoushi->tag["huoshui"].toBool() == false){
-            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi)){
+        if (set && !zoushi->tag["huoshui"].toBool()) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi))
                 room->setPlayerDisableShow(p, "hd", "huoshui");
-            }
+
             zoushi->tag["huoshui"] = true;
         }
-        else if (!set && zoushi->tag["huoshui"].toBool() == true) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi)){
+        else if (!set && zoushi->tag["huoshui"].toBool()) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi))
                 room->removePlayerDisableShow(p, "huoshui");
-            }
+
             zoushi->tag["huoshui"] = false;
         }
     }
