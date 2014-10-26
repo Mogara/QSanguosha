@@ -34,8 +34,9 @@ ClientLogBox::ClientLogBox(QWidget *parent)
 {
     setReadOnly(true);
 
-    QScrollBar *bar = verticalScrollBar();
-    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    verticalScrollBar()->setStyleSheet(style);
+    horizontalScrollBar()->setStyleSheet(style);
 }
 
 void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos,
