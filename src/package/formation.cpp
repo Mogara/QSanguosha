@@ -925,9 +925,8 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         ServerPlayer *hetaihou = ask_who;
-        if (hetaihou && room->askForDiscard(hetaihou, objectName(), 1, 1, true, false, "@zhendu-discard")){
+        if (hetaihou && room->askForDiscard(hetaihou, objectName(), 1, 1, true, false, "@zhendu-discard", true)) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hetaihou->objectName(), player->objectName());
-            room->notifySkillInvoked(player, objectName());
             room->broadcastSkillInvoke(objectName(), hetaihou);
             return true;
         }
@@ -975,17 +974,18 @@ public:
                 return skill_list;
 
             ServerPlayer *current = room->getCurrent();
-            if (current && (current->isAlive() || death.who == current) && current->getPhase() != Player::NotActive){
-                foreach(ServerPlayer *p, room->getAllPlayers())
+            if (current && (current->isAlive() || death.who == current) && current->getPhase() != Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (TriggerSkill::triggerable(p) && death.damage->from == p)
                         room->setPlayerMark(p, objectName(), 1);
+                }
             }
 
             return skill_list;
         }
         else {
-            if (player->getPhase() == Player::NotActive){
-                foreach(ServerPlayer *p, room->getAllPlayers()){
+            if (player->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
                         room->setPlayerMark(p, objectName(), 0);
                         if (p->isAlive())
@@ -1032,8 +1032,8 @@ public:
         if (move.to_place == Player::DrawPileBottom)
             return QStringList();
         int fldfid = -1;
-        foreach(int id, move.card_ids){
-            if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
+        foreach (int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")) {
                 fldfid = id;
                 break;
             }
