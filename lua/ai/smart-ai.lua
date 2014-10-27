@@ -4480,15 +4480,14 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	if self:hasHeavySlashDamage(from, nil, to) then return false end
 	local n = to:getMaxHp()
 
-	if not passive then
-		if to:getMaxHp() > 2 then
-			if to:hasShownSkill("rende") and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then n = math.min(n, to:getMaxHp() - 1) end
-		end
+	if to:getMaxHp() > 2 and to:getPhase() == sgs.Player_Play and to:hasShownSkill("rende") and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then
+		n = math.min(n, to:getMaxHp() - 1)
 	end
 
 	local friends = self:getFriendsNoself(to)
 	local xiangxiang = sgs.findPlayerByShownSkillName("jieyin")
-	if xiangxiang and xiangxiang:isWounded() and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale() then
+	if xiangxiang and xiangxiang:isWounded() and xiangxiang:getPhase() == sgs.Player_Play and xiangxiang:getHandcardNum() >= 2 and not xiangxiang:hasUsed("JieyinCard")
+		and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale() then
 		local need_jieyin = true
 		self:sort(friends, "hp")
 		for _, friend in ipairs(friends) do
