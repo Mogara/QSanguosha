@@ -288,7 +288,8 @@ void QSanSkillButton::setSkill(const Skill *skill) {
         _m_emitActivateSignal = false;
         _m_emitDeactivateSignal = false;
     }
-    else if (freq == Skill::Limited || freq == Skill::NotFrequent) {
+    else if (freq == Skill::Limited || freq == Skill::NotFrequent
+        || ((skill->inherits("WeaponSkill") || skill->inherits("ArmorSkill")) && _m_viewAsSkill != NULL)) {
         setState(QSanButton::S_STATE_DISABLED);
         if (freq == Skill::Limited)
             _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
