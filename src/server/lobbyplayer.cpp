@@ -23,8 +23,6 @@
 #include "json.h"
 #include "room.h"
 #include "engine.h"
-
-//@todo: remove this after the user can sends room config
 #include "settings.h"
 
 using namespace QSanProtocol;
