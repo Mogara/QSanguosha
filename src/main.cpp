@@ -28,6 +28,7 @@
 #include <QTranslator>
 #include <QDateTime>
 #include <QSplashScreen>
+#include <QMessageBox>
 
 #include "server.h"
 #include "settings.h"
@@ -150,7 +151,8 @@ int main(int argc, char *argv[]) {
     showSplashMessage(QSplashScreen::tr("Loading user's configurations..."));
     new Settings;
     Config.init();
-    qApp->setFont(Config.AppFont);
+    if (!noGui)
+        qApp->setFont(Config.AppFont);
 
     showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
     new Engine;
@@ -189,7 +191,8 @@ int main(int argc, char *argv[]) {
     showSplashMessage(QSplashScreen::tr("Initializing audio module..."));
     Audio::init();
 #else
-    QMessageBox::warning(this, QMessageBox::tr("Warning"), QMessageBox::tr("Audio support is disabled when compiled"));
+    if (!noGui)
+        QMessageBox::warning(NULL, QMessageBox::tr("Warning"), QMessageBox::tr("Audio support is disabled when compiled"));
 #endif
 
     showSplashMessage(QSplashScreen::tr("Loading main window..."));
