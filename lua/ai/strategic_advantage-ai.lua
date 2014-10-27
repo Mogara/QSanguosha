@@ -37,7 +37,7 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 	local friends, friends_other = {}, {}
 	local targets = sgs.PlayerList()
 	for _, friend in ipairs(self.friends_noself) do
-		if transferCard:targetFilter(targets, friend, self.player) and not self:needKongcheng(friend, true) and friend:hasShownOneGeneral() then
+		if transferCard:targetFilter(targets, friend, self.player) and not self:needKongcheng(friend, true) then
 			if friend:hasShownOneGeneral() then
 				table.insert(friends, friend)
 			else
@@ -49,8 +49,8 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 
 	local cards = {}
 	local oneJink = self.player:hasSkill("kongcheng")
-	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:isTransferable() and (not isCard("Peach", c, self.player) or #friends == 0) then
+	for _, c in sgs.qlist(self.player:getCards("he")) do
+		if c:isTransferable() and (not isCard("Peach", c, self.player) or #friends > 0) then
 			if not oneJink and isCard("Jink", c, self.player) then
 				oneJink = true
 				continue
