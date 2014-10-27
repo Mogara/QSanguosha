@@ -116,6 +116,9 @@ void LobbyPlayer::createRoomCommand(const QVariant &data)
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
+
+    emit disconnected();
+    deleteLater();
 }
 
 void LobbyPlayer::enterRoomCommand(const QVariant &data)
