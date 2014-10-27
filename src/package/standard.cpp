@@ -126,14 +126,24 @@ void EquipCard::onInstall(ServerPlayer *player) const{
         } else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
+            if (trigger_skill->getViewAsSkill())
+                room->attachSkillToPlayer(player, this->objectName());
         }
     }
 }
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
-    if (Sanguosha->getSkill(this) && Sanguosha->getSkill(this)->inherits("ViewAsSkill"))
-        room->detachSkillFromPlayer(player, this->objectName(), true);
+    const Skill *skill = Sanguosha->getSkill(this);
+    if (skill) {
+        if (skill->inherits("ViewAsSkill")) {
+            room->detachSkillFromPlayer(player, this->objectName(), true);
+        } else if (skill->inherits("TriggerSkill")) {
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            if (trigger_skill->getViewAsSkill())
+                room->detachSkillFromPlayer(player, this->objectName(), true);
+        }
+    }
 }
 
 QString GlobalEffect::getSubtype() const{
