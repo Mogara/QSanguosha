@@ -26,7 +26,7 @@
 #include "settings.h"
 #include "client.h"
 #include "clientplayer.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 #include <QScrollBar>
 #include <QMessageBox>

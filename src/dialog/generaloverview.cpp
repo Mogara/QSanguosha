@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "clientplayer.h"
 #include "generalmodel.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "stylehelper.h"
 
 #include <QHBoxLayout>
