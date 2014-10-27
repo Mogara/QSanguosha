@@ -84,19 +84,31 @@ void Server::cleanupRoom() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
-    Room *new_room = createNewRoom(room->getConfig());
-    foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
-        //@todo: move these two statements
-        //name2objname.remove(player->screenName(), player->objectName());
-        //players.remove(player->objectName());
+    bool someone_stays = false;
+    QList<ServerPlayer *> room_players = room->getPlayers();
+    foreach (ServerPlayer *player, room_players) {
+        if (player->getState() == "online" || player->getState() == "trust") {
+            someone_stays = true;
+            break;
+        }
+    }
 
-        ClientSocket *socket = player->takeSocket();
-        if (socket) {
-            ServerPlayer *new_player = new_room->addSocket(socket);
-            new_player->setObjectName(player->objectName());
-            new_player->setScreenName(player->screenName());
-            new_player->setProperty("avatar", player->property("avatar"));
-            new_player->setOwner(player->isOwner());
+    if (someone_stays) {
+        Room *new_room = createNewRoom(room->getConfig());
+        foreach (ServerPlayer *player, room_players) {
+            ClientSocket *socket = player->takeSocket();
+            if (socket) {
+                ServerPlayer *new_player = new_room->addSocket(socket);
+                new_player->setObjectName(player->objectName());
+                new_player->setScreenName(player->screenName());
+                new_player->setProperty("avatar", player->property("avatar"));
+                new_player->setOwner(player->isOwner());
+            }
+        }
+    } else {
+        foreach (ServerPlayer *player, room_players) {
+            name2objname.remove(player->screenName(), player->objectName());
+            players.remove(player->objectName());
         }
     }
 

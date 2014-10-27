@@ -2301,12 +2301,22 @@ void Room::reportDisconnection() {
     if (player->isOwner()) {
         player->setOwner(false);
         broadcastProperty(player, "owner");
+
+        bool new_owner_found = false;
         foreach (ServerPlayer *p, m_players) {
             if (p->getState() == "online") {
                 p->setOwner(true);
                 broadcastProperty(p, "owner");
+                new_owner_found = true;
                 break;
             }
+        }
+
+        if (!new_owner_found) {
+            if (thread && thread->isRunning())
+                emit game_over(QString());
+            else
+                emit game_over();
         }
     }
 
