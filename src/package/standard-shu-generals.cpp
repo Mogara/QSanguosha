@@ -1184,7 +1184,7 @@ bool FangquanCard::targetFilter(const QList<const Player *> &targets, const Play
 
 void FangquanCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    ServerPlayer *liushan = effect.from, *player = effect.to;
+    ServerPlayer *player = effect.to;
 
     LogMessage log;
     log.type = "#Fangquan";
