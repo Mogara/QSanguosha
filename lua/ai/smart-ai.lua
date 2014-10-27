@@ -4309,7 +4309,7 @@ function SmartAI:evaluateArmor(card, player)
 	local value = 0
 	if player:hasShownSkill("jijiu") and ecard:isRed() then value = value + 0.5 end
 	if player:hasShownSkills("qixi|guidao") and ecard:isBlack() then value = value + 0.5 end
-	for _, askill in sgs.qlist(player:getVisibleSkillList(true)) do
+	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local callback = sgs.ai_armor_value[askill:objectName()]
 		if type(callback) == "function" then
 			return value + (callback(ecard, player, self) or 0)
