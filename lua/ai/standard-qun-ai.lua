@@ -549,6 +549,21 @@ sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
 end
 
 sgs.ai_skill_invoke.weimu = function(self, data)
+	local use = data:toCardUse()
+	if use.card:isKindOf("ImperialOrder") then
+		if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+			local reward = true
+			for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+				if p:hasShownOneGeneral() then
+					reward = false
+					break
+				end
+			end
+			if reward then return true end
+		else
+			return false
+		end
+	end
 	return true
 end
 

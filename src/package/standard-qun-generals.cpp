@@ -552,8 +552,8 @@ public:
         return QStringList(objectName());
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
