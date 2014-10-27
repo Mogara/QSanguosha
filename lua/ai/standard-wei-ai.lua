@@ -141,7 +141,7 @@ sgs.ai_skill_cardask["@guicai-card"] = function(self, data)
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
-		table.insert(cards, 1, sgs.Sanguosah:getCard(id))
+		table.insert(cards, 1, sgs.Sanguosha:getCard(id))
 	end
 	if judge.reason == "tieqi" then
 		local target
