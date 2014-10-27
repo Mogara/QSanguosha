@@ -2629,7 +2629,6 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
 
 	local cardtogivespecial = {}
-	local specialnum = 0
 	local keptslash = 0
 	local friends = {}
 	local cmpByAction = function(a,b)
@@ -2640,31 +2639,31 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 		return a:getNumber() > b:getNumber()
 	end
 
+	local AssistTarget = self:AssistTarget()
+	if AssistTarget (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget) or AssistTarget:getHandcardNum() > 10) then
+		AssistTarget = nil
+	end
+
+	local found
+	local xunyu, huatuo
 	local friends_table = friends_table or self.friends_noself
-	for _, player in ipairs(friends_table) do
+	for i = 1, #friends_table do
+		local player = friends_table[i]
 		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
 		if player:hasShownSkills("keji|qiaobian|shensu") or player:getHp() - player:getHandcardNum() >= 3
 			or (player:isLord() and self:isWeak(player) and self:getEnemyNumBySeat(self.player, player) >= 1) then
 			exclude = false
 		end
 		if self:objectiveLevel(player) <= -2 and not exclude then
+			if AssistTarget and AssistTarget:objectName() == player:objectName() then AssistTarget = true end
+			if player:hasShownSkill("jieming") then xunyu = player end
+			if player:hasShownSkill("jijiu") then huatuo = player end
 			table.insert(friends, player)
 		end
 	end
-
-	local AssistTarget = self:AssistTarget()
-	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget) or AssistTarget:getHandcardNum() > 10) then
-		AssistTarget = nil
-	end
-
-	for _, player in ipairs(friends) do
-		if player:hasShownSkill("jieming") or player:hasShownSkill("jijiu") then
-			specialnum = specialnum + 1
-		end
-	end
-	if specialnum > 1 and #cardtogivespecial == 0 and self.player:hasSkill("rende") and self.player:getPhase() == sgs.Player_Play then
-		local xunyu = sgs.findPlayerByShownSkillName("jieming")
-		local huatuo = sgs.findPlayerByShownSkillName("jijiu")
+	if not found then AssistTarget = nil end
+	
+	if xunyu and huatuo and #cardtogivespecial == 0 and self.player:hasSkill("rende") and self.player:getPhase() == sgs.Player_Play then
 		local no_distance = self.slash_distance_limit
 		local redcardnum = 0
 		for _, acard in ipairs(cards) do
@@ -2831,12 +2830,14 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 		end
 	end
 
-	self:sort(self.enemies, "defense")
-	if #self.enemies > 0 and self.enemies[1]:isKongcheng() and self.enemies[1]:hasShownSkill("kongcheng") then
-		for _, acard in ipairs(cardtogive) do
-			if acard:isKindOf("Lightning") or acard:isKindOf("Collateral") or (acard:isKindOf("Slash") and self.player:getPhase() == sgs.Player_Play)
-				or acard:isKindOf("OffensiveHorse") or acard:isKindOf("Weapon") or acard:isKindOf("AmazingGrace") then
-				return acard, self.enemies[1]
+	if skillname ~= "transfer" then
+		self:sort(self.enemies, "defense")
+		if #self.enemies > 0 and self.enemies[1]:isKongcheng() and self.enemies[1]:hasShownSkill("kongcheng") then
+			for _, acard in ipairs(cardtogive) do
+				if acard:isKindOf("Lightning") or acard:isKindOf("Collateral") or (acard:isKindOf("Slash") and self.player:getPhase() == sgs.Player_Play)
+					or acard:isKindOf("OffensiveHorse") or acard:isKindOf("Weapon") or acard:isKindOf("AmazingGrace") then
+					return acard, self.enemies[1]
+				end
 			end
 		end
 	end

@@ -62,7 +62,7 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 
 	self:sortByUseValue(cards)
 	if #friends > 0 then
-		local card, target = self:getCardNeedPlayer(cards, friends)
+		local card, target = self:getCardNeedPlayer(cards, friends, "transfer")
 		if card and target then
 			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
 			if use.to then use.to:append(target) end
@@ -72,7 +72,7 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 
 	if #friends_other == 0 then return end
 
-	local card, target = self:getCardNeedPlayer(cards, friends_other)
+	local card, target = self:getCardNeedPlayer(cards, friends_other, "transfer")
 	if card and target then
 		use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
 		if use.to then use.to:append(target) end
