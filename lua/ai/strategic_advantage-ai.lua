@@ -223,7 +223,10 @@ sgs.ai_card_intention.BurningCamps = 10
 --Breastplate
 sgs.ai_skill_invoke.Breastplate = true
 
-function sgs.ai_armor_value.Breastplate(player, self)
+function sgs.ai_armor_value.Breastplate(arg1, arg2, arg3)
+	local player = arg3 and arg2 or arg1
+	-- local card = arg3 and arg1
+	-- local self = arg3 or arg2
 	if player:getHp() >= 3 then
 		return 2
 	else
