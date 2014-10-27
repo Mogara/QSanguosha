@@ -2540,7 +2540,7 @@ ServerPlayer *Room::getOwner() const{
 
 void Room::restartCommand(ServerPlayer *player, const QVariant &)
 {
-    player->notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+    player->notify(S_COMMAND_SETUP, getSetupString());
     notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "owner");
 
