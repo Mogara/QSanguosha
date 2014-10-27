@@ -1153,6 +1153,19 @@ void ImperialOrder::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
+class JingFanSkill: public ZeroCardViewAsSkill {
+public:
+    JingFanSkill(): ZeroCardViewAsSkill("JingFan"){
+    }
+
+    virtual const Card *viewAs() const{
+        TransferCard *card = new TransferCard;
+        card->addSubcard(Self->getOffensiveHorse());
+        card->setSkillName("transfer");
+        return card;
+    }
+};
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -1231,6 +1244,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
            << new BladeSkill
            << new JadeSealSkill
            << new BreastplateSkill
+           << new JingFanSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill
            << new HalberdSkill << new HalberdTrigger << new HalberdTargetMod
            << new LureTigerSkill << new LureTigerProhibit

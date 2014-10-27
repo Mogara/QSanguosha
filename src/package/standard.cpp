@@ -446,13 +446,13 @@ Horse::Horse(Suit suit, int number, int correct)
 int Horse::getCorrect() const{
     return correct;
 }
-
+/*
 void Horse::onInstall(ServerPlayer *) const{
 }
 
 void Horse::onUninstall(ServerPlayer *) const{
 }
-
+*/
 QString Horse::getCommonEffectName() const{
     return "horse";
 }

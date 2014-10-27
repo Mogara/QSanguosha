@@ -170,8 +170,8 @@ public:
     int getCorrect() const;
 
     virtual Location location() const;
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
+    /*virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;*/
 
     virtual QString getCommonEffectName() const;
 
