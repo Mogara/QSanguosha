@@ -24,10 +24,6 @@
 #include "clientstruct.h"
 #include "room.h"
 
-//@todo: Remove this after each room has independent configuration.
-#include "settings.h"
-#include "engine.h"
-
 using namespace QSanProtocol;
 
 void Server::initRoomFunctions()
