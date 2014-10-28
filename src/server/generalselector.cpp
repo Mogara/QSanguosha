@@ -44,8 +44,7 @@ GeneralSelector::GeneralSelector() {
 }
 
 QStringList GeneralSelector::selectGenerals(ServerPlayer *player, const QStringList &candidates) {
-    if (private_pair_value_table[player].isEmpty())
-        calculatePairValues(player, candidates);
+    calculatePairValues(player, candidates);
 
     QHash<QString, int> my_hash = private_pair_value_table[player];
 
@@ -65,6 +64,8 @@ QStringList GeneralSelector::selectGenerals(ServerPlayer *player, const QStringL
     QStringList pair = best_pair.split("+");
 
     Q_ASSERT(pair.size() == 2);
+
+    private_pair_value_table.remove(player);
 
     return pair;
 }
