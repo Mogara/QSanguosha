@@ -354,7 +354,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 			if target:getMark("@gale") > 0 then damage = damage + 1 end
 		end
 		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
-		if damage + (dmg or 0) >= target:getHp() then
+		if damage + (dmg or 0) >= target:getHp() and self:isFriend(from) then
 			newvalue = newvalue - 2
 			if self:isEnemy(target) then kills = kills + 1 end
 			if target:objectName() == self.player:objectName() and #self.friends_noself == 0 and peach_num < damage + (dmg or 0) then newvalue = newvalue - 100 end
