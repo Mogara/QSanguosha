@@ -267,6 +267,7 @@ void Client::restart()
     foreach (const ClientPlayer *player, players) {
         delete player;
     }
+    Self = NULL;
     players.clear();
 
     notifyServer(S_COMMAND_SIGNUP);
