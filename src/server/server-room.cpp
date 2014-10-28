@@ -93,6 +93,11 @@ void Server::cleanupRoom() {
         }
     }
 
+    foreach (ServerPlayer *player, room_players) {
+        name2objname.remove(player->screenName(), player->objectName());
+        players.remove(player->objectName());
+    }
+
     if (someone_stays) {
         Room *new_room = createNewRoom(room->getConfig());
         foreach (ServerPlayer *player, room_players) {
@@ -104,11 +109,6 @@ void Server::cleanupRoom() {
                 new_player->setProperty("avatar", player->property("avatar"));
                 new_player->setOwner(player->isOwner());
             }
-        }
-    } else {
-        foreach (ServerPlayer *player, room_players) {
-            name2objname.remove(player->screenName(), player->objectName());
-            players.remove(player->objectName());
         }
     }
 
