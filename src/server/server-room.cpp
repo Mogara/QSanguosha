@@ -108,6 +108,7 @@ void Server::cleanupRoom() {
                 new_player->setScreenName(player->screenName());
                 new_player->setProperty("avatar", player->property("avatar"));
                 new_player->setOwner(player->isOwner());
+                new_player->setState("absent");
             }
         }
     }

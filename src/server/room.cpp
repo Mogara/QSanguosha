@@ -2554,6 +2554,9 @@ void Room::restartCommand(ServerPlayer *player, const QVariant &)
     notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "owner");
 
+    player->setState("online");
+    broadcastProperty(player, "state");
+
     foreach (ServerPlayer *p, m_players) {
         if (p != player)
             p->introduceTo(player);
@@ -2581,7 +2584,10 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     }
 
     // introduce the new joined player to existing players except himself
-    player->introduceTo(NULL);
+    foreach (ServerPlayer *p, m_players) {
+        if (p != player && p->getState() != "absent")
+            player->introduceTo(p);
+    }
 
     if (!is_robot) {
         QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>").arg(screen_name);
