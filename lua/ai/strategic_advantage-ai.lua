@@ -178,31 +178,36 @@ function SmartAI:useCardBurningCamps(card, use)
 	if not card:isAvailable(self.player) then return end
 
 	local player = self.room:nextPlayer(self.player)
-	if self:isFriendWith(player) then
-		return
-	else
-		local enemies = player:getFormation()
-		local shouldUse
-		for _, enemy in sgs.qlist(enemies) do
-			if not self:hasTrickEffective(card, enemy, self.player) then continue end
-			enemy = findPlayerByObjectName(enemy:objectName())
-			local damage = {}
-			damage.from = self.player
-			damage.to = enemy
-			damage.nature = sgs.DamageStruct_Fire
-			damage.damage = 1
-			if self:damageIsEffective_(damage) then
-				if not enemy:isChained() or self:isGoodChainTarget_(damage) then
-					shouldUse = true
-				else
-					shouldUse = false
-					return
-				end
+	if self:isFriendWith(player) then return end
+	
+	local players = player:getFormation()
+	if players:isEmpty() then return end
+	local shouldUse
+	for i = 0 , players:length() - 1 do
+		player = findPlayerByObjectName(players:at(i):objectName())
+		if not self:hasTrickEffective(card, player, self.player) then
+			if i == 0 then return end
+			continue
+		end
+		local damage = {}
+		damage.from = self.player
+		damage.to = player
+		damage.nature = sgs.DamageStruct_Fire
+		damage.damage = 1
+		if self:damageIsEffective_(damage) then
+			if player:isChained() and self:isGoodChainTarget_(damage) then
+				shouldUse = true
+			elseif self:objectiveLevel(player) > 3 or self:evaluateKingdom(player) == "unknown" then
+				shouldUse = true
+			else
+				return
 			end
+		elseif i == 0 then
+			return
 		end
-		if shouldUse then
-			use.card = card
-		end
+	end
+	if shouldUse then
+		use.card = card
 	end
 end
 
