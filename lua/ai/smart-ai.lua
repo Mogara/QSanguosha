@@ -4459,6 +4459,7 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:isKindOf("Treasure") then
+		if self.player:getPile("wooden_ox"):length() > 0 then return end
 		-- @todo
 		use.card = card
 	elseif self.lua_ai:useCard(card) then

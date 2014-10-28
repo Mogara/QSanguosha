@@ -818,8 +818,8 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	end
 	local id = card_ids[1]
 
-	local card, friend = self:getCardNeedPlayer(cards)
-	if card and friend and table.contains(self.friends_noself, friend) then return friend, card:getId() end
+	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)
+	if card and friend then return friend, card:getId() end
 	if #self.friends_noself > 0 then
 		self:sort(self.friends_noself, "handcard")
 		for _, afriend in ipairs(self.friends_noself) do

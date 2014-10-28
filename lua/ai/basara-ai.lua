@@ -18,7 +18,9 @@
   QSanguosha-Rara
 *********************************************************************]]
 
-sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
+sgs.ai_skill_invoke["userdefine:halfmaxhp"] = function(self)
+	return not self:needKongcheng(self.player, true) or self.player:getPhase() == sgs.Player_Play
+end
 
 sgs.ai_skill_invoke["userdefine:changetolord"] = function(self)
 	return math.random() < 0.8
