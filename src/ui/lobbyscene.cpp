@@ -37,6 +37,8 @@ int LobbyScene::SCENE_MARGIN_TOP = 30;
 LobbyScene::LobbyScene(QMainWindow *parent) :
     QGraphicsScene(parent), currentPage(0), client(ClientInstance)
 {
+    setItemIndexMethod(NoIndex);
+
     //chat
     chatBox = new QTextEdit;
     chatBox->setObjectName("chat_log");
