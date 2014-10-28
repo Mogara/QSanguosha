@@ -154,6 +154,7 @@ private slots:
     void enterLobby();
     void gotoScene(QGraphicsScene *scene);
     void exitScene();
+    void restartGame();
     void startGameInAnotherInstance();
     void changeBackground();
 

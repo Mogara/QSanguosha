@@ -750,7 +750,7 @@ void MainWindow::enterRoom() {
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), ClientInstance, SLOT(restart()));
+    connect(room_scene, SIGNAL(restart()), this, SLOT(restartGame()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(exitScene()));
 
     gotoScene(room_scene);
@@ -834,6 +834,15 @@ void MainWindow::exitScene() {
 
     delete systray;
     systray = NULL;
+}
+
+void MainWindow::restartGame()
+{
+    scene->deleteLater();
+    view->setScene(NULL);
+    scene = NULL;
+
+    ClientInstance->restart();
 }
 
 void MainWindow::startGameInAnotherInstance() {
