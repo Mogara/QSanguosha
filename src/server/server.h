@@ -96,6 +96,7 @@ protected:
     static QHash<QSanProtocol::CommandType, RoomFunction> roomFunctions;
 
     Room *current;
+    QMutex currentRoomMutex;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;

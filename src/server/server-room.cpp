@@ -47,13 +47,12 @@ void Server::connectToLobby()
 Room *Server::createNewRoom(const RoomConfig &config)
 {
     Room *new_room = new Room(this, config);
-    current = new_room;
-    rooms.insert(current);
+    rooms.insert(new_room);
 
-    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
-    connect(current, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
+    connect(new_room, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
+    connect(new_room, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
 
-    return current;
+    return new_room;
 }
 
 Room *Server::getRoom(int room_id)
@@ -114,8 +113,11 @@ void Server::cleanupRoom() {
     }
 
     room->deleteLater();
+
+    currentRoomMutex.lock();
     if (current == room)
         current = NULL;
+    currentRoomMutex.unlock();
 }
 
 void Server::checkVersion(const QVariant &server_version)

@@ -192,12 +192,15 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
     }
 
     if (role == RoomRole) {
+        currentRoomMutex.lock();
         if (current == NULL || current->isFull() || current->isFinished())
-            createNewRoom(SettingsInstance);
+            current = createNewRoom(SettingsInstance);
         notifyClient(socket, S_COMMAND_SETUP, current->getSetupString());
 
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);
+        currentRoomMutex.unlock();
+
         emit newPlayer(player);
 
     } else {
