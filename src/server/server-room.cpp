@@ -114,6 +114,8 @@ void Server::cleanupRoom() {
     }
 
     room->deleteLater();
+    if (current == room)
+        current = NULL;
 }
 
 void Server::checkVersion(const QVariant &server_version)
