@@ -2655,7 +2655,7 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 			exclude = false
 		end
 		if self:objectiveLevel(player) <= -2 and not exclude then
-			if AssistTarget and AssistTarget:objectName() == player:objectName() then AssistTarget = true end
+			if AssistTarget and AssistTarget:objectName() == player:objectName() then AssistTarget = player end
 			if player:hasShownSkill("jieming") then xunyu = player end
 			if player:hasShownSkill("jijiu") then huatuo = player end
 			table.insert(friends, player)
