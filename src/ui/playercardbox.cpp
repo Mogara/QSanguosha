@@ -263,11 +263,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
     const int min = qMin(maxCardsInOneRow, maxCardNumberInOneRow / 2);
     const int maxWidth = min * cardWidth + intervalBetweenCards * (min - 1);
     for(int row = 0; row < rows; ++ row) {
-        int count = 0;
-        if (row != rows - 1)
-            count = maxCardNumberInOneRow;
-        else
-            count = areaItems.size();
+        int count = qMin(maxCardNumberInOneRow, areaItems.size());
         double step = 0;
         if (count > 1) {
             step = qMin((double)cardWidth + intervalBetweenCards,
