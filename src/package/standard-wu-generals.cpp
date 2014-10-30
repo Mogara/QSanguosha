@@ -643,10 +643,9 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
         if (player == NULL) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-        if (player->isAlive() && damage.transfer && damage.transfer_reason == "tianxiang") {
+        if (player->isAlive() && damage.transfer && damage.transfer_reason == "tianxiang" && !damage.chain)
             player->drawCards(player->getLostHp());
-            player->removeMark("TianxiangTarget");
-        }
+
         return QStringList();
     }
 };
