@@ -476,7 +476,7 @@ sgs.ai_view_as.kanpo = function(card, player, card_place)
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
 	if card_place == sgs.Player_PlaceHand then
-		if card:isBlack() then
+		if card:isBlack() and not card:isKindOf("HegNullification") then
 			return ("nullification:kanpo[%s:%s]=%d%s"):format(suit, number, card_id, "&kanpo")
 		end
 	end
