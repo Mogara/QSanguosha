@@ -613,7 +613,7 @@ end
 --ThreatenEmperor
 function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
-	if self.player:getHandcardNum() < 2 then return end
+	if self.player:getCardCount(true) < 2 then return end
 	use.card = card
 end
 sgs.ai_use_value.ThreatenEmperor = 8
@@ -630,8 +630,8 @@ sgs.ai_nullification.ThreatenEmperor = function(self, card, from, to, positive)
 end
 
 sgs.ai_skill_cardask["@threaten_emperor"] = function(self)
-	if self.player:isKongcheng() then return "." end
-	local cards = sgs.QList2Table(self.player:getHandcards())
+	if self.player:isNude() then return "." end
+	local cards = sgs.QList2Table(self.player:getCards("he"))
 	self:sortByKeepValue(cards)
 	return cards[1]:getEffectiveId()
 end
