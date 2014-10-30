@@ -264,11 +264,18 @@ void Client::signup() {
 void Client::restart()
 {
     m_isGameOver = false;
+
     foreach (const ClientPlayer *player, players) {
         delete player;
     }
     Self = NULL;
     players.clear();
+
+    if (recorder) {
+        recorder->deleteLater();
+        recorder = new Recorder(this);
+        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
+    }
 
     notifyServer(S_COMMAND_SIGNUP);
 }
