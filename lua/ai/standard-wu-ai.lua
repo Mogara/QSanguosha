@@ -1435,6 +1435,7 @@ function sgs.ai_skill_invoke.buqu(self, data)
 end
 
 sgs.ai_skill_invoke.haoshi = function(self, data)
+	self.haoshi_target = nil
 	local extra = 0
 	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1 }
 	for skill_name, n in ipairs(draw_skills) do
@@ -1466,7 +1467,7 @@ end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 	local target = self.haoshi_target
-	if not self.haoshi_target then
+	if not self.haoshi_target or self.haoshi_target:isDead() then
 		local otherPlayers = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 		self:sort(otherPlayers, "handcard")
 		target = otherPlayers[1]
