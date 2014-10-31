@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QMutex>
 
 class Room;
 class ServerPlayer;
