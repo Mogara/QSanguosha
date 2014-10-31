@@ -5091,7 +5091,7 @@ function SmartAI:willShowForAttack()
 		end
 	end
 
-	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2+1,3) and not self.player:hasShownOneGeneral() then
 		if e < f or eAtt <= 0 then
 			return false
 		end
@@ -5117,7 +5117,7 @@ function SmartAI:willShowForDefence()
 		end
 	end
 
-	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2, 3) and not self.player:hasShownOneGeneral() then
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2+1, 3) and not self.player:hasShownOneGeneral() then
 		if f < 2 or not self:isWeak() then
 			return false
 		end

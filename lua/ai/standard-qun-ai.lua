@@ -97,6 +97,7 @@ end
 sgs.ai_skill_cardask["@multi-jink"] = sgs.ai_skill_cardask["@multi-jink-start"]
 
 sgs.ai_skill_invoke.wushuang = function(self, data)
+	if not self:willShowForAttack() then return false end 
 	local use = data:toCardUse()
 	if use.card then
 		if use.card:isKindOf("Duel") then
@@ -549,6 +550,7 @@ sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
 end
 
 sgs.ai_skill_invoke.weimu = function(self, data)
+	if not self:willShowForDefence() then return false end 
 	local use = data:toCardUse()
 	if use.card:isKindOf("ImperialOrder") then
 		if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then

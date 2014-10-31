@@ -52,7 +52,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
 	local firstShow = ("luanji|qianhuan"):split("|")
-	local bothShow = ("luanji+shuangxiong|luanji+huoshui"):split("|")
+	local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
 	local needShowForAttack = ("chuanxin|suishi"):split("|")
 	local needShowForLead = ("yicheng|qianhuan"):split("|")
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
@@ -93,8 +93,18 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 
-	if self.player:getMark("CompanionEffect") > 0 or (self.player:getMark("HalfMaxHpLeft") > 0 and self:willShowForDefence()) then
-		if self:isWeak() then
+	if self.player:getMark("CompanionEffect") > 0 then
+		if self:isWeak() or (shown > 0 and eAtt > 0 and e - f < 3) then
+			if canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy then
+				return "GameRule_AskForGeneralShowDeputy"
+			end
+		end
+	end
+	
+	if self.player:getMark("HalfMaxHpLeft") > 0 then
+		if self:isWeak() and self:willShowForDefence() then
 			if canShowHead then
 				return "GameRule_AskForGeneralShowHead"
 			elseif canShowDeputy then
@@ -103,17 +113,19 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 
-	for _, skill in ipairs(bothShow) do
-		if self.player:hasSkills(skill) then
-			if canShowHead then
-				return "GameRule_AskForGeneralShowHead"
-			elseif canShowDeputy then
-				return "GameRule_AskForGeneralShowDeputy"
+	if ((sgs.GetConfig("RewardTheFirstShowingPlayer", false) and shown == 0) or self:willShowForAttack()) and not self:willSkipPlayPhase() then
+		for _, skill in ipairs(bothShow) do
+			if self.player:hasSkills(skill) then
+				if canShowHead then
+					return "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then
+					return "GameRule_AskForGeneralShowDeputy"
+				end
 			end
 		end
-	end
-
-	if shown == 0 and self.player:getJudgingArea():isEmpty() then
+	end	
+		
+	if sgs.GetConfig("RewardTheFirstShowingPlayer", false) and shown == 0 and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(firstShow) do
 			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
@@ -125,7 +137,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 
-	if shown > 0 and eAtt > 0 and e - f < 3 and self.player:getJudgingArea():isEmpty() then
+	if shown > 0 and eAtt > 0 and e - f < 3 and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(needShowForAttack) do
 			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
@@ -162,9 +174,9 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	end
 
 	for _, skill in ipairs(followShow) do
-		if self.player:hasSkill(skill) then
+		if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 			for _, skill in ipairs(needShowForLead) do
-				if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
+				if self.player:hasSkill(skill)  then
 					if self.player:inHeadSkills(skill) and canShowHead then
 						return "GameRule_AskForGeneralShowHead"
 					elseif canShowDeputy then
@@ -253,22 +265,7 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 				elseif canShowDeputy then return "GameRule_AskForGeneralShowDeputy" end
 			end
 		end
-		if sgs.GetConfig("RewardTheFirstShowingPlayer", false) then
-			local reward = true
-			for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-				if p:hasShownOneGeneral() then
-					reward = false
-					break
-				end
-			end
-			if reward then
-				if math.random(1, 2) == 1 and canShowHead then
-					return "GameRule_AskForGeneralShowHead"
-				elseif canShowDeputy then
-					return "GameRule_AskForGeneralShowDeputy"
-				end
-			end
-		end
+
 	end
 	return choice
 end
