@@ -139,7 +139,7 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 			value = value + self:evaluateArmor(equip)
 			if self:needToThrowArmor() then value = value - 5
 			elseif equip:isKindOf("Breastplate") and self.player:getHp() <= 1 then value = value + 99
-			elseif equip:isKindOf("PeaceSpell") then value = value + 99
+			elseif equip:isKindOf("PeaceSpell") then value = value - 2
 			end
 		elseif equip:isKindOf("OffensiveHorse") then value = value + 2.5
 		elseif equip:isKindOf("DefensiveHorse") then value = value + 5
