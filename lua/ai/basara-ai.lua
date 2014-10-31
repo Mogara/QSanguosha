@@ -56,7 +56,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	local needShowForAttack = ("chuanxin|suishi"):split("|")
 	local needShowForLead = ("yicheng|qianhuan"):split("|")
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
-	local followShow = ("qianhuan|duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
+	local followShow = ("qianhuan|duoshi|rende|shushen|cunsi|jieyin|xiongyi|shouyue|hongfa"):split("|")
 
 	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -93,8 +93,18 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 
+	if self.player:hasSkill("guixiu") and not self.player:hasShownSkill("guixiu") then
+		if self:isWeak() or (shown > 0 and eAtt > 0 and e - f < 3 and not self:willSkipPlayPhase() ) then
+			if self.player:inHeadSkills("guixiu") and canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy then
+				return "GameRule_AskForGeneralShowDeputy"
+			end
+		end
+	end	
+	
 	if self.player:getMark("CompanionEffect") > 0 then
-		if self:isWeak() or (shown > 0 and eAtt > 0 and e - f < 3) then
+		if self:isWeak() or (shown > 0 and eAtt > 0 and e - f < 3 and not self:willSkipPlayPhase()) then
 			if canShowHead then
 				return "GameRule_AskForGeneralShowHead"
 			elseif canShowDeputy then
