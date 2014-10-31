@@ -373,6 +373,7 @@ class ServerPlayer: public Player {
 public:
     explicit ServerPlayer(Room *room);
 
+    QString objectName() const;
     void kick();
     void unicast(const char *message);
     void drawCard(const Card *card);
