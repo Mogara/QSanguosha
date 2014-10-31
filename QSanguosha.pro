@@ -239,17 +239,8 @@ FORMS += \
     src/dialog/cardoverview.ui \
     src/dialog/configdialog.ui \
     src/dialog/connectiondialog.ui \
-    src/dialog/generaloverview.ui
-
-win32 {
-    FORMS += src/dialog/mainwindow.ui
-}
-else: android {
-    FORMS += src/dialog/mainwindow.ui
-}
-else {
-    FORMS += src/dialog/mainwindow_nonwin.ui
-}
+    src/dialog/generaloverview.ui \
+    src/dialog/mainwindow.ui
 
 INCLUDEPATH += include
 INCLUDEPATH += src/client

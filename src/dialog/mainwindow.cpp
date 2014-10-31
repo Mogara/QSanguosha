@@ -26,11 +26,7 @@
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
-#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
 #include "ui_mainwindow.h"
-#else
-#include "ui_mainwindow_nonwin.h"
-#endif
 #include "rule-summary.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
@@ -189,7 +185,6 @@ MainWindow::MainWindow(QWidget *parent)
         start_scene->addButton(action);
 
 #if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
-    ui->menuSumMenu->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuGame->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuView->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuOptions->setAttribute(Qt::WA_TranslucentBackground);
@@ -212,7 +207,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 #if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
     menu = new QPushButton(this);
-    menu->setMenu(ui->menuSumMenu);
+    QMenu *sumMenu = new QMenu(menu);
+    sumMenu->addActions(menuBar()->actions());
+    menu->setMenu(sumMenu);
     menu->setProperty("control", true);
     StyleHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
     menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
@@ -250,7 +247,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuBar()->hide();
 #elif defined(Q_OS_ANDROID)
-    ui->menuSumMenu->removeAction(ui->menuView->menuAction());
+    menuBar()->removeAction(ui->menuView->menuAction());
 #endif
     repaintButtons();
 
