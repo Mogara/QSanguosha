@@ -1171,7 +1171,7 @@ function SmartAI:getDynamicUsePriority(card)
 	elseif card:isKindOf("ArcheryAttack") and self.player:hasSkill("luanji") then
 		value = value + 5.5
 	elseif card:isKindOf("Duel") and self.player:hasSkill("shuangxiong") then
-		value = value + 6.2
+		value = value + 6.3
 	elseif card:isKindOf("WendaoCard") and self.player:hasShownSkills("wendao+hongfa") and not self.player:getPile("heavenly_army"):isEmpty()
 		and self.player:getArmor() and self.player:getArmor():objectName() == "PeaceSpell" then
 		value = value + 8

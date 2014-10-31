@@ -391,8 +391,6 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 	self:useTrickCard(duel, dummy_use)
 
 	if (self.player:getHandcardNum() >= 3 and dummy_use.card) then
-		self.player:setFlags("ai_shuangxiong")
-		sgs.ai_use_priority.Duel = 9.1
 		return true
 	end
 	return false
