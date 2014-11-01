@@ -173,7 +173,8 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	self:sort(self.enemies, "defense")
 	local useAll = false
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() == 1 and not enemy:hasArmorEffect("EightDiagram") and self.player:distanceTo(enemy) <= self.player:getAttackRange()  then
+		if enemy:getHp() == 1 and not enemy:hasArmorEffect("EightDiagram") and self.player:distanceTo(enemy) <= self.player:getAttackRange() and self:isWeak(enemy)
+			and getCardsNum("Jink", enemy, self.player) + getCardsNum("Peach", enemy, self.player) + getCardsNum("Analeptic", enemy, self.player) == 0 then
 			useAll = true
 			break
 		end
@@ -542,7 +543,7 @@ function sgs.ai_slash_prohibit.xiangle(self, from, to, card)
 		jink_num = self:getCardsNum("Jink")
 	else
 		slash_num = getCardsNum("Slash", from, self.player)
-		analeptic_num = getCardsNum("Analpetic", from, self.player)
+		analeptic_num = getCardsNum("Analeptic", from, self.player)
 		jink_num = getCardsNum("Jink", from, self.player)
 	end
 	if card then

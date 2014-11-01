@@ -332,8 +332,9 @@ luanji_skill.getTurnUseCard = function(self)
 		self:sortByKeepValue(cards)
 		local useAll = false
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine")  then
-			useAll = true
+			if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine") and not self:hasEightDiagramEffect(enemy) and self:damageIsEffective(enemy, nil, self.player)
+				and self:isWeak(enemy) and getCardsNum("Jink", enemy, self.player) + getCardsNum("Peach", enemy, self.player) + getCardsNum("Analeptic", enemy, self.player) == 0 then
+				useAll = true
 			end
 		end
 		for _, fcard in ipairs(cards) do
