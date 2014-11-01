@@ -964,15 +964,19 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage) {
         return;
     QString card_pattern = usage[0].toString();
     _m_roomState.setCurrentCardUsePattern(card_pattern);
-    QStringList texts = usage[1].toString().split(":");
+    QString textsString = usage[1].toString();
+    QStringList texts = textsString.split(":");
     int index = -1;
     if (usage.size() >= 4 && JsonUtils::isNumber(usage[3]) && usage[3].toInt() > 0)
         index = usage[3].toInt();
 
-    if (texts.isEmpty())
+    if (texts.isEmpty()) {
+        _m_roomState.setCurrentCardResponsePrompt(QString());
         return;
-    else
-        setPromptList(texts);
+    } else {
+         setPromptList(texts);
+        _m_roomState.setCurrentCardResponsePrompt(textsString);
+    }
 
     if (card_pattern.endsWith("!"))
         m_isDiscardActionRefusable = false;

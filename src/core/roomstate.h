@@ -31,6 +31,7 @@
 
 class RoomState {
 public:
+
     inline RoomState(bool isClient) { m_isClient = isClient; }
     ~RoomState();
     inline bool isClient() const{ return m_isClient; }
@@ -41,6 +42,16 @@ public:
     inline Player *getCurrentPlayer() const{ return m_currentPlayer; }
     inline CardUseStruct::CardUseReason getCurrentCardUseReason() const{ return m_currentCardUseReason; }
     inline void setCurrentCardUseReason(CardUseStruct::CardUseReason reason) { m_currentCardUseReason = reason; }
+
+    inline QString getCurrentCardResponsePrompt() const
+    {
+        return m_currentCardResponsePrompt;
+    }
+
+    inline void setCurrentCardResponsePrompt(const QString &prompt)
+    {
+        m_currentCardResponsePrompt = prompt;
+    }
 
     // Update a card in the room.
     // @param cardId
@@ -58,6 +69,7 @@ protected:
     Player *m_currentPlayer;
     QString m_currentCardUsePattern;
     CardUseStruct::CardUseReason m_currentCardUseReason;
+    QString m_currentCardResponsePrompt;
 };
 
 #endif

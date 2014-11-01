@@ -13,7 +13,7 @@ return {
 	["#HalberdUse"] = "%from 发动了【<font color=\"yellow\"><b>方天画戟</b></font>】效果",
 	["#HalberdNullified"] = "由于【%arg】的效果，%from 对 %to 使用的【%arg2】无效",
 	["@halberd_extra_targets"] = "你可以发动【方天画戟】为此【杀】选择额外目标",
-	["@halberd"] = "你发动了【方天画戟】，请选择本次使用【杀】的目标",
+	["@Halberd"] = "你发动了【方天画戟】，请选择本次使用【杀】的目标",
 
 	["Breastplate"] = "护心镜",
 	[":Breastplate"] = "装备牌·防具\n\n技能：每当你受到伤害时，若此伤害不小于你的体力值，你可以将此牌从装备区置入弃牌堆，防止此伤害。",

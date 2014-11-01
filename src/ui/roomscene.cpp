@@ -2415,9 +2415,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
-                if (newStatus == Client::RespondingUse)
+                if (newStatus == Client::RespondingUse) {
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
-                else if (newStatus == Client::Responding || rx.exactMatch(pattern))
+                } else if (newStatus == Client::Responding || rx.exactMatch(pattern))
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             } else if (newStatus == Client::Playing) {
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
@@ -2460,6 +2460,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         case Client::AskForCardChosen: {
             playerCardBox->clear();
             break;
+        }
+        case Client::RespondingUse: {
+            QRegExp promptRegExp("@@?([_A-Za-z]+)");
+            QString prompt = Sanguosha->currentRoomState()->getCurrentCardResponsePrompt();
+            if (promptRegExp.exactMatch(prompt))
+                dashboard->highlightEquip(promptRegExp.capturedTexts().at(1), false);
         }
         default:
             break;
@@ -2523,6 +2529,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 response_skill->setRequest(Card::MethodUse);
             else
                 response_skill->setRequest(Card::MethodResponse);
+
+            QRegExp promptRegExp("@@?([_A-Za-z]+)");
+            QString prompt = Sanguosha->currentRoomState()->getCurrentCardResponsePrompt();
+            if (promptRegExp.exactMatch(prompt))
+                dashboard->highlightEquip(promptRegExp.capturedTexts().at(1), true);
+
             dashboard->startPending(response_skill);
             if (Config.EnableIntellectualSelection)
                 dashboard->selectOnlyCard();

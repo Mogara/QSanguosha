@@ -787,8 +787,7 @@ void Dashboard::_onEquipSelectChanged() {
                 break;
             }
         }
-    }
-    else {
+    } else {
         CardItem *equip = qobject_cast<CardItem *>(sender());
         // Do not remove this assertion. If equip is NULL here, some other
         // sources that could select equip has not been considered and must

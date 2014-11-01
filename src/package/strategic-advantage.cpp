@@ -104,7 +104,7 @@ const Card *HalberdCard::validate(CardUseStruct &card_use) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
-    bool use = room->askForUseCard(player, "slash", "@halberd");
+    bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
@@ -118,7 +118,7 @@ const Card *HalberdCard::validateInResponse(ServerPlayer *player) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
-    bool use = room->askForUseCard(player, "slash", "@halberd");
+    bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
@@ -132,23 +132,31 @@ void HalberdCard::onUse(Room *, const CardUseStruct &) const{
     // do nothing
 }
 
-class HalberdSkill: public ZeroCardViewAsSkill {
+class HalberdSkill: public ZeroCardViewAsSkill
+{
 public:
-    HalberdSkill(): ZeroCardViewAsSkill("Halberd") {
+    HalberdSkill(): ZeroCardViewAsSkill("Halberd")
+    {
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
         return !player->hasFlag("Global_HalberdFailed")
             && Slash::IsAvailable(player) && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return !player->hasFlag("Global_HalberdFailed") && !player->hasFlag("slashDisableExtraTarget")
-            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-            && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return !player->hasFlag("Global_HalberdFailed")
+                && !player->hasFlag("slashDisableExtraTarget")
+                && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+                && pattern == "slash"
+                && player->getMark("Equips_Nullified_to_Yourself") == 0
+                && !player->hasFlag("HalberdUse");
     }
 
-    virtual const Card *viewAs() const{
+    virtual const Card *viewAs() const
+    {
         return new HalberdCard;
     }
 };
