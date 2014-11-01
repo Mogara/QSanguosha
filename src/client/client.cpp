@@ -264,6 +264,12 @@ void Client::signup() {
 void Client::restart()
 {
     m_isGameOver = false;
+    m_isDiscardActionRefusable = true;
+    status = NotActive;
+    alive_count = 1;
+    swap_pile = 0;
+    discarded_list.clear();
+    discard_num = 0;
 
     foreach (const ClientPlayer *player, players) {
         delete player;
