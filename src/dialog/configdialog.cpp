@@ -80,7 +80,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->superDragCheckBox->setChecked(Config.EnableSuperDrag);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
-    ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
+    ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshow);
     ui->bubbleChatBoxKeepSpinBox->setValue(Config.BubbleChatBoxKeepSeconds);
     ui->ignoreChangingSkinCheckBox->setChecked(Config.IgnoreOthersSwitchesOfSkin);
 
@@ -227,9 +227,9 @@ void ConfigDialog::saveConfig() {
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
 
-    Config.EnableAutoPreshowInConsoleMode = ui->autoPreshowCheckBox->isChecked();
+    Config.EnableAutoPreshow = ui->autoPreshowCheckBox->isChecked();
     Config.setValue("EnableAutoPreshowInConsoleMode",
-                    Config.EnableAutoPreshowInConsoleMode);
+                    Config.EnableAutoPreshow);
 
     Config.BubbleChatBoxKeepSeconds = ui->bubbleChatBoxKeepSpinBox->value();
     Config.setValue("BubbleChatBoxKeepSeconds", Config.BubbleChatBoxKeepSeconds);

@@ -146,7 +146,7 @@ void Settings::init() {
     NetworkOnly = value("NetworkOnly", false).toBool();
     RecordSavePaths = value("RecordSavePaths", "records/").toString();
 
-    EnableAutoPreshowInConsoleMode = value("EnableAutoPreshowInConsoleMode", false).toBool();
+    EnableAutoPreshow = value("EnableAutoPreshowInConsoleMode", false).toBool();
 
     BubbleChatBoxKeepSeconds = value("BubbleChatBoxKeepSeconds", 2).toInt();
 

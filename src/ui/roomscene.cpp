@@ -517,21 +517,13 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     }
     case S_GAME_EVENT_UPDATE_PRESHOW: {
         //Q_ASSERT(arg[1].isObject());
-        bool in_console_mode = true;
-        foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {
-            if (player == Self) continue;
-            if (player->getState() != "robot") {
-                in_console_mode = false;
-                break;
-            }
-        }
         bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
         JsonObject preshow_map = arg[1].value<JsonObject>();
         QList<QString> skill_names = preshow_map.keys();
         foreach (const QString &skill, skill_names) {
             bool showed = preshow_map[skill].toBool();
 
-            if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available){
+            if (Config.EnableAutoPreshow && auto_preshow_available){
                 const Skill *s = Sanguosha->getSkill(skill);
                 if (s != NULL && s->canPreshow())
                     ClientInstance->preshow(skill, true);

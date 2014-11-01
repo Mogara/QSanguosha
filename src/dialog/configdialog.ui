@@ -45,7 +45,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="displayTab">
        <attribute name="title">
@@ -255,7 +255,7 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>441</width>
+           <width>446</width>
            <height>141</height>
           </rect>
          </property>
@@ -644,7 +644,7 @@
            <item>
             <widget class="QCheckBox" name="autoPreshowCheckBox">
              <property name="text">
-              <string>Enable auto preshow in console mode</string>
+              <string>Enable auto preshow</string>
              </property>
             </widget>
            </item>
