@@ -4310,23 +4310,26 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         if (player->isOffline()) continue;
         JsonArray arg;
         arg << moveId;
-        for (int i = 0; i < cards_moves.size(); i++) {
-            cards_moves[i].open = forceVisible || cards_moves[i].isRelevant(player)
+        int move_num = cards_moves.size();
+        for (int i = 0; i < move_num; i++) {
+            CardsMoveStruct &cards_move = cards_moves[i];
+            cards_move.open = forceVisible || cards_move.isRelevant(player)
                 // forceVisible will override cards to be visible
-                || cards_moves[i].to_place == Player::PlaceEquip
-                || cards_moves[i].from_place == Player::PlaceEquip
-                || cards_moves[i].to_place == Player::PlaceDelayedTrick
-                || cards_moves[i].from_place == Player::PlaceDelayedTrick
+                || cards_move.to_place == Player::PlaceEquip
+                || cards_move.from_place == Player::PlaceEquip
+                || cards_move.to_place == Player::PlaceDelayedTrick
+                || cards_move.from_place == Player::PlaceDelayedTrick
                 // only cards moved to hand/special can be invisible
-                || cards_moves[i].from_place == Player::DiscardPile
-                || cards_moves[i].to_place == Player::DiscardPile
+                || cards_move.from_place == Player::DiscardPile
+                || cards_move.to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
-                || cards_moves[i].from_place == Player::PlaceTable
-                || cards_moves[i].to_place == Player::PlaceTable
+                || cards_move.from_place == Player::PlaceTable
+                || cards_move.to_place == Player::PlaceTable
                 // any card from/to place table should be visible
-                || player->hasFlag("Global_GongxinOperator");
+                || player->hasFlag("Global_GongxinOperator")
+                || (!cards_move.to_pile_name.isEmpty() && cards_move.to && cards_move.to->pileOpen(cards_move.to_pile_name, player->objectName()));
             // the player put someone's cards to the drawpile
-            arg << cards_moves[i].toVariant();
+            arg << cards_move.toVariant();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }
