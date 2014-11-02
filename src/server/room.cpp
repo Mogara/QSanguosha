@@ -61,7 +61,7 @@ QHash<CommandType, Room::Callback> Room::interactions;
 QHash<QString, Room::Callback> Room::cheatCommands;
 
 Room::Room(QObject *parent, const RoomConfig &config)
-    : QThread(parent), config(config), current(NULL), pile1(Sanguosha->getRandomCards()),
+    : QThread(parent), config(config), current(NULL), pile1(getRandomCards()),
     m_drawPile(&pile1), m_discardPile(&pile2),
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     _m_semRaceRequest(0), _m_semRoomMutex(1),
@@ -2037,6 +2037,80 @@ const Scenario *Room::getScenario() const{
     return scenario;
 }
 
+int Room::getGeneralCount(bool include_banned) const{
+    const GeneralList generalList = Sanguosha->getGeneralList();
+    int total = generalList.size();
+
+    if (include_banned)
+        return total;
+
+    foreach (const General *general, generalList) {
+        if (getBanPackages().contains(general->getPackage()))
+            total--;
+    }
+
+    return total;
+}
+
+QStringList Room::getLimitedGeneralNames() const{
+    //for later use
+    QStringList general_names = Sanguosha->getGeneralNames();
+    QStringList general_names_copy = general_names;
+
+    foreach(const QString &name, general_names_copy) {
+        if (Sanguosha->isGeneralHidden(name) || getBanPackages().contains(Sanguosha->getGeneral(name)->getPackage()))
+            general_names.removeOne(name);
+    }
+
+    QStringList banned_generals = Config.value("Banlist/Generals", "").toStringList();
+    foreach(QString banned, banned_generals){
+        general_names.removeOne(banned);
+    }
+
+    return general_names;
+}
+
+QStringList Room::getRandomGenerals(int count, const QSet<QString> &ban_set) const{
+    QStringList all_generals = getLimitedGeneralNames();
+    QSet<QString> general_set = all_generals.toSet();
+
+    count = qMin(count, all_generals.count());
+
+    Q_ASSERT(all_generals.count() >= count);
+
+    all_generals = general_set.subtract(ban_set).toList();
+
+    // shuffle them
+    qShuffle(all_generals);
+
+    QStringList general_list = all_generals.mid(0, count);
+    Q_ASSERT(general_list.count() == count);
+
+    return general_list;
+}
+
+QList<int> Room::getRandomCards() const{
+    QList<int> list;
+
+    QList<const Card *> cards = Sanguosha->getCards();
+    foreach (const Card *card, cards) {
+        if (!getBanPackages().contains(card->getPackage()))
+            list << card->getId();
+    }
+
+    QList<QString> card_conversions = config.CardConversions.toList();
+    foreach (QString str, card_conversions) {
+        if (str == "DragonPhoenix")
+            list.removeOne(55);
+        else
+            list.removeOne(108);
+    }
+
+    qShuffle(list);
+
+    return list;
+}
+
 void Room::broadcast(const QByteArray &message, ServerPlayer *except) {
     foreach(ServerPlayer *player, m_players) {
         if (player != except)
@@ -2610,11 +2684,11 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
     }
 
     const int max_choice = config.HegemonyMaxChoice;
-    const int total = Sanguosha->getGeneralCount();
+    const int total = getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
-    QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
+    QStringList choices = getRandomGenerals(total - existed.size(), existed);
 
     foreach(ServerPlayer *player, to_assign) {
         player->clearSelected();
@@ -3126,7 +3200,8 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 }
             }
 
-            foreach(int id, Sanguosha->getRandomCards()) {
+            QList<int> cards = getRandomCards();
+            foreach (int id, cards) {
                 if (getCardPlace(id) == Player::PlaceTable || getCardPlace(id) == Player::PlaceJudge)
                     moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
                 if (Sanguosha->getCard(id)->hasFlag("using"))
@@ -3496,7 +3571,7 @@ void Room::marshal(ServerPlayer *player) {
 
     doNotify(player, S_COMMAND_GAME_START, QVariant());
 
-    QList<int> drawPile = Sanguosha->getRandomCards();
+    QList<int> drawPile = getRandomCards();
     doNotify(player, S_COMMAND_AVAILABLE_CARDS, JsonUtils::toJsonArray(drawPile));
 
     foreach(ServerPlayer *p, m_players)

@@ -36,7 +36,7 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
 }
 
 void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *room) const{
-    QStringList generalnames = Sanguosha->getRandomGenerals(999);
+    QStringList generalnames = room->getRandomGenerals(999);
     for (int i = 0; i < players.length(); i++) {
         QMap<QString, QString> sp = players.at(i);
         QString name = sp["general"];
@@ -169,7 +169,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
         if (ex_options.contains(S_EXTRA_OPTION_RANDOM_ROLES))
             qShuffle(int_list);
 
-        QStringList all = Sanguosha->getRandomGenerals(Sanguosha->getGeneralCount());
+        QStringList all = room->getRandomGenerals(room->getGeneralCount());
         qShuffle(all);
         for (int i = 0; i < players.length(); i++) {
             QString general = this->players[i]["general"];

@@ -1346,7 +1346,7 @@ public:
         if (broken)
             return false;
 
-        QStringList generals = Sanguosha->getLimitedGeneralNames();
+        QStringList generals = room->getLimitedGeneralNames();
         QStringList avaliable_generals;
 
         foreach(QString general, generals){

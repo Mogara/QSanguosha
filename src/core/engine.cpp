@@ -695,7 +695,7 @@ QString Engine::getSetupString() const{
         << Config.GameMode
         << QString::number(timeout)
         << QString::number(Config.NullificationCountDown)
-        << Sanguosha->getBanPackages().join("+")
+        << getBanPackages().join("+")
         << flags;
 
     return setup_items.join(":");
@@ -849,6 +849,16 @@ QList<int> Engine::getRandomCards() const{
     qShuffle(list);
 
     return list;
+}
+
+QList<const Card *> Engine::getCards() const
+{
+    QList<const Card *> all_cards;
+    all_cards.reserve(cards.size());
+    foreach (Card *card, cards) {
+        all_cards << card;
+    }
+    return all_cards;
 }
 
 QString Engine::getRandomGeneralName() const{

@@ -68,8 +68,12 @@ public:
     const RoomConfig &getConfig() const {return config;}
     QString getSetupString() const;
     QString getMode() const {return config.GameMode;}
-    QStringList getBanPackages() const {return config.BanPackages.toList();}
     const Scenario *getScenario() const;
+    QStringList getBanPackages() const {return config.BanPackages.toList();}
+    int getGeneralCount(bool include_banned = false) const;
+    QStringList getLimitedGeneralNames() const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QList<int> getRandomCards() const;
 
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;

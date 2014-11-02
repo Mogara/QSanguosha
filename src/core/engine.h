@@ -165,6 +165,7 @@ public:
     // March 17 2014
     //************************************
     QList<int> getRandomCards() const;
+    QList<const Card *> getCards() const;
     QString getRandomGeneralName() const;
     //************************************
     // Method:    getLimitedGeneralNames

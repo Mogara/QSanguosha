@@ -115,7 +115,7 @@ public:
                 if (p->getActualGeneral1() != NULL) {
                     QString lord = "lord_" + p->getActualGeneral1()->objectName();
                     const General *lord_general = Sanguosha->getGeneral(lord);
-                    if (lord_general && !Sanguosha->getBanPackages().contains(lord_general->getPackage())) {
+                    if (lord_general && !room->getBanPackages().contains(lord_general->getPackage())) {
                         trigger_map.insert(p, QStringList(objectName()));
                     }
                 }
