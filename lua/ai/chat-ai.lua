@@ -160,6 +160,13 @@ sgs.ai_chat_func[sgs.EventPhaseStart].beset = function(self, player, data)
 	end
 end
 
+sgs.ai_chat_func[sgs.CardUsed].qinshouzhang = function(self, player, data)
+	local use = data:toCardUse()
+	if use.card:isKindOf("Blade") and player:screenName() == "禽受张" then
+		player:speak("这把刀就是我爷爷传下来的，上斩逗比，下斩傻逼！")
+	end
+end
+
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if self.player:getState() ~= "robot" then return end
