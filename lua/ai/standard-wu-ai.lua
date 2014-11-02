@@ -1287,10 +1287,12 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 	local zhugeliang = sgs.findPlayerByShownSkillName("kongcheng")
 
 	local slash = self:getCard("Slash")
-	local dummy_use = { isDummy = true, extra_target = 1, to = sgs.SPlayerList() }
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	self.player:setFlags("TianyiSuccess")
 	self.player:setFlags("slashNoDistanceLimit")
 	if slash then self:useBasicCard(slash, dummy_use) end
 	self.player:setFlags("-slashNoDistanceLimit")
+	self.player:setFlags("-TianyiSuccess")
 
 	sgs.ai_use_priority.TianyiCard = (slashcount >= 1 and dummy_use.card) and 7.2 or 1.2
 	if slashcount >= 1 and slash and dummy_use.card then
@@ -1859,7 +1861,7 @@ end
 
 sgs.ai_skill_use_func.FenxunCard = function(card, use, self)
 	local shouldUse, slashCard = true
-	local dummy_use = { isDummy = true, extra_target = 1, to = sgs.SPlayerList() }
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	for _, slash in ipairs(self:getCards("Slash")) do
 		dummy_use.to = sgs.SPlayerList()
 		dummy_use.card = nil

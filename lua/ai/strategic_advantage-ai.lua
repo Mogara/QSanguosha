@@ -329,11 +329,12 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 
 	card = self:getCard("Slash")
 	if card and self:slashIsAvailable(self.player, card) then
-		local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, LureTiger)
-		local dummyuse = { isDummy = true, to = sgs.SPlayerList(), distance = -total_num }
+		local dummyuse = { isDummy = true, to = sgs.SPlayerList() }
+		self.player:setFlags("slashNoDistanceLimit")
 		self:useCardSlash(card, dummyuse)
+		self.player:setFlags("-slashNoDistanceLimit")
 		if dummyuse.card then
-
+			local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, LureTiger)
 			local function getPlayersFromTo(one)
 				local targets1 = sgs.PlayerList()
 				local targets2 = sgs.PlayerList()
@@ -772,6 +773,7 @@ sgs.ai_skill_cardask["@halberd"] = function(self)
 			end
 		end
 		self:useCardSlash(slash, use)
+		if not use.card then return "." end
 		local targets = {}
 		for _, p in sgs.qlist(use.to) do
 			table.insert(targets, p:objectName())
