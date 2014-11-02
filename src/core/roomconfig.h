@@ -40,6 +40,8 @@ struct RoomConfig{
     bool EnableLordConvertion;
     QSet<QString> BanPackages;
     QSet<QString> CardConversions;
+    QSet<QString> BannedGenerals;
+    QSet<QString> BannedGeneralPairs;
 };
 
 #endif // ROOMINFOSTRUCT_H

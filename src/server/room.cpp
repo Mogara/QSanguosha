@@ -2057,13 +2057,12 @@ QStringList Room::getLimitedGeneralNames() const{
     QStringList general_names = Sanguosha->getGeneralNames();
     QStringList general_names_copy = general_names;
 
-    foreach(const QString &name, general_names_copy) {
+    foreach (const QString &name, general_names_copy) {
         if (Sanguosha->isGeneralHidden(name) || getBanPackages().contains(Sanguosha->getGeneral(name)->getPackage()))
             general_names.removeOne(name);
     }
 
-    QStringList banned_generals = Config.value("Banlist/Generals", "").toStringList();
-    foreach(QString banned, banned_generals){
+    foreach (QString banned, config.BannedGenerals) {
         general_names.removeOne(banned);
     }
 

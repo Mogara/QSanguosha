@@ -50,6 +50,8 @@ RoomConfig::RoomConfig(const Settings *config)
     BanPackages = config->BanPackages.toSet();
     EnableLordConvertion = config->value("EnableLordConvertion", true).toBool();
     CardConversions = config->value("CardConversions").toStringList().toSet();
+    BannedGenerals = config->value("Banlist/Generals").toStringList().toSet();
+    BannedGeneralPairs = config->value("Banlist/Pairs").toStringList().toSet();
 }
 
 bool RoomConfig::parse(const QVariant &data)
@@ -72,7 +74,7 @@ bool RoomConfig::parse(const QVariant &data)
     HegemonyMaxChoice = config.at(10).toInt();
 
     int flag = config.at(11).toInt();
-#define getFlag(var) var = static_cast<bool>(flag & 0x1);flag >>= 1
+#define getFlag(var) var = ((flag & 1) == 1);flag >>= 1
     getFlag(EnableLordConvertion);
     getFlag(SurrenderAtDeath);
     getFlag(DisableLua);
@@ -98,6 +100,16 @@ bool RoomConfig::parse(const QVariant &data)
         CardConversions << conversion.toString();
     }
 
+    JsonArray banned_generals = config.at(14).value<JsonArray>();
+    foreach (const QVariant &general, banned_generals) {
+        BannedGenerals << general.toString();
+    }
+
+    JsonArray banned_general_pairs = config.at(15).value<JsonArray>();
+    foreach (const QVariant &pair, banned_general_pairs) {
+        BannedGeneralPairs << pair.toString();
+    }
+
     return true;
 }
 
@@ -118,7 +130,7 @@ QVariant RoomConfig::toVariant() const
     data << HegemonyMaxChoice;
 
     int flag = AIChat;
-#define setFlag(var) flag = (flag << 1) | static_cast<int>(var)
+#define setFlag(var) flag = (flag << 1) | (var ? 1 : 0)
     setFlag(OperationNoLimit);
     setFlag(RandomSeat);
     setFlag(EnableCheat);
@@ -134,7 +146,6 @@ QVariant RoomConfig::toVariant() const
 #undef setFlag
     data << flag;
 
-
     JsonArray ban_packages;
     foreach (const QString &package, BanPackages) {
         ban_packages << package;
@@ -146,6 +157,18 @@ QVariant RoomConfig::toVariant() const
         card_conversions << conversions;
     }
     data << QVariant(card_conversions);
+
+    JsonArray banned_generals;
+    foreach (const QString &general, BannedGenerals) {
+        banned_generals << general;
+    }
+    data << QVariant(banned_generals);
+
+    JsonArray banned_general_pairs;
+    foreach (const QString &pair, BannedGeneralPairs) {
+        banned_general_pairs << pair;
+    }
+    data << QVariant(banned_general_pairs);
 
     return data;
 }
