@@ -752,7 +752,7 @@ sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
 
 sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
 
-sgs.ai_skill_cardask["@halberd"] = function(self)
+sgs.ai_skill_cardask["@Halberd"] = function(self)
 	local cards = self:getCards("Slash")
 	self:sortByUseValue(cards)
 	for _, slash in ipairs(cards) do
@@ -816,3 +816,8 @@ end
 sgs.ai_playerchosen_intention.WoodenOx = -10
 
 sgs.ai_use_priority.WoodenOxCard = 0
+
+--Blade
+function sgs.ai_weapon_value.Blade(self, enemy)
+	if not enemy then return math.min(self:getCardsNum("Slash"), 3) end
+end

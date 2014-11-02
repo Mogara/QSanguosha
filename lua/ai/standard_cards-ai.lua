@@ -561,8 +561,8 @@ function SmartAI:useCardSlash(card, use)
 end
 
 sgs.ai_skill_use.slash = function(self, prompt)
-	if prompt == "@halberd" then
-		local ret = sgs.ai_skill_cardask["@halberd"](self)
+	if prompt == "@Halberd" then
+		local ret = sgs.ai_skill_cardask["@Halberd"](self)
 		return ret or "."
 	end
 
@@ -747,17 +747,6 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		if target:hasWeapon("Axe") then
 			if target:hasShownSkills(sgs.lose_equip_skill) and target:getEquips():length() > 1 and target:getCards("he"):length() > 2 then return not isdummy and "." end
 			if target:getHandcardNum() - target:getHp() > 2 and not self:isWeak() and not self:getOverflow() then return not isdummy and "." end
-		elseif target:hasWeapon("Blade") then
-			if slash:isKindOf("NatureSlash") and self.player:hasArmorEffect("Vine")
-				or self.player:hasArmorEffect("RenwangShield")
-				or self:hasEightDiagramEffect()
-				or self:hasHeavySlashDamage(target, slash)
-				or (self.player:getHp() == 1 and #self.friends_noself == 0) then
-			elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
-					or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
-				then
-				return not isdummy and "."
-			end
 		end
 	end
 	return getJink()
@@ -777,7 +766,6 @@ function SmartAI:canHit(to, from, conservative)
 	if self:canLiegong(to, from) then return true end
 	if not self:isFriend(to, from) then
 		if from:hasWeapon("Axe") and from:getCards("he"):length() > 2 then return true end
-		if from:hasWeapon("Blade") and getCardsNum("Jink", to, from) <= getCardsNum("Slash", from, from) then return true end
 		if from:hasShownSkill("mengjin") and not self:hasHeavySlashDamage(from, nil, to) and not self:needLeiji(to, from) then
 			if self:doNotDiscard(to, "he", true) then
 			elseif to:getCards("he"):length() == 1 and not to:getArmor() then
@@ -1204,22 +1192,6 @@ function sgs.ai_weapon_value.Axe(self, enemy, player)
 	if player:hasShownSkill("luoyi") then return 6 end
 	if enemy and self:getOverflow() > 0 then return 2 end
 	if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
-end
-
-sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
-	if target and self:isFriend(target) and not self:findLeijiTarget(target, 50, self.player) then
-		return "."
-	end
-	for _, slash in ipairs(self:getCards("Slash")) do
-		if self:slashIsEffective(slash, target) and (self:isWeak(target) or self:getOverflow() > 0) then
-			return slash:toString()
-		end
-	end
-	return "."
-end
-
-function sgs.ai_weapon_value.Blade(self, enemy)
-	if not enemy then return math.min(self:getCardsNum("Slash"), 3) end
 end
 
 function sgs.ai_cardsview.Spear(self, class_name, player, cards)
@@ -2850,7 +2822,6 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					end
 				end
 			end
-			if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and getCardsNum("Jink", enemy, self.player) <= hit_num then return analeptic end
 			if self:hasCrossbowEffect(self.player) and hit_num >= 2 then return analeptic end
 		end
 	end

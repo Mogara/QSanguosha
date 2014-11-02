@@ -469,6 +469,9 @@ sgs.ai_skill_use["@@hongfa2"] = function(self)
 		return "@HongfaTianbingCard=" .. table.concat(ints, "+")
 	elseif pn.m_reason == "DragonPhoenix" or pn.m_reason == "xiongyi" then
 		return "."
+	elseif pn.m_reason == "fight_together" then
+		--@todo
+		return "."
 	else
 		self.room:writeToConsole("@@hongfa2 " .. pn.m_reason .. " is empty!")
 	end
