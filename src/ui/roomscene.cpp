@@ -3030,24 +3030,25 @@ void RoomScene::onGameOver() {
 void RoomScene::addRestartButton(QDialog *dialog) {
     dialog->resize(main_window->width() / 2, dialog->height());
 
-    QPushButton *restart_button;
-    restart_button = new QPushButton(tr("Restart Game"));
-    QPushButton *return_button = new QPushButton(tr("Return"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
-    hlayout->addWidget(restart_button);
-
-    QPushButton *save_button = new QPushButton(tr("Save record"));
-    hlayout->addWidget(save_button);
-    hlayout->addWidget(return_button);
-
     QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dialog->layout());
     if (layout) layout->addLayout(hlayout);
 
-    connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    if (ClientInstance->getReplayer() == NULL) {
+        QPushButton *restart_button = new QPushButton(tr("Restart Game"));
+        hlayout->addWidget(restart_button);
+        connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
+
+        QPushButton *save_button = new QPushButton(tr("Save record"));
+        hlayout->addWidget(save_button);
+        connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
+    }
+
+    QPushButton *return_button = new QPushButton(tr("Return"));
+    hlayout->addWidget(return_button);
     connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
-    connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
