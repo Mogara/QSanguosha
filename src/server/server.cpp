@@ -26,8 +26,6 @@
 #include "lobbyplayer.h"
 #include "json.h"
 
-#include <QApplication>
-
 using namespace QSanProtocol;
 
 QHash<CommandType, Server::LobbyFunction> Server::lobbyFunctions;
@@ -48,7 +46,6 @@ Server::Server(QObject *parent, Role role)
     ServerInfo.parse(Sanguosha->getSetupString());
 
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
 void Server::broadcastSystemMessage(const QString &message)
