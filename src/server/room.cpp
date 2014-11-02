@@ -2033,10 +2033,6 @@ QString Room::getSetupString() const
     return setup_items.join(":");
 }
 
-QString Room::getMode() const{
-    return config.GameMode;
-}
-
 const Scenario *Room::getScenario() const{
     return scenario;
 }

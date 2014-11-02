@@ -64,10 +64,13 @@ public:
     bool canPause(ServerPlayer *p) const;
     void tryPause();
     int getLack() const;
+
     const RoomConfig &getConfig() const {return config;}
     QString getSetupString() const;
-    QString getMode() const;
+    QString getMode() const {return config.GameMode;}
+    QStringList getBanPackages() const {return config.BanPackages.toList();}
     const Scenario *getScenario() const;
+
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);
