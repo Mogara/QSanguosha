@@ -2457,6 +2457,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         case Client::RespondingUse: {
             QRegExp promptRegExp("@@?([_A-Za-z]+)");
             QString prompt = Sanguosha->currentRoomState()->getCurrentCardResponsePrompt();
+            Sanguosha->currentRoomState()->setCurrentCardResponsePrompt(QString());
             if (promptRegExp.exactMatch(prompt))
                 dashboard->highlightEquip(promptRegExp.capturedTexts().at(1), false);
         }
