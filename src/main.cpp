@@ -22,20 +22,17 @@
 #include <vld/vld.h>
 #endif
 
-#include <QFile>
 #include <QCoreApplication>
 #include <QApplication>
 #include <QTranslator>
 #include <QDateTime>
-#include <QSplashScreen>
 #include <QMessageBox>
+#include <QtQuick/QQuickView>
 
 #include "server.h"
 #include "settings.h"
 #include "engine.h"
-#include "mainwindow.h"
 #include "audio.h"
-#include "stylehelper.h"
 
 #ifndef WINDOWS
 #include <QDir>
@@ -76,43 +73,17 @@ int main(int argc, char *argv[]) {
     else
         new QApplication(argc, argv);
 
-#if defined(Q_OS_MAC) || defined(Q_OS_ANDROID)
-#define showSplashMessage(message)
-#define SPLASH_DISABLED
-#else
-    QSplashScreen *splash = NULL;
-    if (!noGui) {
-        QPixmap raraLogo("image/system/developers/logo.png");
-        splash = new QSplashScreen(raraLogo);
-        splash->show();
-        qApp->processEvents();
-    }
-#define showSplashMessage(message) \
-    if (splash == NULL) {\
-        puts(message.toUtf8().constData());\
-    } else {\
-        splash->showMessage(message, Qt::AlignBottom | Qt::AlignHCenter, Qt::cyan);\
-        qApp->processEvents();\
-    }
-#endif
-
 #ifdef USE_BREAKPAD
-    showSplashMessage(QSplashScreen::tr("Loading BreakPad..."));
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
 #endif
 
 #if defined(Q_OS_MAC) && defined(QT_NO_DEBUG)
-    showSplashMessage(QSplashScreen::tr("Setting game path..."));
     QDir::setCurrent(qApp->applicationDirPath());
 #endif
 
 #ifdef Q_OS_LINUX
-    showSplashMessage(QSplashScreen::tr("Checking game path..."));
     QDir dir(QString("lua"));
-    if (dir.exists() && (dir.exists(QString("config.lua")))) {
-        // things look good and use current dir
-    } else {
-        showSplashMessage(QSplashScreen::tr("Setting game path..."));
+    if (!dir.exists() || !(dir.exists(QString("config.lua")))) {
 #ifndef Q_OS_ANDROID
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
 #else
@@ -138,24 +109,23 @@ int main(int argc, char *argv[]) {
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
-    // load the main translation file first for we need to translate messages of splash.
     QTranslator translator;
     translator.load("sanguosha.qm");
     qApp->installTranslator(&translator);
 
-    showSplashMessage(QSplashScreen::tr("Loading translation..."));
+    new Settings;
+    Config.init();
+
+    QQuickView mainView;
+    mainView.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
+    mainView.show();
+
     QTranslator qt_translator;
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
-    showSplashMessage(QSplashScreen::tr("Loading user's configurations..."));
-    new Settings;
-    Config.init();
-    if (!noGui)
-        qApp->setFont(Config.AppFont);
-
-    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
     new Engine;
+    Sanguosha->setParent(&mainView);
 
     if (qApp->arguments().contains("-server")) {
         Server *server = new Server(qApp);
@@ -169,42 +139,11 @@ int main(int argc, char *argv[]) {
         return qApp->exec();
     }
 
-    showSplashMessage(QSplashScreen::tr("Loading style sheet..."));
-    QFile file("style-sheet/sanguosha.qss");
-    QString styleSheet;
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        styleSheet = stream.readAll();
-    }
-
-#ifdef Q_OS_WIN
-    QFile winFile("style-sheet/windows-extra.qss");
-    if (winFile.open(QIODevice::ReadOnly)) {
-        QTextStream winStream(&winFile);
-        styleSheet += winStream.readAll();
-    }
-#endif
-
-    qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
-
 #ifdef AUDIO_SUPPORT
-    showSplashMessage(QSplashScreen::tr("Initializing audio module..."));
     Audio::init();
 #else
     if (!noGui)
         QMessageBox::warning(NULL, QMessageBox::tr("Warning"), QMessageBox::tr("Audio support is disabled when compiled"));
-#endif
-
-    showSplashMessage(QSplashScreen::tr("Loading main window..."));
-    MainWindow main_window;
-
-    Sanguosha->setParent(&main_window);
-    main_window.show();
-#ifndef SPLASH_DISABLED
-    if (splash != NULL) {
-        splash->finish(&main_window);
-        delete splash;
-    }
 #endif
 
     foreach(QString arg, qApp->arguments()) {
@@ -213,7 +152,7 @@ int main(int argc, char *argv[]) {
             Config.HostAddress = arg;
             Config.setValue("HostAddress", arg);
 
-            main_window.startConnection();
+            //main_window.startConnection();
             break;
         }
     }
