@@ -202,8 +202,8 @@ public:
 
     void attachSkill(const QVariant &skill);
 
-    inline virtual RoomState *getRoomState() { return &_m_roomState; }
-    inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
+    inline RoomState *getRoomState() { return &_m_roomState; }
+    inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
 
     void moveFocus(const QString &focus, QSanProtocol::CommandType command);
 
