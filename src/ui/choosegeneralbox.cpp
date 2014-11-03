@@ -239,6 +239,11 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2){
     return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
 }
 
+void ChooseGeneralBox::setBannedPairs(const QSet<BanPair> &pairs)
+{
+    banned_pairs = pairs;
+}
+
 void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player *player) {
     //repaint background
     QStringList generals = _generals;
@@ -424,7 +429,7 @@ void ChooseGeneralBox::adjustItems() {
         const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
         foreach(GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
-            if (BanPair::isBanned(seleted_general->objectName(), general->objectName())
+            if (banned_pairs.contains(BanPair(seleted_general->objectName(), general->objectName()))
                 || (general->getKingdom() != seleted_general->getKingdom() || general->isLord())){
                 if (!card->isFrozen())
                     card->setFrozen(true);
@@ -515,6 +520,7 @@ void ChooseGeneralBox::clear() {
 
     items.clear();
     selected.clear();
+    banned_pairs.clear();
 
     disappear();
 }

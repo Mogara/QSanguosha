@@ -60,6 +60,7 @@ public:
     void clear();
 
 public slots:
+    void setBannedPairs(const QSet<BanPair> &pairs);
     void chooseGeneral(const QStringList &generals, bool view_only = false,
                        bool single_result = false, const QString &reason = QString(),
                        const Player *player = NULL);
@@ -85,6 +86,7 @@ private:
     Button *confirm;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
+    QSet<BanPair> banned_pairs;
 
     void _initializeItems();
 

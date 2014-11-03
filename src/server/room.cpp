@@ -2706,15 +2706,31 @@ void Room::chooseGenerals() {
 
     assignGeneralsForPlayers(to_assign);
 
-    foreach(ServerPlayer *player, to_assign) {
+    foreach (ServerPlayer *player, to_assign) {
         JsonArray args;
         args << JsonUtils::toJsonArray(player->getSelected());
         args << false;
+
+        JsonArray banned_pairs;
+        QStringList candidates = player->getSelected();
+        foreach (const QString &head, candidates) {
+            foreach (const QString &deputy, candidates) {
+                if (config.isBanned(head, deputy)) {
+                    QString pair(head);
+                    pair.append('+');
+                    pair.append(deputy);
+                    banned_pairs << pair;
+                }
+            }
+        }
+        if (!banned_pairs.isEmpty())
+            args << QVariant(banned_pairs);
+
         player->m_commandArgs = args;
     }
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-    foreach(ServerPlayer *player, to_assign) {
+    foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != NULL) continue;
         const QVariant &generalName = player->getClientReply();
         if (!player->m_isClientResponseReady || !JsonUtils::isString(generalName)) {

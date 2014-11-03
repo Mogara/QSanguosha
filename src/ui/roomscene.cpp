@@ -158,7 +158,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer *)), SLOT(addPlayer(ClientPlayer *)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(ClientInstance, SIGNAL(generals_got(QStringList, bool)), this, SLOT(chooseGeneral(QStringList, bool)));
+    connect(ClientInstance, SIGNAL(generals_got(QStringList, bool, QSet<BanPair>)), this, SLOT(chooseGeneral(QStringList, bool, QSet<BanPair>)));
     connect(ClientInstance, SIGNAL(generals_viewed(QString, QStringList)), this, SLOT(viewGenerals(QString, QStringList)));
     connect(ClientInstance, SIGNAL(suits_got(QStringList)), this, SLOT(chooseSuit(QStringList)));
     connect(ClientInstance, SIGNAL(options_got(QString, QStringList)), this, SLOT(chooseOption(QString, QStringList)));
@@ -1540,7 +1540,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     }
 }
 
-void RoomScene::chooseGeneral(const QStringList &generals, const bool single_result) {
+void RoomScene::chooseGeneral(const QStringList &generals, const bool single_result, const QSet<BanPair> &banned_pairs) {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
@@ -1549,6 +1549,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
         delete m_choiceDialog;
         m_choiceDialog = new FreeChooseDialog(main_window);
     } else {
+        choose_general_box->setBannedPairs(banned_pairs);
         choose_general_box->chooseGeneral(generals, false, single_result);
     }
 }

@@ -163,7 +163,7 @@ public slots:
     void keepLoseCardLog(const CardsMoveStruct &move);
     void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
-    void chooseGeneral(const QStringList &generals, const bool single_result);
+    void chooseGeneral(const QStringList &generals, const bool single_result, const QSet<BanPair> &banned_pairs);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason,
         bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);

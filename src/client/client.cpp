@@ -1473,7 +1473,17 @@ void Client::askForGeneral(const QVariant &arg) {
     QStringList generals;
     if (!JsonUtils::tryParse(args[0], generals)) return;
     bool single_result = args[1].toBool();
-    emit generals_got(generals, single_result);
+    QSet<BanPair> banned_pairs;
+    if (args.size() >= 3) {
+        JsonArray pairs = args.at(2).value<JsonArray>();
+        foreach (const QVariant &pair, pairs) {
+            QStringList generals = pair.toString().split('+');
+            if (generals.size() == 2)
+                banned_pairs << BanPair(generals.first(), generals.last());
+        }
+    }
+
+    emit generals_got(generals, single_result, banned_pairs);
     setStatus(AskForGeneralChosen);
 }
 
