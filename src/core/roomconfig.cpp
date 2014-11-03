@@ -51,7 +51,14 @@ RoomConfig::RoomConfig(const Settings *config)
     EnableLordConvertion = config->value("EnableLordConvertion", true).toBool();
     CardConversions = config->value("CardConversions").toStringList().toSet();
     BannedGenerals = config->value("Banlist/Generals").toStringList().toSet();
-    BannedGeneralPairs = config->value("Banlist/Pairs").toStringList().toSet();
+    QStringList banned_pairs = config->value("Banlist/Pairs").toStringList();
+    foreach (const QString &pair, banned_pairs) {
+        int split_pos = pair.indexOf('+');
+        if (split_pos > 0 && split_pos < pair.length() - 1) {
+            QStringList generals = pair.split('+');
+            BannedGeneralPairs.insert(BanPair(generals.first(), generals.last()));
+        }
+    }
 }
 
 bool RoomConfig::parse(const QVariant &data)
@@ -107,7 +114,14 @@ bool RoomConfig::parse(const QVariant &data)
 
     JsonArray banned_general_pairs = config.at(15).value<JsonArray>();
     foreach (const QVariant &pair, banned_general_pairs) {
-        BannedGeneralPairs << pair.toString();
+        JsonArray generals = pair.value<JsonArray>();
+        if (generals.size() != 2)
+            continue;
+
+        QString general1 = generals.first().toString();
+        QString general2 = generals.last().toString();
+        if (!general1.isEmpty() && !general2.isEmpty())
+            BannedGeneralPairs << BanPair(general1, general2);
     }
 
     return true;
@@ -165,10 +179,20 @@ QVariant RoomConfig::toVariant() const
     data << QVariant(banned_generals);
 
     JsonArray banned_general_pairs;
-    foreach (const QString &pair, BannedGeneralPairs) {
-        banned_general_pairs << pair;
+    foreach (const BanPair &pair, BannedGeneralPairs) {
+        JsonArray array;
+        array << pair.first << pair.second;
+        banned_general_pairs << QVariant(array);
     }
     data << QVariant(banned_general_pairs);
 
     return data;
+}
+
+bool RoomConfig::isBanned(const QString &first, const QString &second) {
+    if (BannedGenerals.contains(first) || BannedGenerals.contains(second))
+        return true;
+
+    BanPair pair(first, second);
+    return BannedGeneralPairs.contains(pair);
 }

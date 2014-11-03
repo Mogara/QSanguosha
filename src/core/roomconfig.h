@@ -5,6 +5,8 @@
 #include <QString>
 #include <QVariant>
 
+#include "banpair.h"
+
 class Settings;
 
 struct RoomConfig{
@@ -13,6 +15,8 @@ struct RoomConfig{
 
     bool parse(const QVariant &data);
     QVariant toVariant() const;
+
+    bool isBanned(const QString &first, const QString &second);
 
     QString GameMode;
     QString ServerName;
@@ -41,7 +45,7 @@ struct RoomConfig{
     QSet<QString> BanPackages;
     QSet<QString> CardConversions;
     QSet<QString> BannedGenerals;
-    QSet<QString> BannedGeneralPairs;
+    QSet<BanPair> BannedGeneralPairs;
 };
 
 #endif // ROOMINFOSTRUCT_H
