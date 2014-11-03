@@ -299,14 +299,16 @@ win32-msvc*{
         QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
         DEFINES += USE_BREAKPAD
 
-        SOURCES += src/breakpad/client/windows/crash_generation/client_info.cc \
+        SOURCES += src/core/exceptionhandler.cpp \
+            src/breakpad/client/windows/crash_generation/client_info.cc \
             src/breakpad/client/windows/crash_generation/crash_generation_client.cc \
             src/breakpad/client/windows/crash_generation/crash_generation_server.cc \
             src/breakpad/client/windows/crash_generation/minidump_generator.cc \
             src/breakpad/client/windows/handler/exception_handler.cc \
             src/breakpad/common/windows/guid_string.cc
 
-        HEADERS += src/breakpad/client/windows/crash_generation/client_info.h \
+        HEADERS += src/core/exceptionhandler.h \
+            src/breakpad/client/windows/crash_generation/client_info.h \
             src/breakpad/client/windows/crash_generation/crash_generation_client.h \
             src/breakpad/client/windows/crash_generation/crash_generation_server.h \
             src/breakpad/client/windows/crash_generation/minidump_generator.h \
@@ -314,7 +316,6 @@ win32-msvc*{
             src/breakpad/common/windows/guid_string.h
 
         INCLUDEPATH += src/breakpad
-        INCLUDEPATH += src/breakpad/client/windows
     }
 }
 win32-g++{
@@ -341,10 +342,45 @@ ios{
     }
 }
 linux{
+    CONFIG(release, debug|release) {
+        SOURCES += src/core/exceptionhandler.cpp \
+            src/breakpad/client/linux/crash_generation/crash_generation_client.cc \
+            src/breakpad/client/linux/crash_generation/crash_generation_server.cc \
+            src/breakpad/client/linux/dump_writer_common/seccomp_unwinder.cc \
+            src/breakpad/client/linux/dump_writer_common/thread_info.cc \
+            src/breakpad/client/linux/dump_writer_common/ucontext_reader.cc \
+            src/breakpad/client/linux/handler/exception_handler.cc \
+            src/breakpad/client/linux/handler/minidump_descriptor.cc \
+            src/breakpad/client/linux/log/log.cc \
+            src/breakpad/client/linux/microdump_writer/microdump_writer.cc \
+            src/breakpad/client/linux/minidump_writer/linux_dumper.cc \
+            src/breakpad/client/linux/minidump_writer/linux_ptrace_dumper.cc \
+            src/breakpad/client/linux/minidump_writer/minidump_writer.cc \
+            src/breakpad/client/minidump_file_writer.cc \
+            src/breakpad/common/convert_UTF.c \
+            src/breakpad/common/md5.cc \
+            src/breakpad/common/string_conversion.cc \
+            src/breakpad/common/linux/elfutils.cc \
+            src/breakpad/common/linux/file_id.cc \
+            src/breakpad/common/linux/guid_creator.cc \
+            src/breakpad/common/linux/linux_libc_support.cc \
+            src/breakpad/common/linux/memory_mapped_file.cc \
+            src/breakpad/common/linux/safe_readlink.cc
+
+        HEADERS += src/core/exceptionhandler.h \
+            src/breakpad/client/linux/handler/exception_handler.h
+
+        QMAKE_CXXFLAGS += -g
+        DEFINES += USE_BREAKPAD
+        INCLUDEPATH += src/breakpad
+    }
+
     android{
         DEFINES += ANDROID
         ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
         LIBS += -L"$$ANDROID_LIBPATH"
+
+        CONFIG(release, debug|release): SOURCES += src/common/android/breakpad_getcontext.S
     }
     else {
         DEFINES += LINUX
