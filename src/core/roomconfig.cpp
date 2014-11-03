@@ -64,7 +64,7 @@ RoomConfig::RoomConfig(const Settings *config)
 bool RoomConfig::parse(const QVariant &data)
 {
     JsonArray config = data.value<JsonArray>();
-    if (config.size() != 14)
+    if (config.size() != 16)
         return false;
 
     GameMode = config.at(0).toString();
@@ -114,12 +114,13 @@ bool RoomConfig::parse(const QVariant &data)
 
     JsonArray banned_general_pairs = config.at(15).value<JsonArray>();
     foreach (const QVariant &pair, banned_general_pairs) {
-        JsonArray generals = pair.value<JsonArray>();
-        if (generals.size() != 2)
+        QString generals = pair.toString();
+        int split_pos = generals.indexOf('+');
+        if (split_pos <= 0 || split_pos >= generals.size() - 1)
             continue;
 
-        QString general1 = generals.first().toString();
-        QString general2 = generals.last().toString();
+        QString general1 = generals.left(split_pos);
+        QString general2 = generals.mid(split_pos + 1);
         if (!general1.isEmpty() && !general2.isEmpty())
             BannedGeneralPairs << BanPair(general1, general2);
     }
@@ -180,9 +181,10 @@ QVariant RoomConfig::toVariant() const
 
     JsonArray banned_general_pairs;
     foreach (const BanPair &pair, BannedGeneralPairs) {
-        JsonArray array;
-        array << pair.first << pair.second;
-        banned_general_pairs << QVariant(array);
+        QString pair_str(pair.first);
+        pair_str.append('+');
+        pair_str.append(pair.second);
+        banned_general_pairs << pair_str;
     }
     data << QVariant(banned_general_pairs);
 
