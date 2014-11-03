@@ -380,7 +380,10 @@ linux{
         ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
         LIBS += -L"$$ANDROID_LIBPATH"
 
-        CONFIG(release, debug|release): SOURCES += src/common/android/breakpad_getcontext.S
+        CONFIG(release, debug|release) {
+            SOURCES += src/breakpad/common/android/breakpad_getcontext.S
+            INCLUDEPATH += src/breakpad/common/android/include
+        }
     }
     else {
         DEFINES += LINUX
