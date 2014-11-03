@@ -2062,7 +2062,7 @@ QStringList Room::getLimitedGeneralNames() const{
             general_names.removeOne(name);
     }
 
-    foreach (QString banned, config.BannedGenerals) {
+    foreach (const QString &banned, config.BannedGenerals) {
         general_names.removeOne(banned);
     }
 
@@ -2723,7 +2723,8 @@ void Room::chooseGenerals() {
             _setPlayerGeneral(player, default_generals.last(), false);
         } else {
             QStringList generals = generalName.toString().split("+");
-            if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
+            if (generals.length() != 2 || config.isBanned(generals.first(), generals.last())
+                || !_setPlayerGeneral(player, generals.first(), true)
                 || !_setPlayerGeneral(player, generals.last(), false)) {
                 QStringList default_generals = _chooseDefaultGenerals(player);
                 _setPlayerGeneral(player, default_generals.first(), true);
@@ -2910,8 +2911,7 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
     if (isFirst) {
         player->setGeneralName(general->objectName());
         notifyProperty(player, player, "general");
-    }
-    else {
+    } else {
         player->setGeneral2Name(general->objectName());
         notifyProperty(player, player, "general2");
     }
