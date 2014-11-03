@@ -267,7 +267,7 @@ function sgs.cloneCard(name, suit, number)
 	return card
 end
 
-function SmartAI:getTurnUse(priority)
+function SmartAI:getTurnUse()
 	local cards = {}
 	for _ ,c in sgs.qlist(self.player:getHandcards()) do
 		if c:isAvailable(self.player) then table.insert(cards, c) end
@@ -285,17 +285,15 @@ function SmartAI:getTurnUse(priority)
 	self.slash_distance_limit = (1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50)
 
 	self.weaponUsed = false
-	self:fillSkillCards(cards, priority)
-	self:sortByUseValue(cards)
+	self:fillSkillCards(cards)
 
 	if self.player:hasWeapon("Crossbow") or #self.player:property("extra_slash_specific_assignee"):toString():split("+") > 1 then
 		slashAvail = 100
 		self.slashAvail = slashAvail
 	end
+	local slashs = {}
 
 	for _, card in ipairs(cards) do
-
-		if priority and self:getDynamicUsePriority(card) < 6 then continue end
 
 		local dummy_use = { isDummy = true }
 
@@ -304,10 +302,8 @@ function SmartAI:getTurnUse(priority)
 
 		if dummy_use.card then
 			if dummy_use.card:isKindOf("Slash") then
-				if slashAvail > 0 then
-					slashAvail = slashAvail - 1
-					table.insert(turnUse, dummy_use.card)
-				elseif dummy_use.card:hasFlag("AIGlobal_KillOff") then table.insert(turnUse, dummy_use.card) end
+				if dummy_use.card:hasFlag("AIGlobal_KillOff") then table.insert(slashs, dummy_use.card) break end
+				table.insert(slashs, dummy_use.card)
 			else
 				if self.player:hasFlag("InfinityAttackRange") or self.player:getMark("InfinityAttackRange") > 0 then
 					self.predictedRange = 10000
@@ -323,6 +319,14 @@ function SmartAI:getTurnUse(priority)
 				if dummy_use.card:objectName() == "Crossbow" then slashAvail = 100 self.slashAvail = slashAvail end
 				table.insert(turnUse, dummy_use.card)
 			end
+			if self:getDynamicUsePriority(dummy_use.card) >= 9 then break end
+		end
+	end
+
+	if slashAvail > 0 and #slashs > 0 then
+		self:sortByUseValue(slashs)
+		for i = 1, slashAvail do
+			table.insert(turnUse, slashs[i])
 		end
 	end
 
@@ -332,23 +336,6 @@ end
 function SmartAI:activate(use)
 	self:updatePlayers()
 	self:assignKeep(true)
-	if self.player:getHandcardNum() > 30 then
-		self.toUse = self:getTurnUse(true)
-		self:sortByDynamicUsePriority(self.toUse)
-		for _, card in ipairs(self.toUse) do
-			if not self.player:isCardLimited(card, card:getHandlingMethod())
-				or (card:canRecast() and not self.player:isCardLimited(card, sgs.Card_MethodRecast)) then
-				local type = card:getTypeId()
-
-				self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
-
-				if use:isValid(nil) then
-					self.toUse = nil
-					return
-				end
-			end
-		end
-	end
 	self.toUse = self:getTurnUse()
 	self:sortByDynamicUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
@@ -475,7 +462,7 @@ function sgs.gameProcess(update)
 	local players = global_room:getAlivePlayers()
 	for _, ap in sgs.qlist(players) do
 		if table.contains(kingdoms, sgs.ai_explicit[ap:objectName()]) then
-			local v = 3 + sgs.getDefense(ap, true) / 2
+			local v = 3 + sgs.getDefense(ap) / 2
 			value[sgs.ai_explicit[ap:objectName()]] = value[sgs.ai_explicit[ap:objectName()]] + v
 		else
 			anjiang = anjiang + 1
@@ -3904,12 +3891,10 @@ function SmartAI:hasSkills(skill_names, player)
 	return false
 end
 
-function SmartAI:fillSkillCards(cards, priority)
+function SmartAI:fillSkillCards(cards)
 	local i = 1
 	while i <= #cards do
 		if prohibitUseDirectly(cards[i], self.player) then
-			table.remove(cards, i)
-		elseif priority and self:getDynamicUsePriority(cards[i]) < 6 then
 			table.remove(cards, i)
 		else
 			i = i + 1

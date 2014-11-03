@@ -801,7 +801,8 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 				self.enemies = new_enemies
 				local dummy_use = { isDummy = true }
 				self:useTrickCard(card_x, dummy_use)
-				if dummy_use.card then self:updatePlayers(false) return card end
+				self:updatePlayers(false)
+				if dummy_use.card then return card end
 			end
 		end
 	end
