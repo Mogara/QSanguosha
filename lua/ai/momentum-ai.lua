@@ -472,6 +472,8 @@ sgs.ai_skill_use["@@hongfa2"] = function(self)
 	elseif pn.m_reason == "fight_together" then
 		--@todo
 		return "."
+	elseif pn.m_reason == "IronArmor" then
+		return "."
 	else
 		self.room:writeToConsole("@@hongfa2 " .. pn.m_reason .. " is empty!")
 	end

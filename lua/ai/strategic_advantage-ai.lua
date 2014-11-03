@@ -750,8 +750,7 @@ sgs.ai_skill_use_func.HalberdCard = function(card, use, self)
 	if use.to then use.to = sgs.SPlayerList() end
 end
 
-
-sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.1
+sgs.ai_use_priority.HalberdCard = sgs.ai_use_priority.Slash + 0.2
 
 sgs.ai_skill_playerchosen.Halberd = sgs.ai_skill_playerchosen.slash_extra_targets
 

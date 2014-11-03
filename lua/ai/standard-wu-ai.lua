@@ -40,7 +40,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 			end
 		end
 		if #unpreferedCards > 0 then
-			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(zcard, "+") .. "&zhiheng")
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(unpreferedCards, "+") .. "&zhiheng")
 			return
 		end
 	end
