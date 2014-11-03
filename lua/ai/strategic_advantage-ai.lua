@@ -33,7 +33,6 @@ transfer_skill.getTurnUseCard = function(self, inclusive)
 	for _, c in sgs.qlist(self.player:getCards("he")) do
 		if c:isTransferable() then return sgs.Card_Parse("@TransferCard=.") end
 	end
-	return sgs.Card_Parse("@TransferCard=.")
 end
 
 sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
