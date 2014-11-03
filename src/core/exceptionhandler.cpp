@@ -17,7 +17,7 @@ static bool DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *, b
 }
 
 #elif defined(Q_OS_WIN)
-static bool DumpCallback(const wchar_t *, const wchar_t *id, void *, google_breakpad::EXCEPTION_POINTERS *, google_breakpad::MDRawAssertionInfo *, bool succeeded)
+static bool DumpCallback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINTERS *, MDRawAssertionInfo *, bool succeeded)
 {
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char ID[16000];
