@@ -451,7 +451,7 @@ function SmartAI:objectiveLevel(player)
 end
 
 function sgs.gameProcess(update)
-	if not update and sgs.ai_gameProcess then return sgs.gameProcess end
+	if not update and sgs.ai_process then return sgs.ai_process end
 	local value = {}
 	local kingdoms = sgs.KingdomsTable
 	for _, kingdom in ipairs(kingdoms) do
