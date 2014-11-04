@@ -68,8 +68,7 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
         args.at(2).toInt();     //PlayerNum
         args.at(3).toInt();     //RoomNum
         args.at(4).toInt();     //MaxRoomNum
-        args.at(5).toInt();     //AIDelay
-        args.at(6).toBool();    //RewardTheFirstShowingPlayer*/
+        args.at(5).toInt();     //AIDelay*/
         ServerInfoStruct info;
         if (!info.parse(args.at(0).toString())) {
             emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));

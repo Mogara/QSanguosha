@@ -106,7 +106,6 @@ void Server::processNewConnection(ClientSocket *socket)
     QString address = socket->peerAddress();
     if (Config.ForbidSIMC) {
         if (addresses.contains(address)) {
-            addresses.append(address);
             socket->disconnectFromHost();
             emit serverMessage(tr("Forbid the connection of address %1").arg(address));
             return;
