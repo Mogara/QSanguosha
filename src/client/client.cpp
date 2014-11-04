@@ -41,18 +41,16 @@
 using namespace QSanProtocol;
 
 Client *ClientInstance = NULL;
-QHash<CommandType, Client::Callback> Client::callbacks;
-QHash<CommandType, Client::Callback> Client::interactions;
 
-Client::Client(QObject *parent, const QString &filename)
-    : QObject(parent), m_isDiscardActionRefusable(true),
-    status(NotActive), alive_count(1), swap_pile(0),
-    _m_roomState(true)
+static QHash<CommandType, Client::Callback> callbacks;
+static QHash<CommandType, Client::Callback> interactions;
+static QHash<WarningType, QString> warning_translation;
+
+class ClientInit
 {
-    ClientInstance = this;
-    m_isGameOver = false;
-
-    if (callbacks.isEmpty()) {
+public:
+    ClientInit()
+    {
         callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
         callbacks[S_COMMAND_SETUP] = &Client::setup;
         callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
@@ -111,10 +109,8 @@ Client::Client(QObject *parent, const QString &filename)
         callbacks[S_COMMAND_TAKE_GENERAL] = &Client::takeGeneral;
         callbacks[S_COMMAND_RECOVER_GENERAL] = &Client::recoverGeneral;
         callbacks[S_COMMAND_REVEAL_GENERAL] = &Client::revealGeneral;
-    }
 
-    // interactive methods
-    if (interactions.isEmpty()) {
+
         interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
         interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
         interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
@@ -142,7 +138,21 @@ Client::Client(QObject *parent, const QString &filename)
 
         // 3v3 mode & 1v1 mode
         interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
+
+        warning_translation[S_WARNING_GAME_OVER] = Client::tr("Game is over now");
+        warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = Client::tr("Invalid signup string");
+        warning_translation[S_WARNING_LEVEL_LIMITATION] = Client::tr("Your level is not enough");
     }
+};
+ClientInit clientInit;
+
+Client::Client(QObject *parent, const QString &filename)
+    : QObject(parent), m_isDiscardActionRefusable(true),
+    status(NotActive), alive_count(1), swap_pile(0),
+    _m_roomState(true)
+{
+    ClientInstance = this;
+    m_isGameOver = false;
 
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
@@ -1452,17 +1462,11 @@ void Client::revivePlayer(const QVariant &player) {
 }
 
 
-void Client::warn(const QVariant &reason_var) {
-    QString reason = reason_var.toString();
-    QString msg;
-    if (reason == "GAME_OVER")
-        msg = tr("Game is over now");
-    else if (reason == "INVALID_FORMAT")
-        msg = tr("Invalid signup string");
-    else if (reason == "LEVEL_LIMITATION")
-        msg = tr("Your level is not enough");
-    else
-        msg = tr("Unknown warning: %1").arg(reason);
+void Client::warn(const QVariant &reason) {
+    WarningType type = static_cast<WarningType>(reason.toInt());
+    QString msg = warning_translation.value(type);
+    if (msg.isEmpty())
+        msg = tr("Unknown warning: %1").arg(type);
 
     QMessageBox::warning(NULL, tr("Warning"), msg);
 }

@@ -40,6 +40,7 @@ class Client : public QObject {
     Q_ENUMS(Status)
 
 public:
+
     enum Status {
         NotActive = 0x010000,
         Responding = 0x000001,
@@ -134,7 +135,7 @@ public:
     void killPlayer(const QVariant &player_name);
     void revivePlayer(const QVariant &player);
     void setDashboardShadow(const QVariant &player);
-    void warn(const QVariant &);
+    void warn(const QVariant &reason);
     void setMark(const QVariant &mark_var);
     void showCard(const QVariant &show_str);
     void log(const QVariant &log_str);
@@ -269,8 +270,6 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    static QHash<QSanProtocol::CommandType, Callback> interactions;
-    static QHash<QSanProtocol::CommandType, Callback> callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;

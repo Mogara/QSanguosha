@@ -207,6 +207,12 @@ namespace QSanProtocol {
         S_GUANXING_FINISH
     };
 
+    enum WarningType {
+        S_WARNING_INVALID_SIGNUP_STRING,
+        S_WARNING_GAME_OVER,
+        S_WARNING_LEVEL_LIMITATION
+    };
+
     //static consts
     extern const char *S_PLAYER_SELF_REFERENCE_ID;
 
@@ -283,4 +289,3 @@ namespace QSanProtocol {
 }
 
 #endif
-

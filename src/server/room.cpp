@@ -2523,7 +2523,7 @@ void Room::reportInvalidPacket(const QByteArray &message) {
 
     if (game_finished) {
         if (player->isOnline()) {
-            player->notify(S_COMMAND_WARN, "GAME_OVER");
+            player->notify(S_COMMAND_WARN, S_WARNING_GAME_OVER);
             player->kick();
         }
         return;

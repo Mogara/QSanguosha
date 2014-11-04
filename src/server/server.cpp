@@ -162,7 +162,7 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));
-        notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
+        notifyClient(socket, S_COMMAND_WARN, S_WARNING_INVALID_SIGNUP_STRING);
         socket->disconnectFromHost();
         return;
     }
