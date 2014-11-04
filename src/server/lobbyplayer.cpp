@@ -127,26 +127,27 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
 
     Room *room = server->getRoom(room_id);
     if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
-        //@todo: return an error message
+        notify(S_COMMAND_WARN, S_WARNING_GAME_OVER);
         return;
     } else if (room->isFull()) {
-        //@todo: return an error message
+        notify(S_COMMAND_WARN, S_WARNING_ROOM_IS_FULL);
+        return;
+    }
+
+    ServerPlayer *player = room->addSocket(socket);
+    if (player == NULL) {
+        notify(S_COMMAND_WARN, S_WARNING_ROOM_IS_FULL);
         return;
     }
 
     notify(S_COMMAND_SETUP, room->getSetupString());
 
-    ServerPlayer *player = room->addSocket(socket);
-    if (player) {
-        socket->disconnect(this);
-        this->disconnect(socket);
-        socket = NULL;
+    socket->disconnect(this);
+    this->disconnect(socket);
+    socket = NULL;
 
-        room->signup(player, screenName, avatar, false);
+    room->signup(player, screenName, avatar, false);
 
-        emit disconnected();
-        deleteLater();
-    } else {
-        //@todo: return an error message
-    }
+    emit disconnected();
+    deleteLater();
 }

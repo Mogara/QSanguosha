@@ -142,6 +142,7 @@ public:
         warning_translation[S_WARNING_GAME_OVER] = Client::tr("Game is over now");
         warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = Client::tr("Invalid signup string");
         warning_translation[S_WARNING_LEVEL_LIMITATION] = Client::tr("Your level is not enough");
+        warning_translation[S_WARNING_ROOM_IS_FULL] = Client::tr("The room is already full.");
     }
 };
 ClientInit clientInit;
