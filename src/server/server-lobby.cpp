@@ -130,7 +130,6 @@ QVariant Server::getRoomList(int page)
             item << rooms.size();//max room number
             const RoomConfig &config = room->getConfig();
             item << config.AIDelay;
-            item << config.RewardTheFirstShowingPlayer;
             data << QVariant(item);
         }
         i++;
