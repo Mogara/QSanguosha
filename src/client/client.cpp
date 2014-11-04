@@ -1464,7 +1464,6 @@ void Client::warn(const QVariant &reason_var) {
     else
         msg = tr("Unknown warning: %1").arg(reason);
 
-    disconnectFromHost();
     QMessageBox::warning(NULL, tr("Warning"), msg);
 }
 

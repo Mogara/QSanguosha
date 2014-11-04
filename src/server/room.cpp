@@ -2522,8 +2522,10 @@ void Room::reportInvalidPacket(const QByteArray &message) {
     if (player == NULL) return;
 
     if (game_finished) {
-        if (player->isOnline())
+        if (player->isOnline()) {
             player->notify(S_COMMAND_WARN, "GAME_OVER");
+            player->kick();
+        }
         return;
     }
 
