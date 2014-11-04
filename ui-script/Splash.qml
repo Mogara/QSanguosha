@@ -90,7 +90,7 @@ Rectangle {
         color: "#73c0d6"
         opacity: 0.5
 
-        Component.onCompleted: height = parent.height * 0.95
+        Component.onCompleted: height = parent.height * 0.8
     }
 
     //---------------Waves---------------

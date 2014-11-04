@@ -118,6 +118,7 @@ int main(int argc, char *argv[]) {
 
     QQuickView mainView;
     mainView.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
+    mainView.setResizeMode(QQuickView::SizeRootObjectToView);
     mainView.show();
 
     QTranslator qt_translator;
