@@ -7,7 +7,7 @@
 #if defined(Q_OS_LINUX)
 static bool DumpCallback(const google_breakpad::MinidumpDescriptor &md,void *, bool succeeded)
 {
-    if (succeeded && QFile::exists("QSanSMTPClient.exe")){
+    if (succeeded && QFile::exists("QSanSMTPClient")){
         QProcess *process = new QProcess(qApp);
         QStringList args;
         args << QString(md.path());
