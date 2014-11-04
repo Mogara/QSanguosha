@@ -150,7 +150,6 @@ void Server::checkVersion(const QVariant &server_version)
         data << rooms.size();
         data << -1;//unlimited room number
         data << Config.AIDelay;
-        data << Config.RewardTheFirstShowingPlayer;
         notifyLobby(S_COMMAND_SETUP, data);
     } else {
         emit serverMessage(tr("Failed to setup for the version is different from the lobby."));

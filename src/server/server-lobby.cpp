@@ -56,7 +56,7 @@ void Server::cleanupLobbyPlayer()
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 7) return;
+    if (args.size() != 6) return;
 
     //check if the room server can be connected
     ushort port = args.at(1).toUInt();

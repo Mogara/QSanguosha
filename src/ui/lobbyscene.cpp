@@ -184,7 +184,7 @@ void LobbyScene::setRoomList(const QVariant &data)
             scrollTexts << (info->EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
             if (info->EnableCheat)
                 scrollTexts << (info->FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
-            if (info->RewardTheFirstShowingPlayer)
+            if (info->FirstShowingReward)
                 scrollTexts << tr("The reward of showing general first is enabled");
             if (!info->ForbidAddingRobot)
                 scrollTexts << tr("AI is enabled\n(%1 msec delay)").arg(info->AIDelay);

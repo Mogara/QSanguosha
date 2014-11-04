@@ -57,7 +57,6 @@ struct HostInfoStruct : public ServerInfoStruct {
     int RoomNum;
     int MaxRoomNum;
     int AIDelay;
-    bool RewardTheFirstShowingPlayer;
 
     bool parse(const QVariant &data);
 };
