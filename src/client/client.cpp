@@ -429,13 +429,11 @@ bool Client::processServerRequest(const Packet &packet) {
     _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
 
-    if (!replayer) {
-        Countdown countdown;
-        countdown.current = 0;
-        countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
-        countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-        setCountdown(countdown);
-    }
+    Countdown countdown;
+    countdown.current = 0;
+    countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+    countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    setCountdown(countdown);
 
     Callback callback = interactions[command];
     if (callback) {
