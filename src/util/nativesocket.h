@@ -24,6 +24,7 @@
 #include "socket.h"
 
 class QUdpSocket;
+class QTimer;
 
 class NativeServerSocket : public ServerSocket {
     Q_OBJECT
@@ -66,11 +67,19 @@ public:
 private slots:
     void getMessage();
     void raiseError(QAbstractSocket::SocketError socket_error);
+    void keepAlive();
+    void checkConnectionState();
 
 private:
     QTcpSocket *const socket;
 
+    bool is_alive;
+    QTimer *keep_alive_timer;
+
     void init();
+
+    static const qint64 KEEP_ALIVE_INTERVAL;
+    static const qint64 TIMEOUT_LIMIT;
 };
 
 #endif

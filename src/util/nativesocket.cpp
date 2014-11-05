@@ -26,6 +26,10 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QUdpSocket>
+#include <QTimer>
+
+const qint64 NativeClientSocket::KEEP_ALIVE_INTERVAL = 30000;
+const qint64 NativeClientSocket::TIMEOUT_LIMIT = 10000;
 
 NativeServerSocket::NativeServerSocket() {
     server = new QTcpServer(this);
@@ -93,6 +97,14 @@ void NativeClientSocket::init() {
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
         this, SLOT(raiseError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
+
+    is_alive = false;
+
+    keep_alive_timer = new QTimer(this);
+    keep_alive_timer->setSingleShot(false);
+    keep_alive_timer->setInterval(KEEP_ALIVE_INTERVAL);
+    keep_alive_timer->start();
+    connect(keep_alive_timer, SIGNAL(timeout()), this, SLOT(keepAlive()));
 }
 
 void NativeClientSocket::connectToHost() {
@@ -131,12 +143,23 @@ void NativeClientSocket::connectToHost(const QHostAddress &address, ushort port)
 }
 
 void NativeClientSocket::getMessage() {
+    is_alive = true;
+    keep_alive_timer->start();
+
     while (socket->canReadLine()) {
-        QByteArray msg = socket->readLine();
+        QByteArray raw = socket->readLine();
 #ifndef QT_NO_DEBUG
-        printf("recv: %s", msg.constData());
+        printf("recv: %s", raw.constData());
 #endif
-        emit message_got(msg);
+        QByteArray message = raw.trimmed();
+        if (!message.isEmpty()) {
+            emit message_got(message);
+        } else {
+            if (raw.at(0) == '\n') {//An empty line is used as a keep-alive request.
+                socket->write(" ");
+                socket->flush();
+            }
+        }
     }
 }
 
@@ -190,7 +213,6 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
             reason = tr("You are kicked from server");
         else
             reason = tr("Remote host close this connection");
-
         break;
     }
     case QAbstractSocket::HostNotFoundError:
@@ -205,3 +227,17 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
 }
 
+void NativeClientSocket::keepAlive()
+{
+    is_alive = false;
+    socket->write("\n");
+    QTimer::singleShot(TIMEOUT_LIMIT, this, SLOT(checkConnectionState()));
+}
+
+void NativeClientSocket::checkConnectionState()
+{
+    if (!is_alive) {
+        socket->abort();
+        keep_alive_timer->stop();
+    }
+}
