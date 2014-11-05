@@ -411,12 +411,16 @@ void Client::processServerPacket(const QByteArray &cmd) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
-                Callback callback = interactions[S_COMMAND_CHOOSE_GENERAL];
-                if (callback)
-                    (this->*callback)(packet.getMessageBody());
-            } else if (!replayer)
+            if (!replayer) {
                 processServerRequest(packet);
+            } else {
+                moveFocus(Self->objectName(), packet.getCommandType());
+                if (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
+                    Callback callback = interactions[S_COMMAND_CHOOSE_GENERAL];
+                    if (callback)
+                        (this->*callback)(packet.getMessageBody());
+                }
+            }
         }
     } else {
         processObsoleteServerPacket(cmd);
