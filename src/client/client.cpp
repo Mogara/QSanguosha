@@ -168,10 +168,6 @@ Client::Client(QObject *parent, const QString &filename)
     else {
         socket = new NativeClientSocket;
         socket->setParent(this);
-
-        recorder = new Recorder(this);
-
-        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
         connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
         socket->connectToHost();
@@ -290,8 +286,7 @@ void Client::restart()
 
     if (recorder) {
         recorder->deleteLater();
-        recorder = new Recorder(this);
-        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
+        recorder = NULL;
     }
 
     notifyServer(S_COMMAND_SIGNUP);
@@ -362,6 +357,12 @@ void Client::setup(const QVariant &setup_json) {
 
     QString setup_str = setup_json.toString();
     if (ServerInfo.parse(setup_str)) {
+        recorder = new Recorder(this);
+
+        Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+        setup_packet.setMessageBody(setup_json);
+        recorder->recordLine(setup_packet.toJson());
+
         Self = new ClientPlayer(this);
         Self->setScreenName(Config.UserName);
         Self->setProperty("avatar", Config.UserAvatar);
@@ -398,6 +399,10 @@ typedef char buffer_t[65535];
 
 void Client::processServerPacket(const QByteArray &cmd) {
     if (m_isGameOver) return;
+
+    if (recorder)
+        recorder->recordLine(cmd);
+
     Packet packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
