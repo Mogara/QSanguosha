@@ -826,9 +826,6 @@
     <ClCompile Include="Release\moc_PlayerCardBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\core\json.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\FreeChooseDialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -966,6 +963,9 @@
     </ClCompile>
     <ClCompile Include="Release\moc_tile.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\json.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1359,13 +1359,13 @@
     <ClInclude Include="..\..\src\ui\StyleHelper.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\core\json.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\exceptionhandler.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\roomconfig.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\json.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
