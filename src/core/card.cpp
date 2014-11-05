@@ -749,17 +749,17 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 }
 
 void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (targets.length() == 1) {
-        room->cardEffect(this, source, targets.first());
-    } else {
-        foreach(ServerPlayer *target, targets) {
-            CardEffectStruct effect;
-            effect.card = this;
-            effect.from = source;
-            effect.to = target;
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    foreach(ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
 
-            room->cardEffect(effect);
-        }
+        room->cardEffect(effect);
     }
 
     QList<int> table_cardids = room->getCardIdsOnTable(this);

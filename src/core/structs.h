@@ -65,6 +65,10 @@ struct CardEffectStruct {
 
     ServerPlayer *from;
     ServerPlayer *to;
+
+    bool multiple; // helper to judge whether the card has multiple targets
+                   // does not make sense if the card inherits SkillCard
+    bool nullified;
 };
 
 struct SlashEffectStruct {
@@ -81,6 +85,8 @@ struct SlashEffectStruct {
     int drank;
 
     DamageStruct::Nature nature;
+
+    bool nullified;
 };
 
 struct CardUseStruct {
@@ -103,6 +109,8 @@ struct CardUseStruct {
     QList<ServerPlayer *> to;
     bool m_isOwnerUse;
     bool m_addHistory;
+    bool m_isHandcard;
+    QStringList nullified_list;
 };
 
 class CardMoveReason {
@@ -387,35 +395,42 @@ struct CardResponseStruct {
         m_card = NULL;
         m_who = NULL;
         m_isUse = false;
+        m_isRetrial = false;
     }
 
     inline CardResponseStruct(const Card *card) {
         m_card = card;
         m_who = NULL;
         m_isUse = false;
+        m_isRetrial = false;
     }
 
     inline CardResponseStruct(const Card *card, ServerPlayer *who) {
         m_card = card;
         m_who = who;
         m_isUse = false;
+        m_isRetrial = false;
     }
 
     inline CardResponseStruct(const Card *card, bool isUse) {
         m_card = card;
         m_who = NULL;
         m_isUse = isUse;
+        m_isRetrial = false;
     }
 
     inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse) {
         m_card = card;
         m_who = who;
         m_isUse = isUse;
+        m_isRetrial = false;
     }
 
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
+    bool m_isHandcard;
+    bool m_isRetrial;
 };
 
 struct PlayerNumStruct {
