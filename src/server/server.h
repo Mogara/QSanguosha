@@ -88,7 +88,7 @@ protected:
 
     Role role;
     ServerSocket *server;
-    QStringList addresses;
+    QSet<QString> addresses;
 
     typedef void (Server::*LobbyFunction)(const QVariant &);
     static QHash<QSanProtocol::CommandType, LobbyFunction> lobbyFunctions;

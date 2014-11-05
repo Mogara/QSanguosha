@@ -89,7 +89,7 @@ void Server::broadcast(const AbstractPacket *packet)
 void Server::cleanup() {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (Config.ForbidSIMC)
-        addresses.removeOne(socket->peerAddress());
+        addresses.remove(socket->peerAddress());
 
     socket->deleteLater();
 }
@@ -110,7 +110,7 @@ void Server::processNewConnection(ClientSocket *socket)
             emit serverMessage(tr("Forbid the connection of address %1").arg(address));
             return;
         } else {
-            addresses.append(address);
+            addresses.insert(address);
         }
     }
 
