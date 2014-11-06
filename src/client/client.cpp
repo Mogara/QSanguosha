@@ -357,11 +357,15 @@ void Client::setup(const QVariant &setup_json) {
 
     QString setup_str = setup_json.toString();
     if (ServerInfo.parse(setup_str)) {
-        recorder = new Recorder(this);
+        if (replayer) {
+            ServerInfo.OperationTimeout = 0;
+        } else {
+            recorder = new Recorder(this);
 
-        Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-        setup_packet.setMessageBody(setup_json);
-        recorder->recordLine(setup_packet.toJson());
+            Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+            setup_packet.setMessageBody(setup_json);
+            recorder->recordLine(setup_packet.toJson());
+        }
 
         Self = new ClientPlayer(this);
         Self->setScreenName(Config.UserName);
