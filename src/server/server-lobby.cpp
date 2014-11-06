@@ -56,34 +56,28 @@ void Server::cleanupLobbyPlayer()
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 6) return;
+    if (args.size() != 4) return;
+    /*
+    args.at(0).toString();  //SetupString
+    args.at(1).toUInt();    //RoomId
+    args.at(2).toUInt();    //HostPort
+    args.at(3).toUInt();    //PlayerNum
+    */
 
     //check if the room server can be connected
-    ushort port = args.at(1).toUInt();
+    ushort port = args.at(2).toUInt();
     QTcpSocket socket;
     socket.connectToHost(from->peerAddress(), port);
     if (socket.waitForConnected(2000)) {
-        /*args.at(0).toString();  //SetupString
-        args.at(1).toUInt();    //HostPort
-        args.at(2).toInt();     //PlayerNum
-        args.at(3).toInt();     //RoomNum
-        args.at(4).toInt();     //MaxRoomNum
-        args.at(5).toInt();     //AIDelay*/
         ServerInfoStruct info;
         if (!info.parse(args.at(0).toString())) {
             emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
             return;
         }
 
-        int maxRoomNum = args.at(4).toInt();
-        if (maxRoomNum < -1 || (maxRoomNum != -1 && args.at(3).toInt() > maxRoomNum)) {
-            emit serverMessage(tr("%1 Invalid room number or max room number").arg(from->peerName()));
-            return;
-        }
-
         emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
 
-        args[1] = QString("%1:%2").arg(from->peerAddress()).arg(port);
+        args[2] = QString("%1:%2").arg(from->peerAddress()).arg(port);
         remoteRooms.insert(from, args);
 
         connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRemoteRoom()));
@@ -123,12 +117,9 @@ QVariant Server::getRoomList(int page)
         if (i >= offset) {
             JsonArray item;
             item << room->getSetupString();
+            item << room->getId();
             item << QVariant();//No host address. It's not a remote room.
             item << room->getPlayers().size();
-            item << room->getId();//room number
-            item << rooms.size();//max room number
-            const RoomConfig &config = room->getConfig();
-            item << config.AIDelay;
             data << QVariant(item);
         }
         i++;

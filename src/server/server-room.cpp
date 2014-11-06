@@ -145,11 +145,9 @@ void Server::checkVersion(const QVariant &server_version)
     if (lobby_version == client_version) {
         JsonArray data;
         data << Sanguosha->getSetupString();
+        data << 0;
         data << serverPort();
         data << players.size();
-        data << rooms.size();
-        data << -1;//unlimited room number
-        data << Config.AIDelay;
         notifyLobby(S_COMMAND_SETUP, data);
     } else {
         emit serverMessage(tr("Failed to setup for the version is different from the lobby."));

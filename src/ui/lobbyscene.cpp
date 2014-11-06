@@ -24,6 +24,7 @@
 #include "skinbank.h"
 #include "clientstruct.h"
 #include "tile.h"
+#include "engine.h"
 
 #include <QMainWindow>
 #include <QVBoxLayout>
@@ -177,19 +178,25 @@ void LobbyScene::setRoomList(const QVariant &data)
             Tile *tile = new Tile(info->Name, QSizeF(200.0, 100.0));
             tile->setAutoHideTitle(false);
             QStringList scrollTexts;
-            scrollTexts << tr("Player Number: %1 / %2").arg(info->PlayerNum).arg(info->GameMode);
+            scrollTexts << tr("Player Number: %1 / %2").arg(info->PlayerNum).arg(Sanguosha->getPlayerCount(info->GameMode));
+
             scrollTexts << (info->OperationTimeout == 0 ?
                 tr("There is no time limit") :
                 tr("Operation timeout is %1 seconds").arg(info->OperationTimeout));
-            scrollTexts << (info->EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
-            if (info->EnableCheat)
+
+            if (info->EnableCheat) {
+                scrollTexts << tr("Cheat is enabled");
                 scrollTexts << (info->FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
+            } else {
+                scrollTexts << tr("Cheat is disabled");
+            }
+
             if (info->FirstShowingReward)
                 scrollTexts << tr("The reward of showing general first is enabled");
-            if (!info->ForbidAddingRobot)
-                scrollTexts << tr("AI is enabled\n(%1 msec delay)").arg(info->AIDelay);
-            else
+            if (info->ForbidAddingRobot)
                 scrollTexts << tr("AI is disabled");
+            else
+                scrollTexts << tr("AI is enabled");
 
             tile->addScrollText(scrollTexts);
 
@@ -244,7 +251,7 @@ void LobbyScene::onRoomTileClicked()
 
     HostInfoStruct *info = rooms.at(index);
     if (info->HostAddress.isEmpty()) {
-        emit roomSelected(info->RoomNum);
+        emit roomSelected(info->RoomId);
     } else {
         Config.HostAddress = info->HostAddress;
         emit roomSelected();
