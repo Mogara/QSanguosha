@@ -158,9 +158,9 @@ Client::Client(QObject *parent, const QString &filename)
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
 
+    recorder = NULL;
     if (!filename.isEmpty()) {
         socket = NULL;
-        recorder = NULL;
 
         replayer = new Replayer(this, filename);
         connect(replayer, SIGNAL(command_parsed(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
