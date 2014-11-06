@@ -146,7 +146,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\src\breakpad\client\windows\;..\..\src\breakpad\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
