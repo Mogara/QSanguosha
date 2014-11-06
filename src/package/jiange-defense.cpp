@@ -51,12 +51,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
 
         QList<ServerPlayer *> draw_list;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -458,12 +453,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = ask_who;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(ask_who, objectName());
+        room->sendCompulsoryTriggerLog(ask_who, objectName());
 
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
 
@@ -596,12 +586,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         QList<ServerPlayer *> targets;
 
@@ -649,12 +634,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         CardUseStruct use = data.value<CardUseStruct>();
 
@@ -687,11 +667,7 @@ public:
         QList<ServerPlayer *> targets;
         Room *room = player->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
+        room->sendCompulsoryTriggerLog(player, objectName(), false);
 
         ArcheryAttack *aa = new ArcheryAttack(Card::NoSuit, 0);
         aa->setSkillName("_" + objectName());
@@ -753,12 +729,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         ServerPlayer *victim = NULL;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -1230,12 +1201,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
         room->loseHp(target);
         return false;
     }
@@ -1269,12 +1235,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1468,13 +1429,8 @@ public:
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
         Room *room = player->getRoom();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
         return n - 1;
     }
 };
@@ -1508,12 +1464,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
 
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {

@@ -144,12 +144,7 @@ public:
             }
             if (!can_invoke) return false;
 
-            LogMessage log;
-            log.from = player;
-            log.arg = objectName();
-            log.type = "#TriggerSkill";
-            room->sendLog(log);
-            room->notifySkillInvoked(player, objectName());
+            room->sendCompulsoryTriggerLog(player, objectName());
 
             if (use.card->isKindOf("Duel"))
                 room->setPlayerMark(player, "WushuangTarget", 1);

@@ -938,12 +938,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{
         Room *room = dongzhuo->getRoom();
-        LogMessage log;
-        log.from = dongzhuo;
-        log.arg = objectName();
-        log.type = "#TriggerSkill";
-        room->sendLog(log);
-        room->notifySkillInvoked(dongzhuo, objectName());
+        room->sendCompulsoryTriggerLog(dongzhuo, objectName());
 
         QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
         int index = (result == "hp") ? 2 : 1;
@@ -1043,17 +1038,16 @@ public:
             foreach(ServerPlayer *to, use.to){
                 if (use.from->inSiegeRelation(player, to)){
                     if (to->canDiscard(to, "e")) {
-                        LogMessage log;
+                        ServerPlayer *log_from;
                         if (player->hasSkill(this)) {
-                            log.from = player;
+                            log_from = player;
                         } else if (player->getNextAlive() == to) {
-                            log.from = qobject_cast<ServerPlayer *>(player->getNextAlive(2));
+                            log_from = qobject_cast<ServerPlayer *>(player->getNextAlive(2));
                         } else if (player->getLastAlive() == to) {
-                            log.from = qobject_cast<ServerPlayer *>(player->getLastAlive(2));
+                            log_from = qobject_cast<ServerPlayer *>(player->getLastAlive(2));
                         }
-                        log.arg = objectName();
-                        log.type = "#TriggerSkill";
-                        room->sendLog(log);
+                        Q_ASSERT(log_from);
+                        room->sendCompulsoryTriggerLog(log_from, objectName(), false);
 
                         room->broadcastSkillInvoke(objectName(), player);
                         room->notifySkillInvoked(player, objectName());
@@ -1113,7 +1107,7 @@ public:
         log.type = "$ViewDrawPile";
         log.from = player;
         log.card_str = IntList2StringList(guanxing).join("+");
-        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
+        room->sendLog(log, player);
 
         room->askForGuanxing(player, guanxing, Room::GuanxingUpOnly);
 
