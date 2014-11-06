@@ -200,7 +200,7 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	end]]
 	if not target then
 		for _, enemy in ipairs(self.enemies) do
-			if self:isGoodChainTarget(enemy, sel.player, sgs.DamageStruct_Fire, 2, nil) then
+			if self:isGoodChainTarget(enemy, self.player, sgs.DamageStruct_Fire, 2, nil) then
 				target = enemy
 				break
 			end
