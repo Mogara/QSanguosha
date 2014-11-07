@@ -697,6 +697,9 @@ function sgs.getDefense(player)
 	if player:getArmor() and player:hasArmorEffect(player:getArmor():objectName()) then defense = defense + 2 end
 	if player:getDefensiveHorse() then defense = defense + 0.5 end
 
+	if player:hasTreasure("JadeSeal") then defense = defense + 2 end
+	if player:hasTreasure("WoodenOx") then defense = defense + player:getPile("wooden_ox"):length() end
+
 	if hasEightDiagram then
 		if player:hasShownSkill("tiandu") then defense = defense + 1 end
 		if player:hasShownSkill("leiji") then defense = defense + 1 end
@@ -3626,7 +3629,7 @@ function getCardsNum(class_name, player, from)
 	local blacknull = 0
 	local equipnull = 0
 	local equipcard = 0
-    local trickcard = 0
+	local trickcard = 0
 	local heartslash = 0
 	local heartpeach = 0
 	local spadenull = 0

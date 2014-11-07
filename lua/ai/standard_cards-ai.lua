@@ -206,6 +206,8 @@ function sgs.getDefenseSlash(player, self)
 		defense = defense - 0.6
 	end
 
+	if player:hasTreasure("JadeSeal") then defense = defense - 0.5 end
+
 	if not player:faceUp() then defense = defense - 0.35 end
 
 	if player:containsTrick("indulgence") then defense = defense - 0.15 end
@@ -2029,7 +2031,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then
 			addTarget(enemy, enemy:getArmor():getEffectiveId())
 		end
-		if enemy:getTreasure() and (enemy:getPile("wooden_ox"):length() > 1 or enemy:hasTreasure("JadeSeal")) 
+		if enemy:getTreasure() and (enemy:getPile("wooden_ox"):length() > 1 or enemy:hasTreasure("JadeSeal"))
 			and (not isDiscard or self.player:canDiscard(enemy, enemy:getTreasure():getEffectiveId())) then
 			addTarget(enemy, enemy:getTreasure():getEffectiveId())
 		end
@@ -2745,8 +2747,8 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		elseif card:isKindOf("QinggangSword") then qinggang = card:getEffectiveId()
 		elseif card:isKindOf("Axe") then axe = card:getEffectiveId()
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
-		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId() 
-		
+		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId()
+
 		elseif isCard("JadeSeal", card, self.player) then jadeseal = card:getEffectiveId()  end
 
 		if not weapon and card:isKindOf("Weapon") then weapon = card:getEffectiveId() end
@@ -2816,7 +2818,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 		if before_num > after_num and (self:isWeak() or self:getCardsNum("Jink") == 0) then return DefHorse end
 	end
-	
+
 	if jadeseal then
 		for _, friend in ipairs(self.friends) do
 			if not (friend:getTreasure() and friend:getPile("wooden_ox"):length() > 1) then return jadeseal end
