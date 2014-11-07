@@ -2339,10 +2339,10 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 	else
 		local dangerous = self:getDangerousCard(who)
 		if flags:match("e") and dangerous and (not isDiscard or self.player:canDiscard(who, dangerous)) then return dangerous end
-		if flags:match("e") and who:getTreasure() and who:getPile("wooden_ox"):length() > 1 and (not isDiscard or self.player:canDiscard(who, who:getTreasure():getId())) then
+		if flags:match("e") and who:getTreasure() and (who:getPile("wooden_ox"):length() > 1 or who:hasTreasure("JadeSeal")) and (not isDiscard or self.player:canDiscard(who, who:getTreasure():getId())) then
 			return who:getTreasure():getId()
 		end
-		if flags:match("e") and who:hasArmorEffect("EightDiagram") and (not isDiscard or self.player:canDiscard(who, who:getArmor():getId())) then return who:getArmor():getId() end
+		if flags:match("e") and who:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(who) and (not isDiscard or self.player:canDiscard(who, who:getArmor():getId())) then return who:getArmor():getId() end
 		if flags:match("e") and who:hasShownSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if who:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getDefensiveHorse():getEffectiveId())) then return who:getDefensiveHorse():getEffectiveId() end
 			if who:getArmor() and (not isDiscard or self.player:canDiscard(who, who:getArmor():getEffectiveId())) then return who:getArmor():getEffectiveId() end
@@ -2396,9 +2396,10 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 
 		if flags:match("e") and not self:doNotDiscard(who, "e") then
 			if who:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getDefensiveHorse():getEffectiveId())) then return who:getDefensiveHorse():getEffectiveId() end
-			if who:getArmor() and (not isDiscard or self.player:canDiscard(who, who:getArmor():getEffectiveId())) then return who:getArmor():getEffectiveId() end
+			if who:getArmor() and not self:needToThrowArmor(who) and (not isDiscard or self.player:canDiscard(who, who:getArmor():getEffectiveId())) then return who:getArmor():getEffectiveId() end
 			if who:getOffensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getOffensiveHorse():getEffectiveId())) then return who:getOffensiveHorse():getEffectiveId() end
 			if who:getWeapon() and (not isDiscard or self.player:canDiscard(who, who:getWeapon():getEffectiveId())) then return who:getWeapon():getEffectiveId() end
+			if who:getTreasure() and (not isDiscard or self.player:canDiscard(who, who:getTreasure():getEffectiveId())) then return who:getTreasure():getEffectiveId() end
 		end
 
 		if flags:match("h") then
@@ -4441,7 +4442,7 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:isKindOf("Treasure") then
-		if self.player:getPile("wooden_ox"):length() > 0 then return end
+		if self.player:getPile("wooden_ox"):length() > 0 or self.player:hasTreasure("JadeSeal") then return end
 		-- @todo
 		use.card = card
 	elseif self.lua_ai:useCard(card) then

@@ -122,6 +122,16 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 			end
 		end
 	end
+	
+	if self.player:hasTreasure("JadeSeal") then
+		if not self.player:hasShownOneGeneral() then
+			if canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy then
+				return "GameRule_AskForGeneralShowDeputy"
+			end
+		end
+	end
 
 	if ((sgs.GetConfig("RewardTheFirstShowingPlayer", false) and shown == 0) or self:willShowForAttack()) and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(bothShow) do

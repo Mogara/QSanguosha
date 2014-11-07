@@ -1789,7 +1789,7 @@ function SmartAI:getValuableCard(who)
 	end
 
 	if treasure then
-		if treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
+		if (treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1) or treasure:isKindOf("JadeSeal") then
 			return treasure:getEffectiveId()
 		end
 	end
@@ -2019,7 +2019,11 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if enemy:hasArmorEffect("EightDiagram")	and not self:needToThrowArmor(enemy)
+		if enemy:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(enemy)
+			and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then
+			addTarget(enemy, enemy:getArmor():getEffectiveId())
+		end
+		if enemy:getTreasure() and (enemy:getPile("wooden_ox"):length() > 1 or enemy:hasTreasure("JadeSeal")) 
 			and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then
 			addTarget(enemy, enemy:getArmor():getEffectiveId())
 		end
@@ -2635,7 +2639,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 	if (not friendneedpeach and peach) or peachnum > 1 then return peach end
 
-	local exnihilo, jink, analeptic, nullification, snatch, dismantlement, befriendattacking
+	local exnihilo, jink, analeptic, nullification, snatch, dismantlement, befriendattacking,jadeseal
 	for _, card in ipairs(cards) do
 		if isCard("ExNihilo", card, self.player) then
 			if not NextPlayerCanUse or (not self:willSkipPlayPhase() and (self.player:hasSkills("jizhi|zhiheng|rende") or not NextPlayer:hasShownSkills("jizhi|zhiheng|rende"))) then
@@ -2653,6 +2657,8 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			dismantlement = card
 		elseif isCard("BefriendAttacking", card, self.player) then
 			befriendattacking = card
+		elseif isCard("JadeSeal", card, self.player) then
+			jadeseal = card
 		end
 
 	end

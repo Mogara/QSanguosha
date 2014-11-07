@@ -83,7 +83,7 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 	end
 end
 
-sgs.ai_use_priority.TransferCard = -0.1
+sgs.ai_use_priority.TransferCard = 0.01
 sgs.ai_card_intention.TransferCard = -10
 
 --Drowning

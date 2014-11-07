@@ -1450,6 +1450,9 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 			end
 		end
 	end
+	if self.player:hasTreasure("JadeSeal") then
+		extra = extra + 1
+	end
 	if self.player:getHandcardNum() + extra <= 1 then return true end
 	if not self:willShowForDefence() and not self:willShowForAttack() then return false end
 
