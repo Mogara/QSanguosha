@@ -456,6 +456,7 @@ public:
         return false;
     }
 
+    /*
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL || !player->isAlive())
             return QStringList();
@@ -513,6 +514,67 @@ public:
                     foreach(ServerPlayer *p, owners){
                         if (p->isFriendWith(player))
                             return QStringList(objectName());
+                    }
+                }
+            }
+        }
+        return QStringList();
+    }
+    */
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL || !player->isAlive())
+            return QStringList();
+        QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded){
+            ServerPlayer *from = NULL;
+            bool is_use = false;
+            const Card *card = NULL;
+            if (triggerEvent == CardUsed) {
+                is_use = true;
+                CardUseStruct use = data.value<CardUseStruct>();
+                from = use.from;
+                card = use.card;
+            }
+            else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                is_use = resp.m_isUse;
+                from = player;
+                card = resp.m_card;
+            }
+            if (from->getPhase() == Player::Play && from->getMark(objectName()) == 0 && is_use){
+                if (!card->isKindOf("SkillCard"))
+                    from->addMark(objectName());
+                if (card->isKindOf("Slash")) {
+                    from->tag.remove("yongjue_id");
+                    int yongjue_id = -1;
+                    if (!card->isVirtualCard())
+                        yongjue_id = card->getId();
+                    else if (card->subcardsLength() == 1) {
+                        const Card *c = Sanguosha->getCard(card->getSubcards().first());
+                        if (c->isKindOf("Slash"))
+                            yongjue_id = c->getId();
+                    }
+
+                    if (yongjue_id != -1)
+                        from->tag["yongjue_id"] = yongjue_id;
+                }
+            }
+        }
+        else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != NULL && move.from->tag.contains("yongjue_card") && player == move.from
+                    && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
+                    && move.from_places.contains(Player::PlaceTable) && move.to_place == Player::DiscardPile) {
+                if (move.card_ids.length() == 1) {
+                    bool ok = false;
+                    int yongjue_id = player->tag["yongjue_id"].toInt(&ok);
+                    if (ok && yongjue_id == move.card_ids.first()) {
+                        ask_who = player;
+                        foreach (ServerPlayer *p, owners) {
+                            if (p->isFriendWith(player))
+                                return QStringList(objectName());
+                        }
                     }
                 }
             }
