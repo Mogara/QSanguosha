@@ -699,7 +699,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 					if getCardsNum("Jink", enemy, self.player) < 1
 						or enemy:isKongcheng()
 						or self:canLiegong(enemy, self.player)
-						or self.player:hasShownSkills("tieji|wushuang")
+						or self.player:hasShownSkills("tieqi|wushuang")
 						or (self.player:hasWeapon("Axe") or self:getCardsNum("Axe") > 0) and self.player:getCards("he"):length() > 4
 						then
 						return analeptic

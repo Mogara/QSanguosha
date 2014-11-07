@@ -23,13 +23,6 @@ local transfer_skill = {}
 transfer_skill.name = "transfer"
 table.insert(sgs.ai_skills, transfer_skill)
 transfer_skill.getTurnUseCard = function(self, inclusive)
-	if self.player:isKongcheng() then return end
-	if self.player:hasSkill("rende") then return end
-	if not self.player:hasSkill("kongcheng") then
-		if self:isWeak() and self:getOverflow() <= 0 then return end
-		if not self.player:hasShownOneGeneral() then return end
-	end
-	if self.toUse and #self.toUse > 1 then return end
 	for _, c in sgs.qlist(self.player:getCards("he")) do
 		if c:isTransferable() then return sgs.Card_Parse("@TransferCard=.") end
 	end
@@ -119,7 +112,7 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 	end
 end
 
-sgs.ai_use_priority.TransferCard = 0.01
+sgs.ai_use_priority.TransferCard = -99
 sgs.ai_card_intention.TransferCard = -10
 
 --Drowning
