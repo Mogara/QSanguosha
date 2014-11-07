@@ -332,7 +332,7 @@ sgs.jizhi_keep_value = {
 
 
 sgs.ai_skill_invoke.liegong = function(self, data)
-	if not self:willShowForAttack() then return false end
+	if not self:willShowForAttack() and not self.player:hasSkills("liegong+paoxiao") then return false end
 	local target = data:toPlayer()
 	return not self:isFriend(target)
 end
