@@ -1671,7 +1671,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	end
 
-	if not sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
+	-- if sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
 
 	sgs.lastevent = event
 	sgs.lasteventdata = data
