@@ -328,7 +328,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 	end
 
 	if not self:damageIsEffective_(damageStruct) then return end
-	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
+	if card and card:isKindOf("TrickCard") and not self:hasTrickEffective(card, to, self.player) then return end
 
 	local jiaren_zidan = sgs.findPlayerByShownSkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
@@ -351,22 +351,21 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		if self:isWeak(target) then newvalue = newvalue - 1 end
 		if dmg and nature == sgs.DamageStruct_Fire then
 			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
-			if target:getMark("@gale") > 0 then damage = damage + 1 end
+			if target:getMark("@gale") > 0 then dmg = dmg + 1 end
 		end
 		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
-		if damage + (dmg or 0) >= target:getHp() and self:isFriend(from) then
-			newvalue = newvalue - 2
+		if damage + (dmg or 0) >= target:getHp() then
+			if self:isFriend(target) or self:isFriend(from) then newvalue = newvalue - 2 end
 			if self:isEnemy(target) then kills = kills + 1 end
 			if target:objectName() == self.player:objectName() and #self.friends_noself == 0 and peach_num < damage + (dmg or 0) then newvalue = newvalue - 100 end
 		else
-			if self:isEnemy(target) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
+			if self:isEnemy(target) and self:isFriend(from) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
 				and self:damageIsEffective(from, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
 		end
 
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
 		return newvalue - damage - (dmg or 0)
 	end
-
 
 	local value = getChainedPlayerValue(to)
 	if self:isFriend(to) then

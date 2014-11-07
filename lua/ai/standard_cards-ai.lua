@@ -1112,7 +1112,10 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 
 		local hcards = {}
 		for _, c in sgs.qlist(self.player:getHandcards()) do
-			if not (isCard("Slash", c, self.player) and self:hasCrossbowEffect()) then table.insert(hcards, c) end
+			if not (isCard("Slash", c, self.player) and self:hasCrossbowEffect())
+				and (not isCard("Peach", c, self.player) or target:getHp() == 1 and self:isWeak(target)) then
+				table.insert(hcards, c)
+			end
 		end
 		self:sortByKeepValue(hcards)
 		local cards = {}

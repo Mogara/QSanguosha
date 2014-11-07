@@ -4195,7 +4195,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 
 	local nature = sgs.DamageStruct_Normal
 	if card:isKindOf("FireAttack") or card:isKindOf("BurningCamps") then nature = sgs.DamageStruct_Fire
-	elseif card:isKindOf("Drownning") then nature = sgs.DamageStruct_Thunder end
+	elseif card:isKindOf("Drowning") then nature = sgs.DamageStruct_Thunder end
 
 	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
 		and not self:damageIsEffective(to, nature, from) then return false end
@@ -4950,7 +4950,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
 		local dyingfriend = 0
 		for _, friend in ipairs(self:getFriends(from)) do
-			if friend:getHp() < 2 and peach_num then
+			if friend:getHp() < 2 and peach_num == 0 then
 				dyingfriend = dyingfriend + 1
 			end
 		end

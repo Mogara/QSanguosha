@@ -73,13 +73,49 @@ sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 		end
 	end
 
-	if #friends_other == 0 then return end
+	if friends_other > 0 then
+		local card, target = self:getCardNeedPlayer(cards, friends_other, "transfer")
+		if card and target then
+			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+			if use.to then use.to:append(target) end
+			return
+		end
+	end
 
-	local card, target = self:getCardNeedPlayer(cards, friends_other, "transfer")
-	if card and target then
-		use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
-		if use.to then use.to:append(target) end
-		return
+	for _, card in ipairs(cards) do
+		if card:isKindOf("ThreatenEmperor") then
+			local anjiang = 0
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if sgs.isAnjiang(p) then anjiang = anjiang + 1 end
+			end
+
+			local big_kingdoms = self.player:getBigKingdoms("AI")
+			local big_kingdom = #big_kingdoms > 0 and big_kingdoms[1]
+			local maxNum = (big_kingdom and (big_kingdom:startsWith("sgs") and 99 or self.player:getPlayerNumWithSameKingdom("AI", big_kingdom)))
+							or (anjiang == 0 and 99)
+							or 0
+
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if p:hasShownOneGeneral() and transferCard:targetFilter(targets, p, self.player)
+					and p:objectName() ~= big_kingdom and (not table.contains(big_kingdoms, p:getKingdom()) or p:getRole() == "careerist")
+					and (maxNum == 99 or p:getPlayerNumWithSameKingdom("AI") + anjiang < maxNum) then
+					use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+					if use.to then use.to:append(p) end
+					return
+				end
+			end
+		elseif card:isKindOf("BurningCamps") then
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if p:hasShownOneGeneral() and transferCard:targetFilter(targets, p, self.player) and card:isAvailable(p) then
+					local np = p:getNextAlive()
+					if not self:isFriend(np) and (not np:isChained() or self:isGoodChainTarget(np, p, sgs.DamageStruct_Fire, 1, use.card)) then
+						use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+						if use.to then use.to:append(p) end
+						return
+					end
+				end
+			end
+		end
 	end
 end
 
