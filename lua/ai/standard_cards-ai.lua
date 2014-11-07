@@ -1744,6 +1744,12 @@ sgs.dynamic_value.benefit.ExNihilo = true
 function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
 	local armor = who:getArmor()
+	local treasure = who:getTreasure()
+	if treasure then
+		if treasure:isKindOf("JadeSeal") then
+			return treasure:getEffectiveId()
+		end
+	end
 	if weapon and (weapon:isKindOf("Crossbow") or weapon:isKindOf("GudingBlade")) then
 		for _, friend in ipairs(self.friends) do
 			if weapon:isKindOf("Crossbow") and who:distanceTo(friend) <= 1 and getCardsNum("Slash", who, self.player) > 0 then
