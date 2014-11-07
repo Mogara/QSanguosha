@@ -389,7 +389,7 @@ sgs.ai_skill_invoke.yingzi = function(self, data)
 					target = p
 				end
 			end
-			if target and self:isFriend(target) then return true end
+			if target and not self:isFriend(target) and num + count > 6 then return false
 		end
 	end
 	return true
