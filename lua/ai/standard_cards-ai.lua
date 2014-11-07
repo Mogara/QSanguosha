@@ -2025,7 +2025,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		end
 		if enemy:getTreasure() and (enemy:getPile("wooden_ox"):length() > 1 or enemy:hasTreasure("JadeSeal")) 
 			and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then
-			addTarget(enemy, enemy:getArmor():getEffectiveId())
+			addTarget(enemy, enemy:getTreasure():getEffectiveId())
 		end
 	end
 
@@ -2639,7 +2639,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 	if (not friendneedpeach and peach) or peachnum > 1 then return peach end
 
-	local exnihilo, jink, analeptic, nullification, snatch, dismantlement, befriendattacking,jadeseal
+	local exnihilo, jink, analeptic, nullification, snatch, dismantlement, befriendattacking
 	for _, card in ipairs(cards) do
 		if isCard("ExNihilo", card, self.player) then
 			if not NextPlayerCanUse or (not self:willSkipPlayPhase() and (self.player:hasSkills("jizhi|zhiheng|rende") or not NextPlayer:hasShownSkills("jizhi|zhiheng|rende"))) then
@@ -2657,8 +2657,6 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			dismantlement = card
 		elseif isCard("BefriendAttacking", card, self.player) then
 			befriendattacking = card
-		elseif isCard("JadeSeal", card, self.player) then
-			jadeseal = card
 		end
 
 	end
@@ -2724,7 +2722,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 	end
 
-	local eightdiagram, silverlion, vine, renwang, ironarmor, DefHorse, OffHorse
+	local eightdiagram, silverlion, vine, renwang, ironarmor, DefHorse, OffHorse, jadeseal
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
 	for _, card in ipairs(cards) do
 		if card:isKindOf("EightDiagram") then eightdiagram = card:getEffectiveId()
@@ -2741,7 +2739,9 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		elseif card:isKindOf("QinggangSword") then qinggang = card:getEffectiveId()
 		elseif card:isKindOf("Axe") then axe = card:getEffectiveId()
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
-		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId() end
+		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId() 
+		
+		elseif isCard("JadeSeal", card, self.player) then jadeseal = card:getEffectiveId()  end
 
 		if not weapon and card:isKindOf("Weapon") then weapon = card:getEffectiveId() end
 	end
@@ -2809,6 +2809,12 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			end
 		end
 		if before_num > after_num and (self:isWeak() or self:getCardsNum("Jink") == 0) then return DefHorse end
+	end
+	
+	if jadeseal then
+		for _, friend in ipairs(self.friends) do
+			if not (friend:getTreasure() and friend:getPile("wooden_ox"):length() > 1) then return jadeseal end
+		end
 	end
 
 	if analeptic then
