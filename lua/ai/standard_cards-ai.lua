@@ -34,18 +34,25 @@ function SmartAI:canAttack(enemy, attacker, nature)
 end
 
 
-function sgs.isGoodHp(player)
-	local goodHp = player:getHp() > 1 or getCardsNum("Peach", player, global_room:getCurrent()) >= 1 or getCardsNum("Analeptic", player, global_room:getCurrent()) >= 1
+function sgs.isGoodHp(player, observer)
+	observer = observer or sgs.recorder.player
+	local goodHp = player:getHp() > 1 or getCardsNum("Peach", player, observer) >= 1 or getCardsNum("Analeptic", player, observer) >= 1
 					or hasBuquEffect(player) or (player:hasShownSkill("niepan") and player:getMark("@nirvana") > 0)
 	if goodHp then
 		return goodHp
-	elseif sgs.ais[player:objectName()]:getAllPeachNum(player) >= 1 and not global_room:getCurrent():hasShownSkill("wansha") then
-		return true
+	else
+		local n = 0
+		for _, friend in ipairs(sgs.recorder:getFriends(player)) do
+			if global_room:getCurrent():hasShownSkill("wansha") and player:objectName() ~= friend:objectName() then continue end
+			n = n + getCardsNum("Peach", friend, observer)
+		end
+		return n > 0
 	end
 	return false
 end
 
 function sgs.isGoodTarget(player, targets, self, isSlash)
+	if not self then global_room:writeToConsole(debug.traceback()) end
 	-- self = self or sgs.ais[player:objectName()]
 	local arr = { "jieming", "yiji", "fangzhu" }
 	local m_skill = false
@@ -55,7 +62,7 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		if #targets == 1 then return true end
 		local foundtarget = false
 		for i = 1, #targets, 1 do
-			if sgs.isGoodTarget(targets[i]) and not self:cantbeHurt(targets[i]) then
+			if sgs.isGoodTarget(targets[i], nil, self) and not self:cantbeHurt(targets[i]) then
 				foundtarget = true
 				break
 			end
@@ -78,7 +85,7 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		return true
 	end
 
-	if m_skill and sgs.isGoodHp(player) then
+	if m_skill and sgs.isGoodHp(player, self.player) then
 		return false
 	else
 		return true
@@ -86,8 +93,8 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 end
 
 function sgs.getDefenseSlash(player, self)
-	if not player then return 0 end
-	local attacker = self and self.player or global_room:getCurrent()
+	if not player or not self then global_room:writeToConsole(debug.traceback()) return 0 end
+	local attacker = self.player
 	local defense = getCardsNum("Jink", player, attacker)
 
 	local knownJink = getKnownCard(player, attacker, "Jink", true)
@@ -157,7 +164,7 @@ function sgs.getDefenseSlash(player, self)
 	if attacker then
 		local m = sgs.masochism_skill:split("|")
 		for _, masochism in ipairs(m) do
-			if player:hasShownSkill(masochism) and sgs.isGoodHp(player) then
+			if player:hasShownSkill(masochism) and sgs.isGoodHp(player, self.player) then
 				defense = defense + 1
 			end
 		end
@@ -165,7 +172,7 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasShownSkill("yiji") then defense = defense + 4 end
 	end
 
-	if not sgs.isGoodTarget(player) then defense = defense + 10 end
+	if not sgs.isGoodTarget(player, nil, self) then defense = defense + 10 end
 
 	if player:hasShownSkill("rende") and player:getHp() > 2 then defense = defense + 1 end
 	if player:hasShownSkill("kuanggu") and player:getHp() > 1 then defense = defense + 0.2 end
@@ -245,10 +252,6 @@ function sgs.getDefenseSlash(player, self)
 
 	end
 	return defense
-end
-
-sgs.ai_compare_funcs["defenseSlash"] = function(a,b)
-	return sgs.getDefenseSlash(a) < sgs.getDefenseSlash(b)
 end
 
 function SmartAI:slashProhibit(card, enemy, from)
@@ -1642,8 +1645,8 @@ function SmartAI:useCardDuel(duel, use)
 		if enemy:hasSkill("wushuang") then n2 = n2 * 2 end
 		if sgs.card_lack[enemy:objectName()]["Slash"] == 1 then n2 = 0 end
 		useduel = n1 >= n2 or self:needToLoseHp(self.player, nil, nil, true)
-					or self:getDamagedEffects(self.player, enemy) or (n2 < 1 and sgs.isGoodHp(self.player))
-					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player)
+					or self:getDamagedEffects(self.player, enemy) or (n2 < 1 and sgs.isGoodHp(self.player, self.player))
+					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player, self.player)
 						and n1 + self.player:getHp() >= n2 and self:isWeak(enemy))
 
 		if self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
@@ -2035,7 +2038,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	for i = 1, 2 + (isJixi and 3 or 0), 1 do
 		for _, enemy in ipairs(enemies) do
 			if not enemy:isNude() and not (self:needKongcheng(enemy) and i <= 2) and not self:doNotDiscard(enemy) then
-				if (enemy:getHandcardNum() == i and sgs.getDefenseSlash(enemy) < 6 + (isJixi and 6 or 0) and enemy:getHp() <= 3 + (isJixi and 2 or 0)) then
+				if (enemy:getHandcardNum() == i and sgs.getDefenseSlash(enemy, self) < 6 + (isJixi and 6 or 0) and enemy:getHp() <= 3 + (isJixi and 2 or 0)) then
 					local cardchosen
 					if self.player:distanceTo(enemy) == self.player:getAttackRange() + 1 and enemy:getDefensiveHorse() and not self:doNotDiscard(enemy, "e")
 						and (not isDiscard or self.player:canDiscard(enemy, enemy:getDefensiveHorse():getEffectiveId()))then
@@ -2695,7 +2698,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 				possible_attack = possible_attack + 1
 			end
 		end
-		if possible_attack > self:getCardsNum("Jink") and self:getCardsNum("Jink") <= 2 and sgs.getDefenseSlash(self.player) <= 2 then
+		if possible_attack > self:getCardsNum("Jink") and self:getCardsNum("Jink") <= 2 and sgs.getDefenseSlash(self.player, self) <= 2 then
 			if jink or analeptic or exnihilo then return jink or analeptic or exnihilo end
 		else
 			if exnihilo then return exnihilo end
@@ -3146,7 +3149,7 @@ sgs.ai_skill_use["@@Triblade"] = function(self, prompt)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	for _, c in ipairs(cards) do
-		if not self.player:isCardLimited(c, sgs.Card_MethodDiscard) then id = c:getEffectiveId() break end
+		if not self.player:isCardLimited(c, sgs.Card_MethodDiscard) and not self:isValuableCard(c) then id = c:getEffectiveId() break end
 	end
 	if not id then return "." end
 	for _, target in sgs.qlist(targets) do

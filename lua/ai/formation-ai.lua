@@ -206,7 +206,7 @@ function SmartAI:isTiaoxinTarget(enemy)
 	if sgs.card_lack[enemy:objectName()]["Slash"] == 1
 		or self:needLeiji(self.player, enemy)
 		or self:getDamagedEffects(self.player, enemy, true)
-		or self:needToLoseHp(self.player, enemy, true)
+		or self:needToLoseHp(self.player, enemy, true, true)
 		then return true end
 	return false
 end
@@ -388,6 +388,10 @@ local invoke_qianhuan = function(self, use)
 		if use.card:isKindOf("Slash") or use.card:isKindOf("Duel") or use.card:isKindOf("FireAttack") or use.card:isKindOf("BurningCamps")
 			or use.card:isKindOf("ArcheryAttack") or use.card:isKindOf("Drowning") or use.card:isKindOf("SavageAssault") then
 			return true
+		end
+		if use.card:isKindOf("KnownBoth") or use.card:isKindOf("Dismantlement") or use.card:isKindOf("Indulgence") then
+			--@todo
+			return false
 		end
 		self.room:writeToConsole("invoke_qianhuan ? " .. use.card:getClassName())
 		return false

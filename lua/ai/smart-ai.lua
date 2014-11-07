@@ -977,6 +977,40 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 	return newvalue
 end
 
+function SmartAI:adjustKeepValue(card, v)
+	local suits = {"club", "spade", "diamond", "heart"}
+	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
+		local callback = sgs.ai_suit_priority[askill:objectName()]
+		if type(callback) == "function" then
+			suits = callback(self, card):split("|")
+			break
+		elseif type(callback) == "string" then
+			suits = callback:split("|")
+			break
+		end
+	end
+	table.insert(suits, "no_suit")
+
+	if card:isKindOf("Slash") then
+		if card:isRed() then v = v + 0.02 end
+		if card:isKindOf("NatureSlash") then v = v + 0.03 end
+		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
+	elseif card:isKindOf("HegNullification") then v = v + 0.02
+	end
+
+	if self.player:getPile("wooden_ox"):contains(card:getEffectiveId()) then
+		v = v - 0.01
+	end
+
+	local suits_value = {}
+	for index,suit in ipairs(suits) do
+		suits_value[suit] = index * 2
+	end
+	v = v + (suits_value[card:getSuitString()] or 0) / 100
+	v = v + card:getNumber() / 500
+	return v
+end
+
 function SmartAI:getUseValue(card)
 	local class_name = card:isKindOf("LuaSkillCard") and card:objectName() or card:getClassName()
 	local v = sgs.ai_use_value[class_name] or 0
@@ -1225,84 +1259,6 @@ function SmartAI:cardNeed(card)
 	return self:getUseValue(card)
 end
 
--- compare functions
-sgs.ai_compare_funcs = {
-	hp = function(a, b)
-		local c1 = a:getHp()
-		local c2 = b:getHp()
-		if c1 == c2 then
-			return sgs.ai_compare_funcs.defense(a, b)
-		else
-			return c1 < c2
-		end
-	end,
-
-	handcard = function(a, b)
-		local c1 = a:getHandcardNum()
-		local c2 = b:getHandcardNum()
-		if c1 == c2 then
-			return sgs.ai_compare_funcs.defense(a, b)
-		else
-			return c1 < c2
-		end
-	end,
-
-	handcard_defense = function(a, b)
-		local c1 = a:getHandcardNum()
-		local c2 = b:getHandcardNum()
-		if c1 == c2 then
-			return  sgs.ai_compare_funcs.defense(a, b)
-		else
-			return c1 < c2
-		end
-	end,
-
-	value = function(a, b)
-		return sgs.getValue(a) < sgs.getValue(b)
-	end,
-
-	defense = function(a, b)
-		local def_a, def_b = sgs.getDefenseSlash(a) , sgs.getDefenseSlash(b)
-		if not def_a or not def_b then global_room:writeToConsole(debug.traceback()) return true end
-		return def_a < def_b
-	end,
-
-}
-
-function SmartAI:adjustKeepValue(card, v)
-	local suits = {"club", "spade", "diamond", "heart"}
-	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
-		local callback = sgs.ai_suit_priority[askill:objectName()]
-		if type(callback) == "function" then
-			suits = callback(self, card):split("|")
-			break
-		elseif type(callback) == "string" then
-			suits = callback:split("|")
-			break
-		end
-	end
-	table.insert(suits, "no_suit")
-
-	if card:isKindOf("Slash") then
-		if card:isRed() then v = v + 0.02 end
-		if card:isKindOf("NatureSlash") then v = v + 0.03 end
-		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
-	elseif card:isKindOf("HegNullification") then v = v + 0.02
-	end
-
-	if self.player:getPile("wooden_ox"):contains(card:getEffectiveId()) then
-		v = v - 0.01
-	end
-
-	local suits_value = {}
-	for index,suit in ipairs(suits) do
-		suits_value[suit] = index * 2
-	end
-	v = v + (suits_value[card:getSuitString()] or 0) / 100
-	v = v + card:getNumber() / 500
-	return v
-end
-
 function SmartAI:sortByKeepValue(cards, inverse, kept)
 	local compare_func = function(a, b)
 		local v1 = self:getKeepValue(a)
@@ -1477,6 +1433,14 @@ function SmartAI:getEnemies(player)
 	return enemies
 end
 
+-- compare functions
+sgs.ai_compare_funcs = {
+	value = function(a, b)
+		return sgs.getValue(a) < sgs.getValue(b)
+	end,
+
+}
+
 function SmartAI:sort(players, key)
 	if type(players) ~= "table" then self.room:writeToConsole(debug.traceback()) end
 	if #players == 0 then return end
@@ -1506,7 +1470,7 @@ function SmartAI:sort(players, key)
 			end
 		end
 	elseif key == "handcard_defense" then
-		func = function(a, b, self)
+		func = function(a, b)
 			local c1 = a:getHandcardNum()
 			local c2 = b:getHandcardNum()
 			if c1 == c2 then
@@ -1516,9 +1480,19 @@ function SmartAI:sort(players, key)
 			end
 		end
 	elseif key == "equip_defense" then
-		func = function(a, b, self)
+		func = function(a, b)
 			local c1 = a:getCards("e"):length()
 			local c2 = b:getCards("e"):length()
+			if c1 == c2 then
+				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
+			else
+				return c1 < c2
+			end
+		end
+	elseif key == "chaofeng" then
+		func = function(a, b)
+			local c1 = sgs.getDefense(a)
+			local c2 = sgs.getDefense(b)
 			if c1 == c2 then
 				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
 			else
@@ -1692,7 +1666,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	end
 
-	if sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
+	if not sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
 
 	sgs.lastevent = event
 	sgs.lasteventdata = data
@@ -3318,7 +3292,7 @@ function SmartAI:getDamagedEffects(to, from, isSlash)
 
 	if from:objectName() ~= to:objectName() and self:hasHeavySlashDamage(from, nil, to) then return false end
 
-	if sgs.isGoodHp(to) then
+	if sgs.isGoodHp(to, self.player) then
 		for _, askill in sgs.qlist(to:getVisibleSkillList(true)) do
 			local callback = sgs.ai_need_damaged[askill:objectName()]
 			if type(callback) == "function" and callback(self, from, to) then return true end
@@ -4083,7 +4057,7 @@ function SmartAI:getAoeValue(card)
 			-- value = value + math.min(50, to:getHp() * 10)
 
 			if self:getDamagedEffects(to, self.player) then value = value + 30 end
-			if self:needToLoseHp(to, self.player, nil, true) then value = value + 20 end
+			if self:needToLoseHp(to, self.player) then value = value + 20 end
 
 			if card:isKindOf("ArcheryAttack") then
 				if to:hasShownSkills("leiji") and (sj_num >= 1 or self:hasEightDiagramEffect(to)) and self:findLeijiTarget(to, 50, self.player) then
@@ -4456,24 +4430,22 @@ function SmartAI:needRende()
 end
 
 function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
-	from = from or self.room:getCurrent()
 	to = to or self.player
-	if isSlash then
-		if from:hasWeapon("IceSword") and to:getCards("he"):length() > 1 and not self:isFriend(from, to) then
-			return false
-		end
+	if isSlash and from and from:hasWeapon("IceSword") and to:getCards("he"):length() > 1 and not self:isFriend(from, to) then
+		return false
 	end
-	if self:hasHeavySlashDamage(from, nil, to) then return false end
+	if from and self:hasHeavySlashDamage(from, nil, to) then return false end
 	local n = to:getMaxHp()
 
-	if to:getMaxHp() > 2 and to:getPhase() == sgs.Player_Play and to:hasShownSkill("rende") and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then
+	if not passive and to:getMaxHp() > 2 and to:hasShownSkill("rende") and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then
 		n = math.min(n, to:getMaxHp() - 1)
 	end
 
 	local friends = self:getFriendsNoself(to)
 	local xiangxiang = sgs.findPlayerByShownSkillName("jieyin")
-	if xiangxiang and xiangxiang:isWounded() and xiangxiang:getPhase() == sgs.Player_Play and xiangxiang:getHandcardNum() >= 2 and not xiangxiang:hasUsed("JieyinCard")
-		and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale() then
+	if xiangxiang and xiangxiang:isWounded() and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale()
+		and (xiangxiang:getPhase() == sgs.Player_Play and xiangxiang:getHandcardNum() >= 2 and not xiangxiang:hasUsed("JieyinCard")
+			or self:getEnemyNumBySeat(self.room:getCurrent(), xiangxiang, self.player) <= 1) then
 		local need_jieyin = true
 		self:sort(friends, "hp")
 		for _, friend in ipairs(friends) do
