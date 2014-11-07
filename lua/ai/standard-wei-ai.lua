@@ -347,10 +347,13 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 	local dueltarget = 0
 	self:sort(self.enemies,"hp")
 	for _,card in ipairs(cards) do
-		if card:isKindOf("Slash") then
+		if card:isKindOf("Slash") or (self.player:hasWeapon("Spear") and self.player:getCards("h"):length() > 0) then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, card, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 and sgs.isGoodTarget(enemy, self.enemies, self) then
-					if (not enemy:hasArmorEffect("SilverLion") or self.player:hasWeapon("QinggangSword")) and (getCardsNum("Jink", enemy) < 1 or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4)) then
+					if (not enemy:hasArmorEffect("SilverLion") or self.player:hasWeapon("QinggangSword")) and (getCardsNum("Jink", enemy) < 1 
+					or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 3)) 
+					or (self:getOverflow() > 1)
+					then
 						slashtarget = slashtarget + 1
 					end
 				end
