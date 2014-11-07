@@ -2024,7 +2024,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			addTarget(enemy, enemy:getArmor():getEffectiveId())
 		end
 		if enemy:getTreasure() and (enemy:getPile("wooden_ox"):length() > 1 or enemy:hasTreasure("JadeSeal")) 
-			and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then
+			and (not isDiscard or self.player:canDiscard(enemy, enemy:getTreasure():getEffectiveId())) then
 			addTarget(enemy, enemy:getTreasure():getEffectiveId())
 		end
 	end
