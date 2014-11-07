@@ -499,7 +499,7 @@ function SmartAI:useCardFightTogether(card, use)
 					kingdom = p:getKingdom()
 				end
 				if table.contains(big_kingdoms, kingdom) then
-
+					if p:objectName() == self.player:objectName() then isBig = true end
 					table.insert(bigs, p)
 				else
 					if p:objectName() == self.player:objectName() then isSmall = true end
