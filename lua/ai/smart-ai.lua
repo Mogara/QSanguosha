@@ -909,6 +909,7 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 			if card:isKindOf("Armor") then value = self:isWeak() and 5.2 or 3.2
 			elseif card:isKindOf("DefensiveHorse") then value = self:isWeak() and 4.3 or 3.19
 			elseif card:isKindOf("Weapon") then value = self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and 3.39 or 3.2
+			elseif card:isKindOf("JadeSeal") then value = 5
 			elseif card:isKindOf("WoodenOx") then
 				value = 3.19
 				for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
