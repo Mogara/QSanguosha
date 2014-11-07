@@ -1351,18 +1351,8 @@ function sgs.ai_weapon_value.KylinBow(self, enemy)
 end
 
 sgs.ai_skill_invoke.EightDiagram = function(self, data)
-	local dying = 0
-	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if aplayer:getHp() < 1 and not aplayer:hasShownSkill("buqu") then dying = 1 break end
-	end
-
-	local heart_jink = false
-	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:getSuit() == sgs.Card_Heart and isCard("Jink", card, self.player) then
-			heart_jink = true
-			break
-		end
-	end
+	local jink = sgs.cloneCard("jink")
+	if not self.room:isJinkEffected(self.player, jink) then return false end
 
 	if self:getDamagedEffects(self.player, nil, true) or self:needToLoseHp(self.player, nil, true, true) then return false end
 	if self:getCardsNum("Jink") == 0 then return true end
