@@ -1457,11 +1457,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 player->showGeneral(player->inHeadSkills(skill_name));
         } else if (method == Card::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
-            moveCardTo(card, NULL, Player::PlaceTable, reason, true);
+            moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
             QList<int> table_cardids = getCardIdsOnTable(card);
             if (!table_cardids.isEmpty()) {
                 DummyCard dummy(table_cardids);
-                moveCardTo(&dummy, NULL, Player::DiscardPile, reason, true);
+                moveCardTo(&dummy, player, NULL, Player::DiscardPile, reason, true);
             }
         } else if (method != Card::MethodNone && !isRetrial) {
             QList<int> card_ids;
