@@ -69,7 +69,7 @@ sgs.ai_chat_func[sgs.SlashEffected].blindness = function(self, player, data)
 				}
 
 	if self:hasCrossbowEffect(effect.from) then
-		table.insert(chat, "快闪，药家鑫来了。")
+		table.insert(chat, "杀得我也是醉了。。。")
 		table.insert(chat, "果然是连弩降智商呀。")
 		table.insert(chat, "杀死我也没牌拿，真2")
 	end
@@ -147,7 +147,7 @@ end
 sgs.ai_chat_func[sgs.EventPhaseStart].comeon = function(self, player, data)
 	if player:getState() ~= "robot" then return end
 	local chat = {"有货，可以来搞一下",
-				"我有X张【闪】",
+				"看我眼色行事",
 				"没闪, 不要乱来",
 				"不爽，来啊！砍我啊",
 				"求杀求砍求蹂躏",
@@ -313,6 +313,19 @@ sgs.ai_chat_func[sgs.TargetConfirmed].UnlimitedBladeWorks = function(self, playe
 	end
 end
 
+sgs.ai_chat_func[sgs.TargetConfirmed].imperial_order = function(self, player, data)
+	if player:getState() ~= "robot" then return end
+	local use = data:toCardUse()
+	if use.card:isKindOf("ImperialOrder") and use.from and use.from:objectName() == player:objectName() then
+			local chat = {
+				"开门！查水表！",
+				"我就看看是不是大魏",
+				"都亮出来我好放大招"
+			}
+			player:speak(chat[math.random(1, #chat)])
+	end
+end
+
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if self.player:getState() ~= "robot" then return end
@@ -323,6 +336,26 @@ function SmartAI:speak(type, isFemale)
 		self.player:speak(sgs.ai_chat[type][i])
 	else
 		self.player:speak(type)
+	end
+end
+
+sgs.ai_chat_func[sgs.CardFinished].duoshi = function(self, player, data)
+	local use = data:toCardUse()
+	if use.card:isKindOf("AwaitExhausted") and use.card:getSkillName() == "duoshi" and use.from:usedTimes("DuoshiAE") >= 2 then
+		local chat = {
+			"又刷牌了",
+			"快点吧",
+			"陆逊不要拖时间"
+		}
+		for _, p in ipairs(sgs.robot) do
+			if p:objectName() ~= use.from:objectName() and math.random() < 0.8 then
+				if p:hasSkill("xiaoji") then
+					table.insert(chat, "继续继续")
+				end
+				p:speak(chat[math.random(1, #chat)])
+				return
+			end
+		end
 	end
 end
 
@@ -365,7 +398,8 @@ sgs.ai_chat.duel_female = {
 }
 
 sgs.ai_chat.duel = {
-"来吧！像男人一样决斗吧！"
+"来吧！像男人一样决斗吧！",
+"我只用一张牌就能搞死你"
 }
 
 sgs.ai_chat.lucky = {
@@ -447,5 +481,6 @@ sgs.ai_chat.luoyi = {
 }
 
 sgs.ai_chat.usepeach = {
-"不好，这桃里有屎",
+"不好，这桃里有屎"
 }
+
