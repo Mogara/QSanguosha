@@ -5201,38 +5201,40 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
 
             QList<int> to_move = cards;
 
-            JsonArray movearg_base;
-            movearg_base << S_GUANXING_MOVE;
+            if (to_move != realtopcards) {
+                JsonArray movearg_base;
+                movearg_base << S_GUANXING_MOVE;
 
-            if (guanxing_type == GuanxingBothSides && !realbottomcards.isEmpty()) {
-                for (int i = 0; i < realbottomcards.length(); ++i) {
-                    int id = realbottomcards.at(i);
+                if (guanxing_type == GuanxingBothSides && !realbottomcards.isEmpty()) {
+                    for (int i = 0; i < realbottomcards.length(); ++i) {
+                        int id = realbottomcards.at(i);
+                        int pos = to_move.indexOf(id);
+                        to_move.removeOne(id);
+                        JsonArray movearg = movearg_base;
+                        movearg << pos + 1 << -i - 1;
+                        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
+                        thread->delay();
+                    }
+                }
+
+                for (int i = 0; i < realtopcards.length() - 1; ++i) {
+                    int id = realtopcards.at(i);
                     int pos = to_move.indexOf(id);
+
+                    if (pos == i)
+                        continue;
+
                     to_move.removeOne(id);
+                    to_move.insert(i, id);
                     JsonArray movearg = movearg_base;
-                    movearg << pos + 1 << -i - 1;
+                    movearg << pos + 1 << i + 1;
                     doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
                     thread->delay();
                 }
-            }
 
-            for (int i = 0; i < realtopcards.length() - 1; ++i) {
-                int id = realtopcards.at(i);
-                int pos = to_move.indexOf(id);
-
-                if (pos == i)
-                    continue;
-
-                to_move.removeOne(id);
-                to_move.insert(i, id);
-                JsonArray movearg = movearg_base;
-                movearg << pos + 1 << i + 1;
-                doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
+                thread->delay();
                 thread->delay();
             }
-
-            thread->delay();
-            thread->delay();
 
             if (isTrustAI) {
                 JsonArray stepArgs;
