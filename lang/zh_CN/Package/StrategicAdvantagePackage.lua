@@ -1,7 +1,7 @@
 -- translation for StrategicAdvantage Package
 
 return {
-	["strategic_advantage"] = "势备篇",
+	["strategic_advantage"] = "君临天下·势备篇",
 
 	["transfer"] = "连横",
 
