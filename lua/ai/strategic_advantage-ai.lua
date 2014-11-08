@@ -194,7 +194,7 @@ sgs.ai_nullification.Drowning = function(self, card, from, to, positive)
 end
 
 sgs.ai_use_value.Drowning = 5.1
-sgs.ai_use_priority.Drowning = 7
+sgs.ai_use_priority.Drowning = sgs.ai_use_priority.Dismantlement + 0.05
 sgs.ai_keep_value.Drowning = 3.4
 
 --IronArmor
