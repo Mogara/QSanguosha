@@ -2746,7 +2746,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
 		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId()
 
-		elseif isCard("JadeSeal", card, self.player) then jadeseal = card:getEffectiveId()  end
+		elseif card:isKindOf("JadeSeal") then jadeseal = card:getEffectiveId()  end
 
 		if not weapon and card:isKindOf("Weapon") then weapon = card:getEffectiveId() end
 	end

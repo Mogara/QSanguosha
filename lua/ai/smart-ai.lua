@@ -4422,9 +4422,16 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif card:isKindOf("Treasure") then
-		if self.player:getPile("wooden_ox"):length() > 0 or self.player:hasTreasure("JadeSeal") then return end
-		-- @todo
-		use.card = card
+		if not card:isKindOf("wooden_ox") and not self.player:getTreasure()then
+			for _, friend in ipairs(self.friends) do
+				if (friend:getTreasure() and friend:getPile("wooden_ox"):length() > 1) then  
+					return 
+				end
+			end		
+		end
+		if not self.player:getTreasure() or card:isKindOf("JadeSeal") then
+			use.card = card
+		end	
 	elseif self.lua_ai:useCard(card) then
 		use.card = card
 	end
