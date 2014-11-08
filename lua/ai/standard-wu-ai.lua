@@ -370,7 +370,7 @@ sgs.ai_use_priority.KurouCard = 6.8
 
 sgs.ai_skill_invoke.yingzi = function(self, data)
 
-	if not self:willShowForAttack() then
+	if not self:willShowForAttack() and not self:willShowForDefence() then
 		return false
 	end
 
@@ -389,7 +389,7 @@ sgs.ai_skill_invoke.yingzi = function(self, data)
 					target = p
 				end
 			end
-			if target and not self:isFriend(target) and num + count > 6 then return false end
+			if target and not self:isFriend(target) and num + count == 6 then return false end
 		end
 	end
 	return true
@@ -1462,11 +1462,18 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 
 	self:sort(self.friends_noself)
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:getHandcardNum() == leastNum then
-			self.haoshi_target = friend
-			return true
+		if friend:getHandcardNum() == leastNum and friend:isAlive() and self:isFriendWith(friend) then
+			self.haoshi_target = friend	
 		end
 	end
+	if not self.haoshi_target then 
+		for _, friend in ipairs(self.friends_noself) do
+			if friend:getHandcardNum() == leastNum and friend:isAlive() then
+				self.haoshi_target = friend	
+			end
+		end
+	end	
+	if self.haoshi_target then return true end
 	return false
 end
 
