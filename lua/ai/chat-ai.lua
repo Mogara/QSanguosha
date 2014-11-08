@@ -186,10 +186,10 @@ sgs.ai_chat_func[sgs.CardFinished].yaoseng = function(self, player, data)
 	local use = data:toCardUse()
 	if use.card:isKindOf("OffensiveHorse") and use.from:objectName() == player:objectName() then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
-			-- if self:isEnemy(player, p) and player:distanceTo(p) == 1 and player:distanceTo(p, 1) == 2 and math.random() < 0.2 then
+			if self:isEnemy(player, p) and player:distanceTo(p) == 1 and player:distanceTo(p, 1) == 2 and math.random() < 0.2 then
 				player:speak("妖僧" .. p:screenName() .. "你往哪里跑")
 				return
-			-- end
+			end
 		end
 	end
 end
