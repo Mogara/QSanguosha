@@ -338,13 +338,13 @@ luanji_skill.getTurnUseCard = function(self)
 			end
 		end
 		for _, fcard in ipairs(cards) do
-			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("ArcheryAttack", fcard, self.player))
+			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("ArcheryAttack", fcard, self.player) or isCard("JadeSeal", fcard, self.player))
 			if useAll then fvalueCard = isCard("ArcheryAttack", fcard, self.player) end
 			if not fvalueCard then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
-					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("ArcheryAttack", scard, self.player))
+					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("ArcheryAttack", scard, self.player) or isCard("JadeSeal", scard, self.player))
 					if useAll then svalueCard = (isCard("ArcheryAttack", scard, self.player)) end
 					if first_card ~= scard and scard:getSuit() == first_card:getSuit()
 						and not svalueCard then
