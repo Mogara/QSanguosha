@@ -592,19 +592,22 @@ public:
             }
         }
 
-        if (owner != NULL && player->askForSkillInvoke(this)) {
-            LogMessage log;
-            log.type = "#InvokeOthersSkill";
-            log.from = player;
-            log.to << owner;
-            log.arg = objectName();
-            room->sendLog(log);
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, owner->objectName(), player->objectName());
-            room->broadcastSkillInvoke(objectName(), owner);
-            if (owner != player)
-                room->notifySkillInvoked(owner, objectName());
+        if (owner != NULL) {
+            player->tag.remove("yongjue_id");
+            if (player->askForSkillInvoke(this)) {
+                LogMessage log;
+                log.type = "#InvokeOthersSkill";
+                log.from = player;
+                log.to << owner;
+                log.arg = objectName();
+                room->sendLog(log);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, owner->objectName(), player->objectName());
+                room->broadcastSkillInvoke(objectName(), owner);
+                if (owner != player)
+                    room->notifySkillInvoked(owner, objectName());
 
-            return true;
+                return true;
+            }
         }
         return false;
     }
