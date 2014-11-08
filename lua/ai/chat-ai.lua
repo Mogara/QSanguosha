@@ -22,7 +22,7 @@ function speak(to, type)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
 
-	local i =math.random(1, #sgs.ai_chat[type])
+	local i = math.random(1, #sgs.ai_chat[type])
 	to:speak(sgs.ai_chat[type][i])
 end
 
@@ -52,16 +52,20 @@ function speakTrigger(card, from, to, event)
 		speak(to, "daxiang")
 	elseif card:isKindOf("FireAttack") and to:hasShownSkill("luanji") then
 		speak(to, "yuanshao_fire")
+	elseif card:isKindOf("Peach") and math.random() < 0.1 then
+		speak(to, "usepeach")
 	end
 end
 
 sgs.ai_chat_func[sgs.SlashEffected].blindness = function(self, player, data)
+	if player:getState() ~= "robot" then return end
 	local effect = data:toSlashEffect()
 	if not effect.from then return end
 
 	local chat = {"队长，是我，别开枪，自己人.",
 				"尼玛你杀我，你真是夏侯惇啊",
-				"再杀我一下，老子和你拼命了"
+				"再杀我一下，老子和你拼命了",
+				"信不信等下我砍死你"
 				}
 
 	if self:hasCrossbowEffect(effect.from) then
@@ -92,10 +96,11 @@ sgs.ai_chat_func[sgs.SlashEffected].blindness = function(self, player, data)
 	end
 end
 
-sgs.ai_chat_func[sgs.Death].stupid_lord = function(self, player, data)
+sgs.ai_chat_func[sgs.Death].stupid_friend = function(self, player, data)
+	if player:getState() ~= "robot" then return end
 	local damage = data:toDeath().damage
 	local chat = {"2B了吧，老子和你是一伙的还杀我",
-				-- "主要臣死，臣不得不死",
+				"你这个逼装得太厉害了",
 				"房主下盘T了这个2货，拉黑不解释",
 				"还有更2的吗",
 				"真的很无语",
@@ -121,19 +126,26 @@ sgs.ai_chat_func[sgs.Dying].fuck_renegade = function(self, player, data)
 end
 ]]
 sgs.ai_chat_func[sgs.EventPhaseStart].ally = function(self, player, data)
-	local gameProcess = sgs.gameProcess()
-	if string.find(gameProcess, ">>>") then
-		local kingdom = gameProcess:split(">")[1]
-		kingdom = sgs.Sanguosha:translate(kingdom)
-		local chat = {"现在" .. kingdom .. "国比较猖狂，我们应该联合起来搞死他们",
-					}
-		if player:getPhase() == sgs.Player_Player and os.time() % 10 < 4 then
-			player:speak(chat[math.random(1, #chat)])
+	if player:getState() ~= "robot" then return end
+	if player:getPhase() == sgs.Player_Play then
+		local gameProcess = sgs.gameProcess()
+		if string.find(gameProcess, ">>>") then
+			local kingdom = gameProcess:split(">")[1]
+			if player:getKingdom() == kingdom then return end
+			kingdom = sgs.Sanguosha:translate(kingdom)
+			local chat = {
+				"现在" .. kingdom .. "国比较猖狂，我们应该联合起来",
+				"不要乱砍了，砍" .. kingdom .. "的"
+			}
+			if os.time() % 10 < 1 then
+				player:speak(chat[math.random(1, #chat)])
+			end
 		end
 	end
 end
 
 sgs.ai_chat_func[sgs.EventPhaseStart].comeon = function(self, player, data)
+	if player:getState() ~= "robot" then return end
 	local chat = {"有货，可以来搞一下",
 				"我有X张【闪】",
 				"没闪, 不要乱来",
@@ -147,6 +159,7 @@ sgs.ai_chat_func[sgs.EventPhaseStart].comeon = function(self, player, data)
 end
 
 sgs.ai_chat_func[sgs.EventPhaseStart].beset = function(self, player, data)
+	if player:getState() ~= "robot" then return end
 	local chat = {
 		"大家一起围观一下",
 		"不要一下弄死了，慢慢来",
@@ -161,9 +174,97 @@ sgs.ai_chat_func[sgs.EventPhaseStart].beset = function(self, player, data)
 end
 
 sgs.ai_chat_func[sgs.CardUsed].qinshouzhang = function(self, player, data)
+	if player:getState() ~= "robot" then return end
 	local use = data:toCardUse()
 	if use.card:isKindOf("Blade") and player:screenName() == "禽受张" then
 		player:speak("这把刀就是我爷爷传下来的，上斩逗比，下斩傻逼！")
+	end
+end
+
+sgs.ai_chat_func[sgs.CardFinished].yaoseng = function(self, player, data)
+	if player:getState() ~= "robot" then return end
+	local use = data:toCardUse()
+	if use.card:isKindOf("OffensiveHorse") and use.from:objectName() == player:objectName() then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+			-- if self:isEnemy(player, p) and player:distanceTo(p) == 1 and player:distanceTo(p, 1) == 2 and math.random() < 0.2 then
+				player:speak("妖僧" .. p:screenName() .. "你往哪里跑")
+				return
+			-- end
+		end
+	end
+end
+	
+	
+sgs.ai_chat_func[sgs.CardFinished].analeptic = function(self, player, data)
+	local use = data:toCardUse()
+	if use.card:isKindOf("Analeptic") and use.card:getSkillName() ~= "zhendu" then
+		local to = use.to:first()
+		if to:getMark("drank") == 0 then return end
+		local jink = sgs.cloneCard("jink", math.random(0, 3), math.random(1, 13))
+		local suit = { "spade", "heart", "club", "diamond" }
+		suit = suit[math.random(1, #suit)]
+		-- local num =
+		local chat = {
+			"呵呵",
+			"喜闻乐见",
+			"前排围观，出售爆米花，矿泉水，花生，瓜子...",
+			"不要砍我，我有" .. "<b><font color = 'yellow'>" .. sgs.Sanguosha:translate("jink")
+				.. string.format("[<img src='image/system/log/%s.png' height = 12/>", suit) .. math.random(1, 10) .. "] </font></b>",
+			"我菊花一紧"
+		}
+		for _, p in ipairs(sgs.robot) do
+			if p:objectName() ~= to:objectName() and not p:isFriendWith(to) and math.random() < 0.2 then
+				if not p:isWounded() then
+					table.insert(chat, "我满血，不慌")
+				end
+				p:speak(chat[math.random(1, #chat)])
+				return
+			end
+		end
+	end
+end
+
+
+sgs.ai_chat_func[sgs.EventPhaseStart]["ai_chat_scenario"] = function(self, player, data)
+	if player:getPhase() ~= sgs.Player_Start then end
+	if sgs.ai_chat_scenario then return end
+	sgs.ai_chat_scenario = true
+	for _, p in ipairs(sgs.robot) do
+		if math.random() < 0.05 then
+			if p:hasSkill("luanji") then sgs.ai_yuanshao_ArcheryAttack = {} end
+		end
+	end
+	for _, p in ipairs(sgs.robot) do
+		if player:objectName() ~= self.room:getCurrent():objectName() and math.random() < 0.1 then
+			local chat = {
+				"首先声明，谁砍我我砍谁",
+			}
+			player:speak(chat[math.random(1, #chat)])
+			return
+		end
+	end
+end
+
+sgs.ai_chat_func[sgs.TargetConfirmed].UnlimitedBladeWorks = function(self, player, data)
+	if player:getState() ~= "robot" then return end
+	local use = data:toCardUse()
+	if use.card:isKindOf("ArcheryAttack") and player:hasSkill("luanji") and use.from and use.from:objectName() == player:objectName() and sgs.ai_yuanshao_ArcheryAttack then
+		if #sgs.ai_yuanshao_ArcheryAttack == 0 then
+			sgs.ai_yuanshao_ArcheryAttack = {
+				"此身，为剑所成",
+				"血如钢铁，心似琉璃",
+				"跨越无数战场而不败",
+				"未尝一度被理解",
+				"亦未尝一度有所得",
+				"剑之丘上，剑手孤单一人，沉醉于辉煌的胜利",
+				"铁匠孑然一身，执著于悠远的锻造",
+				"因此，此生没有任何意义",
+				"那么，此生无需任何意义",
+				"这身体，注定由剑而成"
+			}
+		end
+		player:speak(sgs.ai_yuanshao_ArcheryAttack[1])
+		table.remove(sgs.ai_yuanshao_ArcheryAttack, 1)
 	end
 end
 
@@ -298,4 +399,8 @@ sgs.ai_chat.yuanshao_fire = {
 --xuchu
 sgs.ai_chat.luoyi = {
 "不脱光衣服干不过你"
+}
+
+sgs.ai_chat.usepeach = {
+"不好，这桃里有屎",
 }

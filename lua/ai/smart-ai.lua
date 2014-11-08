@@ -134,6 +134,7 @@ sgs.Slash_Natures = {
 	FireSlash = sgs.DamageStruct_Fire,
 	ThunderSlash = sgs.DamageStruct_Thunder,
 }
+sgs.robot = {}
 
 for i = sgs.NonTrigger, sgs.NumOfEvents, 1 do
 	sgs.ai_debug_func[i] = {}
@@ -171,6 +172,7 @@ function setInitialTables()
 	sgs.Friend_FemaleWounded = 6
 
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
+		if p:getState() == "robot" then table.insert(sgs.robot, p) end
 		local kingdom = p:getKingdom()
 		if not table.contains(sgs.KingdomsTable, kingdom) and kingdom ~= "default" then
 			table.insert(sgs.KingdomsTable, kingdom)
@@ -1520,7 +1522,9 @@ function sgs.updateAlivePlayerRoles()
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
 		sgs.current_mode_players[kingdom] = 0
 	end
+	sgs.robot = {}
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
+		if aplayer:getState() == "robot" then table.insert(sgs.robot, aplayer) end
 		if aplayer:getRole() == "careerist" then continue end
 		local kingdom = aplayer:getKingdom()
 		if not sgs.current_mode_players[kingdom] then sgs.current_mode_players[kingdom] = 0 end
@@ -1659,7 +1663,7 @@ function SmartAI:filterEvent(event, player, data)
 				if type(callback) == "function" then callback(self, player, data) end
 			end
 		end
-		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) and player:getState() == "robot" then
+		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) then
 			for _, callback in pairs(sgs.ai_chat_func[event]) do
 				if type(callback) == "function" then callback(self, player, data) end
 			end
