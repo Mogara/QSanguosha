@@ -204,7 +204,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         if (!player->hasSkill("guanxing")){
-            if (player->askForSkillInvoke(objectName())) {
+            if (player->askForSkillInvoke(this)) {
                 LogMessage log;
                 log.type = "#InvokeSkill";
                 log.from = player;
@@ -218,7 +218,7 @@ public:
             }
         }
         if (!player->hasSkill("yizhi")){
-            if (player->askForSkillInvoke(objectName())) {
+            if (player->askForSkillInvoke(this)) {
                 room->broadcastSkillInvoke(objectName(), player);
                 return true;
             } else {
@@ -226,7 +226,7 @@ public:
             }
         }
         // if it runs here, it means player own both two skill;
-        if (player->askForSkillInvoke(objectName())) {
+        if (player->askForSkillInvoke(this)) {
             bool show1 = player->hasShownSkill(this);
             bool show2 = player->hasShownSkill("yizhi");
             QStringList choices;
@@ -305,7 +305,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
+        if (player->hasShownSkill(this) || player->askForSkillInvoke(this)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -451,7 +451,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const {
-        if (ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player))) {
+        if (ask_who->askForSkillInvoke(this, QVariant::fromValue(player))) {
             room->broadcastSkillInvoke(objectName(), 1, ask_who);
             return true;
         }
@@ -532,7 +532,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -578,7 +578,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const {
-        if (ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player))) {
+        if (ask_who->askForSkillInvoke(this, QVariant::fromValue(player))) {
             room->broadcastSkillInvoke(objectName(), 1, ask_who);
             return true;
         }
@@ -671,7 +671,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        bool invoke = player->hasShownSkill(this) ? true : player->askForSkillInvoke(this);
         if (invoke) {
             room->broadcastSkillInvoke(objectName(), player);
             return true;
@@ -730,7 +730,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *pangtong, QVariant &data, ServerPlayer *) const{
-        if (pangtong->askForSkillInvoke(objectName(), data)) {
+        if (pangtong->askForSkillInvoke(this, data)) {
             room->broadcastSkillInvoke(objectName(), pangtong);
             room->doSuperLightbox("pangtong", objectName());
             return true;
@@ -904,7 +904,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        bool invoke = player->hasShownSkill(this) ? true : player->askForSkillInvoke(this);
         if (invoke){
             room->broadcastSkillInvoke(objectName(), 2, player);
             return true;
@@ -937,7 +937,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())){
+        if (player->askForSkillInvoke(this)){
             room->broadcastSkillInvoke(objectName(), 1, player);
             return true;
         }
@@ -1023,7 +1023,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        bool invoke = player->hasShownSkill(this) ? true : player->askForSkillInvoke(this);
         if (invoke){
             room->broadcastSkillInvoke(objectName(), 2, player);
             return true;
@@ -1059,7 +1059,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer *) const{
-        if (zhurong->askForSkillInvoke(objectName(), data)){
+        if (zhurong->askForSkillInvoke(this, data)){
             DamageStruct damage = data.value<DamageStruct>();
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, zhurong->objectName(), damage.to->objectName());
             room->broadcastSkillInvoke(objectName(), 1, zhurong);
@@ -1111,7 +1111,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (player->hasShownSkill(this))
             room->sendCompulsoryTriggerLog(player, objectName());
-        else if (!player->askForSkillInvoke(objectName(), data))
+        else if (!player->askForSkillInvoke(this, data))
             return false;
 
         room->broadcastSkillInvoke(objectName(), player);
@@ -1193,7 +1193,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Play){
-            if (player->askForSkillInvoke(objectName())){
+            if (player->askForSkillInvoke(this)){
                 player->skip(Player::Play);
                 room->broadcastSkillInvoke(objectName(), 1, player);
                 return true;
@@ -1309,7 +1309,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())) {
+        if (player->askForSkillInvoke(this)) {
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }

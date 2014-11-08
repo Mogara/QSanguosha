@@ -47,7 +47,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -74,7 +74,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.from->isNude() && simayi->askForSkillInvoke(objectName(), data)) {
+        if (!damage.from->isNude() && simayi->askForSkillInvoke(this, data)) {
             room->broadcastSkillInvoke(objectName(), simayi);
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), damage.from->objectName());
             return true;
@@ -134,7 +134,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from != NULL)
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
@@ -289,7 +289,7 @@ public:
         if (triggerEvent == DamageCaused) {
             room->broadcastSkillInvoke(objectName(), 1, player);
             return true;
-        } else if (player->askForSkillInvoke(objectName())) {
+        } else if (player->askForSkillInvoke(this)) {
             data = data.toInt() - 1;
             room->broadcastSkillInvoke(objectName(), 2, player);
             return true;
@@ -331,7 +331,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -366,7 +366,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data, ServerPlayer *) const {
-        if (guojia->isAlive() && guojia->askForSkillInvoke(objectName(), data)) {
+        if (guojia->isAlive() && guojia->askForSkillInvoke(this, data)) {
             room->broadcastSkillInvoke(objectName(), guojia);
             return true;
         }
@@ -442,7 +442,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())){
+        if (player->askForSkillInvoke(this)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -460,7 +460,7 @@ public:
 
         do {
             room->judge(judge);
-        } while (judge.isGood() && zhenji->askForSkillInvoke(objectName()));
+        } while (judge.isGood() && zhenji->askForSkillInvoke(this));
 
         QList<int> card_list = VariantList2IntList(zhenji->tag[objectName()].toList());
         zhenji->tag.remove(objectName());
@@ -910,7 +910,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
@@ -1129,7 +1129,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->askForSkillInvoke(this, data)){
             room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
