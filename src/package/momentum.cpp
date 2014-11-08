@@ -563,7 +563,7 @@ public:
         }
         else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != NULL && move.from->tag.contains("yongjue_card") && player == move.from
+            if (move.from != NULL && move.from->tag.contains("yongjue_id") && player == move.from
                     && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
                     && move.from_places.contains(Player::PlaceTable) && move.to_place == Player::DiscardPile) {
                 if (move.card_ids.length() == 1) {
