@@ -106,7 +106,20 @@ int main(int argc, char *argv[]) {
         }
         if (!found) {
             QDir root("/sdcard/Android/data/org.qsanguosha");
-            QDir::setCurrent(root.absolutePath());
+            if (root.exists("lua/config.lua")) {
+                QDir::setCurrent(root.absolutePath());
+                found = true;
+            }
+        }
+
+        if (!found) {
+            QString m = QObject::tr("Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.qsanguosha");
+            if (!noGui)
+                QMessageBox::critical(NULL, QObject::tr("Error"), m);
+            else
+                puts(m.toLatin1().constData());
+
+            return -2;
         }
 #endif
     }
