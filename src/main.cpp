@@ -27,7 +27,7 @@
 #include <QTranslator>
 #include <QDateTime>
 #include <QMessageBox>
-#include <QtQuick/QQuickView>
+#include <QQuickView>
 
 #include "server.h"
 #include "settings.h"
