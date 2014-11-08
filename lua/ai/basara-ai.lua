@@ -78,15 +78,15 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	end
 
 	if self.player:inHeadSkills("baoling") then
-		if (self:hasSkill("luanwu") and self.player:getMark("@chaos") ~= 0)
-			or (self:hasSkill("xiongyi") and self.player:getMark("@arise") ~= 0) then
+		if (self.player:hasSkill("luanwu") and self.player:getMark("@chaos") ~= 0)
+			or (self.player:hasSkill("xiongyi") and self.player:getMark("@arise") ~= 0) then
 			canShowHead = false
 		end
 	end
 	if self.player:inHeadSkills("baoling") then
 		if (self.player:hasSkill("mingshi") and allshown >= (self.room:alivePlayerCount() - 1))
-			or (self:hasSkill("luanwu") and self.player:getMark("@chaos") == 0)
-			or (self:hasSkill("xiongyi") and self.player:getMark("@arise") == 0) then
+			or (self.player:hasSkill("luanwu") and self.player:getMark("@chaos") == 0)
+			or (self.player:hasSkill("xiongyi") and self.player:getMark("@arise") == 0) then
 			if canShowHead then
 				return "GameRule_AskForGeneralShowHead"
 			end
