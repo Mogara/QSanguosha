@@ -742,11 +742,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             rewardAndPunish(killer, player);
 
         if (player->getGeneral()->isLord() && player == data.value<DeathStruct>().who) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(player, true)){
-                if (p->getKingdom() == player->getKingdom()){
-                    if (p->hasShownOneGeneral())
+            foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
+                if (p->getKingdom() == player->getKingdom()) {
+                    if (p->hasShownOneGeneral()) {
                         room->setPlayerProperty(p, "role", "careerist");
-                    else {
+                    } else {
                         p->setRole("careerist");
                         room->notifyProperty(p, p, "role");
                     }

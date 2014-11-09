@@ -246,11 +246,9 @@ QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, Player::Pla
     if (place == Player::PlaceHand || place == Player::PlaceSpecial) {
         result = _createCards(card_ids);
         updateHandcardNum();
-    }
-    else if (place == Player::PlaceEquip) {
+    } else if (place == Player::PlaceEquip) {
         result = removeEquips(card_ids);
-    }
-    else if (place == Player::PlaceDelayedTrick) {
+    } else if (place == Player::PlaceDelayedTrick) {
         result = removeDelayedTricks(card_ids);
     }
 
