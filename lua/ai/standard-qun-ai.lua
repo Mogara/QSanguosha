@@ -877,6 +877,11 @@ sgs.ai_skill_playerchosen["shuangren_slash"] = sgs.ai_skill_playerchosen.zero_ca
 sgs.ai_playerchosen_intention.shuangren = 20
 sgs.ai_cardneed.shuangren = sgs.ai_cardneed.bignumber
 
+sgs.ai_skill_invoke.suishi = function(self, data)
+	local event = data:toInt()
+	if event == sgs.Death then return false end
+	return true
+end
 
 sgs.ai_skill_playerchosen.sijian = function(self, targets)
 	return self:findPlayerToDiscard()
