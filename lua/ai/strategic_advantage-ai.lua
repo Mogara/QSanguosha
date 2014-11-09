@@ -693,7 +693,7 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 			for _, card in ipairs(cards) do
 				if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse")
 					or self:getSameEquip(card, self.player) then
-					return cand:getEffectiveId() 
+					return card:getEffectiveId() 
 				end
 			end
 	end		
