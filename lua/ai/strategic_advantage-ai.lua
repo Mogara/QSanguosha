@@ -687,11 +687,22 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 	if self:needToThrowArmor() then
 		return self.player:getArmor():getEffectiveId()
 	end
+	if not self:willShowForAttack() then 
+		local cards = self.player:getCards("he")
+		local cards = sgs.QList2Table(self.player:getCards("he"))
+			for _, card in ipairs(cards) do
+				if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse")
+					or self:getSameEquip(card, self.player) then
+					return cand:getEffectiveId() 
+				end
+			end
+	end		
 	return "."
 end
 
 sgs.ai_skill_choice.imperial_order = function(self)
 	if self:needToLoseHp() then return "losehp" end
+	if not self.player:isWounded() and self.player:getCards("he"):length() > 6 then return "losehp" end
 	return "show"
 end
 

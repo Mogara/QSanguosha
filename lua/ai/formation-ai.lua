@@ -322,7 +322,16 @@ sgs.ai_use_value.ShangyiCard = 4
 sgs.ai_use_priority.ShangyiCard = 9
 sgs.ai_card_intention.ShangyiCard = 50
 
-sgs.ai_skill_invoke.yicheng = true
+sgs.ai_skill_invoke.yicheng = function(self, data)
+	local use = data:toCardUse()
+	if use.card:isKindOf("Slash") and self:isFriendWith(use.to) and self:isWeak(use.to)  then
+		return true
+	end
+	if not self:willShowForDefence() then
+		return false
+	end
+	return true
+end
 
 sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, include_equip)
 	if self.player:hasSkill("hongyan") then
