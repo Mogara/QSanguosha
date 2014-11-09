@@ -179,7 +179,10 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 			break
 		end
 	end
-
+	
+	local disCrossbow = false
+	if self:getCardsNum("Slash") < 2 or self.player:hasSkill("paoxiao") then disCrossbow = true end
+	
 	local hecards = self.player:getCards("he")
 	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
 		hecards:prepend(sgs.Sanguosha:getCard(id))
@@ -187,7 +190,8 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	local cards = {}
 	for _, card in sgs.qlist(hecards) do
 		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
-			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) then
+			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) 
+			and (not isCard("Crossbow", card, self.player) or disCrossbow ) then
 			local suit = card:getSuitString()
 			local number = card:getNumberString()
 			local card_id = card:getEffectiveId()
