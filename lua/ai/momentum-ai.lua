@@ -26,14 +26,18 @@ end
 
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
-	if target 
-	and (self.player:isFriendWith(target) or self:isFriend(target)) 
-	and not ( target:getPhase() ~= sgs.Player_NotActive and (target:hasShownSkills(sgs.Active_cardneed_skill) or target:hasWeapon("Crossbow")) ) 
-	and not ( target:getPhase() == sgs.Player_NotActive and target:hasShownSkills(sgs.notActive_cardneed_skill) ) then	
-		return not self:needKongcheng(target, true)
-	else
-		return self:needKongcheng(target, true)
-	end
+	if target then
+		if (self.player:isFriendWith(target) or self:isFriend(target)) and not self:needKongcheng(target)then  
+				return true
+		else
+			if	not ( target:getPhase() ~= sgs.Player_NotActive and (target:hasShownSkills(sgs.Active_cardneed_skill) or target:hasWeapon("Crossbow")) ) 
+				and not ( target:getPhase() == sgs.Player_NotActive and target:hasShownSkills(sgs.notActive_cardneed_skill) ) 
+				or self:needKongcheng(target) then	
+				return true
+			end
+		end
+	end	
+return false	
 end
 
 
