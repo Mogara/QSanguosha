@@ -1059,7 +1059,7 @@ void ThreatenEmperor::onEffect(const CardEffectStruct &effect) const{
 class ThreatenEmperorSkill : public TriggerSkill {
 public:
     ThreatenEmperorSkill() : TriggerSkill("threaten_emperor") {
-        events << EventPhaseStart;
+        events << EventPhaseChanging;
         global = true;
     }
 
@@ -1067,9 +1067,10 @@ public:
         return 1;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QMap<ServerPlayer *, QStringList> list;
-        if (player->getPhase() != Player::NotActive)
+		PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::NotActive)
             return list;
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("ThreatenEmperorExtraTurn") > 0)
