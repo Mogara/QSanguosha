@@ -124,11 +124,7 @@ QString QSanUiUtils::QSanFreeTypeFont::resolveFont(const QString &fontName) {
     else {
         QStringList dirsToResolve;
         QStringList extsToTry;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        QString sysfolder = QDesktopServices::storageLocation(QDesktopServices::FontsLocation);
-#else
         QString sysfolder = QStandardPaths::writableLocation(QStandardPaths::FontsLocation);
-#endif
         dirsToResolve.push_back(sysfolder);
         dirsToResolve.push_back(QDir::currentPath());
         dirsToResolve.push_back("./font");

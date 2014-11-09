@@ -44,11 +44,7 @@ Button::Button(const QString &label, const QSizeF &size)
 
 void Button::init()
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlags(ItemIsFocusable);

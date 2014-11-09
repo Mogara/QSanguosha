@@ -387,11 +387,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_from_card = NULL;
     pindian_to_card = NULL;
 #ifndef Q_OS_WINRT
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
     _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
-#endif
 #endif
 }
 
@@ -3084,13 +3082,8 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
     }
 
     QString location = Config.value("LastReplayDir").toString();
-    if (location.isEmpty()) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-#else
+    if (location.isEmpty())
         location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-#endif
-    }
 
     QString filename = QFileDialog::getSaveFileName(main_window,
         tr("Save replay record"),
@@ -3915,7 +3908,6 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         }
     }
 #ifndef Q_OS_WINRT
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     else if (word.startsWith("skill=")) {
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
@@ -3930,7 +3922,6 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         addItem(object);
         bringToFront(object);
     }
-#endif
 #endif
     else {
         QFont font = Config.BigFont;

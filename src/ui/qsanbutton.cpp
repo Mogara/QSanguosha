@@ -36,11 +36,7 @@ QSanButton::QSanButton(QGraphicsItem *parent)
     _m_mouseEntered(false), multi_state(false), first_state(true)
 {
     setSize(QSize(0, 0));
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
@@ -55,12 +51,7 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
         _m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)(state1 ? i : (i - S_NUM_BUTTON_STATES)), state1);
     }
     setSize(_m_bgPixmap[0].size());
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 

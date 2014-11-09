@@ -59,11 +59,7 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString 
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsFocusable);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
 
     setOpacity(initialOpacity);
 }
@@ -148,11 +144,7 @@ GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, co
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsFocusable);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true);
-#endif
 
     setOpacity(initialOpacity);
 }
