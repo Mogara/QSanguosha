@@ -28,11 +28,13 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include <QQuickView>
+#include <QQmlContext>
 
 #include "server.h"
 #include "settings.h"
 #include "engine.h"
 #include "audio.h"
+#include "quickwindow.h"
 
 #ifndef WINDOWS
 #include <QDir>
@@ -116,17 +118,36 @@ int main(int argc, char *argv[]) {
     new Settings;
     Config.init();
 
-    QQuickView mainView;
-    mainView.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
-    mainView.setResizeMode(QQuickView::SizeRootObjectToView);
-    mainView.show();
+    QuickWindow window;
+    window.rootContext()->setContextProperty("winSize", Config.value("WindowSize", QSizeF(1024, 768)));
+    window.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
+    window.setResizeMode(QQuickView::SizeRootObjectToView);
+
+    //The following two commented lines seemed not work normally
+    //window.setWindowState((Qt::WindowState) Config.value("WindowState", 0).toInt());
+    //window.show();
+
+    switch((Qt::WindowState) Config.value("WindowState", 0).toInt()) {
+    case Qt::WindowMaximized: {
+        window.showMaximized();
+        break;
+    }
+    case Qt::WindowFullScreen: {
+        window.showFullScreen();
+        break;
+    }
+    default: {
+        window.show();
+        break;
+    }
+    }
 
     QTranslator qt_translator;
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
     new Engine;
-    Sanguosha->setParent(&mainView);
+    Sanguosha->setParent(&window);
 
     if (qApp->arguments().contains("-server")) {
         Server *server = new Server(qApp);
