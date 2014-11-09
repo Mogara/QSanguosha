@@ -498,7 +498,7 @@ sgs.ai_view_as.qingguo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isBlack() and card_place == sgs.Player_PlaceHand then
+	if card:isBlack() and (card_place == sgs.Player_PlaceHand or player:getPile("wooden_ox"):contains(card_id)) then
 		return ("jink:qingguo[%s:%s]=%d&qingguo"):format(suit, number, card_id)
 	end
 end

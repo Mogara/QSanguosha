@@ -26,9 +26,9 @@ function SmartAI:shouldUseRende()
 									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
 			local inPaoxiaoAttackRange =  self.player:distanceTo(enemy) <= self.player:getAttackRange()	and	self.player:hasSkill("paoxiao")
 			if (inAttackRange or inPaoxiaoAttackRange) and sgs.isGoodTarget(enemy, self.enemies, self) then
-				local slashs = self:getCards("Slash")
+				local slashes = self:getCards("Slash")
 				local slash_count = 0
-				for _, slash in ipairs(slashs) do
+				for _, slash in ipairs(slashes) do
 					if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
 						slash_count = slash_count + 1
 					end
@@ -160,7 +160,7 @@ sgs.ai_view_as.wusheng = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_PlaceSpecial and (player:getLord() and player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Peach") and not card:hasFlag("using") then
+	if (card_place ~= sgs.Player_PlaceSpecial or player:getPile("wooden_ox"):contains(card_id)) and (player:getLord() and player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Peach") and not card:hasFlag("using") then
 		return ("slash:wusheng[%s:%s]=%d&wusheng"):format(suit, number, card_id)
 	end
 end
@@ -276,7 +276,7 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place == sgs.Player_PlaceHand then
+	if card_place == sgs.Player_PlaceHand or player:getPile("wooden_ox"):contains(card_id) then
 		if card:isKindOf("Jink") then
 			return ("slash:longdan[%s:%s]=%d&longdan"):format(suit, number, card_id)
 		elseif card:isKindOf("Slash") then
@@ -480,7 +480,7 @@ sgs.ai_view_as.kanpo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place == sgs.Player_PlaceHand then
+	if card_place == sgs.Player_PlaceHand or player:getPile("wooden_ox"):contains(card_id) then
 		if card:isBlack() and not card:isKindOf("HegNullification") and not (player:hasSkill("jizhi") and card:isKindOf("Nullification")) then
 			return ("nullification:kanpo[%s:%s]=%d%s"):format(suit, number, card_id, "&kanpo")
 		end
@@ -594,9 +594,9 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	end
 
 
-	local slashs = self:getCards("Slash")
+	local slashes = self:getCards("Slash")
 	for _, enemy in ipairs(self.enemies) do
-		for _, slash in ipairs(slashs) do
+		for _, slash in ipairs(slashes) do
 			if hasCrossbow and self:getCardsNum("Slash") > 1 and self:slashIsEffective(slash, enemy)
 				and self.player:canSlash(enemy, slash, true, range_fix) then
 				shouldUse = shouldUse + 2

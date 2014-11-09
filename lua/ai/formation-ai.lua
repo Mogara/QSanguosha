@@ -252,7 +252,9 @@ end
 
 sgs.ai_skill_cardask["@tiaoxin-slash"] = function(self, data, pattern, target)
 	if target then
-		for _, slash in ipairs(self:getCards("Slash")) do
+		local cards = self:getCards("Slash")
+		self:sortByUseValue(cards)
+		for _, slash in ipairs(cards) do
 			if self:isFriend(target) and self:slashIsEffective(slash, target) then
 				if self:needLeiji(target, self.player) then return slash:toString() end
 				if self:getDamagedEffects(target, self.player) then return slash:toString() end
@@ -263,7 +265,7 @@ sgs.ai_skill_cardask["@tiaoxin-slash"] = function(self, data, pattern, target)
 					return slash:toString()
 			end
 		end
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(cards) do
 			if not self:isFriend(target) then
 				if not self:needLeiji(target, self.player) and not self:getDamagedEffects(target, self.player, true) then return slash:toString() end
 				if not self:slashIsEffective(slash, target) then return slash:toString() end

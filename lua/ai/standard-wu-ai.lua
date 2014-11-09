@@ -504,9 +504,9 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
 									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
 			if inAttackRange  and sgs.isGoodTarget(enemy, self.enemies, self) then
-				local slashs = self:getCards("Slash")
+				local slashes = self:getCards("Slash")
 				local slash_count = 0
-				for _, slash in ipairs(slashs) do
+				for _, slash in ipairs(slashes) do
 					if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
 						slash_count = slash_count + 1
 					end

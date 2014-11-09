@@ -690,10 +690,10 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 	end
 
 	if analeptic then
-		local slashs = self:getCards("Slash")
+		local slashes = self:getCards("Slash")
 		for _, enemy in ipairs(self.enemies) do
 			local hit_num = 0
-			for _, slash in ipairs(slashs) do
+			for _, slash in ipairs(slashes) do
 				if self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash) and self:slashIsAvailable() then
 					hit_num = hit_num + 1
 					if getCardsNum("Jink", enemy, self.player) < 1

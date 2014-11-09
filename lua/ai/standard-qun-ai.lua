@@ -60,7 +60,7 @@ sgs.ai_view_as.jijiu = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_PlaceSpecial and card:isRed() and player:getPhase() == sgs.Player_NotActive
+	if (card_place ~= sgs.Player_PlaceSpecial or player:getPile("wooden_ox"):contains(card_id)) and card:isRed() and player:getPhase() == sgs.Player_NotActive
 		and not player:hasFlag("Global_PreventPeach") and (player:getMark("@qianxi_red") <= 0 or card:isEquipped()) then
 		return ("peach:jijiu[%s:%s]=%d&jijiu"):format(suit, number, card_id)
 	end
