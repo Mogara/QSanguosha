@@ -333,7 +333,7 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 	local name2 =  sgs.Sanguosha:translate(self.player:getGeneral2Name())
 	local kingdom = sgs.Sanguosha:translate(self.player:getKingdom())
 	local chat = {
-		"这种将都亮？",
+		"亮这个将有什么意义？",
 		"我还当你多牛的将呢。。"
 	}
 	local notshown, shown= 0, 0
@@ -351,7 +351,10 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 	end
 	if notshown < 3 then 
 		table.insert(chat,"终于亮了")
-	end	
+	end
+	if self.player:getRole() == "careerist" then 
+		table.insert(chat,"野了")
+	end		
 	if not self.player:hasShownAllGenerals() then 
 		table.insert(chat,self.player:screenName() .."原来是"..kingdom.."国的")
 		table.insert(chat,"看来这是大"..kingdom.."的节奏")		
