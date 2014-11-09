@@ -353,7 +353,7 @@ function SmartAI:activate(use)
 				self.toUse = nil
 				return
 			end
-			self:speak(use.card:getClassName(), use)
+			if use.card then self:speak(use.card:getClassName(), use) end
 		end
 	end
 	self.toUse = nil
@@ -4491,9 +4491,9 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 		if need_jieyin then n = math.min(n, to:getMaxHp() - 1) end
 	end
 	if recover then return to:getHp() >= n end
-	
+
 	if self.player:hasSkills("hengzheng|yinghun|zaiqi") and not self.player:isWounded() then return true end
-	
+
 	return to:getHp() > n
 end
 
