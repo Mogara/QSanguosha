@@ -137,9 +137,9 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		for _, skill in ipairs(bothShow) do
 			if self.player:hasSkills(skill) then
 				if canShowHead then
-					return math.random() < 0.6 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.5 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
-					return math.random() < 0.6 or "GameRule_AskForGeneralShowDeputy"
+					return math.random() < 0.5 or "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
@@ -149,7 +149,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		for _, skill in ipairs(firstShow) do
 			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
-					return math.random() < 0.5 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.4 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
 					return math.random() < 0.3 or "GameRule_AskForGeneralShowDeputy"
 				end
@@ -161,7 +161,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		for _, skill in ipairs(needShowForAttack) do
 			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
-					return math.random() < 0.6 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.5 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
 					return math.random() < 0.2 or "GameRule_AskForGeneralShowDeputy"
 				end
@@ -173,7 +173,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		for _, skill in ipairs(needShowForLead) do
 			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead then
-					return math.random() < 0.4 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.3 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
 					return math.random() < 0.2 or "GameRule_AskForGeneralShowDeputy"
 				end
@@ -206,9 +206,9 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 			end
 			if (shown > 0 and e < notshown-1 ) or (self.player:hasShownOneGeneral()) then
 				if self.player:inHeadSkills(skill) and canShowHead then
-					return math.random() < 0.5 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.4 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
-					return math.random() < 0.5 or "GameRule_AskForGeneralShowDeputy"
+					return math.random() < 0.4 or "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
@@ -218,9 +218,9 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 					local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
 					return cho[math.random(1, #cho)]
 				elseif canShowHead then
-					return math.random() < 0.7 or "GameRule_AskForGeneralShowHead"
+					return math.random() < 0.5 or "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then
-					return math.random() < 0.6 or "GameRule_AskForGeneralShowDeputy"
+					return math.random() < 0.4 or "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
@@ -269,20 +269,20 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 		if canShowHead then
 			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
 			for _, p in ipairs(self.enemies) do
-				if p:hasShownSkills("mingshi|huoshui") then return "GameRule_AskForGeneralShowHead" end
+				if p:hasShownSkills("mingshi|huoshui") then return math.random() < 0.4 or "GameRule_AskForGeneralShowHead" end
 			end
 		elseif canShowDeputy then
 			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowDeputy" end
 			for _, p in ipairs(self.enemies) do
-				if p:hasShownSkills("mingshi|huoshui") then return "GameRule_AskForGeneralShowDeputy" end
+				if p:hasShownSkills("mingshi|huoshui") then return math.random() < 0.4 or "GameRule_AskForGeneralShowDeputy" end
 			end
 		end
 
 		if not self.player:hasShownOneGeneral() then
 			local gameProcess = sgs.gameProcess():split(">>")
 			if self.player:getKingdom() == gameProcess[1] and (self.player:getLord() or sgs.shown_kingdom[self.player:getKingdom()] < self.player:aliveCount() / 2) then
-				if canShowHead then return "GameRule_AskForGeneralShowHead"
-				elseif canShowDeputy then return "GameRule_AskForGeneralShowDeputy" end
+				if canShowHead then return math.random() < 0.6 or "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then return math.random() < 0.6 or "GameRule_AskForGeneralShowDeputy" end
 			end
 		end
 
