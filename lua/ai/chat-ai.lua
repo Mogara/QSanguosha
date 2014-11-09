@@ -328,6 +328,30 @@ sgs.ai_chat_func[sgs.CardFinished].duoshi = function(self, player, data)
 	end
 end
 
+sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
+	local name1 =  sgs.Sanguosha:translate(self.player:getGeneralName())
+	local name2 =  sgs.Sanguosha:translate(self.player:getGeneral2Name())
+	local kingdom = sgs.Sanguosha:translate(self.player:getKingdom())
+	local chat = {
+		"终于亮了",
+	}
+	if not self.player:hasShownAllGenerals() then
+		table.insert(chat,self.player:screenName() .."原来是"..kingdom.."国的")
+		table.insert(chat,"看来这是大"..kingdom.."的节奏")
+	elseif self.player:hasShownAllGenerals() then
+		table.insert(chat, "我就说".. self.player:screenName() .."是"..name1..name2.."吧")
+		table.insert(chat,"卧槽,"..name1..name2.."!")
+	end
+	for _, p in ipairs(sgs.robot) do
+		if p:objectName() ~= self.player:objectName() and math.random() < 0.2 then
+			p:speak(chat[math.random(1, #chat)])
+			return
+		end
+	end
+end
+
+sgs.ai_chat = {}
+
 sgs.ai_chat.yiji =
 {
 "再用力一点",
