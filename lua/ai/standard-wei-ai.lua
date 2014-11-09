@@ -1005,6 +1005,7 @@ local qiangxi_skill = {}
 qiangxi_skill.name = "qiangxi"
 table.insert(sgs.ai_skills, qiangxi_skill)
 qiangxi_skill.getTurnUseCard = function(self)
+	if not self:willShowForAttack() then return end
 	if not self.player:hasUsed("QiangxiCard") then
 		return sgs.Card_Parse("@QiangxiCard=.&qiangxi")
 	end
