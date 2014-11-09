@@ -754,7 +754,7 @@ sgs.ai_skill_use["@@JadeSeal!"] = function(self, prompt, method)
 end
 
 sgs.ai_use_priority.JadeSeal = 5.6
-sgs.ai_keep_value.JadeSeal = 2.02
+sgs.ai_keep_value.JadeSeal = 4
 
 --Halberd
 sgs.ai_view_as.Halberd = function(card, player, card_place)
