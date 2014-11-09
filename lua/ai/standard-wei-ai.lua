@@ -1234,6 +1234,14 @@ sgs.ai_skill_playerchosen.fangzhu = function(self, targets)
 					end
 				end
 			end
+			if not target then
+				for _, enemy in ipairs(self.enemies) do
+					if enemy:getPhase() == sgs.Player_NotActive then
+						target = enemy
+						break
+					end
+				end
+			end
 		end
 	end
 	return target
