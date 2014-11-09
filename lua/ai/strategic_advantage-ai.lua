@@ -246,9 +246,6 @@ function SmartAI:useCardBurningCamps(card, use)
 	end
 	if shouldUse then
 		use.card = card
-		if not use.isDummy and sgs.ai_chat_func.usecard then
-			sgs.ai_chat_func.usecard(self, card)
-		end
 	end
 end
 
@@ -311,9 +308,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 		if first then
 			use.card = LureTiger
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
-			if not use.isDummy and sgs.ai_chat_func.usecard then
-				sgs.ai_chat_func.usecard(self, LureTiger)
-			end
 			return
 		end
 	end
@@ -337,9 +331,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.ArcheryAttack + 0.2
 			use.card = LureTiger
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
-			if not use.isDummy and sgs.ai_chat_func.usecard then
-				sgs.ai_chat_func.usecard(self, LureTiger)
-			end
 			return
 		end
 	end
@@ -363,9 +354,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.SavageAssault + 0.2
 			use.card = LureTiger
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
-			if not use.isDummy and sgs.ai_chat_func.usecard then
-				sgs.ai_chat_func.usecard(self, LureTiger)
-			end
 			return
 		end
 	end
@@ -426,9 +414,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 						sgs.ai_use_priority.LureTiger = 3
 						use.card = LureTiger
 						if use.to then use.to = sgs.PlayerList2SPlayerList(sps) end
-						if not use.isDummy and sgs.ai_chat_func.usecard then
-							sgs.ai_chat_func.usecard(self, LureTiger)
-						end
 						return
 					end
 				end
@@ -451,9 +436,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.GodSalvation + 0.1
 			use.card = LureTiger
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
-			if not use.isDummy and sgs.ai_chat_func.usecard then
-				sgs.ai_chat_func.usecard(self, LureTiger)
-			end
 			return
 		end
 	end
@@ -466,9 +448,6 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 				sgs.ai_use_priority.LureTiger = 0.3
 				use.card = LureTiger
 				if use.to then use.to:append(player) end
-				if not use.isDummy and sgs.ai_chat_func.usecard then
-					sgs.ai_chat_func.usecard(self, LureTiger)
-				end
 				return
 			end
 		end

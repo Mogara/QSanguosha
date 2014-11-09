@@ -353,6 +353,7 @@ function SmartAI:activate(use)
 				self.toUse = nil
 				return
 			end
+			self:speak(use.card:getClassName(), use)
 		end
 	end
 	self.toUse = nil

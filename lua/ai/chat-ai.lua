@@ -18,6 +18,8 @@
   QSanguosha-Rara
 *********************************************************************]]
 
+sgs.ai_chat = {}
+
 function speak(to, type)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
@@ -194,40 +196,6 @@ sgs.ai_chat_func[sgs.CardFinished].yaoseng = function(self, player, data)
 	end
 end
 
-sgs.ai_chat_func.usecard = function(self, card)
-	if self.player:getState() ~= "robot" then return end
-	if not sgs.GetConfig("AIChat", false) then return end
-	if card:isKindOf("LureTiger") and math.random() < 0.05 then
-		local chat = {
-			"爆裂吧！现实！粉碎吧！精神！放逐这个世界！",
-		}
-		self.player:speak(chat[math.random(1, #chat)])
-	elseif card:isKindOf("BurningCamps") then
-		local x = math.random()
-		if x < 0.033 then
-			self.player:speak("让火焰净化一切")
-		elseif x < 0.067 then
-			local t = sgs.GetConfig("OriginAIDelay", "")
-			self.player:speak("火元素之王啊")
-			self.room:getThread():delay(t)
-			self.player:speak("藉由您所有的力量")
-			self.room:getThread():delay(t)
-			self.player:speak("赐与我强大的烈焰之力吧！")
-			self.room:getThread():delay(t)
-			self.player:speak("火烧连营~")
-		elseif x < 0.1 then
-			local t = sgs.GetConfig("OriginAIDelay", "")
-			self.player:speak("狂暴的火之精灵哦")
-			self.room:getThread():delay(t)
-			self.player:speak("将您的力量暂时给予我")
-			self.room:getThread():delay(t)
-			self.player:speak("您的契约者在此呼唤")
-			self.room:getThread():delay(t)
-			self.player:speak("爆裂吾眼前所有之物")
-		end
-	end
-end
-
 sgs.ai_chat_func[sgs.TargetConfirmed].gounannv = function(self, player, data)
 	if player:getState() ~= "robot" then return end
 	local use = data:toCardUse()
@@ -240,7 +208,6 @@ sgs.ai_chat_func[sgs.TargetConfirmed].gounannv = function(self, player, data)
 		end
 	end
 end
-
 
 sgs.ai_chat_func[sgs.CardFinished].analeptic = function(self, player, data)
 	local use = data:toCardUse()
@@ -331,11 +298,13 @@ function SmartAI:speak(type, isFemale)
 	if self.player:getState() ~= "robot" then return end
 
 	if sgs.ai_chat[type] then
-		local i =math.random(1,#sgs.ai_chat[type])
-		if isFemale then type = type .. "_female" end
-		self.player:speak(sgs.ai_chat[type][i])
-	else
-		self.player:speak(type)
+		if type(sgs.ai_chat[type]) == "function" then
+			sgs.ai_chat[type](self)
+		else
+			local i = math.random(1,#sgs.ai_chat[type])
+			if isFemale then type = type .. "_female" end
+			self.player:speak(sgs.ai_chat[type][i])
+		end
 	end
 end
 
@@ -358,8 +327,6 @@ sgs.ai_chat_func[sgs.CardFinished].duoshi = function(self, player, data)
 		end
 	end
 end
-
-sgs.ai_chat = {}
 
 sgs.ai_chat.yiji =
 {
@@ -484,3 +451,36 @@ sgs.ai_chat.usepeach = {
 "不好，这桃里有屎"
 }
 
+sgs.ai_chat.LureTiger = function(self)
+	if math.random() < 0.05 then
+		local chat = {
+			"爆裂吧！现实！粉碎吧！精神！放逐这个世界！",
+		}
+		self.player:speak(chat[math.random(1, #chat)])
+	end
+end
+
+sgs.ai_chat.BurningCamps = function(self)
+	local x = math.random()
+	if x < 0.033 then
+		self.player:speak("让火焰净化一切")
+	elseif x < 0.067 then
+		local t = sgs.GetConfig("OriginAIDelay", "")
+		self.player:speak("火元素之王啊")
+		self.room:getThread():delay(t)
+		self.player:speak("藉由您所有的力量")
+		self.room:getThread():delay(t)
+		self.player:speak("赐与我强大的烈焰之力吧！")
+		self.room:getThread():delay(t)
+		self.player:speak("火烧连营~")
+	elseif x < 0.1 then
+		local t = sgs.GetConfig("OriginAIDelay", "")
+		self.player:speak("狂暴的火之精灵哦")
+		self.room:getThread():delay(t)
+		self.player:speak("将您的力量暂时给予我")
+		self.room:getThread():delay(t)
+		self.player:speak("您的契约者在此呼唤")
+		self.room:getThread():delay(t)
+		self.player:speak("爆裂吾眼前所有之物")
+	end
+end
