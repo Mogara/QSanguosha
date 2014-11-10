@@ -18,8 +18,18 @@
   QSanguosha-Rara
 *********************************************************************]]
 
-sgs.ai_skill_invoke.tuntian = true
-sgs.ai_skill_invoke._tuntian = true
+sgs.ai_skill_invoke.tuntian = function(self, data)
+	if not (self:willShowForAttack() or self:willShowForDefence()) then
+		return false
+	end
+	return true
+end
+sgs.ai_skill_invoke._tuntian = function(self, data)
+	if not (self:willShowForAttack() or self:willShowForDefence()) then
+		return false
+	end
+	return true
+end
 
 local jixi_skill = {}
 jixi_skill.name = "jixi"

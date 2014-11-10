@@ -587,6 +587,7 @@ sgs.ai_skill_invoke.mengjin = function(self, data)
 end
 
 sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
+	if not (self:willShowForAttack() or self:willShowForDefence() ) then return "." end 
 	local judge = data:toJudge()
 	local all_cards = self.player:getCards("he")
 	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do

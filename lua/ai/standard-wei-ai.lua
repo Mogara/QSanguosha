@@ -141,7 +141,6 @@ end
 sgs.ai_skill_cardask["@guicai-card"] = function(self, data)
 	if not (self:willShowForAttack() or self:willShowForDefence() ) then return "." end 
 	local judge = data:toJudge()
-
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
 		table.insert(cards, 1, sgs.Sanguosha:getCard(id))
@@ -1393,11 +1392,4 @@ end
 
 sgs.ai_cardneed.xiaoguo = function(to, card)
 	return getKnownCard(to, global_room:getCurrent(), "BasicCard", true) == 0 and card:getTypeId() == sgs.Card_TypeBasic
-end
-
-sgs.ai_skill_invoke.tuntian = function(self, data)
-	if not (self:willShowForAttack() or self:willShowForDefence()) then
-		return false
-	end
-	return true
 end
