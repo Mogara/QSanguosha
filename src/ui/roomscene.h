@@ -104,7 +104,7 @@ private:
     void fillComboBox(QComboBox *ComboBox);
 
 private slots:
-    void disableSource();
+    void disableSource(const QString &currentNature);
 };
 
 class ReplayerControlBar : public QGraphicsObject{
@@ -170,7 +170,7 @@ public slots:
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     //void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
-    void chooseRole(const QString &scheme, const QStringList &roles);
+    //void chooseRole(const QString &scheme, const QStringList &roles);
     //void chooseDirection();
     void chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional);
 
@@ -185,7 +185,8 @@ public slots:
     void setDashboardShadow(const QString &who);
     void showServerInformation();
     void surrender();
-    void saveReplayRecord(const bool auto_save = false, const bool network_only = false);
+    void saveReplayRecord();
+    void saveReplayRecord(const bool auto_save, const bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();

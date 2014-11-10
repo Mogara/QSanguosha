@@ -74,12 +74,12 @@ BanIpDialog::BanIpDialog(QWidget *parent, Server *server)
     layout->addLayout(up_layout);
     layout->addLayout(down_layout);
 
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(save()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(insert, SIGNAL(clicked()), this, SLOT(insertClicked()));
-    connect(remove, SIGNAL(clicked()), this, SLOT(removeClicked()));
-    connect(kick, SIGNAL(clicked()), this, SLOT(kickClicked()));
+    connect(ok, &QPushButton::clicked, this, &BanIpDialog::accept);
+    connect(this, &BanIpDialog::accepted, this, &BanIpDialog::save);
+    connect(cancel, &QPushButton::clicked, this, &BanIpDialog::reject);
+    connect(insert, &QPushButton::clicked, this, &BanIpDialog::insertClicked);
+    connect(remove, &QPushButton::clicked, this, &BanIpDialog::removeClicked);
+    connect(kick, &QPushButton::clicked, this, &BanIpDialog::kickClicked);
 
     if (server)
         loadIPList();
@@ -141,10 +141,8 @@ void BanIpDialog::kickClicked(){
         QStringList split_data = left->currentItem()->text().split("::");
         QString ip = split_data.takeLast();
         QString screenName = split_data.join("::");
-        if (p->screenName() == screenName && p->getIp() == ip){
-            //procedure kick
-            p->kick();
-        }
+        if (p->screenName() == screenName && p->getIp() == ip)
+            p->kick(); // procedure kick
     }
 }
 
@@ -166,7 +164,7 @@ void BanIpDialog::addPlayer(ServerPlayer *player)
 
     QString parsed_string = QString("%1::%2").arg(player->screenName(), player->getIp());
     left->addItem(parsed_string);
-    connect(player, SIGNAL(disconnected()), this, SLOT(removePlayer()));
+    connect(player, &ServerPlayer::disconnected, this, &BanIpDialog::removePlayer);
 }
 
 void BanIpDialog::removePlayer()

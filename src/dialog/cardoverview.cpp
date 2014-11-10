@@ -46,7 +46,7 @@ CardOverview::CardOverview(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(this, SIGNAL(windowTitleChanged(QString)), ui->titleLabel, SLOT(setText(QString)));
+    connect(this, &CardOverview::windowTitleChanged, ui->titleLabel, &QLabel::setText);
 
     ui->tableWidget->setColumnWidth(0, 80);
     ui->tableWidget->setColumnWidth(1, 60);
@@ -54,8 +54,8 @@ CardOverview::CardOverview(QWidget *parent)
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 70);
 
-    connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ui->getCardButton, &QPushButton::clicked, this, &CardOverview::askCard);
+    connect(ui->closeButton, &QPushButton::clicked, this, &CardOverview::reject);
 
     ui->cardDescriptionBox->setProperty("description", true);
     ui->malePlayButton->hide();

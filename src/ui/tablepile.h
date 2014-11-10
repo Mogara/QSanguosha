@@ -45,7 +45,8 @@ public:
     void showJudgeResult(int cardId, bool takeEffect);
 
 public slots:
-    void clear(bool delayRequest = true);
+    void clear();
+    void clear(bool delayRequest);
 
 protected:
     // This function must be called with mutex_pileCards locked.

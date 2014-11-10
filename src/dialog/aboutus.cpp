@@ -43,7 +43,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     list->setMaximumWidth(150);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(closeButton, &QPushButton::clicked, this, &AboutUsDialog::reject);
 
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(list);
@@ -67,7 +67,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
         item->setData(Qt::UserRole, name);
     }
 
-    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(loadContent(int)));
+    connect(list, &QListWidget::currentRowChanged, this, &AboutUsDialog::loadContent);
 
     if (!developers.isEmpty())
         loadContent(0);

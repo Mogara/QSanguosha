@@ -82,6 +82,10 @@ void TablePile::_markClearance(CardItem *item) {
         item->m_uiHelper.tablePileClearTimeStamp = m_currentTime;
 }
 
+void TablePile::clear() {
+    clear(true);
+}
+
 void TablePile::clear(bool delayRequest) {
     if (m_visibleCards.isEmpty()) return;
     _m_mutex_pileCards.lock();
@@ -94,8 +98,7 @@ void TablePile::clear(bool delayRequest) {
     if (delayRequest) {
         foreach(CardItem *toRemove, m_visibleCards)
             _markClearance(toRemove);
-    }
-    else {
+    } else {
         _fadeOutCardsLocked(m_visibleCards);
         m_visibleCards.clear();
     }

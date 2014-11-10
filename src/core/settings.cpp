@@ -53,7 +53,7 @@ Settings::Settings()
 {
     Q_ASSERT(SettingsInstance == NULL);
     SettingsInstance = this;
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(qApp, &QApplication::aboutToQuit, this, &Settings::deleteLater);
 }
 
 void Settings::init() {

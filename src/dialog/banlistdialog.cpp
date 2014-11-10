@@ -40,7 +40,7 @@ BanListDialog::BanListDialog(QWidget *parent, bool view)
 
     QTabWidget *tab = new QTabWidget;
     layout->addWidget(tab);
-    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(switchTo(int)));
+    connect(tab, &QTabWidget::currentChanged, this, &BanListDialog::switchTo);
 
     foreach(QString item, ban_list) {
         QWidget *apage = new QWidget;
@@ -71,11 +71,11 @@ BanListDialog::BanListDialog(QWidget *parent, bool view)
     QPushButton *ok = new QPushButton(tr("OK"));
     QPushButton *cancel = new QPushButton(tr("Cancel"));
 
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
-    connect(remove, SIGNAL(clicked()), this, SLOT(doRemoveButton()));
-    connect(add, SIGNAL(clicked()), this, SLOT(doAddButton()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ok, &QPushButton::clicked, this, &BanListDialog::accept);
+    connect(this, &BanListDialog::accepted, this, &BanListDialog::saveAll);
+    connect(remove, &QPushButton::clicked, this, &BanListDialog::doRemoveButton);
+    connect(add, &QPushButton::clicked, this, &BanListDialog::doAddButton);
+    connect(cancel, &QPushButton::clicked, this, &BanListDialog::reject);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -135,8 +135,8 @@ void BanListDialog::addPair(const QString &first, const QString &second) {
 void BanListDialog::doAddButton() {
     FreeChooseDialog *chooser = new FreeChooseDialog(this,
         (list->objectName() == "Pairs") ? FreeChooseDialog::Pair : FreeChooseDialog::Multi);
-    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
-    connect(chooser, SIGNAL(pair_chosen(QString, QString)), this, SLOT(addPair(QString, QString)));
+    connect(chooser, &FreeChooseDialog::general_chosen, this, &BanListDialog::addGeneral);
+    connect(chooser, &FreeChooseDialog::pair_chosen, this, &BanListDialog::addPair);
     chooser->exec();
 }
 

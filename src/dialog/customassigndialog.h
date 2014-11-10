@@ -200,7 +200,8 @@ private slots:
     void on_list_itemSelectionChanged(QListWidgetItem *current);
 
     void load();
-    bool save(QString path = QString());
+    bool save(const QString &path);
+    bool save();
 
     void doPlayerShows(bool toggled);
     void doPlayerShows2(bool toggled);

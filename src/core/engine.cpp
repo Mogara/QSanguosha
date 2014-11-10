@@ -120,7 +120,7 @@ Engine::Engine()
 
     BanPair::loadBanPairs();
 
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(qApp, &QApplication::aboutToQuit, this, &Engine::deleteLater);
 
     foreach (const Skill *skill, skills) {
         Skill *mutable_skill = const_cast<Skill *>(skill);

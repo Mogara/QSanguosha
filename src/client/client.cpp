@@ -164,13 +164,13 @@ Client::Client(QObject *parent, const QString &filename)
         socket = NULL;
 
         replayer = new Replayer(this, filename);
-        connect(replayer, SIGNAL(command_parsed(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
-    }
-    else {
+        connect(replayer, &Replayer::command_parsed, this, &Client::processServerPacket);
+    } else {
         socket = new NativeClientSocket;
         socket->setParent(this);
-        connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
-        connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
+        connect(socket, &NativeClientSocket::message_got, this, &Client::processServerPacket);
+        connect(socket, &NativeClientSocket::error_message, this, &Client::error_message);
+
         socket->connectToHost();
 
         replayer = NULL;

@@ -52,7 +52,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
     ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
-    connect(this, SIGNAL(windowTitleChanged(QString)), ui->title, SLOT(setText(QString)));
+    connect(this, &ConnectionDialog::windowTitleChanged, ui->title, &QLabel::setText);
 
     QScrollBar *bar = ui->avatarList->verticalScrollBar();
     bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
@@ -146,8 +146,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked() {
 
 void ConnectionDialog::on_detectLANButton_clicked() {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
-    connect(detector_dialog, SIGNAL(address_chosen(QString)),
-        ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+    connect(detector_dialog, &UdpDetectorDialog::address_chosen, ui->hostComboBox->lineEdit(), &QLineEdit::setText);
 
     detector_dialog->exec();
 }

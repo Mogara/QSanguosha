@@ -34,7 +34,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     : FlatDialog(parent, false), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
-    connect(this, SIGNAL(windowTitleChanged(QString)), ui->windowTitle, SLOT(setText(QString)));
+    
+    connect(this, &ConfigDialog::windowTitleChanged, ui->windowTitle, &QLabel::setText);
 
     // tab 1
     QString bg_path = Config.value("BackgroundImage").toString();
@@ -65,7 +66,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
 
     ui->enableLastWordCheckBox->setEnabled(Config.EnableEffects);
     ui->enableLastWordCheckBox->setChecked(Config.EnableLastWord);
-    connect(ui->enableEffectCheckBox, SIGNAL(toggled(bool)), ui->enableLastWordCheckBox, SLOT(setEnabled(bool)));
+    connect(ui->enableEffectCheckBox, &QCheckBox::toggled, ui->enableLastWordCheckBox, &QCheckBox::setEnabled);
 
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
@@ -93,17 +94,17 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->browseRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
     ui->resetRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
 
-    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->networkOnlyCheckBox, SLOT(setEnabled(bool)));
-    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLabel, SLOT(setEnabled(bool)));
-    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLineEdit, SLOT(setEnabled(bool)));
-    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->browseRecordPathsButton, SLOT(setEnabled(bool)));
-    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->resetRecordPathsButton, SLOT(setEnabled(bool)));
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->networkOnlyCheckBox, &QCheckBox::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->recordPathsSetupLabel, &QLabel::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->recordPathsSetupLineEdit, &QLineEdit::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->browseRecordPathsButton, &QPushButton::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->resetRecordPathsButton, &QPushButton::setEnabled);
 
     QString record_path = Config.value("RecordSavePaths", "records/").toString();
     if (!record_path.startsWith(":"))
         ui->recordPathsSetupLineEdit->setText(record_path);
 
-    connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
+    connect(this, &ConfigDialog::accepted, this, &ConfigDialog::saveConfig);
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font) {
