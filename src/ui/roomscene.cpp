@@ -2975,9 +2975,9 @@ void RoomScene::onGameOver() {
                 break;
             }
         }
-    }
-    else
+    } else {
         win_effect = "lose";
+    }
 
     Sanguosha->playSystemAudioEffect(win_effect);
 #endif
@@ -3032,26 +3032,30 @@ void RoomScene::onGameOver() {
 void RoomScene::addRestartButton(QDialog *dialog) {
     dialog->resize(main_window->width() / 2, dialog->height());
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addStretch();
     QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dialog->layout());
-    if (layout) layout->addLayout(hlayout);
+    if (layout) layout->addLayout(hLayout);
 
     if (ClientInstance->getReplayer() == NULL) {
-        QPushButton *restart_button = new QPushButton(tr("Restart Game"));
-        hlayout->addWidget(restart_button);
-        connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
+        QPushButton *restartButton = new QPushButton(tr("Restart Game"));
+        hLayout->addWidget(restartButton);
+        connect(restartButton, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(restartButton, SIGNAL(clicked()), this, SIGNAL(restart()));
 
-        QPushButton *save_button = new QPushButton(tr("Save record"));
-        hlayout->addWidget(save_button);
-        connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
+        QPushButton *saveButton = new QPushButton(tr("Save record"));
+        hLayout->addWidget(saveButton);
+        connect(saveButton, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
     }
 
-    QPushButton *return_button = new QPushButton(tr("Return"));
-    hlayout->addWidget(return_button);
-    connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
+    QPushButton *returnButton = new QPushButton(tr("Return"));
+    hLayout->addWidget(returnButton);
+    connect(returnButton, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(returnButton, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
+
+    QPushButton *closeButton = new QPushButton(tr("Close"));
+    hLayout->addWidget(closeButton);
+    connect(closeButton, SIGNAL(clicked()), dialog, SLOT(reject()));
 }
 
 void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) {
