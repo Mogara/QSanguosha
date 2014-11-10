@@ -1042,10 +1042,10 @@ bool ThreatenEmperor::isAvailable(const Player *player) const{
     if (invoke) {
         if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) // for JadeSeal
             invoke = big_kingdoms.contains(player->objectName());
-        else {
-            QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
-            invoke = big_kingdoms.contains(kingdom);
-        }
+        else if (player->getRole() == "careerist")
+            invoke = false;
+        else
+            invoke = big_kingdoms.contains(player->getKingdom());
     }
     return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);
 }
@@ -1069,7 +1069,7 @@ public:
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QMap<ServerPlayer *, QStringList> list;
-		PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to != Player::NotActive)
             return list;
         foreach (ServerPlayer *p, room->getAllPlayers())

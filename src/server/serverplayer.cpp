@@ -258,11 +258,9 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
     foreach (ServerPlayer *p, players) {
         if (!p->hasShownOneGeneral())
             continue;
-        if (to_calculate == "careerist") {
-            if (p->getRole() == "careerist") {
-                ++num;
-                break;    // careerist always alone.
-            }
+        if (p->getRole() == "careerist") { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
+            if (to_calculate == "careerist")
+                num = 1;
             continue;
         }
         if (p->getKingdom() == to_calculate)
@@ -1880,16 +1878,9 @@ QStringList ServerPlayer::getBigKingdoms(const QString &reason, MaxCardsType::Ma
     // if there is someone has JadeSeal, needn't trigger event because of the fucking effect of JadeSeal
     QMap<QString, int> kingdom_map;
     QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms << "careerist";
     foreach (QString kingdom, kingdoms) {
         if (kingdom == "god") continue;
         kingdom_map.insert(kingdom, getPlayerNumWithSameKingdom(reason, kingdom, type));
-    }
-    foreach (ServerPlayer *p, room->getAlivePlayers()) {
-        if (!p->hasShownOneGeneral()) {
-            kingdom_map.insert("anjiang", 1);
-            break;
-        }
     }
     QStringList big_kingdoms;
     foreach (QString key, kingdom_map.keys()) {
