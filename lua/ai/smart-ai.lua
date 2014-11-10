@@ -389,7 +389,7 @@ function SmartAI:objectiveLevel(player)
 			if sgs.isAnjiang(player) and player_kingdom_explicit == "unknown" then
 				if player_kingdom_evaluate == self_kingdom then return -1
 				elseif string.find(player_kingdom_evaluate, self_kingdom) then return 0
-				elseif player_kingdom_evaluate == "unknown" and player:getHp() == 1 then return 0
+				elseif player_kingdom_evaluate == "unknown" and player:getHp() <= 1 then return 0
 				else
 					return self:getOverflow() > 0 and 3.5 or 0
 				end
@@ -407,7 +407,7 @@ function SmartAI:objectiveLevel(player)
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player)
 					and (player_kingdom_evaluate == self_kingdom or string.find(player_kingdom_evaluate, self_kingdom)) then return 0
-				elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 2 then return 0
+				elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 0 then return 0
 				else return 5
 				end
 			else
@@ -424,7 +424,7 @@ function SmartAI:objectiveLevel(player)
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 					if player_kingdom_evaluate == self_kingdom then return -1
 					elseif string.find(player_kingdom_evaluate, self_kingdom) then return 0
-					elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 2 then return 0
+					elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 0 then return 0
 					end
 				end
 				return 5
@@ -439,7 +439,7 @@ function SmartAI:objectiveLevel(player)
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 					if player_kingdom_evaluate == self_kingdom then return -1
 					elseif string.find(player_kingdom_evaluate, self_kingdom) then return 0
-					elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 2 then return 0
+					elseif player_kingdom_evaluate == "unknown" and sgs.turncount <= 0 then return 0
 					end
 				end
 				return 5
@@ -1086,6 +1086,7 @@ function SmartAI:getUsePriority(card)
 		elseif card:isKindOf("Weapon") and not self.player:getWeapon() then v = (sgs.ai_use_priority[class_name] or 0) + 3
 		elseif card:isKindOf("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
 		elseif card:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() then v = 5.5
+		elseif card:isKindOf("Treasure") and not self.player:getTreasure() then v = 5.6
 		end
 		return v
 	end
@@ -1254,11 +1255,13 @@ function SmartAI:cardNeed(card)
 	end
 	if value then return value / i + 4 end
 
-	if card:isKindOf("Slash") and self:getCardsNum("Slash") == 0 then return 5.9 end
+	if card:isKindOf("Slash") then
+		if self:getCardsNum("Slash") == 0 then return 5.9
+		else return 4 end
+	end
 	if card:isKindOf("Analeptic") then
 		if self.player:getHp() < 2 then return 10 end
 	end
-	if card:isKindOf("Slash") and (self:getCardsNum("Slash") > 0) then return 4 end
 	if card:isKindOf("Crossbow") and self.player:hasSkills("luoshen|kurou|keji|wusheng") then return 20 end
 	if card:isKindOf("Axe") and self.player:hasSkill("luoyi") then return 15 end
 	if card:isKindOf("Weapon") and (not self.player:getWeapon()) and (self:getCardsNum("Slash") > 1) then return 6 end
@@ -3601,7 +3604,8 @@ function SmartAI:getCards(class_name, flag)
 		if card:hasFlag("AI_Using") then
 		elseif class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		else
-			local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, self.player) and card_place ~= sgs.Player_PlaceSpecial
+			local isCard = card:isKindOf(class_name) and not prohibitUseDirectly(card, self.player)
+							and (card_place ~= sgs.Player_PlaceSpecial or self.player:getPile("wooden_ox"):contains(card:getEffectiveId()))
 			local viewas = getSkillViewCard(card, class_name, self.player, card_place)
 			if viewas then
 				viewas = sgs.Card_Parse(viewas)
@@ -4716,7 +4720,7 @@ function SmartAI:findPlayerToDraw(include_self, drawnum)
 	end
 
 	local AssistTarget = self:AssistTarget()
-	if AssistTarget then
+	if AssistTarget and (AssistTarget:getHandcardNum() < 10 or self.player:getHandcardNum() > AssistTarget:getHandcardNum()) then
 		for _, friend in ipairs(friends) do
 			if friend:objectName() == AssistTarget:objectName() and not self:willSkipPlayPhase(friend) then
 				return friend

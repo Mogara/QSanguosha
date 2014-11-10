@@ -545,10 +545,10 @@ function SmartAI:useCardFightTogether(card, use)
 				if v_big > v_small and v_big > 0 then self.FightTogether_choice = "big"
 				elseif v_small > v_big and v_small > 0 then self.FightTogether_choice = "small"
 				elseif v_big == v_small and v_big > 0 then
-					if #bigs > #smalls then return "big"
-					elseif #bigs < #smalls then return "small"
+					if #bigs > #smalls then self.FightTogether_choice = "big"
+					elseif #bigs < #smalls then self.FightTogether_choice = "small"
 					else
-						return math.random(1, 2) == 1 and "big" or "small"
+						self.FightTogether_choice = math.random(1, 2) == 1 and "big" or "small"
 					end
 				end
 			end

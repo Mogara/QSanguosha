@@ -159,7 +159,7 @@ function sgs.getDefenseSlash(player, self)
 	end
 
 	defense = defense + math.min(player:getHp() * 0.45, 10)
-	if sgs.isAnjiang(player) then defense = defense + 1 end
+	if sgs.isAnjiang(player) then defense = defense - 1 end
 
 	if attacker then
 		local m = sgs.masochism_skill:split("|")
@@ -647,7 +647,7 @@ sgs.ai_skill_playerchosen.slash_extra_targets = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets, "defenseSlash")
 	for _, target in ipairs(targets) do
-		if self:isEnemy(target) and not self:slashProhibit(slash, target) and sgs.isGoodTarget(target, targetlist, self) and self:slashIsEffective(slash, target) then
+		if self:isEnemy(target) and not self:slashProhibit(slash, target) and sgs.isGoodTarget(target, targets, self) and self:slashIsEffective(slash, target) then
 			return target
 		end
 	end
@@ -1473,10 +1473,9 @@ sgs.ai_keep_value.Nullification = 3.8
 sgs.ai_use_value.Nullification = 7.8
 
 function SmartAI:useCardAmazingGrace(card, use)
-	-- if (self.role == "lord" or self.role == "loyalist") and sgs.turncount <= 2 and self.player:getSeat() <= 3 and self.player:aliveCount() > 5 then return end
 	local value = 1
 	local suf, coeff = 0.8, 0.8
-	if self:needKongcheng() and self.player:getHandcardNum() == 1 or self.player:hasSkills("nosjizhi|jizhi") then
+	if self:needKongcheng() and self.player:getHandcardNum() == 1 or self.player:hasSkill("jizhi") then
 		suf = 0.6
 		coeff = 0.6
 	end
@@ -2468,10 +2467,10 @@ function SmartAI:useCardIndulgence(card, use)
 	local getvalue = function(enemy)
 		if enemy:hasSkills("jgjiguan_qinglong|jgjiguan_baihu|jgjiguan_zhuque|jgjiguan_xuanwu") then return -101 end
 		if enemy:hasSkills("jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then return -101 end
-		if enemy:hasSkill("qianxun") then return -101 end
-		if enemy:hasSkill("weimu") and card:isBlack() then return -101 end
+		if enemy:hasShownSkill("qianxun") then return -101 end
+		if enemy:hasShownSkill("weimu") and card:isBlack() then return -101 end
 		if enemy:containsTrick("indulgence") then return -101 end
-		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -101 end
+		if enemy:hasShownSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -101 end
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return -101 end
 
