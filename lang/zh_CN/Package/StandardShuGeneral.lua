@@ -24,6 +24,7 @@ return {
 	["illustrator:zhugeliang"] = "木美人",
 	["guanxing"] = "观星",
 	[":guanxing"] = "准备阶段开始时，你可以观看牌堆顶的X张牌（X为全场角色数且至多为5）并改变其中任意数量的牌的顺序并将其余的牌置于牌堆底。",
+	["GuanxingShowGeneral"] = "观星亮将" ,
 	["kongcheng"] = "空城",
 	[":kongcheng"] = "锁定技，每当你成为【杀】或【决斗】的目标时，若你没有手牌，你取消自己。",
 	["#GuanxingResult"] = "%from 的“<font color=\"yellow\"><b>观星</b></font>”结果：%arg 上 %arg2 下",

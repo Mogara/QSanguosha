@@ -238,7 +238,7 @@ public:
                 choices << "show_both_generals";
             if (choices.length() != 3)
                 choices << "cancel";
-            QString choice = room->askForChoice(player, "TurnStartShowGeneral", choices.join("+"));
+            QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
             if (choice == "cancel") {
                 if (show1) {
                     room->broadcastSkillInvoke(objectName(), player);
