@@ -636,6 +636,12 @@ sgs.ai_suit_priority.guose= "club|spade|heart|diamond"
 
 
 sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
+	
+	if not (self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
+		or not  (self:willShowForMasochism() and self:getCardsNum("Jink") == 0) then 
+			return "."
+	end 
+	
 	local others = self.room:getOtherPlayers(self.player)
 	others = sgs.QList2Table(others)
 	local source
@@ -914,6 +920,13 @@ end
 
 sgs.dynamic_value.benefit.JieyinCard = true
 
+sgs.ai_skill_invoke.xiaoji = function(self, data)
+	if not (self:willShowForAttack() or self:willShowForDefence()) then
+		return false
+	end
+	return true
+end
+
 sgs.xiaoji_keep_value = {
 	Weapon = 4.9,
 	Armor = 5,
@@ -1111,6 +1124,7 @@ sgs.ai_choicemade_filter.skillChoice.yinghun = function(self, player, promptlist
 end
 
 sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
+	if not self:willShowForMasochism() then return "." end 
 	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
 	local friend_hp = 0

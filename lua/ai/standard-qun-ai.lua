@@ -733,6 +733,7 @@ sgs.ai_suit_priority.guidao= "diamond|heart|club|spade"
 sgs.ai_skill_discard.beige = function(self)
 	local damage = self.player:getTag("beige_data"):toDamage()
 	if damage.to and not self:isFriend(damage.to) or damage.from and self:isFriend(damage.from) then return {} end
+	if not self:willShowForMasochism() then return {} end
 	return self:askForDiscard("dummy_reason", 1, 1, false, true)
 end
 

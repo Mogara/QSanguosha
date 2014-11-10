@@ -5070,7 +5070,7 @@ function SmartAI:setSkillsPreshowed()
 end
 
 function SmartAI:willShowForAttack()
-	if not sgs.isAnjiang(self.player) then return true end
+	if self.player:hasShownOneGeneral() then return true end
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
@@ -5086,17 +5086,29 @@ function SmartAI:willShowForAttack()
 			end
 		end
 	end
+	
+	local showRate = math.random() + f/10 +eAtt/10 
+	if showRate < 0.8 then return false end
+	
+	local firstShowReward = false
+	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+		if shown == 0 then 
+			firstShowReward = true
+		end	
+	end
+	if firstShowReward and showRate > 0.7 then return true end
 
 	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2+1,3) and not self.player:hasShownOneGeneral() then
 		if e < f or eAtt <= 0 then
 			return false
 		end
 	end
-	return math.random() < 0.5+(shown/10) or true
+
+return true
 end
 
 function SmartAI:willShowForDefence()
-	if not sgs.isAnjiang(self.player) then return true end
+	if self.player:hasShownOneGeneral() then return true end
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
@@ -5112,13 +5124,63 @@ function SmartAI:willShowForDefence()
 			end
 		end
 	end
+	
+	local showRate = math.random() - e/10 - self.player:getHp()/10 
+	if showRate < 0.8 then return false end
+	
+	local firstShowReward = false
+	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+		if shown == 0 then 
+			firstShowReward = true
+		end	
+	end
+	if firstShowReward and showRate > 0.7 then return true end
 
 	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2+1, 3) and not self.player:hasShownOneGeneral() then
 		if f < 2 or not self:isWeak() then
 			return false
 		end
+	end 
+	
+	return true
+end
+
+function SmartAI:willShowForMasochism()
+	if self.player:hasShownOneGeneral() then return true end
+	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if self:evaluateKingdom(p) == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
+			end
+		end
 	end
-	return math.random() < 0.5+(shown/10) or true
+	
+	local showRate = math.random() - f/10 - self.player:getHp()/10 + e/10
+	if showRate < 0.4 then return false end
+	
+	local firstShowReward = false
+	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+		if shown == 0 then 
+			firstShowReward = true
+		end	
+	end
+	if firstShowReward and showRate > 0.7 then return true end
+
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2+1, 3) and not self.player:hasShownOneGeneral() then
+		if self.player:getLostHp() == 1 and self:getCardsNum("Peach") > 0 and showRate < 0.6 then
+			return false
+		end
+	end 
+	
+	return true
 end
 
 function sgs.getReward(player)

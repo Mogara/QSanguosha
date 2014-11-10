@@ -503,9 +503,10 @@ sgs.kanpo_suit_value = {
 }
 
 sgs.ai_skill_invoke.bazhen = function(self, data)
-	if (not self:willShowForDefence() and self:getCardsNum("Jink") > 0) then
-		return false
-	end
+	if not (self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
+		or not  (self:willShowForMasochism() and self:getCardsNum("Jink") == 0) then 
+			return false 
+	end 
 	return sgs.ai_skill_invoke.EightDiagram
 end
 
@@ -759,9 +760,19 @@ function sgs.ai_cardneed.shenzhi(to, card)
 	return to:getHandcardNum() < to:getHp()
 end
 
-sgs.ai_skill_invoke.huoshou = true
+sgs.ai_skill_invoke.huoshou = function(self, data)
+	if not self:willShowForDefence() and not self:willShowForAttack() then
+		return false
+	end
+	return true
+end
 
-sgs.ai_skill_invoke.juxiang = true
+sgs.ai_skill_invoke.juxiang = function(self, data)
+	if not self:willShowForDefence() and not self:willShowForAttack() then
+		return false
+	end
+	return true
+end
 
 sgs.ai_skill_invoke.kongcheng = true
 

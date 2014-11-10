@@ -18,13 +18,14 @@
   QSanguosha-Rara
 *********************************************************************]]
 sgs.ai_skill_invoke.xunxun = function(self, data)
-	if not self:willShowForDefence() then
+	if not (self:willShowForDefence() or self:willShowForAttack()) then
 		return false
 	end
 	return true
 end
 
 function sgs.ai_skill_invoke.wangxi(self, data)
+	if not self:willShowForMasochism() then return false end 
 	local target = data:toPlayer()
 	if target then
 		if (self.player:isFriendWith(target) or self:isFriend(target)) and not self:needKongcheng(target)then  
@@ -57,6 +58,7 @@ sgs.ai_choicemade_filter.skillInvoke.wangxi = function(self, player, promptlist)
 end
 
 function sgs.ai_skill_invoke.hengjiang(self, data)
+	if not self:willShowForMasochism() then return false end
 	local target = data:toPlayer()
 	if not target then return end
 	if self:isFriend(target) then

@@ -385,7 +385,12 @@ sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, in
 	return self:askForDiscard("dummyreason", 1, 1, false, true)
 end
 
-sgs.ai_skill_invoke.qianhuan = true
+sgs.ai_skill_invoke.qianhuan = function(self, data)
+	if not (self:willShowForAttack() or self:willShowForDefence() or self:willShowForMasochism() ) then
+		return false
+	end
+	return true
+end
 
 local invoke_qianhuan = function(self, use)
 	if (use.from and self:isFriend(use.from)) then return false end
