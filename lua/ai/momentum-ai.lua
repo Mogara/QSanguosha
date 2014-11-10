@@ -284,6 +284,13 @@ sgs.ai_skill_invoke.fenming = function(self)
 	return value / count >= 0.2
 end
 
+sgs.ai_skill_invoke.jiang = function(self, data)
+	if not self:willShowForAttack() and not self:willShowForDefence() then
+		return false
+	end
+	return true
+end
+
 sgs.ai_skill_invoke.hengzheng = function(self, data)
 	local value = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
