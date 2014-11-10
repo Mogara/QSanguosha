@@ -24,6 +24,7 @@
 #include <QFile>
 #include <QRect>
 #include <QColor>
+#include <QJsonDocument>
 
 JsonDocument::JsonDocument()
     :valid(false)
@@ -222,8 +223,6 @@ bool JsonUtils::tryParse(const QVariant &arg, QColor &color) {
 
     return true;
 }
-
-#include <QJsonDocument>
 
 QByteArray clearComment(const QByteArray &src)
 {
