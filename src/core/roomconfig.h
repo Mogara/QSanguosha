@@ -46,6 +46,7 @@ struct RoomConfig{
     QSet<QString> CardConversions;
     QSet<QString> BannedGenerals;
     QSet<BanPair> BannedGeneralPairs;
+    QString Password;
 };
 
 #endif // ROOMINFOSTRUCT_H

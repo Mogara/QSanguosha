@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+
 #include "roomconfig.h"
 #include "json.h"
 #include "settings.h"
@@ -25,6 +27,8 @@
 RoomConfig::RoomConfig(const Settings *config)
 {
     ServerName = config->ServerName;
+    if (!config->RoomPassword.isEmpty())
+        Password = QCryptographicHash::hash(config->RoomPassword.toLatin1(), QCryptographicHash::Md5).toHex();
     OperationTimeout = config->OperationTimeout;
     OperationNoLimit = config->OperationNoLimit;
     RandomSeat = config->RandomSeat;
@@ -64,7 +68,7 @@ RoomConfig::RoomConfig(const Settings *config)
 bool RoomConfig::parse(const QVariant &data)
 {
     JsonArray config = data.value<JsonArray>();
-    if (config.size() != 16)
+    if (config.size() != 17)
         return false;
 
     GameMode = config.at(0).toString();
@@ -124,6 +128,8 @@ bool RoomConfig::parse(const QVariant &data)
         if (!general1.isEmpty() && !general2.isEmpty())
             BannedGeneralPairs << BanPair(general1, general2);
     }
+
+    Password = config.at(16).toString();
 
     return true;
 }
@@ -187,6 +193,8 @@ QVariant RoomConfig::toVariant() const
         banned_general_pairs << pair_str;
     }
     data << QVariant(banned_general_pairs);
+
+    data << Password;
 
     return data;
 }

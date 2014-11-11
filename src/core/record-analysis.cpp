@@ -65,7 +65,7 @@ void RecAnalysis::initialize(const QString &dir) {
             const QVariant &body = packet.getMessageBody();
             if (JsonUtils::isString(body)){
                 QString l = body.toString();
-                QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w-]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
+                QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w-]*):([RCFSTBHAMNP123a-r]*)(\\s+)?");
                 if (!rx.exactMatch(l))
                     continue;
 

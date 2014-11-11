@@ -1974,6 +1974,7 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     m_players << player;
+    player->notify(S_COMMAND_SETUP, getSetupString());
     signupMutex.unlock();
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
@@ -2029,6 +2030,8 @@ QString Room::getSetupString() const
         flags.append("M");
     if (config.RewardTheFirstShowingPlayer)
         flags.append("S");
+    if (!config.Password.isEmpty())
+        flags.append("P");
 
     QString ban_packages;
     if (!config.BanPackages.isEmpty()) {
@@ -3554,6 +3557,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
+    player->notify(S_COMMAND_SETUP, getSetupString());
     player->setSocket(socket);
     player->setState("online");
 

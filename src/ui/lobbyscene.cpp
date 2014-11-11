@@ -29,7 +29,7 @@
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QProcess>
+#include <QInputDialog>
 
 int LobbyScene::SCENE_PADDING = 20;
 int LobbyScene::SCENE_MARGIN_TOP = 30;
@@ -250,6 +250,15 @@ void LobbyScene::onRoomTileClicked()
     if (index == -1 || index >= rooms.size()) return;
 
     HostInfoStruct *info = rooms.at(index);
+
+    if (info->RequirePassword) {
+        QString password = QInputDialog::getText(NULL, tr("Please input the password"), tr("Password:"), QLineEdit::Password);
+        if (password.isEmpty())
+            return;
+        else
+            Config.RoomPassword = password;
+    }
+
     if (info->HostAddress.isEmpty()) {
         emit roomSelected(info->RoomId);
     } else {

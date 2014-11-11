@@ -51,7 +51,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str) {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([\\w-]+(?:\\+[\\w-]+)*)?:([RCFAMS]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([\\w-]+(?:\\+[\\w-]+)*)?:([RCFAMSP]*)");
     if (!rx.exactMatch(str)) {
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -91,6 +91,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         ForbidAddingRobot = flags.contains("A");
         DisableChat = flags.contains("M");
         FirstShowingReward = flags.contains("S");
+        RequirePassword = flags.contains("P");
     }
 
     return true;

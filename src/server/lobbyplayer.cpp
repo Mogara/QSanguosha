@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+
 #include "lobbyplayer.h"
 #include "server.h"
 #include "json.h"
@@ -112,7 +114,6 @@ void LobbyPlayer::createRoomCommand(const QVariant &data)
     }
 
     Room *room = server->createNewRoom(config);
-    notify(S_COMMAND_SETUP, room->getSetupString());
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
@@ -123,24 +124,39 @@ void LobbyPlayer::createRoomCommand(const QVariant &data)
 
 void LobbyPlayer::enterRoomCommand(const QVariant &data)
 {
-    int room_id = data.toInt();
+    JsonArray args = data.value<JsonArray>();
+    if (args.isEmpty())
+        return;
 
+    int room_id = args.at(0).toInt();
     Room *room = server->getRoom(room_id);
+
+    if (!room->getConfig().Password.isEmpty()) {
+        QString password;
+        if (args.size() >= 2) {
+            password = args.at(1).toString();
+            password = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Md5).toHex();
+        }
+
+        if (password != room->getConfig().Password) {
+            warn(S_WARNING_WRONG_PASSWORD);
+            return;
+        }
+    }
+
     if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
-        notify(S_COMMAND_WARN, S_WARNING_GAME_OVER);
+        warn(S_WARNING_GAME_OVER);
         return;
     } else if (room->isFull()) {
-        notify(S_COMMAND_WARN, S_WARNING_ROOM_IS_FULL);
+        warn(S_WARNING_ROOM_IS_FULL);
         return;
     }
 
     ServerPlayer *player = room->addSocket(socket);
     if (player == NULL) {
-        notify(S_COMMAND_WARN, S_WARNING_ROOM_IS_FULL);
+        warn(S_WARNING_ROOM_IS_FULL);
         return;
     }
-
-    notify(S_COMMAND_SETUP, room->getSetupString());
 
     socket->disconnect(this);
     this->disconnect(socket);

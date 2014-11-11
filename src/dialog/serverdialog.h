@@ -133,6 +133,7 @@ private:
     QCheckBox *disable_lua_checkbox;
     QLineEdit *lobby_address_edit;
     QCheckBox *connect_to_lobby_checkbox;
+    QLineEdit *room_password_edit;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;

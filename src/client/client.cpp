@@ -143,6 +143,7 @@ public:
         warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = Client::tr("Invalid signup string");
         warning_translation[S_WARNING_LEVEL_LIMITATION] = Client::tr("Your level is not enough");
         warning_translation[S_WARNING_ROOM_IS_FULL] = Client::tr("The room is already full");
+        warning_translation[S_WARNING_WRONG_PASSWORD] = Client::tr("Sorry, your password is incorrect");
     }
 };
 ClientInit clientInit;
@@ -264,6 +265,8 @@ void Client::signup() {
         arg << Config.value("EnableReconnection", false).toBool();
         arg << Config.UserName;
         arg << Config.UserAvatar;
+        if (!Config.RoomPassword.isEmpty())
+            arg << Config.RoomPassword;
         notifyServer(S_COMMAND_SIGNUP, arg);
     }
 }
@@ -1175,7 +1178,11 @@ void Client::onPlayerChangeSkin(int skin_id, bool is_head)
 
 void Client::onPlayerChooseRoom(int room_id)
 {
-    notifyServer(S_COMMAND_ENTER_ROOM, room_id);
+    JsonArray data;
+    data << room_id;
+    if (!Config.RoomPassword.isEmpty())
+        data << Config.RoomPassword;
+    notifyServer(S_COMMAND_ENTER_ROOM, data);
 }
 
 void Client::trust() {

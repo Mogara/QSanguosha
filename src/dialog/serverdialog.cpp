@@ -195,6 +195,8 @@ QWidget *ServerDialog::createAdvancedTab() {
     hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
+    room_password_edit = new QLineEdit;
+
     lobby_address_edit = new QLineEdit;
     lobby_address_edit->setText(Config.LobbyAddress);
 
@@ -233,6 +235,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
+    layout->addLayout(HLay(new QLabel(tr("Room Password")), room_password_edit));
     layout->addLayout(lobby_layout);
     layout->addLayout(address_layout);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
@@ -476,6 +479,7 @@ bool ServerDialog::config() {
     Config.LuckCardLimitation = luck_card_spinbox->value();
     Config.LobbyAddress = lobby_address_edit->text();
     Config.ConnectToLobby = connect_to_lobby_checkbox->isChecked();
+    Config.RoomPassword = room_password_edit->text();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();

@@ -211,7 +211,8 @@ namespace QSanProtocol {
         S_WARNING_INVALID_SIGNUP_STRING,
         S_WARNING_GAME_OVER,
         S_WARNING_LEVEL_LIMITATION,
-        S_WARNING_ROOM_IS_FULL
+        S_WARNING_ROOM_IS_FULL,
+        S_WARNING_WRONG_PASSWORD
     };
 
     //static consts

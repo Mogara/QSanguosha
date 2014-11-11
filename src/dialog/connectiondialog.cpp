@@ -99,6 +99,7 @@ void ConnectionDialog::on_connectButton_clicked() {
 
     Config.UserName = username;
     Config.HostAddress = ui->hostComboBox->lineEdit()->text();
+    Config.RoomPassword = ui->passwordEdit->text();
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostAddress", Config.HostAddress);

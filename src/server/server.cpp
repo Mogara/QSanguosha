@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+
 #include "server.h"
 #include "nativesocket.h"
 #include "clientstruct.h"
@@ -167,7 +169,7 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
     }
 
     JsonArray body = signup.getMessageBody().value<JsonArray>();
-    if (body.size() != 3)
+    if (body.size() < 3)
         return;
     bool is_reconnection = body.at(0).toBool();
     QString screen_name = body.at(1).toString();
@@ -180,18 +182,24 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
             ServerPlayer *player = players.value(objname);
             Room *room = player->getRoom();
             if (player && player->getState() == "offline" && room && !room->isFinished()) {
-                notifyClient(socket, S_COMMAND_SETUP, room->getSetupString());
-                player->getRoom()->reconnect(player, socket);
+                room->reconnect(player, socket);
                 return;
             }
         }
     }
 
     if (role == RoomRole) {
+        if (!Config.RoomPassword.isEmpty()) {
+            QString password = body.size() < 4 ? QString() : body.at(3).toString();
+            if (password != Config.RoomPassword) {
+                notifyClient(socket, S_COMMAND_WARN, S_WARNING_WRONG_PASSWORD);
+                return;
+            }
+        }
+
         currentRoomMutex.lock();
         if (current == NULL || current->isFull() || current->isFinished())
             current = createNewRoom(SettingsInstance);
-        notifyClient(socket, S_COMMAND_SETUP, current->getSetupString());
 
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);

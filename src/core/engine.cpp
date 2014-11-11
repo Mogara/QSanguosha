@@ -688,6 +688,8 @@ QString Engine::getSetupString() const{
         flags.append("M");
     if (Config.RewardTheFirstShowingPlayer)
         flags.append("S");
+    if (!Config.RoomPassword.isEmpty())
+        flags.append("P");
 
     QString server_name = Config.ServerName;
     QStringList setup_items;

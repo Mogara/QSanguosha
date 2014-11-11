@@ -45,7 +45,7 @@ struct ServerInfoStruct {
     bool ForbidAddingRobot;
     bool DisableChat;
     bool FirstShowingReward;
-
+    bool RequirePassword;
     bool DuringGame;
 };
 

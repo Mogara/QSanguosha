@@ -82,7 +82,7 @@ public:
     int LuckCardLimitation;
     ushort ServerPort;
     bool DisableLua;
-
+    QString RoomPassword;
     bool RewardTheFirstShowingPlayer;
 
     // client side

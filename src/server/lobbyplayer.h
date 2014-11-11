@@ -53,6 +53,8 @@ public:
     QString getAvatar() const{ return avatar; }
     void setAvatar(const QString &new_avatar) { avatar = new_avatar; }
 
+    void warn(QSanProtocol::WarningType warning) { notify(QSanProtocol::S_COMMAND_WARN, warning); }
+
 public slots:
     void processMessage(const QByteArray &message);
 
