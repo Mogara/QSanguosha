@@ -23,12 +23,14 @@ sgs.ai_chat = {}
 function speak(to, type)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
+	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
 
 	local i = math.random(1, #sgs.ai_chat[type])
 	to:speak(sgs.ai_chat[type][i])
 end
 
 function speakTrigger(card, from, to, event)
+	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
 	if type(to) == "table" then
 		for _, t in ipairs(to) do
 			speakTrigger(card, from, t, event)
@@ -286,9 +288,13 @@ sgs.ai_chat_func[sgs.TargetConfirmed].imperial_order = function(self, player, da
 	if use.card:isKindOf("ImperialOrder") and use.from and use.from:objectName() == player:objectName() then
 			local chat = {
 				"开门！查水表！",
-				"我就看看是不是大魏",
-				"都亮出来我好放大招"
 			}
+			if player:hasSkills("xiongyi|luanwu") then
+				table.insert(chat, "都亮出来我好放大招")
+			end
+			if player:getKingdom() == "wei" then
+				table.insert(chat, "我就看看是不是大魏")
+			end
 			player:speak(chat[math.random(1, #chat)])
 	end
 end
@@ -296,6 +302,7 @@ end
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if self.player:getState() ~= "robot" then return end
+	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
 
 	if sgs.ai_chat[type] then
 		if type(sgs.ai_chat[type]) == "function" then
@@ -319,7 +326,7 @@ sgs.ai_chat_func[sgs.CardFinished].duoshi = function(self, player, data)
 		for _, p in ipairs(sgs.robot) do
 			if p:objectName() ~= use.from:objectName() and math.random() < 0.8 then
 				if p:hasSkill("xiaoji") then
-					table.insert(chat, "继续继续")
+					p:speak("继续继续")
 				end
 				p:speak(chat[math.random(1, #chat)])
 				return
@@ -334,8 +341,13 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 	local kingdom = sgs.Sanguosha:translate(self.player:getKingdom())
 	local chat = {
 		"亮这个将有什么意义？",
-		"我还当你多牛的将呢。。"
+		"我还当你多牛的将呢。。",
+		"亮得好，免得我被打"
 	}
+	local chat1 = {
+		"亮一个",
+		"没想到吧"
+		}
 	local notshown, shown= 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
@@ -347,25 +359,35 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 	end
 	if shown == 1 then
 		table.insert(chat,"首亮一时爽，全家火葬场")
-		table.insert(chat,"你们懂不懂，渣将首亮防袁绍")
+		if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+			table.insert(chat1,"我来摸两张")
+		end
+		if not self.player:hasShownSkill("luanji") then
+			table.insert(chat1,"你们懂不懂，首亮渣将防袁绍")
+		else table.insert(chat,"大嘴你妹")
+		end
 	end
-	if notshown < 3 then 
+	if notshown < 3 then
 		table.insert(chat,"终于亮了")
+		table.insert(chat,"竟然憋到现在")
 	end
-	if self.player:getRole() == "careerist" then 
+	if self.player:getRole() == "careerist" then
 		table.insert(chat,"野了")
-	end		
-	if not self.player:hasShownAllGenerals() then 
-		table.insert(chat,self.player:screenName() .."原来是"..kingdom.."国的")
-		table.insert(chat,"看来这是大"..kingdom.."的节奏")		
-	elseif self.player:hasShownAllGenerals() then 
+		table.insert(chat,"喜闻乐见野心家")
+		table.insert(chat1,"竟然野了")
+	end
+	if not self.player:hasShownAllGenerals() then
+		table.insert(chat,self.player:screenName() .."原来是"..kingdom)
+		table.insert(chat,"看来这是大"..kingdom.."的节奏")
+	elseif self.player:hasShownAllGenerals() then
 		table.insert(chat, "我就说".. self.player:screenName() .."是"..name1..name2.."吧")
 		table.insert(chat,"卧槽,"..name1..name2.."!")
 	end
 	for _, p in ipairs(sgs.robot) do
-		if p:objectName() ~= self.player:objectName() and math.random() < 0.2 then
+		if p:objectName() ~= self.player:objectName() and math.random() < 0.01 then
 			p:speak(chat[math.random(1, #chat)])
-			return
+		elseif p:objectName() == self.player:objectName() and (math.random() < 0.1 or shown == 1)then
+			p:speak(chat1[math.random(1, #chat1)])
 		end
 	end
 end
@@ -375,23 +397,59 @@ sgs.ai_chat_func[sgs.DamageCaused].attackAnjiang = function(self, player, data)
 	local chat = {
 			"看看局势再说",
 			"都不亮吗？",
+			}
+	local chat1= {
 			"不亮就打到亮",
-			"你不亮，我也不亮"
+			"你敢说你不是郭嘉？"
+			}
+	local chat2= {
+			"我说了我不卖",
+			"别打我，打明的",
 			}
 	if damage and not damage.to:hasShownOneGeneral() then
-		if damage.to:getMaxHp() == 3 then 
+		if damage.to:getMaxHp() == 3 then
 			table.insert(chat, "3血不卖不是魏")
 		end
 		for _, p in ipairs(sgs.robot) do
-			if p:objectName() ~= damage.to:objectName() and math.random() < 0.2 then
+			if not p:hasShownOneGeneral() then
+				table.insert(chat, "你们不亮，我也不亮")
+				table.insert(chat, "国战就是要猥琐")
+			end
+			if p:objectName() ~= damage.to:objectName() and math.random() < 0.1 then
 				p:speak(chat[math.random(1, #chat)])
-				return
+			elseif p:objectName() == damage.from:objectName() and math.random() < 0.1 then
+				p:speak(chat1[math.random(1, #chat1)])
+			elseif p:objectName() == damage.to:objectName() and math.random() < 0.1 then
+				p:speak(chat2[math.random(1, #chat2)])
 			end
 		end
 	end
 end
 
-sgs.ai_chat = {}
+sgs.ai_chat_func[sgs.EventPhaseStart].luanwu = function(self, player, data)
+	if player:getPhase() == sgs.Player_Play then
+		local chat = {
+			"乱一个，乱一个",
+			"要乱了",
+			"完了，没杀"
+		}
+		local chat1 = {
+			"不要紧张",
+			"准备好了吗？",
+			"我凭什么听你的"
+		}
+	if self.player:hasShownSkill("luanwu") and self.player:getMark("@chaos") > 0 then
+		for _, p in ipairs(sgs.robot) do
+			if p:objectName() ~= player:objectName() and math.random() < 0.2 then
+				p:speak(chat[math.random(1, #chat)])
+			elseif p:objectName() == player:objectName() and math.random() < 0.1 then
+				p:speak(chat1[math.random(1, #chat1)])
+			end
+		end
+	end
+	end
+end
+
 
 sgs.ai_chat.yiji =
 {
@@ -425,16 +483,16 @@ sgs.ai_chat.respond_friendly = {
  "谢了。。。"
  }
 
-sgs.ai_chat.duel_female = {
+sgs.ai_chat.Duel_female = {
 "哼哼哼，怕了吧"
 }
 
-sgs.ai_chat.duel = {
+sgs.ai_chat.Duel = {
 "来吧！像男人一样决斗吧！",
 "我只用一张牌就能搞死你"
 }
 
-sgs.ai_chat.lucky = {
+sgs.ai_chat.ExNihilo = {
 "哎哟运气好",
 "哈哈哈哈哈"
 }
@@ -443,7 +501,7 @@ sgs.ai_chat.collateral_female = {
 "别以为这样就算赢了！"
 }
 
-sgs.ai_chat.collateral = {
+sgs.ai_chat.Collateral = {
 "你妹啊，我的刀！"
 }
 
@@ -456,7 +514,7 @@ sgs.ai_chat.jijiang = {
 }
 
 --huanggai
-sgs.ai_chat.kurou = {
+sgs.ai_chat.KurouCard = {
 "有桃么!有桃么？",
 "教练，我想要摸桃",
 "桃桃桃我的桃呢",
@@ -464,7 +522,7 @@ sgs.ai_chat.kurou = {
 }
 
 --indulgence
-sgs.ai_chat.indulgence = {
+sgs.ai_chat.Indulgence = {
 "乐，乐你妹啊乐",
 "擦，乐我",
 "诶诶诶被乐了！"
