@@ -47,6 +47,12 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
         if (general->isTotallyHidden())
             continue;
 
+        if (general->isLord())
+            continue;
+
+        if (general->getPackage() == "jiange-defense")
+            continue;
+
         map[general->getKingdom()] << general;
     }
 
