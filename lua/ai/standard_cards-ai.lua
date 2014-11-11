@@ -517,8 +517,7 @@ function SmartAI:useCardSlash(card, use)
 
 				if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, card) and not use.card then
 					if self:hasCrossbowEffect() and card:isKindOf("NatureSlash") then
-						local slashes = self:getCards("Slash")
-						for _, slash in ipairs(slashes) do
+						for _, slash in ipairs(self:getCards("Slash")) do
 							if not slash:isKindOf("NatureSlash") and self:slashIsEffective(slash, target)
 								and not self:slashProhibit(slash, target) then
 								usecard = slash
@@ -599,6 +598,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
 	end
 	local useslash, target
 	local slashes = self:getCards("Slash")
+	self:sortByUseValue(slashes)
 	self:sort(self.enemies, "defenseSlash")
 	for _, slash in ipairs(slashes) do
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
@@ -713,7 +713,9 @@ end
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local isdummy = type(data) == "number"
 	local function getJink()
-		for _, card in ipairs(self:getCards("Jink")) do
+		local cards = self:getCards("Jink")
+		self:sortByKeepValue(cards)
+		for _, card in ipairs(cards) do
 			if self.room:isJinkEffected(self.player, card) then return card:toString() end
 		end
 		return not isdummy and "."
@@ -783,10 +785,12 @@ function SmartAI:canHit(to, from, conservative)
 	end
 
 	local hasHeart, hasRed, hasBlack
-	for _, card in ipairs(self:getCards("Jink"), to) do
-		if card:getSuit() == sgs.Card_Heart then hasHeart = true end
-		if card:isRed() then hasRed = true end
-		if card:isBlack() then hasBlack = true end
+	if to:objectName() == self.player:objectName() then
+		for _, card in ipairs(self:getCards("Jink")) do
+			if card:getSuit() == sgs.Card_Heart then hasHeart = true end
+			if card:isRed() then hasRed = true end
+			if card:isBlack() then hasBlack = true end
+		end
 	end
 	if to:getMark("@qianxi_red") > 0 and not hasBlack then return true end
 	if to:getMark("@qianxi_black") > 0 and not hasRed then return true end
@@ -2328,8 +2332,10 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 		return "."
 	end
 
+	local slashes = self:getCards("Slash")
+	self:sortByUseValue(slashes)
 	if self:isFriend(target2) and self:needLeiji(target2, self.player) then
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
@@ -2337,7 +2343,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 	end
 
 	if target2 and (self:getDamagedEffects(target2, self.player, true) or self:needToLoseHp(target2, self.player, true)) then
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if self:slashIsEffective(slash, target2) and self:isFriend(target2) then
 				return slash:toString()
 			end
@@ -2345,7 +2351,7 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 				return slash:toString()
 			end
 		end
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if not self:getDamagedEffects(target2, self.player, true) and self:isEnemy(target2) then
 				return slash:toString()
 			end
@@ -2353,19 +2359,19 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 	end
 
 	if target2 and not self.player:hasSkills(sgs.lose_equip_skill) and self:isEnemy(target2) then
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
 		end
 	end
 	if target2 and not self.player:hasSkills(sgs.lose_equip_skill) and self:isFriend(target2) then
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if not self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
 		end
-		for _, slash in ipairs(self:getCards("Slash")) do
+		for _, slash in ipairs(slashes) do
 			if (target2:getHp() > 3 or not self:canHit(target2, self.player, self:hasHeavySlashDamage(self.player, slash, target2)))
 				and self.player:getHandcardNum() > 1 then
 					return slash:toString()

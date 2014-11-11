@@ -1675,7 +1675,7 @@ function SmartAI:filterEvent(event, player, data)
 				if type(callback) == "function" then callback(self, player, data) end
 			end
 		end
-		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) then
+		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) and sgs.GetConfig("OriginAIDelay", "") > 0 then
 			for _, callback in pairs(sgs.ai_chat_func[event]) do
 				if type(callback) == "function" then callback(self, player, data) end
 			end
@@ -1687,7 +1687,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	end
 
-	-- if sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
+	if not sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
 
 	sgs.lastevent = event
 	sgs.lasteventdata = data
@@ -4482,11 +4482,11 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 		n = math.min(n, to:getMaxHp() - 1)
 	end
 
-	local friends = self:getFriendsNoself(to)
 	local xiangxiang = sgs.findPlayerByShownSkillName("jieyin")
 	if xiangxiang and xiangxiang:isWounded() and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale()
 		and (xiangxiang:getPhase() == sgs.Player_Play and xiangxiang:getHandcardNum() >= 2 and not xiangxiang:hasUsed("JieyinCard")
 			or self:getEnemyNumBySeat(self.room:getCurrent(), xiangxiang, self.player) <= 1) then
+		local friends = self:getFriendsNoself(to)
 		local need_jieyin = true
 		self:sort(friends, "hp")
 		for _, friend in ipairs(friends) do
