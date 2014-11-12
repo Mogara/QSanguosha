@@ -159,7 +159,7 @@ void Server::processMessage(const QByteArray &message)
 
 void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
 {
-    socket->disconnect(this, SLOT(processMessage(QByteArray)));
+    disconnect(socket, &ClientSocket::message_got, this, &Server::processMessage);
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));
