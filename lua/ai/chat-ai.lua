@@ -384,7 +384,7 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 		table.insert(chat,"看来这是大"..kingdom.."的节奏")
 	elseif self.player:hasShownAllGenerals() then
 		table.insert(chat, "我就说".. self.player:screenName() .."是"..name1..name2.."吧")
-		table.insert(chat,"卧槽,"..name1..name2.."!")	
+		table.insert(chat,"卧槽,"..name1..name2.."!")
 	end
 	for _, p in ipairs(sgs.robot) do
 		if p:objectName() ~= self.player:objectName() and (math.random() < 0.1 or (self.player:getRole() == "careerist" and math.random() < 0.5)) then
@@ -410,11 +410,11 @@ sgs.ai_chat_func[sgs.DamageCaused].attackAnjiang = function(self, player, data)
 			"别打我，打明的",
 			}
 	if damage and not damage.to:hasShownOneGeneral() then
-		if damage.to:getMaxHp() == 3 then 
+		if damage.to:getMaxHp() == 3 then
 			table.insert(chat, "3血不卖不是魏")
 		end
 		for _, p in ipairs(sgs.robot) do
-			if not p:hasShownOneGeneral() then 
+			if not p:hasShownOneGeneral() then
 				table.insert(chat, "你们不亮，我也不亮")
 				table.insert(chat, "国战就是要猥琐")
 			end
