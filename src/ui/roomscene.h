@@ -192,6 +192,7 @@ public slots:
     void makeReviving();
     void doScript();
     void viewGenerals(const QString &reason, const QStringList &names);
+    void viewDistance();
 
     void handleGameEvent(const QVariant &args);
 
@@ -204,6 +205,10 @@ public slots:
     inline QPointF tableCenterPos() { return m_tableCenterPos; }
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
+
+    void onTransferButtonActivated();
+    void onSkillDeactivated();
+    void trust();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -373,8 +378,6 @@ private slots:
     void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
     void updateSelectedTargets();
     void onSkillActivated();
-    void onTransferButtonActivated();
-    void onSkillDeactivated();
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
@@ -393,7 +396,6 @@ private slots:
     void removeLightBox();
 
     void showCard(const QString &player_name, int card_id);
-    void viewDistance();
 
     void speak();
 
@@ -426,7 +428,6 @@ private slots:
     //void revealGeneral(bool self, const QString &general);
 
     //void skillStateChange(const QString &skill_name);
-    void trust();
 
 signals:
     void restart();

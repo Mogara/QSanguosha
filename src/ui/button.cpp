@@ -48,7 +48,7 @@ void Button::init()
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlags(ItemIsFocusable);
-    connect(this, SIGNAL(enabledChanged()), this, SLOT(onEnabledChanged()));
+    connect(this, &Button::enabledChanged, this, &Button::onEnabledChanged);
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *)

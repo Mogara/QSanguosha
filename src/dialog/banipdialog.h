@@ -43,6 +43,11 @@ private:
     void loadIPList();
     void loadBannedList();
 
+public slots:
+
+    void addPlayer(ServerPlayer *player);
+    void removePlayer();
+
 private slots:
     void insertClicked();
     void removeClicked();
@@ -50,8 +55,6 @@ private slots:
 
     void save();
 
-    void addPlayer(ServerPlayer *player);
-    void removePlayer();
 };
 
 #endif // BANIPDIALOG_H

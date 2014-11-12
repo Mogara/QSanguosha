@@ -93,8 +93,8 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     RoomScene::FillPlayerNames(ui->from, false);
     RoomScene::FillPlayerNames(ui->to, false);
 
-    connect(ui->from, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
-    connect(ui->to, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
+    connect(ui->from, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &DistanceViewDialog::showDistance);
+    connect(ui->to, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &DistanceViewDialog::showDistance);
 
     fLayout->addRow(tr("From"), ui->from);
     fLayout->addRow(tr("To"), ui->to);
@@ -117,7 +117,7 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     layout->addLayout(fLayout);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(closeButton, &QPushButton::clicked, this, &DistanceViewDialog::reject);
     layout->addWidget(closeButton);
 
     showDistance();

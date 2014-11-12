@@ -47,7 +47,7 @@ Server::Server(QObject *parent, Role role)
 
     ServerInfo.parse(Sanguosha->getSetupString());
 
-    connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
+    connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
 }
 
 void Server::broadcastSystemMessage(const QString &message)
@@ -122,11 +122,11 @@ void Server::processNewConnection(ClientSocket *socket)
         return;
     }
 
-    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
+    connect(socket, &ClientSocket::disconnected, this, &Server::cleanup);
     notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
 
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
-    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
+    connect(socket, &ClientSocket::message_got, this, &Server::processRequest);
 }
 
 void Server::processMessage(const QByteArray &message)

@@ -52,8 +52,7 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     layout->addWidget(createInfoTab());
     layout->addLayout(createButtonLayout());
 
-    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
-        parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+    connect(this, &GeneralSearch::search, parent, &GeneralOverview::startSearch);
 }
 
 QWidget *GeneralSearch::createInfoTab() {
@@ -163,9 +162,9 @@ QWidget *GeneralSearch::createInfoTab() {
 
     QHBoxLayout *package_button_layout = new QHBoxLayout;
     select_all_button = new QPushButton(tr("Select All"));
-    connect(select_all_button, SIGNAL(clicked()), this, SLOT(selectAllPackages()));
+    connect(select_all_button, &QPushButton::clicked, this, &GeneralSearch::selectAllPackages);
     unselect_all_button = new QPushButton(tr("Unselect All"));
-    connect(unselect_all_button, SIGNAL(clicked()), this, SLOT(unselectAllPackages()));
+    connect(unselect_all_button, &QPushButton::clicked, this, &GeneralSearch::unselectAllPackages);
     package_button_layout->addWidget(select_all_button);
     package_button_layout->addWidget(unselect_all_button);
     package_button_layout->addStretch();
@@ -210,9 +209,9 @@ QLayout *GeneralSearch::createButtonLayout() {
     button_layout->addWidget(clear_button);
     button_layout->addWidget(ok_button);
 
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(clear_button, SIGNAL(clicked()), this, SLOT(clearAll()));
+    connect(cancelButton, &QPushButton::clicked, this, &GeneralSearch::reject);
+    connect(ok_button, &QPushButton::clicked, this, &GeneralSearch::accept);
+    connect(clear_button, &QPushButton::clicked, this, &GeneralSearch::clearAll);
 
     return button_layout;
 }
@@ -279,8 +278,8 @@ GeneralOverview::GeneralOverview(QWidget *parent)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();
-    connect(this, SIGNAL(windowTitleChanged(QString)), ui->titleLabel, SLOT(setText(QString)));
-    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(this, &GeneralOverview::windowTitleChanged, ui->titleLabel, &QLabel::setText);
+    connect(ui->closeButton, &QPushButton::clicked, this, &GeneralOverview::reject);
 
     const QString style = StyleHelper::styleSheetOfScrollBar();
     ui->tableView->verticalScrollBar()->setStyleSheet(style);
@@ -294,12 +293,12 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
-    connect(ui->changeHeroSkinButton, SIGNAL(clicked()), this, SLOT(showNextSkin()));
+    connect(ui->changeHeroSkinButton, &QPushButton::clicked, this, &GeneralOverview::showNextSkin);
 
     general_search = new GeneralSearch(this);
-    connect(ui->searchButton, SIGNAL(clicked()), general_search, SLOT(show()));
+    connect(ui->searchButton, &QPushButton::clicked, general_search, &GeneralSearch::show);
     ui->returnButton->hide();
-    connect(ui->returnButton, SIGNAL(clicked()), this, SLOT(fillAllGenerals()));
+    connect(ui->returnButton, &QPushButton::clicked, this, &GeneralOverview::fillAllGenerals);
 }
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool init) {
@@ -442,8 +441,8 @@ void GeneralOverview::addLines(const General *general, const Skill *skill) {
             else
                 skill_line = Sanguosha->translate("$"+ QString::number(skinId) + filename);
             button->setDescription(skill_line);
-
-            connect(button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
+            
+            connect(button, &QCommandLinkButton::clicked, this, &GeneralOverview::playAudioEffect);
 
             addCopyAction(button);
         }
@@ -481,7 +480,7 @@ void GeneralOverview::addDeathLine(const General *general)
 
         death_button->setProperty("general", QVariant::fromValue(general));
         death_button->setProperty("skinId", skinId);
-        connect(death_button, SIGNAL(clicked()), SLOT(playDeathAudio()));
+        connect(death_button, &QCommandLinkButton::clicked, this, &GeneralOverview::playDeathAudio);
 
         addCopyAction(death_button);
     }
@@ -499,7 +498,7 @@ void GeneralOverview::addWinLineOfCaoCao()
     addCopyAction(win_button);
 
     win_button->setObjectName("audio/system/win-cc.ogg");
-    connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
+    connect(win_button, &QCommandLinkButton::clicked, this, &GeneralOverview::playAudioEffect);
 }
 
 void GeneralOverview::addCopyAction(QCommandLinkButton *button) {
@@ -509,7 +508,7 @@ void GeneralOverview::addCopyAction(QCommandLinkButton *button) {
     action->setText(tr("Copy lines"));
     button->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    connect(action, SIGNAL(triggered()), this, SLOT(copyLines()));
+    connect(action, &QAction::triggered, this, &GeneralOverview::copyLines);
 }
 
 void GeneralOverview::copyLines() {

@@ -76,19 +76,15 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createControls();
     _createExtraButtons();
 
-    connect(_m_avatarIcon, SIGNAL(hover_enter()), this, SLOT(onAvatarHoverEnter()));
-    connect(_m_avatarIcon, SIGNAL(hover_leave()), this, SLOT(onAvatarHoverLeave()));
-    connect(_m_avatarIcon, SIGNAL(skin_changing_start()),
-        this, SLOT(onSkinChangingStart()));
-    connect(_m_avatarIcon, SIGNAL(skin_changing_finished()),
-        this, SLOT(onSkinChangingFinished()));
+    connect(_m_avatarIcon, &GraphicsPixmapHoverItem::hover_enter, this, &Dashboard::onAvatarHoverEnter);
+    connect(_m_avatarIcon, &GraphicsPixmapHoverItem::hover_leave, this, &Dashboard::onAvatarHoverLeave);
+    connect(_m_avatarIcon, &GraphicsPixmapHoverItem::skin_changing_start, this, &Dashboard::onSkinChangingStart);
+    connect(_m_avatarIcon, &GraphicsPixmapHoverItem::skin_changing_finished, this, &Dashboard::onSkinChangingFinished);
 
-    connect(_m_smallAvatarIcon, SIGNAL(hover_enter()), this, SLOT(onAvatarHoverEnter()));
-    connect(_m_smallAvatarIcon, SIGNAL(hover_leave()), this, SLOT(onAvatarHoverLeave()));
-    connect(_m_smallAvatarIcon, SIGNAL(skin_changing_start()),
-        this, SLOT(onSkinChangingStart()));
-    connect(_m_smallAvatarIcon, SIGNAL(skin_changing_finished()),
-        this, SLOT(onSkinChangingFinished()));
+    connect(_m_smallAvatarIcon, &GraphicsPixmapHoverItem::hover_enter, this, &Dashboard::onAvatarHoverEnter);
+    connect(_m_smallAvatarIcon, &GraphicsPixmapHoverItem::hover_leave, this, &Dashboard::onAvatarHoverLeave);
+    connect(_m_smallAvatarIcon, &GraphicsPixmapHoverItem::skin_changing_start, this, &Dashboard::onSkinChangingStart);
+    connect(_m_smallAvatarIcon, &GraphicsPixmapHoverItem::skin_changing_finished, this, &Dashboard::onSkinChangingFinished);
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
 }
@@ -139,7 +135,7 @@ void Dashboard::showControlButtons() {
 
 void Dashboard::showProgressBar(QSanProtocol::Countdown countdown) {
     _m_progressBar->setCountdown(countdown);
-    connect(_m_progressBar, SIGNAL(timedOut()), this, SIGNAL(progressBarTimedOut()));
+    connect(_m_progressBar, &QSanCommandProgressBar::timedOut, this, &Dashboard::progressBarTimedOut);
     _m_progressBar->show();
 }
 
@@ -264,25 +260,21 @@ void Dashboard::_createRight() {
     _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), rightFrame);
     _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), rightFrame);
 
-    connect(ClientInstance, SIGNAL(head_preshowed()), this,
-        SLOT(onHeadSkillPreshowed()));
-    connect(ClientInstance, SIGNAL(deputy_preshowed()), this,
-        SLOT(onDeputySkillPreshowed()));
+    connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::onHeadSkillPreshowed);
+    connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::onDeputySkillPreshowed);
 
     _paintPixmap(headIcon, G_DASHBOARD_LAYOUT.m_headIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HEAD_ICON), rightFrame);
     _paintPixmap(deputyIcon, G_DASHBOARD_LAYOUT.m_deputyIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON), rightFrame);
 
-    m_changeHeadHeroSkinButton = new QSanButton("heroskin",
-        "change", rightFrame);
+    m_changeHeadHeroSkinButton = new QSanButton("heroskin", "change", rightFrame);
     m_changeHeadHeroSkinButton->hide();
-    connect(m_changeHeadHeroSkinButton, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
-    connect(m_changeHeadHeroSkinButton, SIGNAL(clicked_outside()), this, SLOT(heroSkinButtonMouseOutsideClicked()));
+    connect(m_changeHeadHeroSkinButton, &QSanButton::clicked, this, &Dashboard::showHeroSkinList);
+    connect(m_changeHeadHeroSkinButton, &QSanButton::clicked_outside, this, &Dashboard::heroSkinButtonMouseOutsideClicked);
 
-    m_changeDeputyHeroSkinButton = new QSanButton("heroskin",
-        "change", rightFrame);
+    m_changeDeputyHeroSkinButton = new QSanButton("heroskin", "change", rightFrame);
     m_changeDeputyHeroSkinButton->hide();
-    connect(m_changeDeputyHeroSkinButton, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
-    connect(m_changeDeputyHeroSkinButton, SIGNAL(clicked_outside()), this, SLOT(heroSkinButtonMouseOutsideClicked()));
+    connect(m_changeDeputyHeroSkinButton, &QSanButton::clicked, this, &Dashboard::showHeroSkinList);
+    connect(m_changeDeputyHeroSkinButton, &QSanButton::clicked_outside, this, &Dashboard::heroSkinButtonMouseOutsideClicked);
 }
 
 void Dashboard::_updateFrames() {
@@ -391,11 +383,11 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     else
         m_handCards.append(card_item);
 
-    connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
-    connect(card_item, SIGNAL(double_clicked()), this, SLOT(onCardItemDoubleClicked()));
-    connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
-    connect(card_item, SIGNAL(enter_hover()), this, SLOT(bringSenderToTop()));
-    connect(card_item, SIGNAL(leave_hover()), this, SLOT(resetSenderZValue()));
+    connect(card_item, &CardItem::clicked, this, &Dashboard::onCardItemClicked);
+    connect(card_item, &CardItem::double_clicked, this, &Dashboard::onCardItemDoubleClicked);
+    connect(card_item, &CardItem::thrown, this, &Dashboard::onCardItemThrown);
+    connect(card_item, &CardItem::enter_hover, this, &Dashboard::bringSenderToTop);
+    connect(card_item, &CardItem::leave_hover, this, &Dashboard::resetSenderZValue);
 
     card_item->setOuterGlowEffectEnabled(true);
 
@@ -565,8 +557,8 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
             _m_equipSkillBtns[i] = new QSanInvokeSkillButton(this);
             _m_equipSkillBtns[i]->setSkill(skill);
             _m_equipSkillBtns[i]->setVisible(false);
-            connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
-            connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
+            connect(_m_equipSkillBtns[i], &QSanSkillButton::clicked, this, &Dashboard::_onEquipSelectChanged);
+            connect(_m_equipSkillBtns[i], &QSanSkillButton::enable_changed, this, &Dashboard::_onEquipSelectChanged);
             QSanSkillButton *btn = _m_equipSkillBtns[i];
             _mutexEquipAnim.unlock();
             return btn;
@@ -635,8 +627,8 @@ void Dashboard::highlightEquip(QString skillName, bool highlight) {
 
 void Dashboard::setPlayer(ClientPlayer *player) {
     PlayerCardContainer::setPlayer(player);
-    connect(player, SIGNAL(head_state_changed()), this, SLOT(onHeadStateChanged()));
-    connect(player, SIGNAL(deputy_state_changed()), this, SLOT(onDeputyStateChanged()));
+    connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
+    connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
 }
 
 void Dashboard::_createExtraButtons() {
@@ -657,11 +649,11 @@ void Dashboard::_createExtraButtons() {
     m_btnReverseSelection->hide();
     m_btnSortHandcard->hide();
     m_btnNoNullification->hide();
-    connect(m_trustButton, SIGNAL(clicked()), RoomSceneInstance, SLOT(trust()));
-    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-    connect(m_btnReverseSelection, SIGNAL(clicked()), this, SLOT(reverseSelection()));
-    connect(m_btnSortHandcard, SIGNAL(clicked()), this, SLOT(sortCards()));
-    connect(m_btnNoNullification, SIGNAL(clicked()), this, SLOT(cancelNullification()));
+    connect(m_trustButton, &QSanButton::clicked, RoomSceneInstance, &RoomScene::trust);
+    connect(Self, &ClientPlayer::state_changed, this, &Dashboard::updateTrustButton);
+    connect(m_btnReverseSelection, &QSanButton::clicked, this, &Dashboard::reverseSelection);
+    connect(m_btnSortHandcard, &QSanButton::clicked, this, &Dashboard::sortCards);
+    connect(m_btnNoNullification, &QSanButton::clicked, this, &Dashboard::cancelNullification);
 }
 
 void Dashboard::showSeat() {
@@ -1069,9 +1061,9 @@ void Dashboard::sortCards() {
     QAction *action3 = menu->addAction(tr("Sort by number"));
     action3->setData((int)ByNumber);
 
-    connect(action1, SIGNAL(triggered()), this, SLOT(beginSorting()));
-    connect(action2, SIGNAL(triggered()), this, SLOT(beginSorting()));
-    connect(action3, SIGNAL(triggered()), this, SLOT(beginSorting()));
+    connect(action1, &QAction::triggered, this, &Dashboard::beginSorting);
+    connect(action2, &QAction::triggered, this, &Dashboard::beginSorting);
+    connect(action3, &QAction::triggered, this, &Dashboard::beginSorting);
 
     QPointF posf = QCursor::pos();
     menu->popup(QPoint(posf.x(), posf.y()));
@@ -1177,7 +1169,7 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         if (_m_equipCards[i] != NULL)
-            connect(_m_equipCards[i], SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
+            connect(_m_equipCards[i], &CardItem::mark_changed, this, &Dashboard::onMarkChanged);
     }
 
     updatePending();
@@ -1207,7 +1199,7 @@ void Dashboard::stopPending() {
             equip->setMarkable(false);
             _m_equipRegions[i]->setOpacity(1.0);
             equip->setEnabled(false);
-            disconnect(equip, SIGNAL(mark_changed()));
+            disconnect(equip, &CardItem::mark_changed, this, &Dashboard::onMarkChanged);
         }
     }
     pendings.clear();

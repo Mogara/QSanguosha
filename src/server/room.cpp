@@ -1977,9 +1977,9 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     player->notify(S_COMMAND_SETUP, getSetupString());
     signupMutex.unlock();
 
-    connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(player, SIGNAL(roomPacketReceived(QSanProtocol::Packet)), this, SLOT(processClientPacket(QSanProtocol::Packet)));
-    connect(player, SIGNAL(invalidPacketReceived(QByteArray)), this, SLOT(reportInvalidPacket(QByteArray)));
+    connect(player, &ServerPlayer::disconnected, this, &Room::reportDisconnection);
+    connect(player, &ServerPlayer::roomPacketReceived, this, &Room::processClientPacket);
+    connect(player, &ServerPlayer::invalidPacketReceived, this, &Room::reportInvalidPacket);
 
     return player;
 }
@@ -3690,7 +3690,7 @@ void Room::startGame() {
     _m_roomState.reset();
 
     thread = new RoomThread(this);
-    connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
+    connect(thread, &RoomThread::started, this, &Room::game_start);
     connect(thread, SIGNAL(finished()), this, SIGNAL(game_over()));
 
     if (!_virtual) thread->start();

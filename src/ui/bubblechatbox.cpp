@@ -47,7 +47,7 @@ BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent)
     setFlag(ItemClipsChildrenToShape);
     setOpacity(0);
 
-    connect(&timer, SIGNAL(timeout()), this, SLOT(clear()));
+    connect(&timer, &QTimer::timeout, this, &BubbleChatBox::clear);
 
     appearAndDisappear->setStartValue(0);
     appearAndDisappear->setEndValue(1);
