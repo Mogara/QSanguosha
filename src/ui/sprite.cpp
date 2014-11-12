@@ -83,7 +83,7 @@ void EffectAnimation::effectOut(QGraphicsItem *map) {
     QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
     if (effect) {
         effect->setStay(false);
-        connect(effect, SIGNAL(loop_finished()), this, SLOT(deleteEffect()));
+        connect(effect, &QAnimatedEffect::loop_finished, this, (void (EffectAnimation::*)())(&EffectAnimation::deleteEffect));
     }
 
     effect = registered.value(map);
@@ -115,7 +115,7 @@ EmphasizeEffect::EmphasizeEffect(bool stay, QObject *parent) {
     index = 0;
     this->stay = stay;
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &EmphasizeEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
@@ -155,8 +155,8 @@ void QAnimatedEffect::setStay(bool stay) {
         anim->setEndValue(0);
         anim->setDuration(index * 5);
 
-        connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
-        connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+        connect(anim, &QPropertyAnimation::finished, this, &QAnimatedEffect::deleteLater);
+        connect(anim, &QPropertyAnimation::valueChanged, this, &QAnimatedEffect::update);
         anim->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
@@ -169,7 +169,7 @@ SentbackEffect::SentbackEffect(bool stay, QObject *parent) {
     this->stay = stay;
 
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &SentbackEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
@@ -229,7 +229,7 @@ FadeEffect::FadeEffect(bool stay, QObject *parent) {
     this->stay = stay;
 
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &FadeEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);

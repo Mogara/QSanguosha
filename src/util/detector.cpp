@@ -25,7 +25,7 @@
 
 UdpDetector::UdpDetector() {
     socket = new QUdpSocket(this);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadReady()));
+    connect(socket, &QUdpSocket::readyRead, this, &UdpDetector::onReadReady);
 }
 
 void UdpDetector::detect() {
