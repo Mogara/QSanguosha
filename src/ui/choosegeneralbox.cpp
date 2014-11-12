@@ -91,7 +91,7 @@ void GeneralCardItem::hideCompanion() {
 void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     if (ServerInfo.FreeChoose && Qt::RightButton == event->button()) {
         FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
-        connect(general_changer, SIGNAL(general_chosen(QString)), this, SLOT(changeGeneral(QString)));
+        connect(general_changer, &FreeChooseDialog::general_chosen, this, &GeneralCardItem::changeGeneral);
         general_changer->exec();
         general_changer->deleteLater();
         return;
@@ -107,7 +107,7 @@ ChooseGeneralBox::ChooseGeneralBox()
 {
     confirm->setEnabled(ClientInstance->getReplayer());
     confirm->setParentItem(this);
-    connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
+    connect(confirm, &Button::clicked, this, &ChooseGeneralBox::reply);
 }
 
 void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -286,15 +286,13 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
             general_item->setFlag(QGraphicsItem::ItemIsMovable, false);
         } else {
             general_item->setAutoBack(true);
-            connect(general_item, SIGNAL(released()), this, SLOT(_adjust()));
+            connect(general_item, &GeneralCardItem::released, this, &ChooseGeneralBox::_adjust);
         }
 
         if (!view_only) {
-            connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
-            if (!single_result) {
-                connect(general_item, SIGNAL(general_changed()), this,
-                        SLOT(adjustItems()));
-            }
+            connect(general_item, &GeneralCardItem::clicked, this, &ChooseGeneralBox::_onItemClicked);
+            if (!single_result)
+                connect(general_item, &GeneralCardItem::general_changed, this, &ChooseGeneralBox::adjustItems);
         }
 
         if (!single_result && !view_only) {
@@ -361,7 +359,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progress_bar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progress_bar, &QSanCommandProgressBar::timedOut, this, &ChooseGeneralBox::reply);
         }
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_GENERAL);
         progress_bar->show();

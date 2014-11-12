@@ -85,7 +85,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             original_tooltip = QString(":%1").arg(option);
             tooltip = Sanguosha->translate(original_tooltip);
         }
-        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
+        connect(button, &Button::clicked, this, &ChooseOptionsBox::reply);
         if (tooltip != original_tooltip)
             button->setToolTip(QString("<font color=%1>%2</font>")
                                .arg(Config.SkillDescriptionInToolTipColor.name())
@@ -114,7 +114,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
             progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseOptionsBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
         progressBar->show();

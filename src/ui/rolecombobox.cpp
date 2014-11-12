@@ -114,7 +114,7 @@ RoleComboBox::RoleComboBox(QGraphicsItem *photo, bool circle)
     foreach(QString kingdom, kingdoms)
         kingdoms_excluded[kingdom] = false;
 
-    connect(RoomSceneInstance, SIGNAL(cancel_role_box_expanding()), this, SLOT(mouseClickedOutside()));
+    connect(RoomSceneInstance, &RoomScene::cancel_role_box_expanding, this, &RoleComboBox::mouseClickedOutside);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 

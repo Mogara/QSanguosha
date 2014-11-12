@@ -221,7 +221,7 @@ QSanSkillButton::QSanSkillButton(QGraphicsItem *parent)
     _m_emitDeactivateSignal = false;
     _m_skill = NULL;
     _m_viewAsSkill = NULL;
-    connect(this, SIGNAL(clicked()), this, SLOT(onMouseClick()));
+    connect(this, &QSanSkillButton::clicked, this, &QSanSkillButton::onMouseClick);
     _m_skill = NULL;
 }
 
@@ -374,8 +374,8 @@ QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillN
 
     const Skill *skill = Sanguosha->getSkill(skillName);
     button->setSkill(skill);
-    connect(button, SIGNAL(skill_activated(const Skill *)), this, SIGNAL(skill_activated(const Skill *)));
-    connect(button, SIGNAL(skill_deactivated(const Skill *)), this, SIGNAL(skill_deactivated(const Skill *)));
+    connect(button, (void (QSanInvokeSkillButton::*)(const Skill *))(&QSanInvokeSkillButton::skill_activated), this, &QSanInvokeSkillDock::skill_activated);
+    connect(button, (void (QSanInvokeSkillButton::*)(const Skill *))(&QSanInvokeSkillButton::skill_deactivated), this, &QSanInvokeSkillDock::skill_deactivated);
     _m_buttons.append(button);
     update();
     return button;

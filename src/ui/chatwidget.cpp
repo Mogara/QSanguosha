@@ -160,11 +160,11 @@ ChatWidget::ChatWidget()
     easy_text_board->setVisible(false);
     easy_text_board->itemName = "easytextboard";
 
-    connect(chat_face_board, SIGNAL(my_pixmap_item_msg(QString)), this, SIGNAL(chat_widget_msg(QString)));
-    connect(easy_text_board, SIGNAL(my_pixmap_item_msg(QString)), this, SIGNAL(chat_widget_msg(QString)));
-    connect(chatfaceButton, SIGNAL(clicked()), this, SLOT(showFaceBoard()));
-    connect(easytextButton, SIGNAL(clicked()), this, SLOT(showEasyTextBoard()));
-    connect(returnButton, SIGNAL(clicked()), this, SLOT(sendText()));
+    connect(chat_face_board, &MyPixmapItem::my_pixmap_item_msg, this, &ChatWidget::chat_widget_msg);
+    connect(easy_text_board, &MyPixmapItem::my_pixmap_item_msg, this, &ChatWidget::chat_widget_msg);
+    connect(chatfaceButton, &QPushButton::clicked, this, &ChatWidget::showFaceBoard);
+    connect(easytextButton, &QPushButton::clicked, this, &ChatWidget::showEasyTextBoard);
+    connect(returnButton, &QPushButton::clicked, this, &ChatWidget::sendText);
 }
 
 ChatWidget::~ChatWidget() {

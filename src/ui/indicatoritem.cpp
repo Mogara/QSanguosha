@@ -52,7 +52,7 @@ void IndicatorItem::doAnimation() {
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(group, &QSequentialAnimationGroup::finished, this, &IndicatorItem::deleteLater);
 }
 
 QPointF IndicatorItem::getFinish() const{

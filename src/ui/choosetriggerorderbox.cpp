@@ -211,7 +211,7 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     cancel->hide();
     cancel->setParentItem(this);
     cancel->setObjectName("cancel");
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reply()));
+    connect(cancel, &Button::clicked, this, &ChooseTriggerOrderBox::reply);
 
     generalButtonSize = G_ROOM_SKIN.getGeneralPixmap("caocao", QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE).size() * 0.6;
 }
@@ -333,13 +333,13 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         pos.setY(y);
 
         button->setPos(pos);
-        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
+        connect(button, &TriggerOptionButton::clicked, this, &ChooseTriggerOrderBox::reply);
         y += button->boundingRect().height() + interval;
     }
 
-    foreach (GeneralButton *button, generalButtons) {
-        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
-    }
+    foreach (GeneralButton *button, generalButtons)
+        connect(button, &GeneralButton::clicked, this, &ChooseTriggerOrderBox::reply);
+    
 
     if (optional) {
         cancel->setPos((boundingRect().width() - cancel->boundingRect().width()) / 2,
@@ -357,7 +357,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progressBar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseTriggerOrderBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_TRIGGER_ORDER);
         progressBar->show();

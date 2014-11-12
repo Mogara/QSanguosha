@@ -73,7 +73,8 @@ void PixmapAnimation::timerEvent(QTimerEvent *) {
 
 void PixmapAnimation::start(bool permanent, int interval) {
     _m_timerId = startTimer(interval);
-    if (!permanent) connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+    if (!permanent)
+        connect(this, &PixmapAnimation::finished, this, &PixmapAnimation::deleteLater);
 }
 
 void PixmapAnimation::stop() {
@@ -118,7 +119,7 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
         else
             pma->startTimer(S_DEFAULT_INTERVAL);
 
-        connect(pma, SIGNAL(finished()), pma, SLOT(deleteLater()));
+        connect(pma, &PixmapAnimation::finished, pma, &PixmapAnimation::deleteLater);
         return pma;
     }
     else {
