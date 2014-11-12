@@ -503,9 +503,10 @@ sgs.kanpo_suit_value = {
 }
 
 sgs.ai_skill_invoke.bazhen = function(self, data)
-	if not (self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
-		or not  (self:willShowForMasochism() and self:getCardsNum("Jink") == 0) then 
-			return false 
+	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
+	or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
+	then 
+			return false
 	end 
 	return sgs.ai_skill_invoke.EightDiagram
 end

@@ -22,6 +22,7 @@ local qingnang_skill = {}
 qingnang_skill.name = "qingnang"
 table.insert(sgs.ai_skills, qingnang_skill)
 qingnang_skill.getTurnUseCard = function(self)
+	if not self:willShowForDefence() then return nil end 
 	if self.player:getHandcardNum() < 1 then return nil end
 	if self.player:usedTimes("QingnangCard") > 0 then return nil end
 

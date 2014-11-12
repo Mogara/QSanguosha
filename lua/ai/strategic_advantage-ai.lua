@@ -687,7 +687,7 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 	if self:needToThrowArmor() then
 		return self.player:getArmor():getEffectiveId()
 	end
-	if not self:willShowForAttack() then 
+	if not self:willShowForAttack() and self.player:getPhase() == sgs.Player_NotActive then 
 		local cards = self.player:getCards("he")
 		local cards = sgs.QList2Table(self.player:getCards("he"))
 			for _, card in ipairs(cards) do
@@ -701,6 +701,7 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 end
 
 sgs.ai_skill_choice.imperial_order = function(self)
+	if self.player:getPhase() ~= sgs.Player_NotActive then return "show" end
 	if self:needToLoseHp() then return "losehp" end
 	if not self.player:isWounded() and self.player:getCards("he"):length() > 6 then return "losehp" end
 	return "show"

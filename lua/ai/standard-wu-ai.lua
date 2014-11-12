@@ -636,12 +636,6 @@ sgs.ai_suit_priority.guose= "club|spade|heart|diamond"
 
 
 sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
-	
-	if not (self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
-		or not  (self:willShowForMasochism() and self:getCardsNum("Jink") == 0) then 
-			return "."
-	end 
-	
 	local others = self.room:getOtherPlayers(self.player)
 	others = sgs.QList2Table(others)
 	local source
@@ -654,6 +648,13 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	local slash = self.player:getTag("liuli-card"):toCard()
 	local nature = sgs.Slash_Natures[slash:getClassName()]
 
+	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
+	or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
+	and not source:getMark("drank") > 0
+	then 
+			return "."
+	end 
+	
 	local doLiuli = function(who)
 		if not self:isFriend(who) and who:hasShownSkill("leiji")
 			and (self:hasSuit("spade", true, who) or who:getHandcardNum() >= 3)
@@ -1124,7 +1125,6 @@ sgs.ai_choicemade_filter.skillChoice.yinghun = function(self, player, promptlist
 end
 
 sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
-	if not self:willShowForMasochism() then return "." end 
 	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
 	local friend_hp = 0
@@ -1140,7 +1140,8 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	end
 
 	if not dmg then self.room:writeToConsole(debug.traceback()) return "." end
-
+	if not self:willShowForMasochism() and not dmg > 1 then return "." end 
+	
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)

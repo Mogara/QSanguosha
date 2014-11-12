@@ -340,9 +340,8 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 	local name2 =  sgs.Sanguosha:translate(self.player:getGeneral2Name())
 	local kingdom = sgs.Sanguosha:translate(self.player:getKingdom())
 	local chat = {
-		"亮这个将有什么意义？",
-		"我还当你多牛的将呢。。",
-		"亮得好，免得我被打"
+		"好牛逼的武将呀",
+		"干脆全都亮了吧"
 	}
 	local chat1 = {
 		"亮一个",
@@ -363,9 +362,13 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 			table.insert(chat1,"我来摸两张")
 		end
 		if not self.player:hasShownSkill("luanji") then
-			table.insert(chat1,"你们懂不懂，首亮渣将防袁绍")
+			table.insert(chat1,"你们懂不懂，渣将首亮防袁绍")
 		else table.insert(chat,"大嘴你妹")
 		end
+	end
+	if shown < 3 then
+		table.insert(chat,"亮这么早，小心被打")
+		table.insert(chat,"这么快就亮了？")
 	end
 	if notshown < 3 then
 		table.insert(chat,"终于亮了")
@@ -381,10 +384,10 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 		table.insert(chat,"看来这是大"..kingdom.."的节奏")
 	elseif self.player:hasShownAllGenerals() then
 		table.insert(chat, "我就说".. self.player:screenName() .."是"..name1..name2.."吧")
-		table.insert(chat,"卧槽,"..name1..name2.."!")
+		table.insert(chat,"卧槽,"..name1..name2.."!")	
 	end
 	for _, p in ipairs(sgs.robot) do
-		if p:objectName() ~= self.player:objectName() and math.random() < 0.01 then
+		if p:objectName() ~= self.player:objectName() and (math.random() < 0.1 or (self.player:getRole() == "careerist" and math.random() < 0.5)) then
 			p:speak(chat[math.random(1, #chat)])
 		elseif p:objectName() == self.player:objectName() and (math.random() < 0.1 or shown == 1)then
 			p:speak(chat1[math.random(1, #chat1)])
@@ -407,17 +410,17 @@ sgs.ai_chat_func[sgs.DamageCaused].attackAnjiang = function(self, player, data)
 			"别打我，打明的",
 			}
 	if damage and not damage.to:hasShownOneGeneral() then
-		if damage.to:getMaxHp() == 3 then
+		if damage.to:getMaxHp() == 3 then 
 			table.insert(chat, "3血不卖不是魏")
 		end
 		for _, p in ipairs(sgs.robot) do
-			if not p:hasShownOneGeneral() then
+			if not p:hasShownOneGeneral() then 
 				table.insert(chat, "你们不亮，我也不亮")
 				table.insert(chat, "国战就是要猥琐")
 			end
-			if p:objectName() ~= damage.to:objectName() and math.random() < 0.1 then
+			if p:objectName() ~= damage.to:objectName() and math.random() < 0.05 then
 				p:speak(chat[math.random(1, #chat)])
-			elseif p:objectName() == damage.from:objectName() and math.random() < 0.1 then
+			elseif p:objectName() == damage.from:objectName() and math.random() < 0.05 then
 				p:speak(chat1[math.random(1, #chat1)])
 			elseif p:objectName() == damage.to:objectName() and math.random() < 0.1 then
 				p:speak(chat2[math.random(1, #chat2)])

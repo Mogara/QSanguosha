@@ -303,12 +303,35 @@ end
 sgs.ai_skill_invoke.jgxuanlei = true
 
 sgs.ai_skill_playerchosen.jghuodi = function(self, targets)
-	self:updatePlayers()
+	self:sort(self.friends_noself, "handcard")
 	local target = nil
 	for _, enemy in ipairs(self.enemies) do
-		if not self.player:isFriendWith(enemy) and enemy:faceUp() then
+		if enemy:hasShownSkills("jgtianyu|jgtianyun") and not enemy:faceUp() then
 			target = enemy
 			break
+		end
+	end
+	for _, friend in ipairs(self.friends_noself) do
+		if not self:toTurnOver(friend) then
+			target = friend
+			break
+		end
+	end
+	if not target then
+		self:sort(self.enemies)
+		for _, enemy in ipairs(self.enemies) do
+			if self:toTurnOver(enemy) and enemy:hasShownSkills(sgs.priority_skill) and not (enemy:getMark("@fog") > 0 and enemy:hasShownSkill("jgbiantian")) then
+				target = enemy
+				break
+			end
+		end
+		if not target then
+			for _, enemy in ipairs(self.enemies) do
+				if self:toTurnOver(enemy) and not (enemy:getMark("@fog") > 0 and enemy:hasShownSkill("jgbiantian")) then
+					target = enemy
+					break
+				end
+			end
 		end
 	end
 	return target
