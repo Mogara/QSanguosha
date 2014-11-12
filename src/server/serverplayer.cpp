@@ -290,7 +290,8 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
             this->socket->deleteLater();
         }
 
-        disconnect(this, SLOT(sendMessage(QByteArray)));
+
+        disconnect(this, &ServerPlayer::message_ready, this, &ServerPlayer::sendMessage);
     }
 
     this->socket = socket;
