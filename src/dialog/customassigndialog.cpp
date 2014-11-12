@@ -1751,9 +1751,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString playerName, QStrin
     m_skillList->verticalScrollBar()->setStyleSheet(styleSheet);
 
     m_skillInput = new QLineEdit;
-#if QT_VERSION >= 0x040700
     m_skillInput->setPlaceholderText(tr("Input the Skill Name"));
-#endif
     m_skillInput->setToolTip(tr("<font color=%1>Internal skill name is a phonetic form, "
         "the rest of the special circumstances, "
         "please see the translation of documents in the lang directory.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
