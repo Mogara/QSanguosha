@@ -52,8 +52,7 @@ function sgs.debugFunc(player, debugType)
 			local msg = string.format("%s/%s[Visiblecards]:", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name())
 			local cards = sgs.QList2Table(players[i]:getHandcards())
 			for _, card in ipairs(cards) do
-				local flag = string.format("%s_%s_%s","visible", player:objectName(), players[i]:objectName())
-				if card:hasFlag("visible") or card:hasFlag(flag) then
+				if sgs.cardIsVisible(c, players[i], player) then
 					msg = msg .. card:getClassName() ..", "
 				end
 			end
@@ -131,6 +130,12 @@ function changeHero(player, new_general, isSecondaryHero)
 	local flag = isSecondaryHero and "general2_showed" or "general1_showed"
 	room:setPlayerProperty(player, flag, sgs.QVariant(true))
 
+	if isSecondaryHero then
+		room:changePlayerGeneral2(player, new_general)
+	else
+		room:changePlayerGeneral(player, new_general)
+	end
+
 	for _, skill in sgs.qlist(sgs.Sanguosha:getGeneral(new_general):getSkillList(true, not isSecondaryHero)) do
 		player:addSkill(skill:objectName(), not isSecondaryHero)
 		local args = {
@@ -151,12 +156,6 @@ function changeHero(player, new_general, isSecondaryHero)
 	}
 	room:doBroadcastNotify(sgs.CommandType.S_COMMAND_LOG_EVENT, json.encode(args))
 
-	if isSecondaryHero then
-		room:changePlayerGeneral2(player, new_general)
-	else
-		room:changePlayerGeneral(player, new_general)
-	end
-
 	player:setHp(5)
 	player:setMaxHp(5)
 	room:broadcastProperty(player, "hp")
@@ -164,9 +163,13 @@ function changeHero(player, new_general, isSecondaryHero)
 
 	local void_data = sgs.QVariant()
 	local gen = isSecondaryHero and player:getGeneral2() or player:getGeneral()
-	local thread = room:getThread()
 	if gen then
+		local thread = room:getThread()
 		for _, skill in sgs.qlist(gen:getSkillList(true, not isSecondaryHero)) do
+			if skill:inherits("TriggerSkill") then
+				local triggerskill = skill:toTriggerSkill()
+				thread:addTriggerSkill(triggerskill)
+			end
 			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() and skill:getLimitMark() ~= "" then
 				room:setPlayerMark(player, skill:getLimitMark(), 1)
 			end
@@ -177,7 +180,7 @@ function changeHero(player, new_general, isSecondaryHero)
 end
 
 function endlessNiepan(self, player)
-
+	if player:getHp() > 0 then return end
 	local room = player:getRoom()
 	room:setPlayerProperty(player, "Duanchang", sgs.QVariant(""))
 	local getG2 = player:getGeneral2()

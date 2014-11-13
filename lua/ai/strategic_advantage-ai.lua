@@ -687,16 +687,16 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 	if self:needToThrowArmor() then
 		return self.player:getArmor():getEffectiveId()
 	end
-	if not self:willShowForAttack() and self.player:getPhase() == sgs.Player_NotActive then 
+	if not self:willShowForAttack() and self.player:getPhase() == sgs.Player_NotActive then
 		local cards = self.player:getCards("he")
 		local cards = sgs.QList2Table(self.player:getCards("he"))
 			for _, card in ipairs(cards) do
 				if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse")
 					or self:getSameEquip(card, self.player) then
-					return card:getEffectiveId() 
+					return card:getEffectiveId()
 				end
 			end
-	end		
+	end
 	return "."
 end
 
@@ -831,6 +831,7 @@ function sgs.ai_weapon_value.Halberd(self, enemy, player)
 	return 2.1
 end
 
+--WoodenOx
 local wooden_ox_skill = {}
 wooden_ox_skill.name = "WoodenOx"
 table.insert(sgs.ai_skills, wooden_ox_skill)

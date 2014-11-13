@@ -25,20 +25,20 @@ sgs.ai_skill_invoke.xunxun = function(self, data)
 end
 
 function sgs.ai_skill_invoke.wangxi(self, data)
-	if not self:willShowForMasochism() then return false end 
+	if not self:willShowForMasochism() then return false end
 	local target = data:toPlayer()
 	if target then
-		if (self.player:isFriendWith(target) or self:isFriend(target)) and not self:needKongcheng(target)then  
+		if (self.player:isFriendWith(target) or self:isFriend(target)) and not self:needKongcheng(target)then
 				return true
 		else
-			if	not ( target:getPhase() ~= sgs.Player_NotActive and (target:hasShownSkills(sgs.Active_cardneed_skill) or target:hasWeapon("Crossbow")) ) 
-				and not ( target:getPhase() == sgs.Player_NotActive and target:hasShownSkills(sgs.notActive_cardneed_skill) ) 
-				or self:needKongcheng(target) then	
+			if	not ( target:getPhase() ~= sgs.Player_NotActive and (target:hasShownSkills(sgs.Active_cardneed_skill) or target:hasWeapon("Crossbow")) )
+				and not ( target:getPhase() == sgs.Player_NotActive and target:hasShownSkills(sgs.notActive_cardneed_skill) )
+				or self:needKongcheng(target) then
 				return true
 			end
 		end
-	end	
-return false	
+	end
+return false
 end
 
 
@@ -327,13 +327,13 @@ end
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
 
-	if  damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") ~= 0 then
+	if damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") > 0 then
 		return true
 	end
 
 	return not self:isFriend(damage.to)
-	and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
-	and not (damage.to:getHp() == 1 and not damage.to:getArmor())
+		and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
+		and not (damage.to:getHp() == 1 and not damage.to:getArmor())
 end
 
 sgs.ai_skill_choice.chuanxin = "discard"

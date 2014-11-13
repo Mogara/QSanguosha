@@ -283,9 +283,8 @@ function SmartAI:findTuxiTarget()
 		if zhugeliang:getHp() <= 2 then
 			if add_player(zhugeliang, 1) == 2 then return targets end
 		else
-			local flag = string.format("%s_%s_%s","visible",self.player:objectName(),zhugeliang:objectName())
 			local cards = sgs.QList2Table(zhugeliang:getHandcards())
-			if #cards == 1 and (cards[1]:hasFlag("visible") or cards[1]:hasFlag(flag)) then
+			if #cards == 1 and sgs.cardIsVisible(cards[1], zhugeliang, self.player) then
 				if cards[1]:isKindOf("TrickCard") or cards[1]:isKindOf("Slash") or cards[1]:isKindOf("EquipCard") then
 					if add_player(zhugeliang, 1) == 2 then return targets end
 				end
@@ -295,9 +294,8 @@ function SmartAI:findTuxiTarget()
 
 	for _, enemy in ipairs(self.enemies) do
 		local cards = sgs.QList2Table(enemy:getHandcards())
-		local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
 		for _, card in ipairs(cards) do
-			if (card:hasFlag("visible") or card:hasFlag(flag)) and (card:isKindOf("Peach") or card:isKindOf("Nullification") or card:isKindOf("Analeptic") ) then
+			if sgs.cardIsVisible(card, enemy, self.player) and (card:isKindOf("Peach") or card:isKindOf("Nullification") or card:isKindOf("Analeptic") ) then
 				if add_player(enemy) == 2  then return targets end
 			end
 		end
@@ -364,7 +362,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		end
 		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
-				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
+				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy, self.player) and sgs.isGoodTarget(enemy, self.enemies, self)
 				and not enemy:hasArmorEffect("SilverLion")
 				and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy) then
 					dueltarget = dueltarget + 1
@@ -387,8 +385,7 @@ function sgs.ai_cardneed.luoyi(to, card, self)
 	local cards = to:getHandcards()
 	local need_slash = true
 	for _, c in sgs.qlist(cards) do
-		local flag = string.format("%s_%s_%s","visible",self.room:getCurrent():objectName(),to:objectName())
-		if c:hasFlag("visible") or c:hasFlag(flag) then
+		if sgs.cardIsVisible(c, to, self.player) then
 			if isCard("Slash", c, to) then
 				need_slash = false
 				break

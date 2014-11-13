@@ -37,7 +37,7 @@ end
 function sgs.isGoodHp(player, observer)
 	observer = observer or sgs.recorder.player
 	local goodHp = player:getHp() > 1 or getCardsNum("Peach", player, observer) >= 1 or getCardsNum("Analeptic", player, observer) >= 1
-					or hasBuquEffect(player) or (player:hasShownSkill("niepan") and player:getMark("@nirvana") > 0)
+					or hasBuquEffect(player) or hasNiepanEffect(player)
 	if goodHp then
 		return goodHp
 	else
@@ -85,7 +85,7 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		return true
 	end
 
-	if m_skill and sgs.isGoodHp(player, self.player) then
+	if m_skill and sgs.isGoodHp(player, self and self.player) then
 		return false
 	else
 		return true
@@ -95,9 +95,10 @@ end
 function sgs.getDefenseSlash(player, self)
 	if not player or not self then global_room:writeToConsole(debug.traceback()) return 0 end
 	local attacker = self.player
-	local defense = getCardsNum("Jink", player, attacker)
+	local unknownJink = getCardsNum("Jink", player, attacker)
+	local defense = unknownJink
 
-	local knownJink = getKnownCard(player, attacker, "Jink", true)
+	local knownJink = getKnownCard(player, attacker, "Jink", true, "he")
 
 	if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0 then defense = 0 end
 
@@ -117,7 +118,7 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
 	end
 
-	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and getCardsNum("Jink", player, global_room:getCurrent()) >= 1 then
+	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and unknownJink >= 1 then
 		defense = defense + 1.5
 	end
 
@@ -134,8 +135,7 @@ function sgs.getDefenseSlash(player, self)
 		end
 	end
 	local need_double_jink = attacker:hasShownSkill("wushuang") or niaoxiang_BA
-	if need_double_jink and getKnownCard(player, attacker, "Jink", true, "he") < 2
-		and getCardsNum("Jink", player, global_room:getCurrent()) < 1.5 then
+	if need_double_jink and knownJink < 2 and unknownJink < 1.5 then
 		defense = 0
 	end
 
@@ -454,7 +454,6 @@ function SmartAI:useCardSlash(card, use)
 		return card:targetFilter(targets, target, self.player)
 	end
 
-	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
 	for _, friend in ipairs(self.friends_noself) do
 		if self:isPriorFriendOfSlash(friend, card) and not self:slashProhibit(card, friend) then
 			if self.player:canSlash(friend, card, not no_distance, rangefix) or (use.isDummy and self.player:distanceTo(friend, rangefix) <= self.predictedRange)
@@ -1207,18 +1206,12 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 		if not cards then
 			cards = {}
 			for _, c in sgs.qlist(player:getHandcards()) do
-				local visible = self.player:objectName() == player:objectName()
-									or c:hasFlag("visible")
-									or c:hasFlag(string.format("visible_%s_%s", self.player:objectName(), player:objectName()))
-				if visible and c:isKindOf("Slash") then continue end
+				if sgs.cardIsVisible(c, player, self.player) and c:isKindOf("Slash") then continue end
 				table.insert(cards, c)
 			end
 			for _, id in sgs.qlist(player:getPile("wooden_ox")) do
 				c = sgs.Sanguosha:getCard(id)
-				local visible = self.player:objectName() == player:objectName()
-									or c:hasFlag("visible")
-									or c:hasFlag(string.format("visible_%s_%s", self.player:objectName(), player:objectName()))
-				if visible and c:isKindOf("Slash") then continue end
+				if sgs.cardIsVisible(c, player, self.player) and c:isKindOf("Slash") then continue end
 				table.insert(cards, c)
 			end
 		end
@@ -1980,10 +1973,9 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 
 	for _, enemy in ipairs(enemies) do
 		local cards = sgs.QList2Table(enemy:getHandcards())
-		local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
 		if #cards <= 2 and not enemy:isKongcheng() and not self:doNotDiscard(enemy, "h", true) then
 			for _, cc in ipairs(cards) do
-				if (cc:hasFlag("visible") or cc:hasFlag(flag)) and (cc:isKindOf("Peach") or cc:isKindOf("Analeptic")) then
+				if sgs.cardIsVisible(cc, enemy, self.player) and (cc:isKindOf("Peach") or cc:isKindOf("Analeptic")) then
 					if addTarget(enemy, self:getCardRandomly(enemy, "h")) then return end
 				end
 			end
@@ -2251,7 +2243,7 @@ function SmartAI:useCardCollateral(card, use)
 			if not n then
 				for _, friend in ipairs(toList) do
 					if enemy:canSlash(friend) and self:objectiveLevel(friend) < 0 and enemy:objectName() ~= friend:objectName()
-							and (getKnownCard(friend, self.player, "Jink", true, "he") >= 2 or getCardsNum("Slash", enemy) < 1) then
+							and (getKnownCard(friend, self.player, "Jink", true, "he") >= 2 or getCardsNum("Slash", enemy, self.player) < 1) then
 						n = 1
 						final_enemy = friend
 						break
@@ -2270,7 +2262,7 @@ function SmartAI:useCardCollateral(card, use)
 	end
 
 	for _, friend in ipairs(fromList) do
-		if friend:getWeapon() and (getKnownCard(friend, self.player, "Slash", true, "he") > 0 or getCardsNum("Slash", friend) > 1 and friend:getHandcardNum() >= 4)
+		if friend:getWeapon() and (getKnownCard(friend, self.player, "Slash", true, "he") > 0 or getCardsNum("Slash", friend, self.player) > 1 and friend:getHandcardNum() >= 4)
 			and self:hasTrickEffective(card, friend)
 			and self:objectiveLevel(friend) < 0 then
 
@@ -2292,7 +2284,7 @@ function SmartAI:useCardCollateral(card, use)
 		if friend:getWeapon() and friend:hasShownSkills(sgs.lose_equip_skill)
 			and self:hasTrickEffective(card, friend)
 			and self:objectiveLevel(friend) < 0
-			and not (friend:getWeapon():isKindOf("Crossbow") and getCardsNum("Slash", friend) > 1) then
+			and not (friend:getWeapon():isKindOf("Crossbow") and getCardsNum("Slash", friend, self.player) > 1) then
 
 			for _, enemy in ipairs(toList) do
 				if friend:canSlash(enemy, nil) and friend:objectName() ~= enemy:objectName() then
@@ -2852,7 +2844,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			end
 			if self.player:hasSkill("rende") then
 				for _, friend in ipairs(self.friends_noself) do
-					if getCardsNum("Slash", friend) > 1 then
+					if getCardsNum("Slash", friend, self.player) > 1 then
 						return crossbow:getEffectiveId()
 					end
 				end

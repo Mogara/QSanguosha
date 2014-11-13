@@ -296,6 +296,7 @@ sgs.ai_skill_invoke.shoucheng = function(self, data)
 			return true
 		end
 	end
+	return false
 end
 
 local shangyi_skill = {}
@@ -415,7 +416,7 @@ local invoke_qianhuan = function(self, use)
 			or use.card:isKindOf("ArcheryAttack") or use.card:isKindOf("Drowning") or use.card:isKindOf("SavageAssault") then
 			return true
 		end
-		if use.card:isKindOf("KnownBoth") or use.card:isKindOf("Dismantlement") or use.card:isKindOf("Indulgence") then
+		if use.card:isKindOf("KnownBoth") or use.card:isKindOf("Dismantlement") or use.card:isKindOf("Indulgence") or use.card:isKindOf("SupplyShortage") then
 			--@todo
 			return false
 		end

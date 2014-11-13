@@ -152,7 +152,7 @@ function SmartAI:shouldUseAnaleptic(target, card_use)
 	end
 
 	if getKnownCard(target, self.player, "Jink", true, "he") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
-	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1 or self:getOverflow() > 0
+	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1 or self:getOverflow() > 0
 end
 
 function SmartAI:useCardAnaleptic(card, use)
@@ -291,7 +291,7 @@ end
 
 function SmartAI:isGoodChainPartner(player)
 	player = player or self.player
-	if hasBuquEffect(player) or (self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0) or self:needToLoseHp(player) or self:getDamagedEffects(player) then
+	if hasBuquEffect(player) or hasNiepanEffect(player) or self:needToLoseHp(player) or self:getDamagedEffects(player) then
 		return true
 	end
 	return false
@@ -388,7 +388,8 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 			and not (card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player)) then
 			local getvalue = getChainedPlayerValue(player, 0)
 			if kills == #self.enemies and sgs.getDefenseSlash(player, self) < 2 then
-				if card then self.room:setCardFlag(card, "AIGlobal_KillOff") end
+				if card and from:objectName() == self.room:getCurrent():objectName() and from:getPhase() == sgs.Player_Play then
+					self.room:setCardFlag(card, "AIGlobal_KillOff") end
 				return true
 			end
 			if self:isFriend(player) then
@@ -594,7 +595,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
 
-		if self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0 then
+		if hasNiepanEffect(self.player) then
 			table.insert(targets, self.player)
 		elseif hasBuquEffect(self.player)then
 			table.insert(targets, self.player)
@@ -612,8 +613,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	for _, enemy in ipairs(enemies) do
 		if enemy:getHandcardNum() == 1 then
 			local handcards = sgs.QList2Table(enemy:getHandcards())
-			local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
-			if handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag) then
+			if sgs.cardIsVisible(handcards[1], enemy, self.player) then
 				local suitstring = handcards[1]:getSuitString()
 				if not lack[suitstring] and not table.contains(targets, enemy) then
 					table.insert(targets, enemy)

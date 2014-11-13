@@ -179,10 +179,10 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 			break
 		end
 	end
-	
+
 	local disCrossbow = false
 	if self:getCardsNum("Slash") < 2 or self.player:hasSkill("paoxiao") then disCrossbow = true end
-	
+
 	local hecards = self.player:getCards("he")
 	for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
 		hecards:prepend(sgs.Sanguosha:getCard(id))
@@ -190,7 +190,7 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	local cards = {}
 	for _, card in sgs.qlist(hecards) do
 		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
-			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll) 
+			and ((not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll)
 			and (not isCard("Crossbow", card, self.player) or disCrossbow ) then
 			local suit = card:getSuitString()
 			local number = card:getNumberString()
@@ -221,8 +221,7 @@ function sgs.ai_cardneed.paoxiao(to, card, self)
 	local has_weapon = to:getWeapon() and not to:getWeapon():isKindOf("Crossbow")
 	local slash_num = 0
 	for _, c in sgs.qlist(cards) do
-		local flag=string.format("%s_%s_%s","visible",self.room:getCurrent():objectName(),to:objectName())
-		if c:hasFlag("visible") or c:hasFlag(flag) then
+		if sgs.cardIsVisible(c, to, self.player) then
 			if c:isKindOf("Weapon") and not c:isKindOf("Crossbow") then
 				has_weapon=true
 			end
@@ -429,12 +428,12 @@ huoji_skill.getTurnUseCard = function(self)
 	local card
 
 	self:sortByUseValue(cards, true)
-	
+
 	for _,acard in ipairs(cards) do
 		local fireValue = sgs.ai_use_value.FireAttack
-		if self.player:hasSkill("jizhi") and acard:isKindOf("TrickCard") then 
+		if self.player:hasSkill("jizhi") and acard:isKindOf("TrickCard") then
 			fireValue = fireValue - 4
-		end 	
+		end
 		if acard:isRed() and not isCard("Peach", acard, self.player) and (self:getDynamicUsePriority(acard) < fireValue or self:getOverflow() > 0) then
 			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
 				local keep
@@ -503,11 +502,11 @@ sgs.kanpo_suit_value = {
 }
 
 sgs.ai_skill_invoke.bazhen = function(self, data)
-	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1) 
+	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1)
 	or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
-	then 
+	then
 			return false
-	end 
+	end
 	return sgs.ai_skill_invoke.EightDiagram
 end
 
