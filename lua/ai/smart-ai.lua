@@ -1675,7 +1675,7 @@ function SmartAI:filterEvent(event, player, data)
 				if type(callback) == "function" then callback(self, player, data) end
 			end
 		end
-		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) and sgs.GetConfig("OriginAIDelay", "") > 0 then
+		if type(sgs.ai_chat_func[event]) == "table" and sgs.GetConfig("AIChat", false) and sgs.GetConfig("OriginAIDelay", 0) > 0 then
 			for _, callback in pairs(sgs.ai_chat_func[event]) do
 				if type(callback) == "function" then callback(self, player, data) end
 			end
@@ -5167,7 +5167,7 @@ function SmartAI:willShowForMasochism()
 		end
 	end
 	local showRate = math.random() - self.player:getHp()/20 + e/20 + shown/30
-	
+
 	local firstShowReward = false
 	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
 		if shown == 0 then
@@ -5175,10 +5175,10 @@ function SmartAI:willShowForMasochism()
 		end
 	end
 	if firstShowReward and showRate > 0.9 then return true end
-	
+
 	if showRate < 0.2 then return false end
 	if self.player:getLostHp() == 0 and self:getCardsNum("Peach") > 0 and showRate < 0.3 then return false end
-	
+
 	return true
 end
 

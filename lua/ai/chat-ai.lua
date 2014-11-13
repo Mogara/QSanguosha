@@ -23,14 +23,14 @@ sgs.ai_chat = {}
 function speak(to, type)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
-	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
+	if sgs.GetConfig("OriginAIDelay", 0) == 0 then return end
 
 	local i = math.random(1, #sgs.ai_chat[type])
 	to:speak(sgs.ai_chat[type][i])
 end
 
 function speakTrigger(card, from, to, event)
-	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
+	if sgs.GetConfig("OriginAIDelay", 0) == 0 then return end
 	if type(to) == "table" then
 		for _, t in ipairs(to) do
 			speakTrigger(card, from, t, event)
@@ -302,7 +302,7 @@ end
 function SmartAI:speak(type, isFemale)
 	if not sgs.GetConfig("AIChat", false) then return end
 	if self.player:getState() ~= "robot" then return end
-	if sgs.GetConfig("OriginAIDelay", "") == 0 then return end
+	if sgs.GetConfig("OriginAIDelay", 0) == 0 then return end
 
 	if sgs.ai_chat[type] then
 		if type(sgs.ai_chat[type]) == "function" then
@@ -591,7 +591,7 @@ sgs.ai_chat.BurningCamps = function(self)
 	if x < 0.033 then
 		self.player:speak("让火焰净化一切")
 	elseif x < 0.067 then
-		local t = sgs.GetConfig("OriginAIDelay", "")
+		local t = sgs.GetConfig("OriginAIDelay", 0)
 		self.player:speak("火元素之王啊")
 		self.room:getThread():delay(t)
 		self.player:speak("藉由您所有的力量")
@@ -600,7 +600,7 @@ sgs.ai_chat.BurningCamps = function(self)
 		self.room:getThread():delay(t)
 		self.player:speak("火烧连营~")
 	elseif x < 0.1 then
-		local t = sgs.GetConfig("OriginAIDelay", "")
+		local t = sgs.GetConfig("OriginAIDelay", 0)
 		self.player:speak("狂暴的火之精灵哦")
 		self.room:getThread():delay(t)
 		self.player:speak("将您的力量暂时给予我")
