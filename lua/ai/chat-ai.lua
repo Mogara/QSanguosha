@@ -25,8 +25,10 @@ function speak(to, type)
 	if to:getState() ~= "robot" then return end
 	if sgs.GetConfig("OriginAIDelay", 0) == 0 then return end
 
-	local i = math.random(1, #sgs.ai_chat[type])
-	to:speak(sgs.ai_chat[type][i])
+	if table.contains(sgs.ai_chat, type) then
+		local i = math.random(1, #sgs.ai_chat[type])
+		to:speak(sgs.ai_chat[type][i])
+	end
 end
 
 function speakTrigger(card, from, to, event)
