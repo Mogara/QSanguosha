@@ -148,7 +148,7 @@ void StartScene::switchToServer(Server *server) {
 
     this->server = server;
     printServerInfo();
-    connect(server, &Server::server_message, serverLog, &QTextEdit::append);
+    connect(server, &Server::serverMessage, serverLog, &QTextEdit::append);
     update();
 }
 

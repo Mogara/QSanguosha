@@ -52,8 +52,8 @@ void LobbyPlayer::setSocket(ClientSocket *new_socket)
 
     if (new_socket) {
         socket = new_socket;
-        connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
+        connect(socket, &ClientSocket::disconnected, this, &LobbyPlayer::disconnected);
+        connect(socket, &ClientSocket::message_got, this, &LobbyPlayer::processMessage);
     }
 }
 

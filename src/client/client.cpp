@@ -373,8 +373,8 @@ void Client::setup(const QVariant &setup_json) {
         Self = new ClientPlayer(this);
         Self->setScreenName(Config.UserName);
         Self->setProperty("avatar", Config.UserAvatar);
-        connect(Self, SIGNAL(phase_changed()), this, SLOT(alertFocus()));
-        connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+        connect(Self, &ClientPlayer::phase_changed, this, &Client::alertFocus);
+        connect(Self, &ClientPlayer::role_changed, this, &Client::notifyRoleChange);
 
         players << Self;
 

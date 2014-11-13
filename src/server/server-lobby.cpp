@@ -80,7 +80,7 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
         args[2] = QString("%1:%2").arg(from->peerAddress()).arg(port);
         remoteRooms.insert(from, args);
 
-        connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRemoteRoom()));
+        connect(from, &ClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
     }
 }
 

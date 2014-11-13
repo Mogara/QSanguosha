@@ -118,7 +118,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
             progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, &QSanCommandProgressBar::timedOut, this, &PlayerCardBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_CARD);
         progressBar->show();
@@ -248,7 +248,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         } else {
             item->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
         }
-        connect(item, SIGNAL(clicked()), this, SLOT(reply()));
+        connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
         items << item;
         areaItems << item;
     }

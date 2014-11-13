@@ -38,7 +38,7 @@ void Server::connectToLobby()
 
     lobby = new NativeClientSocket;
     lobby->setParent(this);
-    connect(lobby, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
+    connect(lobby, &NativeClientSocket::message_got, this, &Server::processMessage);
     //@todo: handle disconnection from lobby
 
     lobby->connectToHost(Config.LobbyAddress);
@@ -49,8 +49,8 @@ Room *Server::createNewRoom(const RoomConfig &config)
     Room *new_room = new Room(this, config);
     rooms.insert(new_room);
 
-    connect(new_room, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
-    connect(new_room, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
+    connect(new_room, &Room::room_message, this, &Server::serverMessage);
+    connect(new_room, &Room::game_end, this, &Server::cleanupRoom);
 
     return new_room;
 }

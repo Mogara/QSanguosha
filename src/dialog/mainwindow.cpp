@@ -617,8 +617,8 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 
     if (server_version == client_version) {
         client->signup();
-        connect(client, &Client::server_connected, this, &MainWindow::enterRoom);
-        connect(client, SIGNAL(lobbyServerConnected()), SLOT(enterLobby()));
+        connect(client, &Client::roomServerConnected, this, &MainWindow::enterRoom);
+        connect(client, &Client::lobbyServerConnected, this, &MainWindow::enterLobby);
         return;
     }
 
@@ -661,7 +661,7 @@ void MainWindow::on_actionReplay_triggered() {
     Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
-    connect(client, &Client::server_connected, this, &MainWindow::enterRoom);
+    connect(client, &Client::roomServerConnected, this, &MainWindow::enterRoom);
     client->signup();
 }
 
@@ -731,7 +731,7 @@ void MainWindow::enterRoom() {
     }
 
     connect(room_scene, &RoomScene::restart, this, &MainWindow::startConnection);
-    connect(room_scene, &RoomScene::return_to_start, this, &MainWindow::gotoStartScene);
+    connect(room_scene, &RoomScene::return_to_start, this, &MainWindow::exitScene);
 
     gotoScene(room_scene);
 }
@@ -745,9 +745,9 @@ void MainWindow::enterLobby() {
     }
 
     LobbyScene *scene = new LobbyScene(this);
-    connect(scene, SIGNAL(createRoomClicked()), SLOT(onCreateRoomClicked()));
-    connect(scene, SIGNAL(roomSelected()), SLOT(startConnection()));
-    connect(scene, SIGNAL(exit()), SLOT(exitScene()));
+    connect(scene, &LobbyScene::createRoomClicked, this, &MainWindow::onCreateRoomClicked);
+    connect(scene, (void (LobbyScene::*)()) &LobbyScene::roomSelected, this, &MainWindow::startConnection);
+    connect(scene, &LobbyScene::exit, this, &MainWindow::exitScene);
 
     gotoScene(scene);
 }
@@ -1383,7 +1383,7 @@ void MainWindow::on_actionStart_Lobby_triggered()
 #ifdef QT_NO_PROCESS
     ui->actionStart_Game->setEnabled(false);
 #else
-    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+    connect(ui->actionStart_Game, &QAction::triggered, this, &MainWindow::startGameInAnotherInstance);
 #endif
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if (start_scene) {

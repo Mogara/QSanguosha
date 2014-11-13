@@ -103,7 +103,7 @@ void NativeClientSocket::init() {
     keep_alive_timer->setSingleShot(false);
     keep_alive_timer->setInterval(KEEP_ALIVE_INTERVAL);
     keep_alive_timer->start();
-    connect(keep_alive_timer, SIGNAL(timeout()), this, SLOT(keepAlive()));
+    connect(keep_alive_timer, &QTimer::timeout, this, &NativeClientSocket::keepAlive);
 }
 
 void NativeClientSocket::connectToHost() {

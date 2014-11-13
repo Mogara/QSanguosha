@@ -54,8 +54,8 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     chatWidget->setLayout(chatLayout);
     addWidget(chatWidget);
 
-    connect(client, SIGNAL(lineSpoken(const QString &)), chatBox, SLOT(append(QString)));
-    connect(chatLineEdit, SIGNAL(editingFinished()), SLOT(speakToServer()));
+    connect(client, &Client::lineSpoken, chatBox, &QTextEdit::append);
+    connect(chatLineEdit, &QLineEdit::editingFinished, this, &LobbyScene::speakToServer);
 
     //user profile
     userAvatarItem = addPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
@@ -73,8 +73,8 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     buttonBox->setLayout(buttonLayout);
     addWidget(buttonBox);
 
-    connect(refreshButton, SIGNAL(clicked()), SLOT(refreshRoomList()));
-    connect(exitButton, SIGNAL(clicked()), this, SIGNAL(exit()));
+    connect(refreshButton, &QPushButton::clicked, this, &LobbyScene::refreshRoomList);
+    connect(exitButton, &QPushButton::clicked, this, &LobbyScene::exit);
 
     //room tiles
     roomTitle = new Title(NULL, tr("Rooms"), "wqy-microhei", 30);
@@ -83,16 +83,16 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
 
     createRoomTile = new Tile(tr("Create Room"), QSizeF(200.0, 100.0));
     createRoomTile->setObjectName("create_room_button");
-    connect(createRoomTile, SIGNAL(clicked()), SLOT(onCreateRoomClicked()));
+    connect(createRoomTile, &Tile::clicked, this, &LobbyScene::onCreateRoomClicked);
     addItem(createRoomTile);
 
     setBackgroundBrush(QPixmap(Config.BackgroundImage));
 
-    connect(client, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
-    connect(client, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
-    connect(this, SIGNAL(roomListRequested(int)), client, SLOT(fetchRoomList(int)));
-    connect(this, SIGNAL(roomSelected(int)), client, SLOT(onPlayerChooseRoom(int)));
+    connect(client, &Client::roomListChanged, this, &LobbyScene::setRoomList);
+    connect(client, &Client::destroyed, this, &LobbyScene::onClientDestroyed);
+    connect(this, &LobbyScene::sceneRectChanged, this, &LobbyScene::onSceneRectChanged);
+    connect(this, &LobbyScene::roomListRequested, client, &Client::fetchRoomList);
+    connect(this, (void (LobbyScene::*)(int)) &LobbyScene::roomSelected, client, &Client::onPlayerChooseRoom);
 }
 
 LobbyScene::~LobbyScene()
@@ -202,7 +202,7 @@ void LobbyScene::setRoomList(const QVariant &data)
 
             roomTiles << tile;
             addItem(tile);
-            connect(tile, SIGNAL(clicked()), SLOT(onRoomTileClicked()));
+            connect(tile, &Tile::clicked, this, &LobbyScene::onRoomTileClicked);
         } else {
             delete info;
         }
@@ -276,5 +276,5 @@ void LobbyScene::onCreateRoomClicked()
 void LobbyScene::onClientDestroyed()
 {
     client = NULL;
-    chatLineEdit->disconnect(this, SLOT(speakToServer()));
+    disconnect(chatLineEdit, (void (QLineEdit::*)()) 0, this, &LobbyScene::speakToServer);
 }

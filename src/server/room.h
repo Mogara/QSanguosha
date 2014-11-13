@@ -594,7 +594,7 @@ signals:
     void room_message(const QString &msg);
     void game_start();
     void game_over(const QString &winner);
-    void game_over();
+    void game_end();
 };
 
 typedef Room *RoomStar;

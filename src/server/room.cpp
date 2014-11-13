@@ -2407,7 +2407,7 @@ void Room::reportDisconnection() {
             if (thread && thread->isRunning())
                 emit game_over(QString());
             else
-                emit game_over();
+                emit game_end();
         }
     }
 
@@ -3691,7 +3691,7 @@ void Room::startGame() {
 
     thread = new RoomThread(this);
     connect(thread, &RoomThread::started, this, &Room::game_start);
-    connect(thread, SIGNAL(finished()), this, SIGNAL(game_over()));
+    connect(thread, &RoomThread::finished, this, &Room::game_end);
 
     if (!_virtual) thread->start();
 }

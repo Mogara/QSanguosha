@@ -203,7 +203,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     connect_to_lobby_checkbox = new QCheckBox(tr("Connect"));
     connect_to_lobby_checkbox->setChecked(Config.ConnectToLobby);
 
-    connect(connect_to_lobby_checkbox, SIGNAL(toggled(bool)), lobby_address_edit, SLOT(setEnabled(bool)));
+    connect(connect_to_lobby_checkbox, &QCheckBox::toggled, lobby_address_edit, &QLineEdit::setEnabled);
     lobby_address_edit->setEnabled(connect_to_lobby_checkbox->isChecked());
 
     QLayout *lobby_layout = new QHBoxLayout;

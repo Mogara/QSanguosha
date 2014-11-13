@@ -84,7 +84,7 @@ void Tile::addScrollText(const QStringList &texts)
         scroll_timer->setSingleShot(true);
     } else {
         scroll_timer->stop();
-        scroll_timer->disconnect(this, SLOT(scrollToNextContent()));
+        disconnect(scroll_timer, (void (QTimer::*)()) 0, this, &Tile::scrollToNextContent);
     }
 
     if (!texts.isEmpty()) {
@@ -100,7 +100,7 @@ void Tile::addScrollText(const QStringList &texts)
         first_content->setOpacity(1.0);
         first_content->setY(first_content->x());
 
-        connect(scroll_timer, SIGNAL(timeout()), SLOT(scrollToNextContent()));
+        connect(scroll_timer, &QTimer::timeout, this, &Tile::scrollToNextContent);
         scroll_timer->start(((qrand() % 3) + 3) * 1000);
     }
 }

@@ -170,7 +170,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, &Client::triggers_got, this, &RoomScene::chooseTriggerOrder);
     connect(ClientInstance, &Client::seats_arranged, this, &RoomScene::arrangeSeats);
     connect(ClientInstance, &Client::status_changed, this, &RoomScene::updateStatus);
-    connect(ClientInstance, &Client::avatars_hiden, this, &RoomScene::hideAvatars);
+    connect(ClientInstance, &Client::avatars_hidden, this, &RoomScene::hideAvatars);
     connect(ClientInstance, &Client::hp_changed, this, &RoomScene::changeHp);
     connect(ClientInstance, &Client::maxhp_changed, this, &RoomScene::changeMaxHp);
     connect(ClientInstance, &Client::pile_reset, this, &RoomScene::resetPiles);
@@ -3033,7 +3033,7 @@ void RoomScene::addRestartButton(QDialog *dialog) {
         QPushButton *restartButton = new QPushButton(tr("Restart Game"));
         hLayout->addWidget(restartButton);
         connect(restartButton, &QPushButton::clicked, dialog, &QDialog::accept);
-        connect(restartButton, &QPushButton::clicked, this, RoomScene::restart);
+        connect(restartButton, &QPushButton::clicked, this, &RoomScene::restart);
 
         QPushButton *saveButton = new QPushButton(tr("Save record"));
         hLayout->addWidget(saveButton);

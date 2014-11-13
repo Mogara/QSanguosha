@@ -126,7 +126,7 @@ void Server::processNewConnection(ClientSocket *socket)
     notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
 
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
-    connect(socket, &ClientSocket::message_got, this, &Server::processRequest);
+    connect(socket, &ClientSocket::message_got, this, &Server::processMessage);
 }
 
 void Server::processMessage(const QByteArray &message)
@@ -216,8 +216,8 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
         player->setAvatar(avatar);
         lobbyPlayers << player;
 
-        connect(player, SIGNAL(errorMessage(QString)), SIGNAL(serverMessage(QString)));
-        connect(player, SIGNAL(disconnected()), SLOT(cleanupLobbyPlayer()));
+        connect(player, &LobbyPlayer::errorMessage, this, &Server::serverMessage);
+        connect(player, &LobbyPlayer::disconnected, this, &Server::cleanupLobbyPlayer);
 
         emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
 
