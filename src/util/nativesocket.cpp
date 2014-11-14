@@ -144,7 +144,7 @@ void NativeClientSocket::getMessage() {
     keep_alive_timer->start();
 
     char type;
-    while (socket->read(&type, 1)) {
+    while (socket->read(&type, 1) == 1) {
         switch (type) {
         case InlineTextPacket:
             if (socket->canReadLine()) {
