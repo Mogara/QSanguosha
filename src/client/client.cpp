@@ -402,8 +402,6 @@ void Client::disconnectFromHost() {
     }
 }
 
-typedef char buffer_t[65535];
-
 void Client::processServerPacket(const QByteArray &cmd) {
     if (m_isGameOver) return;
 

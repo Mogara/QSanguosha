@@ -61,7 +61,5 @@ signals:
     void connected();
 };
 
-typedef char buffer_t[65535];
-
 #endif
 
