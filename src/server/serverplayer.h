@@ -24,14 +24,13 @@
 class Room;
 class AI;
 class Recorder;
-
+class ClientSocket;
 class CardMoveReason;
 struct PhaseStruct;
 struct PindianStruct;
 
 #include "structs.h"
 #include "player.h"
-#include "socket.h"
 #include "protocol.h"
 #include "namespace.h"
 

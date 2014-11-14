@@ -55,7 +55,7 @@ public:
     NativeClientSocket(QTcpSocket *socket);
 
     virtual void connectToHost();
-    virtual void connectToHost(QString address);
+    virtual void connectToHost(const QString &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
     virtual void send(const QByteArray &message);
@@ -71,12 +71,17 @@ private slots:
     void checkConnectionState();
 
 private:
-    QTcpSocket *const socket;
-
-    bool is_alive;
-    QTimer *keep_alive_timer;
+    enum PacketType{
+        UnknownPacket,
+        InlineTextPacket,   //Texts ended with '\n'
+        KeepAlivePacket     //Checking the peer's state
+    };
 
     void init();
+
+    QTcpSocket *const socket;
+    bool is_alive;
+    QTimer *keep_alive_timer;
 
     static const qint64 KEEP_ALIVE_INTERVAL;
     static const qint64 TIMEOUT_LIMIT;

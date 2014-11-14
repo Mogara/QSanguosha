@@ -27,6 +27,7 @@
 #include "lua-wrapper.h"
 #include "json.h"
 #include "gamerule.h"
+#include "socket.h"
 
 using namespace QSanProtocol;
 

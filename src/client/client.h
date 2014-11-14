@@ -24,7 +24,6 @@
 #include "clientplayer.h"
 #include "card.h"
 #include "skill.h"
-#include "socket.h"
 #include "clientstruct.h"
 #include "protocol.h"
 #include "roomstate.h"

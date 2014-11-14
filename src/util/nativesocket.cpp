@@ -123,17 +123,15 @@ void NativeClientSocket::connectToHost() {
     socket->connectToHost(address, port);
 }
 
-void NativeClientSocket::connectToHost(QString address)
+void NativeClientSocket::connectToHost(const QString &address)
 {
-    ushort port;
     if (address.contains(':')) {
         QStringList texts = address.split(':');
-        address = texts.first();
-        port = texts.at(1).toUInt();
+        socket->connectToHost(texts.first(), texts.at(1).toUInt());
     } else {
-        port = Config.value("ServerPort", 9527u).toUInt();
+        ushort port = Config.value("ServerPort", 9527u).toUInt();
+        socket->connectToHost(address, port);
     }
-    socket->connectToHost(address, port);
 }
 
 void NativeClientSocket::connectToHost(const QHostAddress &address, ushort port)
@@ -145,19 +143,24 @@ void NativeClientSocket::getMessage() {
     is_alive = true;
     keep_alive_timer->start();
 
-    while (socket->canReadLine()) {
-        QByteArray raw = socket->readLine();
-#ifndef QT_NO_DEBUG
-        printf("recv: %s", raw.constData());
-#endif
-        QByteArray message = raw.trimmed();
-        if (!message.isEmpty()) {
-            emit message_got(message);
-        } else {
-            if (raw.at(0) == '\n') {//An empty line is used as a keep-alive request.
-                socket->write(" ");
-                socket->flush();
+    char type;
+    while (socket->read(&type, 1)) {
+        switch (type) {
+        case InlineTextPacket:
+            if (socket->canReadLine()) {
+                QByteArray text = socket->readLine();
+        #ifndef QT_NO_DEBUG
+                printf("recv: %s", text.constData());
+        #endif
+                emit message_got(text);
             }
+            break;
+        case KeepAlivePacket:
+            socket->putChar(InlineTextPacket);
+            socket->flush();
+            break;
+        default:
+            raiseError(QAbstractSocket::UnknownSocketError);
         }
     }
 }
@@ -167,12 +170,10 @@ void NativeClientSocket::disconnectFromHost() {
 }
 
 void NativeClientSocket::send(const QByteArray &message) {
-    if (message.isEmpty())
-        return;
-
+    socket->putChar(InlineTextPacket);
     socket->write(message);
     if (!message.endsWith('\n')){
-        socket->write("\n");
+        socket->putChar('\n');
     }
 
 #ifndef QT_NO_DEBUG
@@ -229,7 +230,7 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
 void NativeClientSocket::keepAlive()
 {
     is_alive = false;
-    socket->write("\n");
+    socket->putChar(KeepAlivePacket);
     QTimer::singleShot(TIMEOUT_LIMIT, this, SLOT(checkConnectionState()));
 }
 
