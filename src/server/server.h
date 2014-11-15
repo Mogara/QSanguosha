@@ -82,6 +82,7 @@ protected:
 
     //callbacks for lobby server
     void checkVersion(const QVariant &server_version);
+    void forwardLobbyMessage(const QVariant &message);
 
     //callbacks for room servers
     void setupNewRemoteRoom(ClientSocket *socket, const QVariant &data);

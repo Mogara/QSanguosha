@@ -29,6 +29,7 @@ using namespace QSanProtocol;
 void Server::initLobbyFunctions()
 {
     lobbyFunctions[S_COMMAND_CHECK_VERSION] = &Server::checkVersion;
+    lobbyFunctions[S_COMMAND_SPEAK] = &Server::forwardLobbyMessage;
 }
 
 void Server::connectToLobby()
@@ -120,6 +121,13 @@ void Server::cleanupRoom() {
     currentRoomMutex.unlock();
 }
 
+void Server::notifyLobby(CommandType command, const QVariant &data)
+{
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_LOBBY, command);
+    packet.setMessageBody(data);
+    lobby->send(packet.toJson());
+}
+
 void Server::checkVersion(const QVariant &server_version)
 {
     QString version = server_version.toString();
@@ -155,9 +163,11 @@ void Server::checkVersion(const QVariant &server_version)
     }
 }
 
-void Server::notifyLobby(CommandType command, const QVariant &data)
+void Server::forwardLobbyMessage(const QVariant &message)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_LOBBY, command);
-    packet.setMessageBody(data);
-    lobby->send(packet.toJson());
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    packet.setMessageBody(message);
+
+    foreach (Room *room, rooms)
+        room->broadcast(&packet);
 }
