@@ -84,7 +84,7 @@ void Tile::addScrollText(const QStringList &texts)
         scroll_timer->setSingleShot(true);
     } else {
         scroll_timer->stop();
-        disconnect(scroll_timer, (void (QTimer::*)()) 0, this, &Tile::scrollToNextContent);
+        disconnect(scroll_timer, &QTimer::timeout, this, &Tile::scrollToNextContent);
     }
 
     if (!texts.isEmpty()) {

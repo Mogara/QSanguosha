@@ -276,5 +276,5 @@ void LobbyScene::onCreateRoomClicked()
 void LobbyScene::onClientDestroyed()
 {
     client = NULL;
-    disconnect(chatLineEdit, (void (QLineEdit::*)()) 0, this, &LobbyScene::speakToServer);
+    disconnect(chatLineEdit, &QLineEdit::editingFinished, this, &LobbyScene::speakToServer);
 }
