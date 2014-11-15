@@ -746,7 +746,7 @@ void MainWindow::enterLobby() {
 
     LobbyScene *scene = new LobbyScene(this);
     connect(scene, &LobbyScene::createRoomClicked, this, &MainWindow::onCreateRoomClicked);
-    connect(scene, (void (LobbyScene::*)()) &LobbyScene::roomSelected, this, &MainWindow::startConnection);
+    connect(scene, (void (LobbyScene::*)())(&LobbyScene::roomSelected), this, &MainWindow::startConnection);
     connect(scene, &LobbyScene::exit, this, &MainWindow::exitScene);
 
     gotoScene(scene);
