@@ -1138,7 +1138,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	end
 
 	if not dmg then self.room:writeToConsole(debug.traceback()) return "." end
-	if not self:willShowForMasochism() and not dmg > 1 then return "." end
+	if not self:willShowForMasochism() and not dmg.damage > 1 then return "." end
 
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
