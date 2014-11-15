@@ -79,6 +79,7 @@ void Server::broadcast(const AbstractPacket *packet)
     if (destination & S_DEST_ROOM) {
         QMapIterator<ClientSocket *, QVariant> iter(remoteRooms);
         while (iter.hasNext()) {
+            iter.next();
             ClientSocket *socket = iter.key();
             socket->send(packet->toJson());
         }
