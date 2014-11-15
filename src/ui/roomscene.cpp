@@ -2944,7 +2944,7 @@ void RoomScene::onStandoff() {
 
     addRestartButton(dialog);
 
-    dialog->exec();
+    dialog->show();
 }
 
 void RoomScene::onGameOver() {
@@ -3018,7 +3018,7 @@ void RoomScene::onGameOver() {
 
     addRestartButton(dialog);
     m_roomMutex.unlock();
-    dialog->exec();
+    dialog->show();
 }
 
 void RoomScene::addRestartButton(QDialog *dialog) {
