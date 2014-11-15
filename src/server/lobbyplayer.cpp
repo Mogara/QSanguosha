@@ -131,6 +131,11 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
     int room_id = args.at(0).toInt();
     Room *room = server->getRoom(room_id);
 
+    if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
+        warn(S_WARNING_GAME_OVER);
+        return;
+    }
+
     if (!room->getConfig().Password.isEmpty()) {
         QString password;
         if (args.size() >= 2) {
@@ -142,14 +147,6 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
             warn(S_WARNING_WRONG_PASSWORD);
             return;
         }
-    }
-
-    if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
-        warn(S_WARNING_GAME_OVER);
-        return;
-    } else if (room->isFull()) {
-        warn(S_WARNING_ROOM_IS_FULL);
-        return;
     }
 
     ServerPlayer *player = room->addSocket(socket);
