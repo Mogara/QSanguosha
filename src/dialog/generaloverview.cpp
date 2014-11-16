@@ -393,6 +393,16 @@ QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
     }
 }
 
+QList<const Skill *> qsgs_allSkillsOf(const General *general)
+{
+    QList<const Skill *> skills = general->getVisibleSkillList();
+    foreach(QString skill_name, general->getRelatedSkillNames()) {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill && skill->isVisible()) skills << skill;
+    }
+    return skills;
+}
+
 QString GeneralOverview::getCvInfo(const QString &generalName)
 {
     const int skinId = all_generals->value(Sanguosha->getGeneral(generalName));
@@ -537,17 +547,11 @@ void GeneralOverview::on_tableView_clicked(const QModelIndex &index)
     ui->generalPhoto->setPixmap(G_ROOM_SKIN.getGeneralCardPixmap(generalName, skinId));
     ui->changeHeroSkinButton->setVisible(hasSkin(general));
 
-    QList<const Skill *> skills = general->getVisibleSkillList();
-    foreach(QString skill_name, general->getRelatedSkillNames()) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && skill->isVisible()) skills << skill;
-    }
-
     ui->skillTextEdit->clear();
 
     resetButtons();
 
-    foreach(const Skill *skill, skills)
+    foreach(const Skill *skill, qsgs_allSkillsOf(general))
         addLines(general, skill);
 
     addDeathLine(general);
@@ -613,7 +617,7 @@ void GeneralOverview::showNextSkin() {
     ui->cvLineEdit->setText(getCvInfo(generalName));
     ui->illustratorLineEdit->setText(getIllustratorInfo(generalName));
     resetButtons();
-    foreach(const Skill *skill, general->getVisibleSkillList())
+    foreach(const Skill *skill, qsgs_allSkillsOf(general))
         addLines(general, skill);
 
     addDeathLine(general);
