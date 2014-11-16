@@ -92,8 +92,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_last_front_ZValue = 0;
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
-    _m_isInDragAndUseMode = false;
-    _m_superDragStarted = false;
+    m_isInDragAndUseMode = false;
+    m_superDragStarted = false;
+    m_mousePressed = false;
 
     _m_roomSkin = &(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin());
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
@@ -1084,6 +1085,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
 
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mousePressEvent(event);
+    m_mousePressed = true;
     bool changed = false;
     QPoint point(event->pos().x(), event->pos().y());
     foreach(Photo *photo, photos) {
@@ -1101,7 +1103,9 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mouseReleaseEvent(event);
 
-    if (_m_isInDragAndUseMode) {
+    m_mousePressed = false;
+
+    if (m_isInDragAndUseMode) {
         if ((ok_button->isEnabled() || dashboard->currentSkill())
                 && (!dashboard->isUnderMouse() || dashboard->isAvatarUnderMouse())) {
             if (ok_button->isEnabled())
@@ -1112,14 +1116,14 @@ void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
             enableTargets(NULL);
             dashboard->unselectAll();
         }
-        _m_isInDragAndUseMode = false;
+        m_isInDragAndUseMode = false;
     }
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mouseMoveEvent(event);
 
-    if (!Config.EnableSuperDrag)
+    if (!Config.EnableSuperDrag || !m_mousePressed)
         return;
 
     QGraphicsObject *obj = static_cast<QGraphicsObject *>(focusItem());
@@ -1132,8 +1136,8 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             || dashboard->isAvatarUnderMouse();
     if (isOutsideDashboard != wasOutsideDashboard) {
         wasOutsideDashboard = isOutsideDashboard;
-        if (wasOutsideDashboard && !_m_isInDragAndUseMode) {
-            if (!_m_superDragStarted && !dashboard->getPendings().isEmpty())
+        if (wasOutsideDashboard && !m_isInDragAndUseMode) {
+            if (!m_superDragStarted && !dashboard->getPendings().isEmpty())
                 dashboard->clearPendings();
 
             dashboard->selectCard(card_item, true);
@@ -1141,8 +1145,8 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
                 dashboard->addPending(card_item);
                 dashboard->updatePending();
             }
-            _m_isInDragAndUseMode = true;
-            _m_superDragStarted = true;
+            m_isInDragAndUseMode = true;
+            m_superDragStarted = true;
             if (!dashboard->currentSkill()
                     && (ClientInstance->getStatus() == Client::Playing
                         || ClientInstance->getStatus() == Client::RespondingUse)) {
@@ -2417,7 +2421,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }
     }
 
-    _m_superDragStarted = false;
+    m_superDragStarted = false;
 
     switch (newStatus & Client::ClientStatusBasicMask) {
     case Client::NotActive: {
