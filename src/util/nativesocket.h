@@ -32,14 +32,11 @@ class NativeServerSocket : public ServerSocket {
 public:
     NativeServerSocket();
 
-    virtual bool listen();
     virtual bool listen(const QHostAddress &address, ushort port = 0);
     virtual ushort serverPort() const;
-    virtual void daemonize();
 
 private slots:
     void processNewConnection();
-    void processNewDatagram();
 
 private:
     QTcpServer *server;
@@ -54,7 +51,6 @@ public:
     NativeClientSocket();
     NativeClientSocket(QTcpSocket *socket);
 
-    virtual void connectToHost();
     virtual void connectToHost(const QString &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
@@ -85,6 +81,21 @@ private:
 
     static const qint64 KEEP_ALIVE_INTERVAL;
     static const qint64 TIMEOUT_LIMIT;
+};
+
+class NativeUdpSocket : public UdpSocket {
+    Q_OBJECT
+
+public:
+    NativeUdpSocket(const QHostAddress &address, ushort port);
+
+    virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port);
+
+private slots:
+    void processNewDatagram();
+
+private:
+    QUdpSocket *socket;
 };
 
 #endif

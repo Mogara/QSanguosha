@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
         Server *server = new Server(qApp);
         printf("Server is starting on port %u\n", Config.ServerPort);
 
-        if (server->listen())
+        if (server->listen(QHostAddress::Any, Config.ServerPort))
             printf("Starting successfully\n");
         else
             printf("Starting failed!\n");

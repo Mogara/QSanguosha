@@ -46,11 +46,18 @@ static QHash<CommandType, Client::Callback> callbacks;
 static QHash<CommandType, Client::Callback> interactions;
 static QHash<WarningType, QString> warning_translation;
 
-class ClientInit
+Client::Client(QObject *parent, const QString &filename)
+    : QObject(parent), m_isDiscardActionRefusable(true),
+    status(NotActive), alive_count(1), swap_pile(0),
+    _m_roomState(true)
 {
-public:
-    ClientInit()
-    {
+    ClientInstance = this;
+    m_isGameOver = false;
+
+    m_noNullificationThisTime = false;
+    m_noNullificationTrickName = ".";
+
+    if (callbacks.isEmpty()) {
         callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
         callbacks[S_COMMAND_SETUP] = &Client::setup;
         callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
@@ -139,25 +146,12 @@ public:
         // 3v3 mode & 1v1 mode
         interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
 
-        warning_translation[S_WARNING_GAME_OVER] = Client::tr("Game is over now");
-        warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = Client::tr("Invalid signup string");
-        warning_translation[S_WARNING_LEVEL_LIMITATION] = Client::tr("Your level is not enough");
-        warning_translation[S_WARNING_ROOM_IS_FULL] = Client::tr("The room is already full");
-        warning_translation[S_WARNING_WRONG_PASSWORD] = Client::tr("Sorry, your password is incorrect");
+        warning_translation[S_WARNING_GAME_OVER] = tr("Game is over now");
+        warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = tr("Invalid signup string");
+        warning_translation[S_WARNING_LEVEL_LIMITATION] = tr("Your level is not enough");
+        warning_translation[S_WARNING_ROOM_IS_FULL] = tr("The room is already full");
+        warning_translation[S_WARNING_WRONG_PASSWORD] = tr("Sorry, your password is incorrect");
     }
-};
-ClientInit clientInit;
-
-Client::Client(QObject *parent, const QString &filename)
-    : QObject(parent), m_isDiscardActionRefusable(true),
-    status(NotActive), alive_count(1), swap_pile(0),
-    _m_roomState(true)
-{
-    ClientInstance = this;
-    m_isGameOver = false;
-
-    m_noNullificationThisTime = false;
-    m_noNullificationTrickName = ".";
 
     recorder = NULL;
     if (!filename.isEmpty()) {
@@ -171,7 +165,18 @@ Client::Client(QObject *parent, const QString &filename)
         connect(socket, &NativeClientSocket::message_got, this, &Client::processServerPacket);
         connect(socket, &NativeClientSocket::error_message, this, &Client::error_message);
 
-        socket->connectToHost();
+        QHostAddress address(QHostAddress::LocalHost);
+        ushort port = 9527u;
+        if (Config.HostAddress.contains(QChar(':'))) {
+            QStringList texts = Config.HostAddress.split(QChar(':'));
+            address.setAddress(texts.value(0));
+            port = texts.value(1).toUShort();
+        } else {
+            address.setAddress(Config.HostAddress);
+            if (address.isLoopback())
+                port = Config.ServerPort;
+        }
+        socket->connectToHost(address, port);
 
         replayer = NULL;
     }

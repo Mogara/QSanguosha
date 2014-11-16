@@ -35,7 +35,7 @@ QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
 
 Server::Server(QObject *parent, Role role)
     : QObject(parent),  role(role), server(new NativeServerSocket),
-      current(NULL), lobby(NULL)
+      current(NULL), lobby(NULL), daemon(NULL)
 {
     server->setParent(this);
 
@@ -48,6 +48,21 @@ Server::Server(QObject *parent, Role role)
     ServerInfo.parse(Sanguosha->getSetupString());
 
     connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
+}
+
+void Server::daemonize()
+{
+    daemon = new NativeUdpSocket(QHostAddress::Any, serverPort());
+    connect(daemon, &UdpSocket::new_datagram, this, &Server::processDatagram);
+}
+
+void Server::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    if (daemon) {
+        //@todo: A map of callback functions is necessary for more datagrams to be added.
+        if (data == "whoIsServer")
+            daemon->writeDatagram(Config.ServerName.toUtf8(), from, port);
+    }
 }
 
 void Server::broadcastSystemMessage(const QString &message)

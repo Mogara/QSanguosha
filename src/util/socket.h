@@ -31,10 +31,8 @@ class ServerSocket : public QObject {
     Q_OBJECT
 
 public:
-    virtual bool listen() = 0;
     virtual bool listen(const QHostAddress &address, ushort port = 0) = 0;
     virtual ushort serverPort() const = 0;
-    virtual void daemonize() = 0;
 
 signals:
     void new_connection(ClientSocket *connection);
@@ -44,7 +42,6 @@ class ClientSocket : public QObject {
     Q_OBJECT
 
 public:
-    virtual void connectToHost() = 0;
     virtual void connectToHost(const QString &address) = 0;
     virtual void connectToHost(const QHostAddress &address, ushort port) = 0;
     virtual void disconnectFromHost() = 0;
@@ -59,6 +56,16 @@ signals:
     void error_message(const QString &msg);
     void disconnected();
     void connected();
+};
+
+class UdpSocket : public QObject {
+    Q_OBJECT
+
+public:
+    virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port) = 0;
+
+signals:
+    void new_datagram(const QByteArray &data, const QHostAddress &from, ushort port);
 };
 
 #endif

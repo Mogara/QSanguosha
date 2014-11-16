@@ -48,10 +48,11 @@ public:
     Role getRole() const {return role;}
     void broadcastSystemMessage(const QString &msg);
 
-    bool listen() { return server->listen(); }
     bool listen(const QHostAddress &address, ushort port) { return server->listen(address, port); }
     ushort serverPort() const {return server->serverPort(); }
-    void daemonize() { server->daemonize(); }
+
+    void daemonize();
+    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
 
     void connectToLobby();
     Room *createNewRoom(const RoomConfig &config);
@@ -106,6 +107,8 @@ protected:
 
     QList<LobbyPlayer *> lobbyPlayers;
     QMap<ClientSocket *, QVariant> remoteRooms;
+
+    UdpSocket *daemon;
 
 private:
     void initLobbyFunctions();
