@@ -128,10 +128,10 @@ public:
     static const int S_PENDING_OFFSET_Y = -25;
 
     inline void updateSkillButton() {
-        if (rightSkillDock)
-            rightSkillDock->update();
-        if (leftSkillDock)
-            leftSkillDock->update();
+        if (m_leftSkillDock)
+            m_leftSkillDock->update();
+        if (m_rightSkillDock)
+            m_rightSkillDock->update();
     }
 
     void setPlayer(ClientPlayer *player);
@@ -225,7 +225,7 @@ protected:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
-    QSanInvokeSkillDock *rightSkillDock, *leftSkillDock;
+    QSanInvokeSkillDock *m_leftSkillDock, *m_rightSkillDock;
     const QSanRoomSkin::DashboardLayout *layout;
 
     //for avatar shadow layer
