@@ -22,6 +22,7 @@
 #include "room.h"
 #include "skill.h"
 #include "engine.h"
+#include "roomthread.h"
 
 QString BasicCard::getType() const{
     return "basic";

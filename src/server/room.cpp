@@ -32,6 +32,7 @@
 #include "generalselector.h"
 #include "json.h"
 #include "clientstruct.h"
+#include "roomthread.h"
 
 #include <lua.hpp>
 #include <QStringList>

@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "engine.h"
 #include "room.h"
-#include "roomthread.h"
 
 class JiangeDefenseScenarioRule: public ScenarioRule {
 public:

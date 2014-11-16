@@ -25,6 +25,7 @@
 #include "engine.h"
 #include "settings.h"
 #include "json.h"
+#include "roomthread.h"
 
 #include <QTime>
 

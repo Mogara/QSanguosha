@@ -26,6 +26,7 @@
 #include "client.h"
 #include "engine.h"
 #include "structs.h"
+#include "roomthread.h"
 
 class Xunxun : public PhaseChangeSkill {
 public:

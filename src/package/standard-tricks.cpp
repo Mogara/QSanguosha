@@ -25,6 +25,7 @@
 #include "engine.h"
 #include "skill.h"
 #include "json.h"
+#include "roomthread.h"
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
     : GlobalEffect(suit, number)

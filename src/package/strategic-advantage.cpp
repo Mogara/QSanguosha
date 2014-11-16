@@ -23,6 +23,7 @@
 #include "standard-tricks.h"
 #include "engine.h"
 #include "client.h"
+#include "roomthread.h"
 
 Blade::Blade(Card::Suit suit, int number)
     : Weapon(suit, number, 3)

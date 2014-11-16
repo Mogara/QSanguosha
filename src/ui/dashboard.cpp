@@ -263,6 +263,8 @@ void Dashboard::_createRight() {
     connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::onHeadSkillPreshowed);
     connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::onDeputySkillPreshowed);
 
+
+
     _paintPixmap(headIcon, G_DASHBOARD_LAYOUT.m_headIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HEAD_ICON), rightFrame);
     _paintPixmap(deputyIcon, G_DASHBOARD_LAYOUT.m_deputyIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON), rightFrame);
 

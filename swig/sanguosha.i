@@ -27,6 +27,7 @@
 #include "client.h"
 #include "namespace.h"
 #include "standard.h"
+#include "roomthread.h"
 
 #include <QDir>
 

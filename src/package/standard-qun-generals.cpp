@@ -26,6 +26,7 @@
 #include "engine.h"
 #include "client.h"
 #include "settings.h"
+#include "roomthread.h"
 
 class Jijiu : public OneCardViewAsSkill {
 public:

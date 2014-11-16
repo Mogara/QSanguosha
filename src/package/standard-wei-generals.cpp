@@ -25,6 +25,7 @@
 #include "standard-tricks.h"
 #include "client.h"
 #include "settings.h"
+#include "roomthread.h"
 
 class Jianxiong : public MasochismSkill {
 public:

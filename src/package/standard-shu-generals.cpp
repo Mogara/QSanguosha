@@ -25,6 +25,7 @@
 #include "client.h"
 #include "engine.h"
 #include "util.h"
+#include "roomthread.h"
 
 RendeCard::RendeCard() {
     will_throw = false;

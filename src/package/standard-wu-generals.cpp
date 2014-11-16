@@ -25,6 +25,7 @@
 #include "client.h"
 #include "settings.h"
 #include "json.h"
+#include "roomthread.h"
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;

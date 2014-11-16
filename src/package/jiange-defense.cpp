@@ -23,6 +23,7 @@
 #include "engine.h"
 #include "standard-tricks.h"
 #include "standard-basics.h"
+#include "roomthread.h"
 
 class JGJizhen : public PhaseChangeSkill{
 public:

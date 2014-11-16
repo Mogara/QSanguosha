@@ -28,6 +28,7 @@
 #include "json.h"
 #include "gamerule.h"
 #include "socket.h"
+#include "roomthread.h"
 
 using namespace QSanProtocol;
 

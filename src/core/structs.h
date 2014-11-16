@@ -565,6 +565,19 @@ enum TriggerEvent {
     NumOfEvents
 };
 
+struct LogMessage {
+    LogMessage();
+    QString toString() const;
+    QVariant toVariant() const;
+
+    QString type;
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+    QString card_str;
+    QString arg;
+    QString arg2;
+};
+
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
 Q_DECLARE_METATYPE(SlashEffectStruct)
