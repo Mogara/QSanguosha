@@ -2496,7 +2496,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 Self->setFlags("-" + skill_name);
                 if (!available) {
                     ClientInstance->onPlayerResponseCard(NULL);
-                    return;
+                    break;
                 }
                 highlightSkillButton(skill_name, reason, pattern);
                 dashboard->startPending(skill);
@@ -2682,8 +2682,11 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     }
-    if (newStatus != oldStatus && newStatus != Client::Playing && newStatus != Client::NotActive)
-        QApplication::alert(QApplication::focusWidget());
+    if (newStatus != oldStatus) {
+        _cancelAllFocus();
+        if (newStatus != Client::Playing && newStatus != Client::NotActive)
+            QApplication::alert(QApplication::focusWidget());
+    }
 
     if (ServerInfo.OperationTimeout == 0)
         return;
@@ -2693,7 +2696,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             && newStatus != oldStatus) {
         QApplication::alert(main_window);
         connect(dashboard, &Dashboard::progressBarTimedOut, this, &RoomScene::doTimeout);
-        _cancelAllFocus();
         dashboard->showProgressBar(ClientInstance->getCountdown());
     }
 }

@@ -111,7 +111,7 @@ public:
 public slots:
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
-    void updatePhase();
+    virtual void updatePhase();
     void updateHp();
     void updateHandcardNum();
     void updateDrankState();
