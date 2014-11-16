@@ -92,7 +92,6 @@ public:
     QString UserName;
     QString UserAvatar;
     QStringList HistoryIPs;
-    ushort DetectorPort;
     int MaxCards;
 
     bool EnableHotKey;

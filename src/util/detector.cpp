@@ -29,7 +29,7 @@ UdpDetector::UdpDetector() {
 }
 
 void UdpDetector::detect() {
-    socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
+    socket->bind(0, QUdpSocket::ShareAddress);
 
     const char *ask_str = "whoIsServer";
     socket->writeDatagram(ask_str,

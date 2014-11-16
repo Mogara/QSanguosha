@@ -120,7 +120,6 @@ void Settings::init() {
     //Set Cao Cao as default avatar to pay tribute to Moligaloo, the founder of QSanguosha.
     UserAvatar = value("UserAvatar", "caocao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
-    DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
 
     EnableHotKey = value("EnableHotKey", true).toBool();
