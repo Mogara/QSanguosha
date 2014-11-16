@@ -720,10 +720,14 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
     bool scaled = false;
 
     // case 1 and 2
-    if (arg.isNull())
+    if (arg.isNull()) {
         totalKey = key;
-    else
+    } else {
         totalKey = key.arg(arg);
+        if (!arg2.isNull())
+            totalKey = key.arg(arg2);
+    }
+
     //bool from_cache = false;
     if (S_IMAGE_KEY2FILE.contains(totalKey)) { // first, search cache
         fileName = S_IMAGE_KEY2FILE[totalKey];

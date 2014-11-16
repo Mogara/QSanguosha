@@ -102,7 +102,7 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
 }
 
 QRectF RoleComboBox::boundingRect() const {
-    QRect rect = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX).rect();
+    static QRect rect = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX).rect();
     return QRectF(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
