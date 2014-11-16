@@ -37,8 +37,7 @@ void Server::connectToLobby()
     if (Config.LobbyAddress.isEmpty())
         return;
 
-    lobby = new NativeClientSocket;
-    lobby->setParent(this);
+    lobby = new NativeClientSocket(this);
     connect(lobby, &NativeClientSocket::message_got, this, &Server::processMessage);
     //@todo: handle disconnection from lobby
 

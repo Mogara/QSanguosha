@@ -160,8 +160,7 @@ Client::Client(QObject *parent, const QString &filename)
         replayer = new Replayer(this, filename);
         connect(replayer, &Replayer::command_parsed, this, &Client::processServerPacket);
     } else {
-        socket = new NativeClientSocket;
-        socket->setParent(this);
+        socket = new NativeClientSocket(this);
         connect(socket, &NativeClientSocket::message_got, this, &Client::processServerPacket);
         connect(socket, &NativeClientSocket::error_message, this, &Client::error_message);
 

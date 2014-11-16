@@ -31,7 +31,9 @@
 const qint64 NativeClientSocket::KEEP_ALIVE_INTERVAL = 30000;
 const qint64 NativeClientSocket::TIMEOUT_LIMIT = 10000;
 
-NativeServerSocket::NativeServerSocket() {
+NativeServerSocket::NativeServerSocket(QObject *parent)
+{
+    setParent(parent);
     server = new QTcpServer(this);
     daemon = NULL;
     connect(server, &QTcpServer::newConnection, this, &NativeServerSocket::processNewConnection);
@@ -55,15 +57,17 @@ void NativeServerSocket::processNewConnection() {
 
 // ---------------------------------
 
-NativeClientSocket::NativeClientSocket()
+NativeClientSocket::NativeClientSocket(QObject *parent)
     : socket(new QTcpSocket(this))
 {
+    setParent(parent);
     init();
 }
 
-NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
+NativeClientSocket::NativeClientSocket(QTcpSocket *socket, QObject *parent)
     : socket(socket)
 {
+    setParent(parent);
     socket->setParent(this);
     init();
 }
@@ -202,11 +206,16 @@ void NativeClientSocket::checkConnectionState()
     }
 }
 
-NativeUdpSocket::NativeUdpSocket(const QHostAddress &address, ushort port)
-    :socket(new QUdpSocket(this))
+NativeUdpSocket::NativeUdpSocket(QObject *parent)
+    : socket(new QUdpSocket(this))
+{
+    setParent(parent);
+    connect(socket, &QUdpSocket::readyRead, this, &NativeUdpSocket::processNewDatagram);
+}
+
+void NativeUdpSocket::bind(const QHostAddress &address, ushort port)
 {
     socket->bind(address, port);
-    connect(socket, &QUdpSocket::readyRead, this, &NativeUdpSocket::processNewDatagram);
 }
 
 void NativeUdpSocket::writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port)

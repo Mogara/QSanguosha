@@ -30,7 +30,7 @@ class NativeServerSocket : public ServerSocket {
     Q_OBJECT
 
 public:
-    NativeServerSocket();
+    NativeServerSocket(QObject *parent = 0);
 
     virtual bool listen(const QHostAddress &address, ushort port = 0);
     virtual ushort serverPort() const;
@@ -48,8 +48,8 @@ class NativeClientSocket : public ClientSocket {
     Q_OBJECT
 
 public:
-    NativeClientSocket();
-    NativeClientSocket(QTcpSocket *socket);
+    NativeClientSocket(QObject *parent = 0);
+    NativeClientSocket(QTcpSocket *socket, QObject *parent = 0);
 
     virtual void connectToHost(const QString &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
@@ -87,8 +87,9 @@ class NativeUdpSocket : public UdpSocket {
     Q_OBJECT
 
 public:
-    NativeUdpSocket(const QHostAddress &address, ushort port);
+    NativeUdpSocket(QObject *parent = 0);
 
+    virtual void bind(const QHostAddress &address, ushort port);
     virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port);
 
 private slots:

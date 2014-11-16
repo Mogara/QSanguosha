@@ -62,6 +62,7 @@ class UdpSocket : public QObject {
     Q_OBJECT
 
 public:
+    virtual void bind(const QHostAddress &address, ushort port) = 0;
     virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port) = 0;
 
 signals:

@@ -52,7 +52,8 @@ Server::Server(QObject *parent, Role role)
 
 void Server::daemonize()
 {
-    daemon = new NativeUdpSocket(QHostAddress::Any, serverPort());
+    daemon = new NativeUdpSocket(this);
+    daemon->bind(QHostAddress::Any, serverPort());
     connect(daemon, &UdpSocket::new_datagram, this, &Server::processDatagram);
 }
 
