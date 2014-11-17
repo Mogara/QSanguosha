@@ -218,6 +218,21 @@ void NativeUdpSocket::bind(const QHostAddress &address, ushort port)
     socket->bind(address, port);
 }
 
+void NativeUdpSocket::writeDatagram(const QByteArray &data, const QString &to)
+{
+    QHostAddress address(QHostAddress::Broadcast);
+    ushort port = 0;
+    if (to.contains(QChar(':'))) {
+        QStringList texts = to.split(QChar(':'));
+        address.setAddress(texts.at(0));
+        port = texts.at(1).toUShort();
+    } else {
+        address.setAddress(to);
+    }
+
+    socket->writeDatagram(data, address, port);
+}
+
 void NativeUdpSocket::writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port)
 {
     socket->writeDatagram(data, to, port);
@@ -226,10 +241,11 @@ void NativeUdpSocket::writeDatagram(const QByteArray &data, const QHostAddress &
 void NativeUdpSocket::processNewDatagram() {
     while (socket->hasPendingDatagrams()) {
         QHostAddress from;
-        char data[256];
+        QByteArray data;
         quint16 port;
 
-        socket->readDatagram(data, sizeof(data), &from, &port);
+        data.resize(socket->pendingDatagramSize());
+        socket->readDatagram(data.data(), data.size(), &from, &port);
         emit new_datagram(data, from, port);
     }
 }
