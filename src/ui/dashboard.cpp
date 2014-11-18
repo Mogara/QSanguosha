@@ -574,8 +574,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
     if (m_leftSkillDock->getSkillButtonByName(skillName)) {
         //_m_button_recycle.append(_m_rightSkillDock->getSkillButtonByName(skillName));
         return NULL;
-    }
-    else if (m_rightSkillDock->getSkillButtonByName(skillName)) {
+    } else if (m_rightSkillDock->getSkillButtonByName(skillName)) {
         //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
     }
@@ -584,6 +583,12 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
         dock = Self->inHeadSkills(skillName) ? m_leftSkillDock : m_rightSkillDock;
     else
         dock = head ? m_leftSkillDock : m_rightSkillDock;
+
+    if (dock == m_leftSkillDock)
+        onHeadSkillPreshowed();
+    else
+        onDeputySkillPreshowed();
+
     return dock->addSkillButtonByName(skillName);
 }
 
