@@ -42,9 +42,10 @@ using namespace QSanProtocol;
 
 Client *ClientInstance = NULL;
 
-static QHash<CommandType, Client::Callback> callbacks;
-static QHash<CommandType, Client::Callback> interactions;
-static QHash<WarningType, QString> warning_translation;
+QHash<CommandType, Client::Callback> Client::callbacks;
+QHash<CommandType, Client::Callback> Client::interactions;
+QHash<WarningType, QString> Client::warning_translation;
+QHash<ServiceType, Client::ServiceFunction> Client::services;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent), m_isDiscardActionRefusable(true),
@@ -146,6 +147,8 @@ Client::Client(QObject *parent, const QString &filename)
         // 3v3 mode & 1v1 mode
         interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
 
+        services[S_SERVICE_PLAYER_NUM] = &Client::updateRoomPlayerNum;
+
         warning_translation[S_WARNING_GAME_OVER] = tr("Game is over now");
         warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = tr("Invalid signup string");
         warning_translation[S_WARNING_LEVEL_LIMITATION] = tr("Your level is not enough");
@@ -189,6 +192,9 @@ Client::Client(QObject *parent, const QString &filename)
 #else
     prompt_doc->setDefaultFont(QFont("SimHei"));
 #endif
+
+    detector = new NativeUdpSocket(this);
+    connect(detector, &UdpSocket::new_datagram, this, &Client::processDatagram);
 }
 
 Client::~Client() {
@@ -394,9 +400,21 @@ void Client::enterLobby(const QVariant &)
     emit lobbyServerConnected();
 }
 
-void Client::updateRoomList(const QVariant &list)
+void Client::updateRoomList(const QVariant &data)
 {
-    emit roomListChanged(list);
+    rooms.clear();
+
+    JsonArray array = data.value<JsonArray>();
+    QByteArray command(1, S_SERVICE_PLAYER_NUM);
+    RoomInfoStruct info;
+    foreach (const QVariant &item, array) {
+        if (info.parse(item)) {
+            rooms << info;
+            if (!info.HostAddress.isEmpty())
+                detector->writeDatagram(command, info.HostAddress);
+        }
+    }
+    emit roomListChanged(&rooms);
 }
 
 void Client::disconnectFromHost() {
@@ -460,6 +478,13 @@ bool Client::processServerRequest(const Packet &packet) {
 void Client::processObsoleteServerPacket(const QString &cmd) {
     // invoke methods
     QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(cmd));
+}
+
+void Client::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    ServiceFunction func = services.value(static_cast<ServiceType>(data.at(0)));
+    if (func)
+        (this->*func)(data.mid(1), from, port);
 }
 
 void Client::addPlayer(const QVariant &player_info) {
@@ -2166,4 +2191,24 @@ void Client::setAvailableCards(const QVariant &pile) {
     QList<int> drawPile;
     if (JsonUtils::tryParse(pile, drawPile))
         available_cards = drawPile;
+}
+
+void Client::updateRoomPlayerNum(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    if (data.size() != 4)
+        return;
+    QString host_address = QString("%1:%2").arg(from.toString()).arg(port);
+    for (int index = 0; index < rooms.size(); index++) {
+        RoomInfoStruct &info = rooms[index];
+        if (info.HostAddress == host_address) {
+            int num = data.at(0);
+            for(int i = 1; i <= 3; i++) {
+                num <<= 8;
+                num |= data.at(i);
+            }
+            info.PlayerNum = num;
+            emit roomChanged(index);
+            break;
+        }
+    }
 }

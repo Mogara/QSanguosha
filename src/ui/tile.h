@@ -36,7 +36,8 @@ public:
     bool autoHideTitle() const { return auto_hide_title; }
 
     void setIcon(QString path);
-    void addScrollText(const QStringList &texts);
+    void addScrollTexts(const QStringList &texts);
+    void setScrollText(int index, const QString &text);
 
 protected slots:
     void scrollToNextContent();

@@ -52,7 +52,6 @@ public:
     ushort serverPort() const {return server->serverPort(); }
 
     void daemonize();
-    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
 
     void connectToLobby();
     Room *createNewRoom(const RoomConfig &config);
@@ -73,6 +72,8 @@ protected slots:
     void cleanupLobbyPlayer();
     void cleanupRemoteRoom();
 
+    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
+
 protected:
     void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void notifyLobby(QSanProtocol::CommandType command, const QVariant &data = QVariant());
@@ -88,6 +89,10 @@ protected:
     //callbacks for room servers
     void setupNewRemoteRoom(ClientSocket *socket, const QVariant &data);
 
+    //callbacks for daemon
+    void replyServerName(const QByteArray &, const QHostAddress &from, ushort port);
+    void replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port);
+
     Role role;
     ServerSocket *server;
     QSet<QString> addresses;
@@ -97,6 +102,9 @@ protected:
 
     typedef void (Server::*RoomFunction)(ClientSocket *socket, const QVariant &);
     static QHash<QSanProtocol::CommandType, RoomFunction> roomFunctions;
+
+    typedef void (Server::*ServiceFunction)(const QByteArray &, const QHostAddress &, ushort);
+    static QHash<QSanProtocol::ServiceType, ServiceFunction> serviceFunctions;
 
     Room *current;
     QMutex currentRoomMutex;

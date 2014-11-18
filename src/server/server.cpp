@@ -32,6 +32,7 @@ using namespace QSanProtocol;
 
 QHash<CommandType, Server::LobbyFunction> Server::lobbyFunctions;
 QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
+QHash<ServiceType, Server::ServiceFunction> Server::serviceFunctions;
 
 Server::Server(QObject *parent, Role role)
     : QObject(parent),  role(role), server(new NativeServerSocket),
@@ -60,9 +61,9 @@ void Server::daemonize()
 void Server::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
 {
     if (daemon) {
-        //@todo: A map of callback functions is necessary for more datagrams to be added.
-        if (data == "whoIsServer")
-            daemon->writeDatagram(Config.ServerName.toUtf8(), from, port);
+        ServiceFunction func = serviceFunctions.value(static_cast<ServiceType>(data.at(0)));
+        if (func)
+            (this->*func)(data.mid(1), from, port);
     }
 }
 

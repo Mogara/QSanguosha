@@ -31,6 +31,7 @@
 class Recorder;
 class Replayer;
 class QTextDocument;
+class UdpSocket;
 
 class Client : public QObject {
     Q_OBJECT
@@ -279,8 +280,14 @@ private:
     int pile_num;
     QString skill_to_invoke;
     QList<int> available_cards;
+    UdpSocket *detector;
+    QList<RoomInfoStruct> rooms;
 
     unsigned int _m_lastServerSerial;
+
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> interactions;
+    static QHash<QSanProtocol::WarningType, QString> warning_translation;
 
     void updatePileNum();
     QString setPromptList(const QStringList &text);
@@ -290,10 +297,15 @@ private:
     bool _loseSingleCard(int card_id, CardsMoveStruct move);
     bool _getSingleCard(int card_id, CardsMoveStruct move);
 
+    typedef void (Client::*ServiceFunction)(const QByteArray &data, const QHostAddress &from, ushort port);
+    static QHash<QSanProtocol::ServiceType, Client::ServiceFunction> services;
+    void updateRoomPlayerNum(const QByteArray &data, const QHostAddress &from, ushort port);
+
 private slots:
     void processServerPacket(const QByteArray &cmd);
     bool processServerRequest(const QSanProtocol::Packet &packet);
     void processObsoleteServerPacket(const QString &cmd);
+    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
     void notifyRoleChange(const QString &new_role);
     void alertFocus();
     //void onPlayerChooseOrder();
@@ -381,7 +393,8 @@ signals:
 
     void update_handcard_num();
 
-    void roomListChanged(const QVariant &list);
+    void roomListChanged(const QList<RoomInfoStruct> *list);
+    void roomChanged(int room_index);
 };
 
 extern Client *ClientInstance;

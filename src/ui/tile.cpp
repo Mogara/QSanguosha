@@ -77,7 +77,7 @@ void Tile::setIcon(QString path)
     }
 }
 
-void Tile::addScrollText(const QStringList &texts)
+void Tile::addScrollTexts(const QStringList &texts)
 {
     if (scroll_timer == NULL) {
         scroll_timer = new QTimer(this);
@@ -103,6 +103,14 @@ void Tile::addScrollText(const QStringList &texts)
         connect(scroll_timer, &QTimer::timeout, this, &Tile::scrollToNextContent);
         scroll_timer->start(((qrand() % 3) + 3) * 1000);
     }
+}
+
+void Tile::setScrollText(int index, const QString &text)
+{
+    Title *textItem = qobject_cast<Title *>(scroll_contents.at(index));
+    if (textItem == NULL)
+        return;
+    textItem->setText(text);
 }
 
 void Tile::scrollToNextContent()

@@ -30,6 +30,9 @@ void Server::initLobbyFunctions()
 {
     lobbyFunctions[S_COMMAND_CHECK_VERSION] = &Server::checkVersion;
     lobbyFunctions[S_COMMAND_SPEAK] = &Server::forwardLobbyMessage;
+
+    serviceFunctions[S_SERVICE_DETECT_SERVER] = &Server::replyServerName;
+    serviceFunctions[S_SERVICE_PLAYER_NUM] = &Server::replyPlayerNum;
 }
 
 void Server::connectToLobby()
@@ -169,4 +172,22 @@ void Server::forwardLobbyMessage(const QVariant &message)
 
     foreach (Room *room, rooms)
         room->broadcast(&packet);
+}
+
+void Server::replyServerName(const QByteArray &, const QHostAddress &from, ushort port)
+{
+    QByteArray data(1, S_SERVICE_DETECT_SERVER);
+    data.append(Config.ServerName.toUtf8());
+    daemon->writeDatagram(data, from, port);
+}
+
+void Server::replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port)
+{
+    QByteArray data(5, S_SERVICE_PLAYER_NUM);
+    int playerNum = current != NULL ? current->getPlayers().size() : 0;
+    for (int i = 4; i >= 1; i--) {
+        data[i] = playerNum;
+        playerNum >>= 8;
+    }
+    daemon->writeDatagram(data, from, port);
 }

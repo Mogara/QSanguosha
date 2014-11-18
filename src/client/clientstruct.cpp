@@ -97,7 +97,7 @@ bool ServerInfoStruct::parse(const QString &str) {
     return true;
 }
 
-bool HostInfoStruct::parse(const QVariant &data)
+bool RoomInfoStruct::parse(const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
     if (args.size() != 4 || !ServerInfoStruct::parse(args.at(0).toString())) {

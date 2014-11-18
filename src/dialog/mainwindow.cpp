@@ -1419,6 +1419,7 @@ void MainWindow::onCreateRoomClicked()
             return;
         }
         server->connectToLobby();
+        server->daemonize();
 
         Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
         startConnection();
