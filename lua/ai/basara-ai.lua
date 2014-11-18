@@ -74,7 +74,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 	
-	local showRate = math.random() + shown/30
+	local showRate = math.random() + shown/20
 
 	local firstShowReward = false
 	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
@@ -194,9 +194,9 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	for _, skill in ipairs(followShow) do
 		if ((shown > 0 and e < notshown) or self.player:hasShownOneGeneral()) and self.player:hasSkill(skill) then
-			if self.player:inHeadSkills(skill) and canShowHead and showRate > 0.8 then
+			if self.player:inHeadSkills(skill) and canShowHead and showRate > 0.6 then
 				return "GameRule_AskForGeneralShowHead"
-			elseif canShowDeputy and showRate > 0.8 then
+			elseif canShowDeputy and showRate > 0.6 then
 				return "GameRule_AskForGeneralShowDeputy"
 			end
 		end
