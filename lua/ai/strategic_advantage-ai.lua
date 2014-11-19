@@ -820,7 +820,7 @@ sgs.ai_skill_cardask["@Halberd"] = function(self)
 	self:sortByUseValue(cards)
 	for _, slash in ipairs(cards) do
 		if slash:isKindOf("HalberdCard") then continue end
-		local use = { to = sgs.SPlayerList() }
+		local use = { isDummy = true, to = sgs.SPlayerList() }
 		local target
 		if self.player:hasFlag("slashTargetFix") then
 			for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do

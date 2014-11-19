@@ -152,7 +152,7 @@ function sgs.getDefenseSlash(player, self)
 
 	if hasEightDiagram then
 		defense = defense + 1.3
-		if player:hasShownSkills("qingguo+tiandu") then defense = defense + 10 end
+		if player:hasShownSkills("qingguo+tiandu") then defense = defense + 10
 		elseif player:hasShownSkill("tiandu") then defense = defense + 0.6 end
 		if player:hasShownSkill("leiji") then defense = defense + 0.4 end
 		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
