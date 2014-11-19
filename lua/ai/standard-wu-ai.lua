@@ -326,6 +326,19 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 		return kuroucard
 	end
 
+	if type(self.kept) == "table" and #self.kept > 0 then
+		local hcards = sgs.QList2Table(self.player:getHandcards())
+		for _, c in ipairs(self.kept) do
+			hcards = self:resetCards(hcards, c)
+		end
+		for _, c in ipairs(self.kept) do
+			if isCard("Peach", c, self.player) or isCard("Analeptic", c, self.player) then
+				sgs.ai_use_priority.KurouCard = 0
+				return kuroucard
+			end
+		end
+	end
+
 	--Suicide by Kurou
 	local nextplayer = self.player:getNextAlive()
 	if self.player:getHp() == 1 and self:getCardsNum("Armor") == 0 and self:getCardsNum("Jink") == 0 and self:getKingdomCount() > 1 then

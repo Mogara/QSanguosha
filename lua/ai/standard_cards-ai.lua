@@ -104,24 +104,6 @@ function sgs.getDefenseSlash(player, self)
 
 	defense = defense + knownJink * 1.2
 
-	local hasEightDiagram = false
-
-	if (player:hasArmorEffect("EightDiagram") or (player:hasShownSkill("bazhen") and not player:getArmor()))
-	  and not IgnoreArmor(attacker, player) then
-		hasEightDiagram = true
-	end
-
-	if hasEightDiagram then
-		defense = defense + 1.3
-		if player:hasShownSkill("tiandu") then defense = defense + 0.6 end
-		if player:hasShownSkill("leiji") then defense = defense + 0.4 end
-		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
-	end
-
-	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and unknownJink >= 1 then
-		defense = defense + 1.5
-	end
-
 	if attacker:canSlashWithoutCrossbow() and attacker:getPhase() == sgs.Player_Play then
 		local hcard = player:getHandcardNum()
 		if attacker:hasShownSkill("liegong") and (hcard >= attacker:getHp() or hcard <= attacker:getAttackRange()) then defense = 0 end
@@ -160,6 +142,25 @@ function sgs.getDefenseSlash(player, self)
 
 	defense = defense + math.min(player:getHp() * 0.45, 10)
 	if sgs.isAnjiang(player) then defense = defense - 1 end
+
+	local hasEightDiagram = false
+
+	if (player:hasArmorEffect("EightDiagram") or (player:hasShownSkill("bazhen") and not player:getArmor()))
+	  and not IgnoreArmor(attacker, player) then
+		hasEightDiagram = true
+	end
+
+	if hasEightDiagram then
+		defense = defense + 1.3
+		if player:hasShownSkills("qingguo+tiandu") then defense = defense + 10 end
+		elseif player:hasShownSkill("tiandu") then defense = defense + 0.6 end
+		if player:hasShownSkill("leiji") then defense = defense + 0.4 end
+		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
+	end
+
+	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and unknownJink >= 1 then
+		defense = defense + 1.5
+	end
 
 	if attacker then
 		local m = sgs.masochism_skill:split("|")
@@ -1353,6 +1354,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 	if zhangjiao and self:isEnemy(zhangjiao) then
 		if getKnownCard(zhangjiao, self.player, "black", false, "he") > 1 then return false end
 		if self:getCardsNum("Jink") > 1 and getKnownCard(zhangjiao, self.player, "black", false, "he") > 0 then return false end
+		if zhangjiao:getHandcardNum() - getKnownNum(zhangjiao, self.player) >= 3 then return false end
 	end
 	return true
 end

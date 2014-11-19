@@ -218,6 +218,8 @@ function SmartAI:isTiaoxinTarget(enemy)
 		or self:getDamagedEffects(self.player, enemy, true)
 		or self:needToLoseHp(self.player, enemy, true, true)
 		then return true end
+	if self.player:hasSkill("xiangle") and (enemy:getHandcardNum() < 2 or getKnownCard(enemy, self.player, "BasicCard") < 2
+												and enemy:getHandcardNum() - getKnownNum(enemy, self.player) < 2) then return true end
 	return false
 end
 

@@ -1732,9 +1732,12 @@ function SmartAI:filterEvent(event, player, data)
 				local index = 2
 				if promptlist[1] == "cardResponded" then
 
-					if promptlist[2]:match("jink") then sgs.card_lack[player:objectName()]["Jink"] = promptlist[#promptlist] == "_nil_" and 1 or 0
-					elseif promptlist[2]:match("slash") then sgs.card_lack[player:objectName()]["Slash"] = promptlist[#promptlist] == "_nil_" and 1 or 0
-					elseif promptlist[2]:match("peach") then sgs.card_lack[player:objectName()]["Peach"] = promptlist[#promptlist] == "_nil_" and 1 or 0
+					if promptlist[2]:match("jink") and not self:hasEightDiagramEffect(player) then
+						sgs.card_lack[player:objectName()]["Jink"] = promptlist[#promptlist] == "_nil_" and 1 or 0
+					elseif promptlist[2]:match("slash") then
+						sgs.card_lack[player:objectName()]["Slash"] = promptlist[#promptlist] == "_nil_" and 1 or 0
+					elseif promptlist[2]:match("peach") then
+						sgs.card_lack[player:objectName()]["Peach"] = promptlist[#promptlist] == "_nil_" and 1 or 0
 					end
 
 					index = 3
@@ -2079,12 +2082,12 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local callback = sgs.ai_nullification[trick:getClassName()]
 	if type(callback) == "function" then
 		local shouldUse = callback(self, trick, from, to, positive)
-		if shouldUse then return null_card end
+		return shouldUse and null_card
 	end
 
 	if positive then
 
-		if from and (trick:isKindOf("FireAttack") or trick:isKindOf("Duel") or trick:isKindOf("AOE")) and self:cantbeHurt(to, from) then
+		if from and (trick:isKindOf("FireAttack") or trick:isKindOf("Duel") or trick:isKindOf("ArcheryAttack") or trick:isKindOf("SavageAssault")) and self:cantbeHurt(to, from) then
 			if self:isFriend(from) then return null_card end
 			return
 		end
@@ -2281,8 +2284,6 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	end
 	return
 end
-
-sgs.ai_skill_choice.heg_nullification = "all"
 
 function SmartAI:getCardRandomly(who, flags)
 	local cards = who:getCards(flags)

@@ -621,10 +621,29 @@ function SmartAI:useCardAllianceFeast(card, use)
 			return v1 > v2
 		end
 		table.sort(targets, cmp_k)
-		if isEnemy then targets = sgs.reverse(targets) end
-		use.card = card
-		if use.to then use.to:append(targets[1]) end
-		return
+		local target = targets[1]
+		if isEnemy then
+			target = nil
+			targets = sgs.reverse(targets)
+			for _, t in ipairs(targets) do
+				local v = 0
+				for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+					if p:isFriendWith(t) then
+						if p:isWounded() then
+							v = v - 2
+						else
+							v = v + 1
+						end
+					end
+				end
+				if v > 0 then target = t break end
+			end
+		end
+		if target then
+			use.card = card
+			if use.to then use.to:append(target) end
+			return
+		end
 	end
 end
 

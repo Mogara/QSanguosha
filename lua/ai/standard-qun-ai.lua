@@ -509,12 +509,10 @@ sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
 			end
 		end
 
-		for _, slash in ipairs(slashes) do
-			for _, enemy in ipairs(targets) do
-				if self:isEnemy(enemy) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy)
-					and sgs.isGoodTarget(enemy, targets, self) and not targets.contains(enemy:objectName()) then
-					table.insert(targets, enemy:objectName())
-				end
+		for _, enemy in ipairs(targets) do
+			if self:isEnemy(enemy) and not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy)
+				and sgs.isGoodTarget(enemy, targets, self) and not targets.contains(enemy:objectName()) then
+				table.insert(targets, enemy:objectName())
 			end
 		end
 
@@ -543,7 +541,7 @@ sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
 		end
 
 		if #targets > 0 then
-			return slash:toString() .. "->" .. table.concat(targets, "+", EXT) end
+			return slash:toString() .. "->" .. table.concat(targets, "+", 1, EXT) end
 		end
 	end
 	return "."
