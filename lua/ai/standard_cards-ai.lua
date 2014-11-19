@@ -815,26 +815,28 @@ function SmartAI:useCardPeach(card, use)
 
 	if self.player:hasSkill("rende") and self:findFriendsByType(sgs.Friend_Draw) then return end
 
-	if self.player:hasArmorEffect("SilverLion") then
+	if not use.isDummy then
+		if self.player:hasArmorEffect("SilverLion") then
 		for _, card in sgs.qlist(self.player:getHandcards()) do
 			if card:isKindOf("Armor") and self:evaluateArmor(card) > 0 then
 				use.card = card
 				return
 			end
 		end
-	end
-
-	local SilverLion, OtherArmor
-	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:isKindOf("SilverLion") then
-			SilverLion = card
-		elseif card:isKindOf("Armor") and not card:isKindOf("SilverLion") and self:evaluateArmor(card) > 0 then
-			OtherArmor = true
 		end
-	end
-	if SilverLion and OtherArmor then
-		use.card = SilverLion
-		return
+
+		local SilverLion, OtherArmor
+		for _, card in sgs.qlist(self.player:getHandcards()) do
+			if card:isKindOf("SilverLion") then
+				SilverLion = card
+			elseif card:isKindOf("Armor") and not card:isKindOf("SilverLion") and self:evaluateArmor(card) > 0 then
+				OtherArmor = true
+			end
+		end
+		if SilverLion and OtherArmor then
+			use.card = SilverLion
+			return
+		end
 	end
 
 	for _, enemy in ipairs(self.enemies) do
@@ -867,7 +869,7 @@ function SmartAI:useCardPeach(card, use)
 	end
 
 	local useJieyinCard
-	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and overflow then
+	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and overflow and self.player:getPhase() == sgs.Player_Play then
 		self:sort(self.friends, "hp")
 		for _, friend in ipairs(self.friends) do
 			if friend:isWounded() and friend:isMale() then useJieyinCard = true end
