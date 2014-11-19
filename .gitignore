@@ -1,6 +1,6 @@
 debug/
 release/
-ui_*
+GeneratedFiles/
 Makefile*
 *.pro.user
 sanguosha.qm
