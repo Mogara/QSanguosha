@@ -4502,8 +4502,14 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	if from and self:hasHeavySlashDamage(from, nil, to) then return false end
 	local n = to:getMaxHp()
 
-	if not passive and to:getMaxHp() > 2 and to:hasShownSkill("rende") and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then
-		n = math.min(n, to:getMaxHp() - 1)
+	if not passive then
+		if to:hasShownSkill("rende") and to:getMaxHp() > 2 and not self:willSkipPlayPhase(to) and self:findFriendsByType(sgs.Friend_Draw, to) then
+			n = math.min(n, to:getMaxHp() - 1)
+		elseif to:hasShownSkill("hengzheng") and sgs.ai_skill_invoke.hengzheng(sgs.ais[to:objectName()]) then
+			n = math.min(n, to:getMaxHp() - 1)
+		elseif to:hasShownSkills("yinghun|zaiqi") then
+			n = math.min(n, to:getMaxHp() - 1)
+		end
 	end
 
 	local xiangxiang = sgs.findPlayerByShownSkillName("jieyin")
@@ -4517,14 +4523,6 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 			if friend:isMale() and friend:isWounded() then need_jieyin = false end
 		end
 		if need_jieyin then n = math.min(n, to:getMaxHp() - 1) end
-	end
-
-	if to:hasShownSkill("hengzheng") and sgs.ai_skill_invoke.hengzheng(sgs.ais[to:objectName()]) then
-		n = math.min(n, to:getMaxHp() - 1)
-	end
-
-	if to:hasShownSkills("yinghun|zaiqi") then
-		n = math.min(n, to:getMaxHp() - 1)
 	end
 
 	if recover then return to:getHp() >= n end
