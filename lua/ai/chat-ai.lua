@@ -346,6 +346,7 @@ sgs.ai_chat_func[sgs.CardFinished].duoshi = function(self, player, data)
 end
 
 sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
+	if self.room:getMode() == "jiange_defense" then return end
 	local name1 =  sgs.Sanguosha:translate(self.player:getGeneralName())
 	local name2 =  sgs.Sanguosha:translate(self.player:getGeneral2Name())
 	local kingdom = sgs.Sanguosha:translate(self.player:getKingdom())
@@ -406,6 +407,7 @@ sgs.ai_chat_func[sgs.GeneralShown].show = function(self, player, data)
 end
 
 sgs.ai_chat_func[sgs.DamageCaused].attackAnjiang = function(self, player, data)
+	if self.room:getMode() == "jiange_defense" then return end
 	local damage = data:toDamage()
 	local chat = {
 			"看看局势再说",
@@ -463,6 +465,47 @@ sgs.ai_chat_func[sgs.EventPhaseStart].luanwu = function(self, player, data)
 	end
 end
 
+sgs.ai_chat_func[sgs.GeneralShown].show_jiange = function(self, player, data)
+	if self.room:getMode() ~= "jiange_defense" then return end
+	local kingdom = self.player:getKingdom()
+	local chat1 = {
+		"无知小儿，报上名来，饶你不死！",
+		"剑阁乃险要之地，诸位将军须得谨慎行事。"
+		}
+	local chat2 = {
+		"嗷~！",
+		"呜~！",
+		"发动机已启动，随时可以出发。。。"
+		}
+	if kingdom == "shu" then
+		table.insert(chat1, "人在塔在！")
+		table.insert(chat1, "汉室存亡，在此一战！")
+		table.insert(chat2, "红色！")
+	elseif kingdom == "wei" then
+		table.insert(chat1, "众将官，剑阁去者！")
+		table.insert(chat1, "此战若胜，大业必成！")
+		table.insert(chat2, "蓝色！")
+	end	
+	if string.find(self.player:getGeneral():objectName(), "baihu") then 
+		table.insert(chat2, "喵~！")
+	end
+	if string.find(self.player:getGeneral():objectName(), "jiangwei") then 
+		table.insert(chat1, "白水地狭路多，非征战之所，不如且退，去救剑阁。若剑阁一失，是绝路也。")
+		table.insert(chat1, "今四面受敌，粮道不同，不如退守剑阁，再作良图。")	
+	elseif string.find(self.player:getGeneral():objectName(), "dengai") then 
+		table.insert(chat1, "剑阁之守必还赴涪，则会方轨而进；剑阁之军不还，则应涪之兵寡矣。")
+		table.insert(chat1, "以愚意度之，可引一军从阴平小路出汉中德阳亭，用奇兵径取成都，姜维必撤兵来救，将军乘虚就取剑阁，可获全功。")
+	end	
+	for _, p in ipairs(sgs.robot) do
+		if p:objectName() == self.player:objectName() and (string.find(self.player:getGeneral():objectName(), "jg_") or math.random() < 0.1) then
+			if string.find(self.player:getGeneral():objectName(), "machine") then 
+			p:speak(chat2[math.random(1, #chat2)])
+			else
+			p:speak(chat1[math.random(1, #chat1)])
+			end
+		end
+	end
+end
 
 sgs.ai_chat.yiji = {
 "再用力一点",
