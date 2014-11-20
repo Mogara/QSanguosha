@@ -457,10 +457,9 @@ function SmartAI:useCardSlash(card, use)
 
 	for _, friend in ipairs(self.friends_noself) do
 		if self:isPriorFriendOfSlash(friend, card) and not self:slashProhibit(card, friend) then
-			if self.player:canSlash(friend, card, not no_distance, rangefix) or (use.isDummy and self.player:distanceTo(friend, rangefix) <= self.predictedRange)
-				and canAppendTarget(friend) then
+			if self.player:canSlash(friend, card, not no_distance, rangefix) or (use.isDummy and self.player:distanceTo(friend, rangefix) <= self.predictedRange) then
 				use.card = card
-				if use.to then use.to:append(friend) end
+				if use.to and canAppendTarget(friend) then use.to:append(friend) end
 				if not use.to or self.slash_targets <= use.to:length() then return end
 			end
 		end
@@ -486,8 +485,7 @@ function SmartAI:useCardSlash(card, use)
 			and self:objectiveLevel(target) > 3
 			and not canliuli
 			and not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
-				and self:getOverflow() > 0 and not self:hasCrossbowEffect())
-			and canAppendTarget(target) then
+				and self:getOverflow() > 0 and not self:hasCrossbowEffect()) then
 
 			if target:getHp() > 1 and target:hasShownSkill("jianxiong") and self.player:hasWeapon("Spear") and card:getSkillName() == "Spear" then
 				local ids, isGood = card:getSubcards(), true
@@ -543,7 +541,7 @@ function SmartAI:useCardSlash(card, use)
 			end
 
 			use.card = use.card or usecard
-			if use.to then use.to:append(target) end
+			if use.to and canAppendTarget(target) then use.to:append(target) end
 			if not use.to or self.slash_targets <= use.to:length() then return end
 		end
 	end
@@ -554,7 +552,7 @@ function SmartAI:useCardSlash(card, use)
 			and (self.player:canSlash(friend, card, not no_distance, rangefix)
 				or (use.isDummy and self.predictedRange and self.player:distanceTo(friend, rangefix) <= self.predictedRange)) then
 			use.card = card
-			if use.to then use.to:append(friend) end
+			if use.to and canAppendTarget(friend) then use.to:append(friend) end
 			if not use.to or self.slash_targets <= use.to:length() then return end
 		end
 	end
