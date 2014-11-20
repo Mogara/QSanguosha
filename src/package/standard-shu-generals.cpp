@@ -148,6 +148,11 @@ public:
     PaoxiaoArmorNullificaion() : TriggerSkill("#paoxiao-null"){
         events << TargetChosen;
         frequency = Compulsory;
+        global = true;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
