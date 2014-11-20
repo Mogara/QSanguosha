@@ -345,7 +345,7 @@ public:
 class Guixiu : public TriggerSkill {
 public:
     Guixiu() : TriggerSkill("guixiu") {
-        events << GameStart << GeneralShown << GeneralRemoved;
+        events << GameStart << GeneralShown << GeneralRemoved << DFDebut;
         frequency = Frequent;
     }
 
@@ -354,7 +354,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (triggerEvent == GameStart) {
+        if (triggerEvent == GameStart || triggerEvent == DFDebut) {
             if (TriggerSkill::triggerable(player))
                 room->setPlayerMark(player, objectName(), 1); // for guixiu2
         }
@@ -363,13 +363,16 @@ public:
                 return (data.toBool() == player->inHeadSkills(objectName())) ? QStringList(objectName()) : QStringList();
         }
         else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0)
-            if (player->isWounded())
-                return QStringList(objectName());
+            return QStringList(objectName());
+        
 
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (triggerEvent == GeneralRemoved)
+            room->setPlayerMark(player, objectName(), 0);
+
         if (player->askForSkillInvoke(this)) {
             room->broadcastSkillInvoke(objectName(), player);
             return true;
@@ -381,7 +384,6 @@ public:
         if (triggerEvent == GeneralShown)
             player->drawCards(2, objectName());
         else if (triggerEvent == GeneralRemoved) {
-            room->setPlayerMark(player, objectName(), 0);
             LogMessage log;
             log.type = "#InvokeSkill";
             log.from = player;

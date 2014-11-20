@@ -636,6 +636,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         foreach(ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasFlag("Global_DFDebut")) {
                 p->setFlags("-Global_DFDebut");
+                room->getThread()->trigger(DFDebut, room, p);
             }
         }
         break;
