@@ -683,6 +683,11 @@ sgs.ai_skill_cardask["@threaten_emperor"] = function(self)
 	if self.player:isNude() then return "." end
 	local cards = sgs.QList2Table(self.player:getCards("he"))
 	self:sortByKeepValue(cards)
+	for _, card in ipairs(cards) do
+		if not card:isKindOf("JadeSeal") then
+			return card:getEffectiveId()
+		end
+	end
 	return cards[1]:getEffectiveId()
 end
 
