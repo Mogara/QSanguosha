@@ -31,7 +31,10 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	else return "draw" end
 end
 
-sgs.ai_skill_invoke["userdefine:FirstShowReward"] = true
+sgs.ai_skill_invoke["userdefine:FirstShowReward"] = function(self, choice, data)
+	if self.room:getMode() == "jiange_defense" then return false end
+	return true
+end
 
 
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
@@ -52,7 +55,6 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	
 	local firstShow = ("luanji|qianhuan"):split("|")
 	local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
-	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local followShow = ("qianhuan|duoshi|rende|cunsi|jieyin|xiongyi|shouyue|hongfa"):split("|")
 
 	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
@@ -176,18 +178,6 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 				return "GameRule_AskForGeneralShowHead"
 			elseif canShowDeputy then
 				return "GameRule_AskForGeneralShowDeputy"
-			end
-		end
-	end
-
-	if self.player:getLostHp() >= 2 then
-		for _, skill in ipairs(woundedShow) do
-			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
-				if self.player:inHeadSkills(skill) and canShowHead and showRate > 0.9 then
-					return "GameRule_AskForGeneralShowHead"
-				elseif canShowDeputy and showRate > 0.9 then
-					return "GameRule_AskForGeneralShowDeputy"
-				end
 			end
 		end
 	end

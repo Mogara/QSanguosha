@@ -126,7 +126,7 @@ function SmartAI:useCardDrowning(card, use)
 	for _, enemy in ipairs(self.enemies) do
 		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
 			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy, sgs.DamageStruct_Thunder, self.player) and self:canAttack(enemy)
-			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player)
+			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) and not self:needToThrowArmor(enemy)
 			and not (enemy:hasArmorEffect("PeaceSpell") and (enemy:getHp() > 1 or self:needToLoseHp(enemy, self.player)))
 			and not (enemy:hasArmorEffect("Breastplate") and enemy:getHp() == 1) then
 			players:append(enemy)
@@ -224,7 +224,6 @@ function SmartAI:useCardBurningCamps(card, use)
 	for i = 0 , players:length() - 1 do
 		player = findPlayerByObjectName(players:at(i):objectName())
 		if not self:hasTrickEffective(card, player, self.player) then
-			if i == 0 then return end
 			continue
 		end
 		local damage = {}
@@ -240,8 +239,6 @@ function SmartAI:useCardBurningCamps(card, use)
 			else
 				return
 			end
-		elseif i == 0 then
-			return
 		end
 	end
 	if shouldUse then

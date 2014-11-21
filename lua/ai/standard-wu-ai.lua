@@ -1080,6 +1080,13 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		if self.yinghun then self.yinghunchoice = "dxt1" end
 	end
 	if not self.yinghun and x > 1 and #self.enemies > 0 then
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getCards("he"):length() <= n and (self:getDangerousCard(enemy) or self:getValuableCard(enemy))
+				and not self:doNotDiscard(enemy, "nil", true, n) then
+				self.yinghunchoice = "d1tx"
+				return enemy
+			end
+		end
 		self:sort(self.enemies, "handcard")
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:getCards("he"):length() >= n
