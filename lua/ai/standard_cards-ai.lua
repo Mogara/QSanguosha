@@ -3017,14 +3017,16 @@ function SmartAI:useCardBefriendAttacking(BefriendAttacking, use)
 	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 	self:sort(players)
 	for _, to_select in ipairs(players) do
-		if self:isFriend(to_select) and BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select) then
+		if self:isFriend(to_select) and BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select) 
+			and self:hasTrickEffective(BefriendAttacking, to_select, self.player) then
 			targets:append(to_select)
 			if use.to then use.to:append(to_select) end
 		end
 	end
 	if targets:isEmpty() then
 		for _, to_select in ipairs(players) do
-			if BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select) then
+			if BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select)
+				and self:hasTrickEffective(BefriendAttacking, to_select, self.player) then
 				targets:append(to_select)
 				if use.to then use.to:append(to_select) end
 			end
