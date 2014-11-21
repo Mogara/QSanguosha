@@ -604,7 +604,9 @@ QList<CardItem *> PlayerCardContainer::removeDelayedTricks(const QList<int> &car
         item->setOpacity(0.0);
         item->setPos(start.center());
         _m_judgeCards.removeAt(index);
-        delete _m_judgeIcons.takeAt(index);
+        QGraphicsPixmapItem *icon = _m_judgeIcons.takeAt(index);
+        icon->setOpacity(0.0);
+        delete icon;
         result.append(item);
     }
     updateDelayedTricks();
