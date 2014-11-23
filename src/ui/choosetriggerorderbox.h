@@ -34,6 +34,9 @@ class TriggerOptionButton : public QGraphicsObject {
 
     friend class ChooseTriggerOrderBox;
 
+public:
+    static QFont defaultFont();
+
 signals:
     void clicked();
 
@@ -96,20 +99,22 @@ private:
     QList<TriggerOptionButton *> optionButtons;
     QList<GeneralButton *> generalButtons;
     static const int top_dark_bar = 27;
-    static const int top_blank_width = 42;
+    static const int m_topBlankWidth = 42;
     static const int bottom_blank_width = 25;
     static const int interval = 15;
-    static const int left_blank_width = 37;
+    static const int m_leftBlankWidth = 37;
 
     QString reason;
     QStringList options;
     bool optional;
+    int m_minimumWidth;
 
     Button *cancel;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progressBar;
 
     int getGeneralNum() const;
+    void storeMinimumWidth();
 };
 
 #endif // CHOOSETRIGGERORDERBOX_H
