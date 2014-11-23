@@ -501,7 +501,7 @@ public:
 
         foreach(ServerPlayer *p, room->getAllPlayers())
             if (p->hasFlag("TribladeCanBeSelected"))
-                room->setPlayerFlag(p, "TribladeCanBeSelected");
+                room->setPlayerFlag(p, "-TribladeCanBeSelected");
 
         return false;
     }
