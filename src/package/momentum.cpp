@@ -1082,6 +1082,57 @@ public:
         return false;
     }
 
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from != NULL && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)) {
+            ServerPlayer *zhangren = room->findPlayerBySkillName(objectName());
+            if (BattleArraySkill::triggerable(zhangren) && zhangren->hasShownSkill(this)) {
+                if (use.from->inSiegeRelation(zhangren, player) && player->canDiscard(player, "e")) {
+                    ask_who = zhangren;
+                    return QStringList(objectName());
+                }
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+        if (ask_who != NULL && ask_who->hasShownSkill(this)) {
+            room->broadcastSkillInvoke(objectName(), ask_who);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+        room->notifySkillInvoked(ask_who, objectName());
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (room->askForCard(player, ".|.|.|equipped!", "@fengshi-discard:" + ask_who->objectName() + ":" + use.from->objectName()) == NULL) {
+            QList<const Card *> equips = player->getEquips();
+            QList<const Card *> equips_candiscard;
+            foreach (const Card *e, equips) {
+                if (player->canDiscard(player, e->getEffectiveId()))
+                    equips_candiscard << e;
+            }
+
+            const Card *rand_c = equips_candiscard.at(qrand() % equips_candiscard.length());
+            room->throwCard(rand_c, player);
+        }
+        return false;
+    }
+};
+
+/*
+class Fengshi : public BattleArraySkill {
+public:
+    Fengshi() : BattleArraySkill("fengshi", HegemonyMode::Siege) {
+        events << TargetChosen;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (!player->hasShownSkill(this) || player->aliveCount() < 4) return QStringList();
@@ -1138,6 +1189,7 @@ public:
         return false;
     }
 };
+*/
 
 class Wuxin : public PhaseChangeSkill {
 public:

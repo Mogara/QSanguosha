@@ -443,6 +443,10 @@ BattleArraySkill::BattleArraySkill(const QString &name, const HegemonyMode::Arra
         view_as_skill = new ArraySummonSkill(objectName());
 }
 
+bool BattleArraySkill::triggerable(const ServerPlayer *player) const {
+    return TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
+}
+
 void BattleArraySkill::summonFriends(ServerPlayer *player) const {
     player->summonFriends(array_type);
 }

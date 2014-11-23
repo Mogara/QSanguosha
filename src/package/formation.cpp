@@ -708,6 +708,52 @@ public:
         events << TargetChosen;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from != NULL && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)) {
+            ServerPlayer *jiangqin = room->findPlayerBySkillName(objectName());
+            if (BattleArraySkill::triggerable(jiangqin) && jiangqin->hasShownSkill(this)) {
+                if (use.from->inSiegeRelation(jiangqin, player)) {
+                    ask_who = jiangqin;
+                    return QStringList(objectName());
+                }
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+        if (ask_who != NULL && ask_who->hasShownSkill(this)) {
+            room->broadcastSkillInvoke(objectName(), ask_who);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+        room->notifySkillInvoked(ask_who, objectName());
+        CardUseStruct use = data.value<CardUseStruct>();
+        int x = use.to.indexOf(player);
+        // log??
+        QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
+        if (jink_list.at(x).toInt() == 1)
+            jink_list[x] = 2;
+        use.from->tag["Jink_" + use.card->toString()] = jink_list;
+
+        return false;
+    }
+};
+/*
+class Niaoxiang : public BattleArraySkill {
+public:
+    Niaoxiang() : BattleArraySkill("niaoxiang", HegemonyMode::Siege) {
+        events << TargetChosen;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (!player->hasShownSkill(this) || player->aliveCount() < 4) return QStringList();
@@ -729,6 +775,7 @@ public:
         return QStringList();
     }
 };
+*/
 
 class Yicheng : public TriggerSkill {
 public:
@@ -1277,16 +1324,25 @@ public:
         events << TargetChosen;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from == player && use.card->isKindOf("Slash")){
-            foreach (ServerPlayer *to, use.to) {
-                if (to->canDiscard(to, "he") && player->askForSkillInvoke(this, QVariant::fromValue(to))) {
-                    room->setEmotion(use.from, "weapon/dragonphoenix");
-                    room->askForDiscard(to, objectName(), 1, 1, false, true, "@dragonphoenix-discard");
-                }
-            }
+        if (use.from != NULL && use.from->hasWeapon(objectName()) && use.card != NULL && use.card->isKindOf("Slash") && player != NULL && use.to.contains(player) && use.from->canDiscard(player, "he")) {
+            ask_who = use.from;
+            return QStringList(objectName());
         }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+        if (ask_who->askForSkillInvoke(this, QVariant::fromValue(player))) {
+            room->setEmotion(ask_who, "weapon/dragonphoenix");
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        room->askForDiscard(player, objectName(), 1, 1, false, true, "@dragonphoenix-discard");
         return false;
     }
 };
