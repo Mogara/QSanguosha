@@ -1082,7 +1082,7 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from != NULL && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)) {
             ServerPlayer *zhangren = room->findPlayerBySkillName(objectName());
@@ -1096,7 +1096,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const {
         if (ask_who != NULL && ask_who->hasShownSkill(this)) {
             room->broadcastSkillInvoke(objectName(), ask_who);
             return true;
@@ -1104,7 +1104,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
         room->notifySkillInvoked(ask_who, objectName());
         CardUseStruct use = data.value<CardUseStruct>();
         if (room->askForCard(player, ".|.|.|equipped!", "@fengshi-discard:" + ask_who->objectName() + ":" + use.from->objectName()) == NULL) {

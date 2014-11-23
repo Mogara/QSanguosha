@@ -37,7 +37,7 @@ public:
         events << TargetChosen;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!WeaponSkill::triggerable(use.from))
             return QStringList();
@@ -49,7 +49,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const {
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const {
         if (ask_who != NULL && ask_who->askForSkillInvoke(this)) {
             room->setEmotion(ask_who, "weapon/double_sword");
             return true;
@@ -57,7 +57,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         bool draw_card = false;
         if (!player->canDiscard(player, "h"))
             draw_card = true;
@@ -90,7 +90,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (!WeaponSkill::triggerable(use.from))
             return QStringList();
@@ -102,13 +102,13 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         if ((player->getArmor() && player->hasArmorEffect(player->getArmor()->objectName())) || player->hasArmorEffect("bazhen"))
             room->setEmotion(ask_who, "weapon/qinggang_sword");
         return true;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         CardUseStruct use = data.value<CardUseStruct>();
         player->addQinggangTag(use.card);
         return false;

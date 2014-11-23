@@ -969,7 +969,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
         bool invoke = ask_who->hasShownSkill(this) ? true : ask_who->askForSkillInvoke(this);
         if (invoke) {
             room->broadcastSkillInvoke(objectName(), 2, ask_who);
@@ -979,7 +979,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
         room->notifySkillInvoked(ask_who, objectName());
         room->setTag("HuoshouSource", QVariant::fromValue(ask_who));
 
