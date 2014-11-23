@@ -83,7 +83,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
                 generalName = player->getGeneral2Name();
         }
     } else {
-        if (player->inHeadSkills(skillName))
+        if (player->inHeadSkills(Sanguosha->getMainSkill(skillName)->objectName()))
             generalName = player->getGeneralName();
         else
             generalName = player->getGeneral2Name();
