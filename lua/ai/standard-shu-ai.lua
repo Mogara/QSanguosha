@@ -507,7 +507,7 @@ sgs.ai_skill_invoke.bazhen = function(self, data)
 	then
 			return false
 	end
-	return sgs.ai_skill_invoke.EightDiagram
+	return sgs.ai_skill_invoke.EightDiagram(self, data)
 end
 
 function sgs.ai_armor_value.bazhen(card)
