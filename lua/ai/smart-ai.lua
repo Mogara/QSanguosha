@@ -2061,9 +2061,9 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	if self.player:isLocked(null_card) then return nil end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 
-	local jgyueying = sgs.findPlayerByShownSkillName("jgjingmiao") 
+	local jgyueying = sgs.findPlayerByShownSkillName("jgjingmiao")
 	if jgyueying and self:isEnemy(jgyueying) and self.player:getHp() == 1 then return nil end
-	
+
 	if trick:isKindOf("FireAttack") then
 		if to:isKongcheng() or from:isKongcheng() then return nil end
 		if self.player:objectName() == from:objectName() and self.player:getHandcardNum() == 1 and self.player:handCards():first() == null_card:getId() then return nil end
@@ -2397,11 +2397,11 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 		end
 		if flags:match("h") and (not isDiscard or self.player:canDiscard(who, "h")) then
-			if who:hasShownSkills("jijiu|qingnang|qiaobian|jieyin|beige") 
+			if who:hasShownSkills("jijiu|qingnang|qiaobian|jieyin|beige")
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
 			end
-			if who:getHp() == 1 and not who:needKongcheng()  
+			if who:getHp() == 1 and not who:needKongcheng()
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
 			end
@@ -3336,7 +3336,7 @@ function SmartAI:damageIsEffective_(damageStruct)
 	if to:hasShownSkills("jgyuhuo_pangtong|jgyuhuo_zhuque") and nature == sgs.DamageStruct_Fire then return false end
 	if to:getMark("@fog") > 0 and nature ~= sgs.DamageStruct_Thunder then return false end
 	if to:hasArmorEffect("Breastplate") and damage >= to:getHp() then return false end
-	
+
 	for _, callback in pairs(sgs.ai_damage_effect) do
 		if type(callback) == "function" then
 			local is_effective = callback(self, damageStruct)

@@ -284,21 +284,22 @@ function SmartAI:slashProhibit(card, enemy, from)
 	return not self:slashIsEffective(card, enemy, from) -- @todo: param of slashIsEffective
 end
 
-function SmartAI:canLiuli(other, another)
-	if not other:hasShownSkill("liuli") then return false end
+function SmartAI:canLiuli(daqiao, another)
+	if not daqiao:hasShownSkill("liuli") then return false end
 	if type(another) == "table" then
 		if #another == 0 then return false end
 		for _, target in ipairs(another) do
-			if target:getHp() < 3 and self:canLiuli(other, target) then return true end
+			if target:getHp() < 3 and self:canLiuli(daqiao, target) then return true end
 		end
 		return false
 	end
 
 	if not self:needToLoseHp(another, self.player, true) or not self:getDamagedEffects(another, self.player, true) then return false end
-	local n = other:getHandcardNum()
-	if n > 0 and (other:distanceTo(another) <= other:getAttackRange()) then return true
-	elseif other:getWeapon() and other:getOffensiveHorse() and (other:distanceTo(another) <= other:getAttackRange()) then return true
-	elseif other:getWeapon() or other:getOffensiveHorse() then return other:distanceTo(another) <= 1
+	if another:hasShownSkill("xiangle") then return false end
+	local n = daqiao:getHandcardNum()
+	if n > 0 and (daqiao:distanceTo(another) <= daqiao:getAttackRange()) then return true
+	elseif daqiao:getWeapon() and daqiao:getOffensiveHorse() and (daqiao:distanceTo(another) <= daqiao:getAttackRange()) then return true
+	elseif daqiao:getWeapon() or daqiao:getOffensiveHorse() then return daqiao:distanceTo(another) <= 1
 	else return false end
 end
 
@@ -3017,7 +3018,7 @@ function SmartAI:useCardBefriendAttacking(BefriendAttacking, use)
 	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
 	self:sort(players)
 	for _, to_select in ipairs(players) do
-		if self:isFriend(to_select) and BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select) 
+		if self:isFriend(to_select) and BefriendAttacking:targetFilter(targets, to_select, self.player) and not targets:contains(to_select)
 			and self:hasTrickEffective(BefriendAttacking, to_select, self.player) then
 			targets:append(to_select)
 			if use.to then use.to:append(to_select) end
