@@ -40,7 +40,7 @@ public:
     Sprite(QGraphicsItem *parent = NULL) : QGraphicsPixmapItem(parent) {}
 };
 
-class QAnimatedEffect : public QGraphicsEffect {
+class AnimatedEffect : public QGraphicsEffect {
     Q_OBJECT
     Q_PROPERTY(int index READ getIndex WRITE setIndex)
 
@@ -68,17 +68,17 @@ public:
     void emphasize(QGraphicsItem *map, bool stay = true);
     void sendBack(QGraphicsItem *map);
     void effectOut(QGraphicsItem *map);
-    void deleteEffect(QAnimatedEffect *effect);
+    void deleteEffect(AnimatedEffect *effect);
 
 public slots:
     void deleteEffect();
 
 private:
-    QMap<QGraphicsItem *, QAnimatedEffect *> effects;
-    QMap<QGraphicsItem *, QAnimatedEffect *> registered;
+    QMap<QGraphicsItem *, AnimatedEffect *> effects;
+    QMap<QGraphicsItem *, AnimatedEffect *> registered;
 };
 
-class EmphasizeEffect : public QAnimatedEffect {
+class EmphasizeEffect : public AnimatedEffect {
     Q_OBJECT
 
 public:
@@ -89,7 +89,7 @@ protected:
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;
 };
 
-class SentbackEffect : public QAnimatedEffect {
+class SentbackEffect : public AnimatedEffect {
     Q_OBJECT
 
 public:
@@ -105,7 +105,7 @@ private:
     QImage *grayed;
 };
 
-class FadeEffect : public QAnimatedEffect {
+class FadeEffect : public AnimatedEffect {
     Q_OBJECT
 
 public:

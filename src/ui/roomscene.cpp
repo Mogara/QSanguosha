@@ -1289,13 +1289,11 @@ void RoomScene::updateTargetsEnablity(const Card *card) {
             animations->effectOut(animationTarget);
             if (animationTarget2)
                 animations->effectOut(animationTarget2);
-        } else if (!animationTarget->graphicsEffect()
-            || !animationTarget->graphicsEffect()->inherits("SentbackEffect")) {
+        } else {
             animations->sendBack(animationTarget);
             if (animationTarget2)
                 animations->sendBack(animationTarget2);
         }
-
         if (card)
             item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
     }
@@ -1308,9 +1306,9 @@ void RoomScene::updateSelectedTargets() {
     const Card *card = dashboard->getSelected();
     if (card) {
         const ClientPlayer *player = item2player.value(item, NULL);
-        if (item->isSelected())
+        if (item->isSelected()) {
             selected_targets.append(player);
-        else {
+        } else {
             selected_targets.removeAll(player);
             foreach(const Player *cp, selected_targets) {
                 QList<const Player *> tempPlayers = QList<const Player *>(selected_targets);
