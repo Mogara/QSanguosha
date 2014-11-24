@@ -3298,6 +3298,19 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 	end
 	if not hasSpade and #other_suit > 0 then table.insertTable(can_use, other_suit) end
 
+	if reason ~= "lightning" then
+		for _, aplayer in sgs.qlist(self.room:getAllPlayers()) do
+			if aplayer:containsTrick("lightning") then
+				for _, card in ipairs(can_use) do
+					if card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 then
+						table.removeOne(can_use, card)
+						break
+					end
+				end
+			end
+		end
+	end
+
 	if next(can_use) then
 		if self:needToThrowArmor() then
 			for _, c in ipairs(can_use) do
