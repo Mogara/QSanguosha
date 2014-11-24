@@ -220,7 +220,7 @@ void GeneralButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     : optional(true), m_minimumWidth(0),
-      cancel(new Button(tr("cancel"), 0.6, true)), progressBar(NULL)
+      cancel(new Button(tr("cancel"), 0.6)), progressBar(NULL)
 {
     cancel->hide();
     cancel->setParentItem(this);
