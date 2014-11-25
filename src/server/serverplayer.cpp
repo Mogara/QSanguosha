@@ -1950,6 +1950,9 @@ void ServerPlayer::changeToLord() {
     room->broadcastProperty(this, "maxhp");
     room->broadcastProperty(this, "hp");
 
+    setActualGeneral1(lord);
+    room->notifyProperty(this, this, "actual_general1");
+
     JsonArray arg_changehero;
     arg_changehero << (int)S_GAME_EVENT_CHANGE_HERO;
     arg_changehero << objectName();

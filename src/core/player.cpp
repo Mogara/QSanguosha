@@ -1345,13 +1345,13 @@ void Player::setActualGeneral2(const General *general) {
 
 void Player::setActualGeneral1Name(const QString &name) {
     const General *general = Sanguosha->getGeneral(name);
-    Q_ASSERT(name.isNull() || name.isEmpty() || general != NULL);
+    Q_ASSERT(!(name.isNull() || name.isEmpty() || general == NULL));
     setActualGeneral1(general);
 }
 
 void Player::setActualGeneral2Name(const QString &name) {
     const General *general = Sanguosha->getGeneral(name);
-    Q_ASSERT(name.isNull() || name.isEmpty() || general != NULL);
+    Q_ASSERT(!(name.isNull() || name.isEmpty() || general == NULL));
     setActualGeneral2(general);
 }
 
