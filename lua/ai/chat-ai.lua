@@ -111,7 +111,7 @@ sgs.ai_chat_func[sgs.Death].stupid_friend = function(self, player, data)
 				"还有更2的吗",
 				"真的很无语",
 				}
-	if damage and damage.from and player:isFriendWith(damage.from) and damage.to:objectName() == player:objectName() then
+	if damage and damage.from and player:isFriendWith(damage.from) and damage.to:objectName() == player:objectName() and ((not damage.card) or (damage.card:getSkillName() ~= "lijian")) then
 		local index = 1 + (os.time() % #chat)
 		damage.to:speak(chat[index])
 	end
