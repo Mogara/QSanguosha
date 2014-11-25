@@ -885,15 +885,16 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->isChained() && player->canDiscard(p, "he")) {
-            if (player != p){
-                int card_id = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
-                room->throwCard(card_id, p, player);
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->isChained() && player->canDiscard(p, "he") && player->isAlive()) {
+                if (player != p){
+                    int card_id = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
+                    room->throwCard(card_id, p, player);
+                }
+                else
+                    room->askForDiscard(player, objectName(), 1, 1, false, true);
             }
-            else
-                room->askForDiscard(player, objectName(), 1, 1, false, true);
-            }
+        }
         return false;
     }
 };
