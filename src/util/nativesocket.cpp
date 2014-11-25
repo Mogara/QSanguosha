@@ -117,6 +117,9 @@ void NativeClientSocket::getMessage() {
                 printf("recv: %s", text.constData());
         #endif
                 emit message_got(text);
+            } else {
+                socket->ungetChar(type);
+                return;
             }
             break;
         case KeepAlivePacket:
@@ -124,7 +127,7 @@ void NativeClientSocket::getMessage() {
             socket->flush();
             break;
         default:
-            raiseError(QAbstractSocket::UnknownSocketError);
+            qDebug() << "Unknown packet: " << type;
         }
     }
 }
