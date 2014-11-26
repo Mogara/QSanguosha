@@ -82,8 +82,8 @@ void EffectAnimation::sendBack(QGraphicsItem *map) {
 void EffectAnimation::effectOut(QGraphicsItem *map) {
     AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(map->graphicsEffect());
     if (effect) {
-        effect->setStay(false);
         connect(effect, &AnimatedEffect::loop_finished, this, (void (EffectAnimation::*)()) (&EffectAnimation::deleteEffect));
+        effect->setStay(false);
     }
 
     effect = registered.value(map);
