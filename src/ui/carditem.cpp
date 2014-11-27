@@ -182,7 +182,14 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     }
     m_animationMutex.unlock();
     connect(m_currentAnimation, &QAbstractAnimation::finished, this, &CardItem::movement_animation_finished);
+    connect(m_currentAnimation, &QAbstractAnimation::destroyed, this, &CardItem::currentAnimationDestroyed);
     return m_currentAnimation;
+}
+
+void CardItem::currentAnimationDestroyed() {
+    QObject *ca = sender();
+    if (ca == m_currentAnimation)
+        m_currentAnimation = NULL;
 }
 
 void CardItem::showFrame(const QString &result) {
