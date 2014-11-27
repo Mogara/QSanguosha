@@ -40,6 +40,12 @@ static const QString generalShowStringHead = "GameRule_AskForGeneralShow";
 static const QString headString = generalShowStringHead + "Head";
 static const QString deputyString = generalShowStringHead + "Deputy";
 
+const int ChooseTriggerOrderBox::top_dark_bar = 27;
+const int ChooseTriggerOrderBox::m_topBlankWidth = 42;
+const int ChooseTriggerOrderBox::bottom_blank_width = 25;
+const int ChooseTriggerOrderBox::interval = 15;
+const int ChooseTriggerOrderBox::m_leftBlankWidth = 37;
+
 static int getSkinId(const ClientPlayer *player, const QString &generalName)
 {
     if (player->getGeneralName() == generalName)

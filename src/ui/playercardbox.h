@@ -69,16 +69,16 @@ private:
     int intervalsBetweenRows;
     int maxCardsInOneRow;
 
-    static const int maxCardNumberInOneRow = 10;
+    static const int maxCardNumberInOneRow;
 
-    static const int verticalBlankWidth = 37;
-    static const int placeNameAreaWidth = 15;
-    static const int intervalBetweenNameAndCard = 20;
-    static const int topBlankWidth = 42;
-    static const int bottomBlankWidth = 25;
-    static const int intervalBetweenAreas = 10;
-    static const int intervalBetweenRows = 5;
-    static const int intervalBetweenCards = 3;
+    static const int verticalBlankWidth;
+    static const int placeNameAreaWidth;
+    static const int intervalBetweenNameAndCard;
+    static const int topBlankWidth;
+    static const int bottomBlankWidth;
+    static const int intervalBetweenAreas;
+    static const int intervalBetweenRows;
+    static const int intervalBetweenCards;
 
 public slots:
     void reply();

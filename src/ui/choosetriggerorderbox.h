@@ -98,11 +98,11 @@ public slots:
 private:
     QList<TriggerOptionButton *> optionButtons;
     QList<GeneralButton *> generalButtons;
-    static const int top_dark_bar = 27;
-    static const int m_topBlankWidth = 42;
-    static const int bottom_blank_width = 25;
-    static const int interval = 15;
-    static const int m_leftBlankWidth = 37;
+    static const int top_dark_bar;
+    static const int m_topBlankWidth;
+    static const int bottom_blank_width;
+    static const int interval;
+    static const int m_leftBlankWidth;
 
     QString reason;
     QStringList options;

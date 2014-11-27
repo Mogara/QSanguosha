@@ -32,6 +32,17 @@ static QChar handcardFlag('h');
 static QChar equipmentFlag('e');
 static QChar judgingFlag('j');
 
+const int PlayerCardBox::maxCardNumberInOneRow = 10;
+
+const int PlayerCardBox::verticalBlankWidth = 37;
+const int PlayerCardBox::placeNameAreaWidth = 15;
+const int PlayerCardBox::intervalBetweenNameAndCard = 20;
+const int PlayerCardBox::topBlankWidth = 42;
+const int PlayerCardBox::bottomBlankWidth = 25;
+const int PlayerCardBox::intervalBetweenAreas = 10;
+const int PlayerCardBox::intervalBetweenRows = 5;
+const int PlayerCardBox::intervalBetweenCards = 3;
+
 PlayerCardBox::PlayerCardBox()
     : player(NULL), progressBar(NULL),
       rowCount(0), intervalsBetweenAreas(-1), intervalsBetweenRows(0), maxCardsInOneRow(0)
