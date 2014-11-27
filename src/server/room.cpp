@@ -3545,7 +3545,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
     if (starter == NULL)
         starter = m_players.first();
     bool loop = false;
-    for (ServerPlayer *p = starter; p != starter || !loop; p = qobject_cast<ServerPlayer *>(p->getNext())) {
+    for (ServerPlayer *p = starter; p != starter || !loop; p = qobject_cast<ServerPlayer *>(p->getNext(false))) {
         loop = true;
         if (p == a)
             return a;
