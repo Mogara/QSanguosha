@@ -183,34 +183,40 @@ void Replayer::toggle() {
 }
 
 void Replayer::run() {
-    int last = 0;
-
-    static QList<CommandType> nondelays;
-    if (nondelays.isEmpty())
-        nondelays << S_COMMAND_ADD_PLAYER << S_COMMAND_REMOVE_PLAYER << S_COMMAND_SPEAK;
-
-    foreach(Pair pair, pairs) {
-        int delay = qMin(pair.elapsed - last, 2500);
-        last = pair.elapsed;
-
+    int i = 0;
+    const int pairNum = pairs.length();
+    while (i < pairNum) {
+        const Pair &pair = pairs.at(i);
         Packet packet;
-        bool delayed = true;
         if (packet.parse(pair.cmd)) {
-            if (nondelays.contains(packet.getCommandType()))
-                delayed = false;
+            if (packet.getCommandType() == S_COMMAND_START_IN_X_SECONDS)
+                break;
+            emit command_parsed(pair.cmd);
         }
 
-        if (delayed) {
-            delay /= getSpeed();
+        i++;
+    }
 
-            msleep(delay);
-            emit elasped(pair.elapsed / 1000.0);
+    if (i >= pairNum)
+        return;
 
-            if (!playing)
-                play_sem.acquire();
-        }
+    int last = 0;
+    while (i < pairNum) {
+        const Pair &pair = pairs.at(i);
+
+        int delay = qMax(0, qMin(pair.elapsed - last, 2500));
+        delay /= getSpeed();
+        msleep(delay);
+
+        emit elasped(pair.elapsed / 1000.0);
+
+        if (!playing)
+            play_sem.acquire();
 
         emit command_parsed(pair.cmd);
+
+        last = pair.elapsed;
+        i++;
     }
 }
 
