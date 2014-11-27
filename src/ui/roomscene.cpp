@@ -349,8 +349,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     return_to_start_scene->setTransform(QTransform::fromTranslate(-return_to_start_scene->boundingRect().width() / 2, -return_to_start_scene->boundingRect().height() / 2), true);
     connect(return_to_start_scene, &Button::clicked, this, &RoomScene::return_to_start);
 
-    animations = new EffectAnimation();
-    animations->setParent(this);
+    animations = new EffectAnimation(this);
 
     pausing_item = new QGraphicsRectItem;
     pausing_text = new QGraphicsSimpleTextItem(tr("Paused ..."));

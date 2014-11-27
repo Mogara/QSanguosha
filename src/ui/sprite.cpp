@@ -26,11 +26,9 @@
 #include <QSequentialAnimationGroup>
 #include <QPainter>
 
-EffectAnimation::EffectAnimation()
-    : QObject()
+EffectAnimation::EffectAnimation(QObject *parent)
+    : QObject(parent)
 {
-    effects.clear();
-    registered.clear();
 }
 
 void EffectAnimation::fade(QGraphicsItem *map) {
