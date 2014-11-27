@@ -69,8 +69,9 @@ private slots:
 private:
     enum PacketType{
         UnknownPacket,
-        InlineTextPacket,   //Texts ended with '\n'
-        KeepAlivePacket     //Checking the peer's state
+        InlineTextPacket,       //Texts ended with '\n'
+        KeepAlivePacket,        //Checking the peer's state
+        AcknowledgePacket
     };
 
     void init();

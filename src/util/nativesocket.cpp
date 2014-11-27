@@ -123,8 +123,10 @@ void NativeClientSocket::getMessage() {
             }
             break;
         case KeepAlivePacket:
-            socket->putChar(InlineTextPacket);
+            socket->putChar(AcknowledgePacket);
             socket->flush();
+            break;
+        case AcknowledgePacket:
             break;
         default:
             qDebug() << "Unknown packet: " << type;
