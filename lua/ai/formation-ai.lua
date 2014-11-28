@@ -336,10 +336,6 @@ sgs.ai_use_priority.ShangyiCard = 9
 sgs.ai_card_intention.ShangyiCard = 50
 
 sgs.ai_skill_invoke.yicheng = function(self, data)
-	local use = data:toCardUse()
-	if use.card:isKindOf("Slash") and self:isFriendWith(use.to) and self:isWeak(use.to)  then
-		return true
-	end
 	if not self:willShowForDefence() then
 		return false
 	end
