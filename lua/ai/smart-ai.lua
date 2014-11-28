@@ -2403,7 +2403,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
 			end
-			if who:getHp() == 1 and not who:needKongcheng()
+			if who:getHp() == 1 and not self:needKongcheng(who)
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
 			end
