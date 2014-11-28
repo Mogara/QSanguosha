@@ -142,6 +142,10 @@ public:
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
+    void notifyProperty(const char *propertyName){ notifyProperty(propertyName, property(propertyName)); }
+    void notifyProperty(const char *propertyName, const QVariant &value);
+    void notifyPropertyTo(ServerPlayer *playerToNotify, const char *propertyName) const{ notifyPropertyTo(playerToNotify, propertyName, property(propertyName)); }
+    void notifyPropertyTo(ServerPlayer *playerToNotify, const char *propertyName, const QVariant &value) const;
 
     void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());

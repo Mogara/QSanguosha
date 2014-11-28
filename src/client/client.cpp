@@ -516,7 +516,7 @@ void Client::updateProperty(const QVariant &arg) {
     QString object_name = args[0].toString();
     ClientPlayer *player = getPlayer(object_name);
     if (!player) return;
-    player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
+    player->setProperty(args[1].toString().toLatin1().constData(), args[2]);
 
     //for shuangxiong { RoomScene::detachSkill(const QString &) }
     if (args[1] == "phase" && player->getPhase() == Player::Finish

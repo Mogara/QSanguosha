@@ -752,7 +752,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                         room->setPlayerProperty(p, "role", "careerist");
                     } else {
                         p->setRole("careerist");
-                        room->notifyProperty(p, p, "role");
+                        p->notifyProperty("role");
                     }
                 }
             }

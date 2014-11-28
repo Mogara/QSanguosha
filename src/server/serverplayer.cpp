@@ -343,7 +343,8 @@ void ServerPlayer::getMessage(QByteArray request) {
     }
 }
 
-void ServerPlayer::unicast(const QByteArray &message) {
+void ServerPlayer::unicast(const QByteArray &message)
+{
     emit message_ready(message);
 
     if (recorder)
@@ -407,7 +408,8 @@ void ServerPlayer::unicast(const AbstractPacket *packet) {
     unicast(packet->toJson());
 }
 
-void ServerPlayer::notify(CommandType type, const QVariant &arg){
+void ServerPlayer::notify(CommandType type, const QVariant &arg)
+{
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);
     unicast(packet.toJson());
@@ -1012,7 +1014,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
 
     if (player) {
         player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
-        room->notifyProperty(player, this, "state");
+        notifyPropertyTo(player, "state");
     } else {
         room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
         room->broadcastProperty(this, "state");
@@ -1069,33 +1071,33 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
 
 void ServerPlayer::marshal(ServerPlayer *player) const
 {
-    room->notifyProperty(player, this, "maxhp");
-    room->notifyProperty(player, this, "hp");
-    room->notifyProperty(player, this, "general1_showed");
-    room->notifyProperty(player, this, "general2_showed");
+    notifyPropertyTo(player, "maxhp");
+    notifyPropertyTo(player, "hp");
+    notifyPropertyTo(player, "general1_showed");
+    notifyPropertyTo(player, "general2_showed");
 
     if (this == player || hasShownGeneral1())
-        room->notifyProperty(player, this, "head_skin_id");
+        notifyPropertyTo(player, "head_skin_id");
     if (this == player || hasShownGeneral2())
-        room->notifyProperty(player, this, "deputy_skin_id");
+        notifyPropertyTo(player, "deputy_skin_id");
 
     if (isAlive()) {
-        room->notifyProperty(player, this, "seat");
+        notifyPropertyTo(player, "seat");
         if (getPhase() != Player::NotActive)
-            room->notifyProperty(player, this, "phase");
+            notifyPropertyTo(player, "phase");
     } else {
-        room->notifyProperty(player, this, "alive");
-        room->notifyProperty(player, this, "role");
+        notifyPropertyTo(player, "alive");
+        notifyPropertyTo(player, "role");
         room->doNotify(player, S_COMMAND_KILL_PLAYER, objectName());
     }
 
     if (!faceUp())
-        room->notifyProperty(player, this, "faceup");
+        notifyPropertyTo(player, "faceup");
 
     if (isChained())
-        room->notifyProperty(player, this, "chained");
+        notifyPropertyTo(player, "chained");
 
-    room->notifyProperty(player, this, "gender");
+    notifyPropertyTo(player, "gender");
 
     QList<ServerPlayer*> players;
     players << player;
@@ -1186,15 +1188,15 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 }
             }
         }
-        room->notifyProperty(player, this, "kingdom");
-        room->notifyProperty(player, this, "role");
+        notifyPropertyTo(player, "kingdom");
+        notifyPropertyTo(player, "role");
     }
     else {
-        room->notifyProperty(player, this, "kingdom", "god");
+        notifyPropertyTo(player, "kingdom", "god");
     }
 
     foreach(const QString &flag, flags)
-        room->notifyProperty(player, this, "flags", flag);
+        notifyPropertyTo(player, "flags", flag);
 
     foreach(const QString &item, history.keys()) {
         int value = history.value(item);
@@ -1207,6 +1209,24 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
         }
     }
+}
+
+void ServerPlayer::notifyProperty(const char *propertyName, const QVariant &value)
+{
+    JsonArray arg;
+    arg << QSanProtocol::S_PLAYER_SELF_REFERENCE_ID;
+    arg << propertyName;
+    arg << value;
+    notify(S_COMMAND_SET_PROPERTY, arg);
+}
+
+void ServerPlayer::notifyPropertyTo(ServerPlayer *playerToNotify, const char *propertyName, const QVariant &value) const
+{
+    JsonArray arg;
+    arg << objectName();
+    arg << propertyName;
+    arg << value;
+    playerToNotify->notify(S_COMMAND_SET_PROPERTY, arg);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, QList<ServerPlayer *> open_players) {
@@ -1319,7 +1339,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         }
 
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
-            room->notifyProperty(p, this, "head_skin_id");
+            notifyPropertyTo(p, "head_skin_id");
 
         if (!hasShownGeneral2()) {
             QString kingdom = room->getMode() == "custom_scenario" ? getKingdom() : getGeneral()->getKingdom();
@@ -1390,7 +1410,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         }
 
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
-            room->notifyProperty(p, this, "deputy_skin_id");
+            notifyPropertyTo(p, "deputy_skin_id");
 
         if (!hasShownGeneral1()) {
             QString kingdom = room->getMode() == "custom_scenario" ? getKingdom() : getGeneral2()->getKingdom();
@@ -1951,7 +1971,7 @@ void ServerPlayer::changeToLord() {
     room->broadcastProperty(this, "hp");
 
     setActualGeneral1(lord);
-    room->notifyProperty(this, this, "actual_general1");
+    notifyProperty("actual_general1");
 
     JsonArray arg_changehero;
     arg_changehero << (int)S_GAME_EVENT_CHANGE_HERO;

@@ -2312,17 +2312,17 @@ void Room::prepareForStart() {
                 this->setTag(player->objectName(), QVariant::fromValue(names));
                 player->setGeneralName("anjiang");
                 player->setActualGeneral1Name(generals[i]);
-                notifyProperty(player, player, "actual_general1");
+                player->notifyProperty("actual_general1");
                 foreach(ServerPlayer *p, getOtherPlayers(player))
-                    notifyProperty(p, player, "general");
-                notifyProperty(player, player, "general", generals[i]);
+                    player->notifyPropertyTo(p, "general");
+                player->notifyProperty("general", generals[i]);
                 if (generals[i] != generals2[i] || config.GameMode == "custom_scenario") {
                     player->setGeneral2Name("anjiang");
                     player->setActualGeneral2Name(generals2[i]);
-                    notifyProperty(player, player, "actual_general2");
+                    player->notifyProperty("actual_general2");
                     foreach(ServerPlayer *p, getOtherPlayers(player))
-                        notifyProperty(p, player, "general2");
-                    notifyProperty(player, player, "general2", generals2[i]);
+                        player->notifyPropertyTo(p, "general2");
+                    player->notifyProperty("general2", generals2[i]);
                 }
                 setPlayerProperty(player, "kingdom", kingdoms[i]);
                 setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(kingdoms[i]));
@@ -2627,8 +2627,9 @@ void Room::changeSkinCommand(ServerPlayer *player, const QVariant &arg)
     }
 
     foreach(ServerPlayer *target, m_players) {
-        if (player == target) continue;
-        notifyProperty(target, player, propertyName.toLatin1().constData());
+        if (player == target)
+            continue;
+        player->notifyPropertyTo(target, propertyName.toLatin1().constData());
     }
 }
 
@@ -2644,8 +2645,8 @@ ServerPlayer *Room::getOwner() const{
 void Room::restartCommand(ServerPlayer *player, const QVariant &)
 {
     player->notify(S_COMMAND_SETUP, getSetupString());
-    notifyProperty(player, player, "objectName");
-    notifyProperty(player, player, "owner");
+    player->notifyProperty("objectName");
+    player->notifyProperty("owner");
 
     player->setState("online");
     broadcastProperty(player, "state");
@@ -2667,12 +2668,12 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     player->setScreenName(screen_name);
 
     if (!is_robot) {
-        notifyProperty(player, player, "objectName");
+        player->notifyProperty("objectName");
 
         ServerPlayer *owner = getOwner();
         if (owner == NULL) {
             player->setOwner(true);
-            notifyProperty(player, player, "owner");
+            player->notifyProperty("owner");
         }
     }
 
@@ -2784,21 +2785,21 @@ void Room::chooseGenerals() {
             player->setActualGeneral1Name(name);
             player->setRole(role);
             player->setGeneralName("anjiang");
-            notifyProperty(player, player, "actual_general1");
+            player->notifyProperty("actual_general1");
             foreach(ServerPlayer *p, getOtherPlayers(player))
-                notifyProperty(p, player, "general");
-            notifyProperty(player, player, "general", name);
-            notifyProperty(player, player, "role", role);
+                player->notifyPropertyTo(p, "general");
+            player->notifyProperty("general", name);
+            player->notifyProperty("role", role);
         }
         if (player->getGeneral2()) {
             QString name = player->getGeneral2Name();
             names.append(name);
             player->setActualGeneral2Name(name);
             player->setGeneral2Name("anjiang");
-            notifyProperty(player, player, "actual_general2");
+            player->notifyProperty("actual_general2");
             foreach(ServerPlayer *p, getOtherPlayers(player))
-                notifyProperty(p, player, "general2");
-            notifyProperty(player, player, "general2", name);
+                player->notifyPropertyTo(p, "general2");
+            player->notifyProperty("general2", name);
         }
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
@@ -2851,7 +2852,7 @@ void Room::assignRoles() {
 
         player->setRole(role);
 
-        notifyProperty(player, player, "role");
+        player->notifyProperty("role");
     }
 }
 
@@ -2950,10 +2951,10 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
 
     if (isFirst) {
         player->setGeneralName(general->objectName());
-        notifyProperty(player, player, "general");
+        player->notifyProperty("general");
     } else {
         player->setGeneral2Name(general->objectName());
-        notifyProperty(player, player, "general2");
+        player->notifyProperty("general2");
     }
     return true;
 }
@@ -3567,9 +3568,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
 }
 
 void Room::marshal(ServerPlayer *player) {
-    notifyProperty(player, player, "objectName");
-    notifyProperty(player, player, "role");
-    notifyProperty(player, player, "flags", "marshalling");
+    player->notifyProperty("objectName");
+    player->notifyProperty("role");
+    player->notifyProperty("flags", "marshalling");
 
     foreach(ServerPlayer *p, m_players) {
         if (p != player)
@@ -3589,17 +3590,17 @@ void Room::marshal(ServerPlayer *player) {
         if (p == player)
             continue;
 
-        notifyProperty(player, p, "general");
+        p->notifyPropertyTo(player, "general");
 
         if (p->getGeneral2())
-            notifyProperty(player, p, "general2");
+            p->notifyPropertyTo(player, "general2");
     }
 
-    notifyProperty(player, player, "actual_general1");
-    notifyProperty(player, player, "actual_general2");
+    player->notifyProperty("actual_general1");
+    player->notifyProperty("actual_general2");
 
-    notifyProperty(player, player, "general", player->getActualGeneral1Name());
-    notifyProperty(player, player, "general2", player->getActualGeneral2Name());
+    player->notifyProperty("general", player->getActualGeneral1Name());
+    player->notifyProperty("general2", player->getActualGeneral2Name());
 
     foreach(const Skill *skill, player->getVisibleSkillList()) {
         JsonArray args1;
@@ -3631,7 +3632,7 @@ void Room::marshal(ServerPlayer *player) {
     foreach(ServerPlayer *p, m_players)
         p->marshal(player);
 
-    notifyProperty(player, player, "flags", "-marshalling");
+    player->notifyProperty("flags", "-marshalling");
     doNotify(player, S_COMMAND_UPDATE_PILE, m_drawPile->length());
 }
 
@@ -3709,10 +3710,10 @@ bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *prop
     return doNotify(playerToNotify, S_COMMAND_SET_PROPERTY, arg);
 }
 
-bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value) {
+bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, const QVariant &value) {
     if (player == NULL) return false;
-    QString real_value = value;
-    if (real_value.isNull()) real_value = player->property(property_name).toString();
+    QVariant real_value = value;
+    if (real_value.isNull()) real_value = player->property(property_name);
 
     if (strcmp(property_name, "role"))
         player->setShownRole(true);
@@ -4552,9 +4553,9 @@ void Room::preparePlayers() {
         args << (int) QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
         doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-        notifyProperty(player, player, "flags", "AutoPreshowAvailable");
+        player->notifyProperty("flags", "AutoPreshowAvailable");
         player->notifyPreshow();
-        notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
+        player->notifyProperty("flags", "-AutoPreshowAvailable");
 
         player->setGender(General::Sexless);
     }
@@ -4565,7 +4566,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     QList<ServerPlayer *> players = m_players;
     if (new_general == "anjiang") players.removeOne(player);
     foreach(ServerPlayer *p, players)
-        notifyProperty(p, player, "general");
+        player->notifyPropertyTo(p, "general");
 
     Q_ASSERT(player->getGeneral() != NULL);
     if (new_general != "anjiang")
@@ -4584,7 +4585,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
     QList<ServerPlayer *> players = m_players;
     if (new_general == "anjiang") players.removeOne(player);
     foreach(ServerPlayer *p, players)
-        notifyProperty(p, player, "general2");
+        player->notifyPropertyTo(p, "general2");
     Q_ASSERT(player->getGeneral2() != NULL);
     if (!player->hasShownGeneral1()) {
         if (new_general != "anjiang")
