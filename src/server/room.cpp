@@ -3715,7 +3715,7 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     QVariant real_value = value;
     if (real_value.isNull()) real_value = player->property(property_name);
 
-    if (strcmp(property_name, "role"))
+    if (!strcmp(property_name, "role"))
         player->setShownRole(true);
 
     JsonArray arg;
