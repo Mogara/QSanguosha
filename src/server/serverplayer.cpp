@@ -313,7 +313,7 @@ ClientSocket *ServerPlayer::takeSocket()
 }
 
 void ServerPlayer::kick(){
-    room->notifyProperty(this, this, "flags", "is_kicked");
+    notify(S_COMMAND_WARN, S_WARNING_KICKED);
     if (socket != NULL)
         socket->disconnectFromHost();
     setSocket(NULL);

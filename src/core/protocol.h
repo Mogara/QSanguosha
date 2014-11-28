@@ -212,7 +212,8 @@ namespace QSanProtocol {
         S_WARNING_GAME_OVER,
         S_WARNING_LEVEL_LIMITATION,
         S_WARNING_ROOM_IS_FULL,
-        S_WARNING_WRONG_PASSWORD
+        S_WARNING_WRONG_PASSWORD,
+        S_WARNING_KICKED
     };
 
     enum ServiceType {

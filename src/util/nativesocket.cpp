@@ -177,13 +177,8 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     switch (socket_error) {
     case QAbstractSocket::ConnectionRefusedError:
         reason = tr("Connection was refused or timeout"); break;
-    case QAbstractSocket::RemoteHostClosedError:{
-        if (Self && Self->hasFlag("is_kicked"))
-            reason = tr("You are kicked from server");
-        else
-            reason = tr("Remote host close this connection");
-        break;
-    }
+    case QAbstractSocket::RemoteHostClosedError:
+        reason = tr("Remote host close this connection"); break;
     case QAbstractSocket::HostNotFoundError:
         reason = tr("Host not found"); break;
     case QAbstractSocket::SocketAccessError:

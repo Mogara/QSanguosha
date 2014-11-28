@@ -154,6 +154,7 @@ Client::Client(QObject *parent, const QString &filename)
         warning_translation[S_WARNING_LEVEL_LIMITATION] = tr("Your level is not enough");
         warning_translation[S_WARNING_ROOM_IS_FULL] = tr("The room is already full");
         warning_translation[S_WARNING_WRONG_PASSWORD] = tr("Sorry, your password is incorrect");
+        warning_translation[S_WARNING_KICKED] = tr("You are kicked from server");
     }
 
     recorder = NULL;
