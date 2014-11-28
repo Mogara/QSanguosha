@@ -730,7 +730,7 @@ void MainWindow::enterRoom() {
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, &RoomScene::restart, this, &MainWindow::startConnection);
+    connect(room_scene, &RoomScene::restart, this, &MainWindow::restartGame);
     connect(room_scene, &RoomScene::return_to_start, this, &MainWindow::exitScene);
 
     gotoScene(room_scene);
