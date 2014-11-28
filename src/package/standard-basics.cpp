@@ -109,6 +109,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     if (player->hasFlag("HalberdSlashFilter")) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
         room->setPlayerMark(player, "halberd_count", card_use.to.length() - 1);
     }

@@ -105,8 +105,12 @@ const Card *HalberdCard::validate(CardUseStruct &card_use) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
+    if (player->getWeapon() != NULL)
+        room->setCardFlag(player->getWeapon()->getId(), "using");
     bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
@@ -119,8 +123,12 @@ const Card *HalberdCard::validateInResponse(ServerPlayer *player) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
+    if (player->getWeapon() != NULL)
+        room->setCardFlag(player->getWeapon()->getId(), "using");
     bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
