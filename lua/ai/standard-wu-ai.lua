@@ -661,7 +661,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 
 	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1)
 	or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
-	and not source:getMark("drank") > 0
+	and source:getMark("drank") <= 0
 	then
 			return "."
 	end
