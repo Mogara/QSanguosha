@@ -1418,11 +1418,14 @@ void MainWindow::onCreateRoomClicked()
             QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
             return;
         }
-        server->connectToLobby();
         server->daemonize();
 
+        if (ClientInstance)
+            ClientInstance->disconnectFromHost();
         Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
         startConnection();
+        server->connectToLobby();
+
     } else {
         if (ClientInstance)
             ClientInstance->requestNewRoom();
