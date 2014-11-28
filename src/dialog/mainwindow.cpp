@@ -1370,7 +1370,7 @@ void MainWindow::on_actionCard_editor_triggered()
 
 void MainWindow::on_actionStart_Lobby_triggered()
 {
-    Server *server = new Server(this, Server::LobbyRole);
+    server = new Server(this, Server::LobbyRole);
     if (!server->listen(QHostAddress::Any, Config.ServerPort)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         server->deleteLater();
