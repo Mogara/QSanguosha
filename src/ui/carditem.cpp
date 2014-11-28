@@ -93,7 +93,7 @@ void CardItem::setEnabled(bool enabled) {
 CardItem::~CardItem() {
     m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
-        delete m_currentAnimation;
+        m_currentAnimation->deleteLater();
         m_currentAnimation = NULL;
     }
     m_animationMutex.unlock();

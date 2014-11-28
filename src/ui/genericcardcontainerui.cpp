@@ -114,7 +114,7 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, boo
 
     connect(animation, &QParallelAnimationGroup::finished, this, &GenericCardContainer::_doUpdate);
     connect(animation, &QParallelAnimationGroup::finished, this, &GenericCardContainer::onAnimationFinished);
-    animation->start();
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) {
