@@ -53,7 +53,7 @@ public:
     explicit Replayer(QObject *parent, const QString &filename);
     static QByteArray PNG2TXT(const QString &filename);
 
-    int getDuration() const;
+    int getDuration() const { return duration / 1000; }
     qreal getSpeed();
 
     QString getPath() const;
@@ -75,6 +75,8 @@ private:
     bool playing;
     QMutex mutex;
     QSemaphore play_sem;
+    int duration;
+    int pair_offset;
 
     struct Pair {
         int elapsed;
