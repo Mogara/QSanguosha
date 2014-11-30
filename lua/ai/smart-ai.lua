@@ -5161,7 +5161,7 @@ function SmartAI:willShowForAttack()
 		end
 	end
 
-	local showRate = math.random() + f/20 + eAtt/10 + shown/20
+	local showRate = math.random() + f/20 + eAtt/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
 	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
@@ -5181,6 +5181,7 @@ function SmartAI:willShowForDefence()
 	if self.room:getMode() == "jiange_defense" then return true end
 	if self.player:hasShownOneGeneral() then return true end
 	if self.room:alivePlayerCount() < 3 then return true end
+	if self:isWeak() then return true end
 
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -5197,7 +5198,7 @@ function SmartAI:willShowForDefence()
 			end
 		end
 	end
-	local showRate = math.random() - e/10 - self.player:getHp()/10 + shown/20
+	local showRate = math.random() - e/10 - self.player:getHp()/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
 	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
@@ -5233,7 +5234,7 @@ function SmartAI:willShowForMasochism()
 			end
 		end
 	end
-	local showRate = math.random() - self.player:getHp()/10 + e/10 + shown/20
+	local showRate = math.random() - self.player:getHp()/10 + e/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
 	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then

@@ -548,6 +548,7 @@ sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
 end
 
 sgs.ai_skill_invoke.weimu = function(self, data)
+	if self:isWeak() then return true end
 	if not self:willShowForDefence() then return false end
 	local use = data:toCardUse()
 	if use.card:isKindOf("ImperialOrder") then
