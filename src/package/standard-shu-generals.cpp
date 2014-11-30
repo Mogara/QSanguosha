@@ -947,9 +947,12 @@ public:
         if (triggerEvent == TargetChosen) {
             CardUseStruct use = data.value<CardUseStruct>();
             // according to Banyuan, Huoshou can only be showed when the first player in use.to is chosen to be the target
-            if (use.card->isKindOf("SavageAssault") && TriggerSkill::triggerable(use.from) && player == use.to.first()) {
-                ask_who = use.from;
-                return QStringList(objectName());
+            if (use.card->isKindOf("SavageAssault") && player == use.to.first()) {
+                ServerPlayer *menghuo = room->findPlayerBySkillName(objectName());
+                if (TriggerSkill::triggerable(menghuo)) {
+                    ask_who = menghuo;
+                    return QStringList(objectName());
+                }
             }
         }
         else if (triggerEvent == ConfirmDamage && !room->getTag("HuoshouSource").isNull()) {
