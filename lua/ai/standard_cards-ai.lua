@@ -3075,7 +3075,7 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 		self:sort(self.enemies, "handcard")
 		sgs.reverse(self.enemies)
 		for _, enemy in ipairs(self.enemies) do
-			if KnownBoth:targetFilter(targets, enemy, self.player) and enemy:getHandcardNum() - self:getKnownNum(enemy) > 3 and not targets:contains(enemy)
+			if KnownBoth:targetFilter(targets, enemy, self.player) and enemy:getHandcardNum() - self:getKnownNum(enemy, self.player) > 3 and not targets:contains(enemy)
 				and self:hasTrickEffective(KnownBoth, enemy, self.player) then
 				use.card = KnownBoth
 				targets:append(enemy)
