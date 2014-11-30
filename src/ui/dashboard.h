@@ -127,12 +127,7 @@ public:
 
     static const int S_PENDING_OFFSET_Y = -25;
 
-    inline void updateSkillButton() {
-        if (m_leftSkillDock)
-            m_leftSkillDock->update();
-        if (m_rightSkillDock)
-            m_rightSkillDock->update();
-    }
+    void updateSkillButton();
 
     void setPlayer(ClientPlayer *player);
 
@@ -169,7 +164,7 @@ public slots:
     void skillButtonDeactivated();
     void selectAll();
     void selectCards(const QString &pattern);
-    void controlNullificationButton();
+    void controlNullificationButton(bool keepState);
 
     virtual void updateAvatar();
     virtual void updateSmallAvatar();

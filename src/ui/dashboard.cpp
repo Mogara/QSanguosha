@@ -216,10 +216,17 @@ int Dashboard::getWidth() {
     return this->width;
 }
 
+void Dashboard::updateSkillButton() {
+    if (m_leftSkillDock)
+        m_leftSkillDock->update();
+    if (m_rightSkillDock)
+        m_rightSkillDock->update();
+}
+
 void Dashboard::_createRight() {
     QRect rect = QRect(width - G_DASHBOARD_LAYOUT.m_rightWidth, 0,
-        G_DASHBOARD_LAYOUT.m_rightWidth,
-        G_DASHBOARD_LAYOUT.m_normalHeight);
+                       G_DASHBOARD_LAYOUT.m_rightWidth,
+                       G_DASHBOARD_LAYOUT.m_normalHeight);
     QPixmap pix = QPixmap(1, 1);
     pix.fill(QColor(0, 0, 0, 0));
     _paintPixmap(rightFrame, rect, pix, _m_groupMain);
@@ -1115,8 +1122,11 @@ void Dashboard::cancelNullification() {
     }
 }
 
-void Dashboard::controlNullificationButton() {
+void Dashboard::controlNullificationButton(bool keepState)
+{
     if (ClientInstance->getReplayer()) return;
+    if (!keepState)
+        m_btnNoNullification->setFirstState(true);
     m_btnNoNullification->setState(QSanButton::S_STATE_UP);
 }
 
