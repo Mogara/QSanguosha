@@ -357,6 +357,11 @@ function SmartAI:activate(use)
 				self.toUse = nil
 				return
 			end
+			if use.card and use.card:isKindOf("Slash") and not use.to or use.to:isEmpty() then
+				self.toUse = nil
+				return
+			end
+
 			if use.card then self:speak(use.card:getClassName(), use) end
 		end
 	end
