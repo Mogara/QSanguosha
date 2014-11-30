@@ -2281,6 +2281,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 	else
 
+		if from and from:objectName() == self.player:objectName() then return end
+
 		if (trick:isKindOf("FireAttack") or trick:isKindOf("Duel") or trick:isKindOf("AOE")) and self:cantbeHurt(to, from) then
 			if isEnemyFrom then return null_card end
 		end
