@@ -1106,7 +1106,9 @@ function SmartAI:getUsePriority(card)
 		elseif card:isKindOf("Weapon") and not self.player:getWeapon() then v = (sgs.ai_use_priority[class_name] or 0) + 3
 		elseif card:isKindOf("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
 		elseif card:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() then v = 5.5
-		elseif card:isKindOf("Treasure") and not self.player:getTreasure() then v = 5.6
+		elseif card:isKindOf("Treasure") and not self.player:getTreasure() then
+			v = 5.6
+			if card:isKindOf("JadeSeal") then v = v + 0.1 end
 		end
 		return v
 	end
