@@ -1163,10 +1163,9 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     ServerPlayer *repliedPlayer = NULL;
     time_t timeOut = ServerInfo.getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
     if (!validHumanPlayers.isEmpty()) {
-        if (trick->isKindOf("AOE") || trick->isKindOf("GlobalEffect")) {
-            foreach(ServerPlayer *p, validHumanPlayers)
-                doNotify(p, S_COMMAND_NULLIFICATION_ASKED, trick->objectName());
-        }
+        foreach(ServerPlayer *p, validHumanPlayers)
+            doNotify(p, S_COMMAND_NULLIFICATION_ASKED, trick->objectName());
+
         repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION,
             timeOut, &Room::verifyNullificationResponse);
     }
