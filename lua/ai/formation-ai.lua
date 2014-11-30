@@ -306,6 +306,7 @@ shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("ShangyiCard") then return end
+	if self.player:isKongcheng() then return end
 	if not self:willShowForAttack() then return end
 	local card_str = ("@ShangyiCard=.&shangyi")
 	local shangyi_card = sgs.Card_Parse(card_str)
