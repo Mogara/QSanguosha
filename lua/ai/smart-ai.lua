@@ -309,6 +309,7 @@ function SmartAI:getTurnUse()
 
 		if dummy_use.card then
 			if dummy_use.card:isKindOf("Slash") then
+				if dummy_use.to and dummy_use.to:isEmpty() then continue end
 				if dummy_use.card:hasFlag("AIGlobal_KillOff") then table.insert(slashes, dummy_use.card) break end
 				table.insert(slashes, dummy_use.card)
 			else
@@ -516,13 +517,19 @@ function SmartAI:evaluateKingdom(player, other)
 	if self.room:getMode() == "jiange_defense" then return player:getKingdom() end
 	if sgs.ai_explicit[player:objectName()] ~= "unknown" then return sgs.ai_explicit[player:objectName()] end
 	if player:getMark(string.format("KnownBoth_%s_%s", other:objectName(), player:objectName())) > 0 then
-		local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
+		local upperlimit = player:getLord() and 99 or math.ceil( self.room:getPlayers():length() / 2)
 		return sgs.shown_kingdom[player:getKingdom()] < upperlimit and player:getKingdom() or "careerist"
+	end
+
+	if player:getMark("KnownBothFriend" .. other:objectName()) > 0 then
+		local upperlimit = self.player:getLord() and 99 or math.ceil(self.room:getPlayers():length() / 2)
+		return sgs.shown_kingdom[player:getKingdom()] < upperlimit and other:getKingdom() or "careerist"
 	end
 
 	local max_value, max_kingdom = 0, {}
 	local KnownBothEnemy = player:getMark("KnownBothEnemy" .. other:objectName()) > 0
 	for kingdom, v in pairs(sgs.ai_loyalty) do
+		if not table.contains(sgs.KingdomsTable, kingdom) then continue end
 		if KnownBothEnemy and kingdom == other:getKingdom() then continue end
 		if sgs.ai_loyalty[kingdom][player:objectName()] > max_value then
 			max_value = sgs.ai_loyalty[kingdom][player:objectName()]
@@ -530,6 +537,7 @@ function SmartAI:evaluateKingdom(player, other)
 	end
 	if max_value > 0 then
 		for kingdom, v in pairs(sgs.ai_loyalty) do
+			if not table.contains(sgs.KingdomsTable, kingdom) then continue end
 			if sgs.ai_loyalty[kingdom][player:objectName()] == max_value then
 				table.insert(max_kingdom, kingdom)
 			end
@@ -577,9 +585,14 @@ function sgs.updateIntention(from, to, intention)
 			end
 		elseif to:getMark(string.format("KnownBoth_%s_%s", from:objectName(), to:objectName())) > 0 and sgs.isAnjiang(to) then
 			if sgs.isAnjiang(from) then
-				from:setMark("KnownBothEnemy" .. to:objectName(), 1)
-				to:setMark("KnownBothEnemy" .. from:objectName(), 1)
-			else
+				if intention > 0 then
+					from:setMark("KnownBothEnemy" .. to:objectName(), 1)
+					to:setMark("KnownBothEnemy" .. from:objectName(), 1)
+				elseif intention < 0 then
+					from:setMark("KnownBothFriend" .. to:objectName(), 1)
+					to:setMark("KnownBothFriend" .. from:objectName(), 1)
+				end
+			--[[else
 				sendLog = true
 				output_to = true
 				sgs.outputKingdomValues(to, intention)
@@ -589,7 +602,7 @@ function sgs.updateIntention(from, to, intention)
 					else
 						sgs.ai_loyalty[kingdom][to:objectName()] = sgs.ai_loyalty[kingdom][to:objectName()] - intention
 					end
-				end
+				end]]
 			end
 		end
 	end
@@ -1078,6 +1091,8 @@ function SmartAI:getUseValue(card)
 		v = v + 1
 	end
 
+	if card:isKindOf("HalberdCard") then v = v + 20 end
+
 	if self.player:getPhase() == sgs.Player_Play then v = self:adjustUsePriority(card, v) end
 	return v
 end
@@ -1398,12 +1413,10 @@ end
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		if sgs.gameProcess() == "===" and (sgs.isAnjiang(other) or sgs.isAnjiang(another))
-			and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
-			return false
+		for _, p in ipairs(sgs.ais[other:objectName()].friends) do
+			if p:objectName() == another:objectName() then return true end
 		end
-		local of, af = self:isFriend(other), self:isFriend(another)
-		return of ~= nil and af ~= nil and of == af
+		return false
 	end
 	if self.player:objectName() == other:objectName() then return true end
 	if self.player:isFriendWith(other) then return true end
@@ -1416,12 +1429,10 @@ end
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		if sgs.gameProcess() == "===" and (sgs.isAnjiang(other) or sgs.isAnjiang(another))
-			and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
-			return true
+		for _, p in ipairs(sgs.ais[other:objectName()].enemies) do
+			if p:objectName() == another:objectName() then return true end
 		end
-		local of, af = self:isEnemy(other), self:isEnemy(another)
-		return of ~= nil and af ~= nil and of ~= af
+		return false
 	end
 	if self.player:objectName() == other:objectName() then return false end
 	local level = self:objectiveLevel(other)
@@ -1541,7 +1552,15 @@ function SmartAI:sort(players, key)
 	if not pcall(_sort, players) then self.room:writeToConsole(debug.traceback()) end
 end
 
-function sgs.updateAlivePlayerRoles()
+function sgs.updateAlivePlayerRoles(data)
+	if data then
+		local who = data:toDeath().who
+		local n = 0
+		for _, aplayer in sgs.qlist(global_room:getOtherPlayers(who)) do
+			if aplayer:isFriendWith(who) then n = n + 1 end
+		end
+		if n == 0 then table.removeOne(sgs.KingdomsTable, who:getKingdom()) end
+	end
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
 		sgs.current_mode_players[kingdom] = 0
 	end
@@ -1756,7 +1775,7 @@ function SmartAI:filterEvent(event, player, data)
 	end
 
 	if event == sgs.BuryVictim then
-		if self == sgs.recorder then sgs.updateAlivePlayerRoles() end
+		if self == sgs.recorder then sgs.updateAlivePlayerRoles(data) end
 	end
 
 	if self.player:objectName() == player:objectName() and event == sgs.AskForPeaches then
@@ -3301,9 +3320,9 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 	if reason ~= "lightning" then
 		for _, aplayer in sgs.qlist(self.room:getAllPlayers()) do
 			if aplayer:containsTrick("lightning") then
-				for _, card in ipairs(can_use) do
+				for i, card in ipairs(can_use) do
 					if card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 then
-						table.removeOne(can_use, card)
+						table.remove(can_use, i)
 						break
 					end
 				end
