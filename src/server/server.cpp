@@ -52,10 +52,10 @@ Server::Server(QObject *parent, Role role)
 
     connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
 
-    db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(":memory:");
     if (db.open()) {
-        db.exec("CREATE TABLE `room` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `setupstring` text, `hostaddress` varchar(21), `playernum` int)");
+        db.exec("CREATE TABLE `room` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `setupstring` text, `hostaddress` varchar(21))");
     } else {
         qFatal("SQLite database can't be opened.");
     }

@@ -103,7 +103,7 @@ bool RoomInfoStruct::parse(const QVariant &data)
     if (args.size() != 4 || !ServerInfoStruct::parse(args.at(1).toString())) {
         return false;
     }
-    RoomId = args.at(0).toInt();
+    RoomId = args.at(0).toLongLong();
     HostAddress = args.at(2).toString();
     PlayerNum = args.at(3).toInt();
     return true;

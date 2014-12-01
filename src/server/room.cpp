@@ -45,6 +45,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QElapsedTimer>
+#include <QSqlQuery>
 
 #ifndef QT_NO_DEBUG
 #include <QApplication>
@@ -70,8 +71,12 @@ Room::Room(QObject *parent, const RoomConfig &config)
     _m_raceStarted(false), provided(NULL), has_provided(false),
     m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
 {
-    static int s_global_room_id = 0;
-    _m_Id = s_global_room_id++;
+    QSqlQuery query;
+    query.prepare("INSERT INTO `room` (`setupstring`) VALUES (:setupstring)");
+    query.bindValue(":setupstring", getSetupString());
+    query.exec();
+
+    _m_Id = query.lastInsertId().toLongLong();
     _m_lastMovementId = 0;
     player_count = Sanguosha->getPlayerCount(config.GameMode);
     scenario = Sanguosha->getScenario(config.GameMode);
@@ -134,7 +139,13 @@ Room::Room(QObject *parent, const RoomConfig &config)
     }
 }
 
-Room::~Room(){
+Room::~Room()
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM `room` WHERE `id`=?");
+    query.addBindValue(_m_Id);
+    query.exec();
+
     lua_close(L);
     if (thread != NULL)
         delete thread;

@@ -1200,7 +1200,7 @@ void Client::onPlayerChangeSkin(int skin_id, bool is_head)
     notifyServer(S_COMMAND_CHANGE_SKIN, args);
 }
 
-void Client::onPlayerChooseRoom(int room_id)
+void Client::onPlayerChooseRoom(qlonglong room_id)
 {
     JsonArray data;
     data << room_id;

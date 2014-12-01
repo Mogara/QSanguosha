@@ -52,7 +52,7 @@ struct ServerInfoStruct {
 extern ServerInfoStruct ServerInfo;
 
 struct RoomInfoStruct : public ServerInfoStruct {
-    int RoomId;
+    qlonglong RoomId;
     QString HostAddress;
     int PlayerNum;
 

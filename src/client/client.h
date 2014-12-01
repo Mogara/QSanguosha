@@ -248,7 +248,7 @@ public slots:
     void onPlayerChangeSkin(int skin_id, bool is_head = true);
     void onPlayerChooseSuit();
     void onPlayerChooseKingdom();
-    void onPlayerChooseRoom(int room_id);
+    void onPlayerChooseRoom(qlonglong room_id);
     void preshow(const QString &skill_name, const bool isPreshowed);
     void trust();
     void addRobot();

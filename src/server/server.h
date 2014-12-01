@@ -28,7 +28,6 @@
 #include <QObject>
 #include <QStringList>
 #include <QMutex>
-#include <QSqlDatabase>
 
 class Room;
 class ServerPlayer;
@@ -56,7 +55,7 @@ public:
 
     void connectToLobby();
     Room *createNewRoom(const RoomConfig &config);
-    Room *getRoom(int room_id);
+    Room *getRoom(qlonglong room_id);
     void signupPlayer(ServerPlayer *player);
 
     void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);
@@ -116,7 +115,6 @@ protected:
 
     QList<LobbyPlayer *> lobbyPlayers;
     QMap<ClientSocket *, unsigned> remoteRoomId;
-    QSqlDatabase db;
 
     UdpSocket *daemon;
 

@@ -134,8 +134,7 @@ void LobbyPlayer::enterRoomCommand(const QVariant &data)
     if (args.isEmpty())
         return;
 
-    int room_id = args.at(0).toInt();
-    Room *room = server->getRoom(room_id);
+    Room *room = server->getRoom(args.at(0).toLongLong());
 
     if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
         warn(S_WARNING_GAME_OVER);

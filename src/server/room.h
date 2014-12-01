@@ -59,7 +59,7 @@ public:
     ~Room();
 
     ServerPlayer *addSocket(ClientSocket *socket);
-    inline int getId() const{ return _m_Id; }
+    inline qlonglong getId() const{ return _m_Id; }
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
@@ -413,7 +413,7 @@ public:
 
 protected:
     virtual void run();
-    int _m_Id;
+    qlonglong _m_Id;
 
 private:
     struct _MoveSourceClassifier {

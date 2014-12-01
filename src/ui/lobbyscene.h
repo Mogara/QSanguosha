@@ -42,7 +42,7 @@ public:
     void adjustRoomTiles();
 
 signals:
-    void roomSelected(int room_id);
+    void roomSelected(qlonglong room_id);
     void roomSelected();
     void createRoomClicked();
     void roomListRequested(int page);

@@ -93,7 +93,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     connect(client, &Client::roomChanged, this, &LobbyScene::onRoomChanged);
     connect(this, &LobbyScene::sceneRectChanged, this, &LobbyScene::onSceneRectChanged);
     connect(this, &LobbyScene::roomListRequested, client, &Client::fetchRoomList);
-    connect(this, (void (LobbyScene::*)(int))(&LobbyScene::roomSelected), client, &Client::onPlayerChooseRoom);
+    connect(this, (void (LobbyScene::*)(qlonglong))(&LobbyScene::roomSelected), client, &Client::onPlayerChooseRoom);
 }
 
 LobbyScene::~LobbyScene()

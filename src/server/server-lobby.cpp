@@ -58,11 +58,10 @@ void Server::cleanupLobbyPlayer()
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 3) return;
+    if (args.size() != 2) return;
 
     QString setupString = args.at(0).toString();
     ushort hostPort = args.at(1).toUInt();
-    ushort playerNum = args.at(2).toUInt();
 
     //check if the room server can be connected
     QTcpSocket socket;
@@ -76,12 +75,10 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 
         emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(hostPort));
 
-        QSqlQuery query(db);
-        query.prepare("INSERT INTO room (`hostaddress`, `setupstring`, `playernum`) VALUES (:hostaddress, :setupstring, :playernum)");
+        QSqlQuery query;
+        query.prepare("INSERT INTO `room` (`hostaddress`, `setupstring`) VALUES (:hostaddress, :setupstring)");
         query.bindValue(":hostaddress", QString("%1:%2").arg(from->peerAddress()).arg(hostPort));
-        query.bindValue(":port", hostPort);
         query.bindValue(":setupstring", setupString);
-        query.bindValue(":playernum", playerNum);
         query.exec();
 
         remoteRoomId[from] = query.lastInsertId().toUInt();
@@ -99,8 +96,8 @@ void Server::cleanupRemoteRoom()
     emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));
     unsigned id = remoteRoomId.value(socket);
     if (id > 0) {
-        QSqlQuery query(db);
-        query.prepare("DELETE FROM room WHERE id=?");
+        QSqlQuery query;
+        query.prepare("DELETE FROM `room` WHERE `id`=?");
         query.addBindValue(id);
         query.exec();
     }
@@ -114,18 +111,24 @@ QVariant Server::getRoomList(int page)
     static const int limit = 10;
     int offset = (page - 1) * 10;
 
-    QSqlQuery query(db);
-    query.prepare("SELECT * FROM room WHERE 1 LIMIT :offset,:limit");
+    QSqlQuery query;
+    query.prepare("SELECT * FROM `room` WHERE 1 LIMIT :offset,:limit");
     query.bindValue(":offset", offset);
     query.bindValue(":limit", limit);
     query.exec();
 
     JsonArray data;
     while (query.next()) {
-        JsonArray room;
-        for(int i = 0; i < 4; i++)
-            room << query.value(i);
-        data << QVariant(room);
+        JsonArray row;
+        for(int i = 0; i < 3; i++)
+            row << query.value(i);
+        row << 0;
+        if (row.at(2).isNull()) {
+            Room *room = getRoom(row.at(0).toLongLong());
+            if (room)
+                row[3] = room->getPlayers().length();
+        }
+        data << QVariant(row);
     }
 
     return data;

@@ -58,7 +58,7 @@ Room *Server::createNewRoom(const RoomConfig &config)
     return new_room;
 }
 
-Room *Server::getRoom(int room_id)
+Room *Server::getRoom(qlonglong room_id)
 {
     foreach (Room *room, rooms) {
         if (room->getId() == room_id)
@@ -156,7 +156,6 @@ void Server::checkVersion(const QVariant &server_version)
         JsonArray data;
         data << Sanguosha->getSetupString();
         data << serverPort();
-        data << players.size();
         notifyLobby(S_COMMAND_SETUP, data);
     } else {
         emit serverMessage(tr("Failed to setup for the version is different from the lobby."));
