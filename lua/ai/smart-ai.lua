@@ -176,7 +176,7 @@ function setInitialTables()
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		if p:getState() == "robot" then table.insert(sgs.robot, p) end
 		local kingdom = p:getKingdom()
-		if not table.contains(sgs.KingdomsTable, kingdom) and kingdom ~= "default" then
+		if not table.contains(sgs.KingdomsTable, kingdom) then
 			table.insert(sgs.KingdomsTable, kingdom)
 		end
 		sgs.ai_loyalty[kingdom] = {}
@@ -618,19 +618,26 @@ function sgs.updateIntention(from, to, intention)
 end
 
 function sgs.outputKingdomValues(player, level, sendLog)
-	--[[local name = player:getGeneralName() .. "/" .. player:getGeneral2Name()
-	if name == "anjiang/anjiang" then name = "SEAT" .. player:getSeat() end
-	local msg = name .. " " .. level .. " "
-	for _, kingdom in ipairs(sgs.KingdomsTable) do
-		msg = msg .. " " .. kingdom .. math.ceil(sgs.ai_loyalty[kingdom][player:objectName()])
+	local logType = 1
+	local name = player:getGeneralName() .. "/" .. player:getGeneral2Name()
+	if name == "anjiang/anjiang" then
+		name = "SEAT" .. player:getSeat()
+		logType = 2
 	end
-	msg = msg .. " gP " .. sgs.gameProcess() .. " "
+	local msg = name
+	if logType == 2 then
+		msg = msg .. " " .. level
+		for _, kingdom in ipairs(sgs.KingdomsTable) do
+			msg = msg .. " " .. kingdom .. math.ceil(sgs.ai_loyalty[kingdom][player:objectName()])
+		end
+	end
+	msg = msg .. " gP:" .. sgs.gameProcess() .. " "
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
-		msg = msg .. sgs.current_mode_players[kingdom]
+		msg = msg .. string.upper(string.sub(kingdom, 1, 1)) .. string.sub(kingdom, 2) .. sgs.current_mode_players[kingdom] .. " "
 	end
 	global_room:writeToConsole(msg)
 
-	if sendLog then
+	--[[if sendLog then
 		local log = sgs.LogMessage()
 		log.type = "#AI_evaluateKingdom"
 		log.arg = sgs.recorder:evaluateKingdom(player)
@@ -681,9 +688,25 @@ function SmartAI:updatePlayerKingdom(player, data)
 		sgs.general_shown[player:objectName()]["head"] = player:hasShownGeneral1()
 		sgs.general_shown[player:objectName()]["deputy"] = player:hasShownGeneral2()
 	end
+
 	for _, k in ipairs(sgs.KingdomsTable) do
 		if k == sgs.ai_explicit[player:objectName()] then sgs.ai_loyalty[k][player:objectName()] = 99
 		else sgs.ai_loyalty[k][player:objectName()] = 0
+		end
+	end
+	local all_shown = true
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if sgs.isAnjiang(p) then all_shown = false break end
+	end
+
+	if all_shown then
+		sgs.KingdomsTable = {}
+		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+			if p:getRole() == "careerist" then continue end
+			local kingdom = p:getKingdom()
+			if not table.contains(sgs.KingdomsTable, kingdom) then
+				table.insert(sgs.KingdomsTable, kingdom)
+			end
 		end
 	end
 
