@@ -34,18 +34,19 @@ class LobbyPlayer : public QObject
     Q_OBJECT
 
 public:
-    Q_PROPERTY(QString screenName READ getScreenName WRITE setScreenName)
+    Q_PROPERTY(QString screenname READ getScreenName WRITE setScreenName)
     Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar)
 
     explicit LobbyPlayer(Server *parent = 0);
 
     void setSocket(ClientSocket *new_socket);
-    QString getIP() const { return socket != NULL ? socket->peerAddress() : QString(); }
+    QString getIp() const { return socket != NULL ? socket->peerAddress() : QString(); }
     QString getSocketName() const { return socket != NULL ? socket->peerName() : QString(); }
 
     void notify(QSanProtocol::CommandType command, const QVariant &data = QVariant());
     void unicast(const QByteArray &message) { socket->send(message); }
     void unicast(const QSanProtocol::Packet *packet) { socket->send(packet->toJson()); }
+    void kick();
 
     QString getScreenName() const { return screenName; }
     void setScreenName(const QString &name) { screenName = name; }

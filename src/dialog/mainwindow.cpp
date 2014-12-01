@@ -1285,9 +1285,6 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
 
 void MainWindow::on_actionManage_Ban_IP_triggered(){
     BanIpDialog *dlg = new BanIpDialog(this, server);
-    if (server)
-        connect(server, &Server::newPlayer, dlg, &BanIpDialog::addPlayer);
-
     dlg->show();
 }
 

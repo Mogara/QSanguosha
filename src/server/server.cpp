@@ -236,6 +236,7 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
 
         connect(player, &LobbyPlayer::errorMessage, this, &Server::serverMessage);
         connect(player, &LobbyPlayer::disconnected, this, &Server::cleanupLobbyPlayer);
+        emit newPlayer(player);
 
         emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
 

@@ -64,6 +64,12 @@ void LobbyPlayer::notify(CommandType command, const QVariant &data)
     unicast(packet.toJson());
 }
 
+void LobbyPlayer::kick()
+{
+    warn(S_WARNING_KICKED);
+    socket->disconnectFromHost();
+}
+
 void LobbyPlayer::processMessage(const QByteArray &message)
 {
     Packet packet;

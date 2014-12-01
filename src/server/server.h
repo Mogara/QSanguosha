@@ -125,6 +125,7 @@ private:
 signals:
     void serverMessage(const QString &);
     void newPlayer(ServerPlayer *player);
+    void newPlayer(LobbyPlayer *player);
 };
 
 #endif // SERVER_H
