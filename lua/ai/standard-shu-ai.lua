@@ -348,6 +348,10 @@ function SmartAI:canLiegong(to, from)
 	return false
 end
 
+sgs.ai_skill_invoke.kuanggu = function(self, data)
+	return true
+end
+
 function sgs.ai_cardneed.kuanggu(to, card, self)
 	return card:isKindOf("OffensiveHorse") and not (to:getOffensiveHorse() or getKnownCard(to, self.player, "OffensiveHorse", false) > 0)
 end
