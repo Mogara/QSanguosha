@@ -408,9 +408,6 @@ function SmartAI:objectiveLevel(player)
 		else return self:getOverflow() > 0 and 4 or 0
 		end
 	elseif string.find(gameProcess, ">") then
-		local isWeakPlayer = player:getHp() == 1 and not player:hasShownSkill("duanchang")
-						and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
-						and (sgs.getReward(player) >= 2 or self.player:aliveCount() <= 4) and self:isWeak(player)
 		local kingdom = gameProcess:split(">")[1]
 		if string.find(gameProcess, ">>>") then
 			if self_kingdom == kingdom and not selfIsCareerist then
@@ -422,7 +419,6 @@ function SmartAI:objectiveLevel(player)
 			else
 				if player_kingdom_explicit == kingdom then return 5
 				elseif player_kingdom_evaluate == kingdom then return 5
-				elseif isWeakPlayer then return 5
 				elseif player_kingdom_evaluate == "unknown" then return 0
 				elseif not string.find(player_kingdom_evaluate, kingdom) then return -1
 				else return 3
@@ -438,7 +434,7 @@ function SmartAI:objectiveLevel(player)
 				end
 				return 5
 			else
-				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom or isWeakPlayer then return 5
+				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom then return 5
 				elseif not string.find(player_kingdom_evaluate, kingdom) then return 0
 				else return 3
 				end
@@ -453,6 +449,9 @@ function SmartAI:objectiveLevel(player)
 				end
 				return 5
 			else
+				local isWeakPlayer = player:getHp() == 1 and not player:hasShownSkill("duanchang") and self:isWeak(player)
+										and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
+										and (sgs.getReward(player) >= 2 or self.player:aliveCount() <= 4)
 				if player_kingdom_explicit == kingdom or isWeakPlayer then return 5
 				elseif player_kingdom_evaluate == kingdom then return 3
 				elseif player_kingdom_explicit == "careerist" then return 0
