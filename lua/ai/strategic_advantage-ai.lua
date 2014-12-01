@@ -659,12 +659,12 @@ sgs.ai_nullification.AllianceFeast = function(self, card, from, to, positive)
 	if positive then
 		if self:isEnemy(to) then
 			if to:objectName() ~= from:objectName() and (to:isWounded() or not to:faceUp()) then return true end
-			if to:objectName() == from:objectName() and to:getPlayerNumWithSameKingdom("AI") >= 2 then return true end
+			if to:objectName() == from:objectName() and to:getMark("alliance_feast") >= 2 then return true end
 		end
 	else
 		if self:isFriend(to) then
 			if to:objectName() ~= from:objectName() and (to:isWounded() or not to:faceUp()) then return true end
-			if to:objectName() == from:objectName() and to:getPlayerNumWithSameKingdom("AI") >= 2 then return true end
+			if to:objectName() == from:objectName() and to:getMark("alliance_feast") >= 2 then return true end
 		end
 	end
 	return
