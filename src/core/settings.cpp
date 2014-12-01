@@ -102,6 +102,7 @@ void Settings::init() {
     ServerPort = value("ServerPort", 9527u).toUInt();
     DisableLua = value("DisableLua", false).toBool();
     RewardTheFirstShowingPlayer = value("RewardTheFirstShowingPlayer", false).toBool();
+    BannedIp = value("BannedIP").toStringList().toSet();
 
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();

@@ -26,6 +26,7 @@
 #include <QRectF>
 #include <QPixmap>
 #include <QBrush>
+#include <QSet>
 
 class Settings : public QSettings {
     Q_OBJECT
@@ -84,6 +85,7 @@ public:
     bool DisableLua;
     QString RoomPassword;
     bool RewardTheFirstShowingPlayer;
+    QSet<QString> BannedIp;
 
     // client side
     QString LobbyAddress;

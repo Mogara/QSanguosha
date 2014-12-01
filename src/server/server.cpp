@@ -134,7 +134,7 @@ void Server::processNewConnection(ClientSocket *socket)
         }
     }
 
-    if (Config.value("BannedIP").toStringList().contains(address)){
+    if (Config.BannedIp.contains(address)){
         socket->disconnectFromHost();
         emit serverMessage(tr("Forbid the connection of address %1").arg(address));
         return;

@@ -109,7 +109,7 @@ void BanIpDialog::loadIPList(){
 }
 
 void BanIpDialog::loadBannedList() {
-    QStringList banned = Config.value("BannedIP", QStringList()).toStringList();
+    QStringList banned = Config.BannedIp.toList();
 
     right->clear();
     right->addItems(banned);
