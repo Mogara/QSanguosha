@@ -719,7 +719,14 @@ sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
 	if self:needToThrowArmor() then
 		return self.player:getArmor():getEffectiveId()
 	end
-	if self.player:getPhase() == sgs.Player_NotActive then
+	local discard
+	local kingdom = self:evaluateKingdom(self.player)
+	if kingdom == "unknown" then discard = true
+	else
+		kingdom = kingdom:split("?")
+		discard = #kingdom / #sgs.KingdomsTable >= 0.5
+	end
+	if self.player:getPhase() == sgs.Player_NotActive and discard then
 		local cards = self.player:getCards("he")
 		local cards = sgs.QList2Table(self.player:getCards("he"))
 			for _, card in ipairs(cards) do
