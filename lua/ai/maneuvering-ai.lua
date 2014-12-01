@@ -341,6 +341,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 
 	if to:hasArmorEffect("SilverLion") then damage = 1 end
 
+	local punish
 	local kills, the_enemy = 0
 	local good, bad, F_count, E_count = 0, 0, 0, 0
 	local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
@@ -355,7 +356,11 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		end
 		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
 		if damage + (dmg or 0) >= target:getHp() then
-			if self:isFriend(target) or self:isFriend(from) then newvalue = newvalue - 2 end
+			if self:isFriend(target) or self:isFriend(from) then newvalue = newvalue - sgs.getReward(to) end
+			if self:isFriend(from) and self:isFriend(target) and not punish and getCardsNum("Peach", from, self.player) + getCardsNum("Peach", target, self.player) == 0 then
+				punish = true
+				newvalue = newvalue - from:getCardCount(true)
+			end
 			if self:isEnemy(target) then kills = kills + 1 end
 			if target:objectName() == self.player:objectName() and #self.friends_noself == 0 and peach_num < damage + (dmg or 0) then newvalue = newvalue - 100 end
 		else
@@ -364,7 +369,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		end
 
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
-		return newvalue - damage - (dmg or 0)
+		return newvalue - damage * 2 - (dmg * 2 or 0)
 	end
 
 	local value = getChainedPlayerValue(to)
@@ -376,7 +381,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		E_count = E_count + 1
 	end
 
-	if nature == sgs.DamageStruct_Normal then return good >= bad end
+	if nature == sgs.DamageStruct_Normal then return good > bad end
 
 	if card and card:isKindOf("FireAttack") and from:objectName() == to:objectName() then good = good - 1 end
 
@@ -411,7 +416,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 
 	if F_count > 0 and E_count <= 0 then return end
 
-	return good >= bad
+	return good > bad
 end
 
 function SmartAI:useCardIronChain(card, use)
