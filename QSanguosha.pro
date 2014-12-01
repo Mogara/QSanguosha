@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network widgets
+QT += network widgets sql
 !winrt:QT += declarative
 TEMPLATE = app
 CONFIG += audio

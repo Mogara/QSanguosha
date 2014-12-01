@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QSqlQuery>
+
 #include "server.h"
 #include "lobbyplayer.h"
 #include "json.h"
@@ -56,18 +58,15 @@ void Server::cleanupLobbyPlayer()
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 4) return;
-    /*
-    args.at(0).toString();  //SetupString
-    args.at(1).toUInt();    //RoomId
-    args.at(2).toUInt();    //HostPort
-    args.at(3).toUInt();    //PlayerNum
-    */
+    if (args.size() != 3) return;
+
+    QString setupString = args.at(0).toString();
+    ushort hostPort = args.at(1).toUInt();
+    ushort playerNum = args.at(2).toUInt();
 
     //check if the room server can be connected
-    ushort port = args.at(2).toUInt();
     QTcpSocket socket;
-    socket.connectToHost(from->peerAddress(), port);
+    socket.connectToHost(from->peerAddress(), hostPort);
     if (socket.waitForConnected(2000)) {
         ServerInfoStruct info;
         if (!info.parse(args.at(0).toString())) {
@@ -75,10 +74,17 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
             return;
         }
 
-        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
+        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(hostPort));
 
-        args[2] = QString("%1:%2").arg(from->peerAddress()).arg(port);
-        remoteRooms.insert(from, args);
+        QSqlQuery query(db);
+        query.prepare("INSERT INTO room (`hostaddress`, `setupstring`, `playernum`) VALUES (:hostaddress, :setupstring, :playernum)");
+        query.bindValue(":hostaddress", QString("%1:%2").arg(from->peerAddress()).arg(hostPort));
+        query.bindValue(":port", hostPort);
+        query.bindValue(":setupstring", setupString);
+        query.bindValue(":playernum", playerNum);
+        query.exec();
+
+        remoteRoomId[from] = query.lastInsertId().toUInt();
 
         connect(from, &ClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
     }
@@ -91,50 +97,36 @@ void Server::cleanupRemoteRoom()
     if (socket == NULL) return;
 
     emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));
-    remoteRooms.remove(socket);
+    unsigned id = remoteRoomId.value(socket);
+    if (id > 0) {
+        QSqlQuery query(db);
+        query.prepare("DELETE FROM room WHERE id=?");
+        query.addBindValue(id);
+        query.exec();
+    }
+    remoteRoomId.remove(socket);
     socket->disconnect(this);
     this->disconnect(socket);
 }
 
 QVariant Server::getRoomList(int page)
 {
-    if (rooms.isEmpty() && remoteRooms.isEmpty()) {
-        return QVariant();
-    }
+    static const int limit = 10;
+    int offset = (page - 1) * 10;
 
-    static const int pageLimit = 10;
-    int offset = page * pageLimit;
-    if (offset >= rooms.size() + remoteRooms.size())
-        return QVariant();
+    QSqlQuery query(db);
+    query.prepare("SELECT * FROM room WHERE 1 LIMIT :offset,:limit");
+    query.bindValue(":offset", offset);
+    query.bindValue(":limit", limit);
+    query.exec();
 
-    int end = offset + pageLimit;
     JsonArray data;
-    int i = 0;
-
-    QSetIterator<Room *> iter1(rooms);
-    while (iter1.hasNext()) {
-        Room *room = iter1.next();
-        if (i >= offset) {
-            JsonArray item;
-            item << room->getSetupString();
-            item << room->getId();
-            item << QVariant();//No host address. It's not a remote room.
-            item << room->getPlayers().size();
-            data << QVariant(item);
-        }
-        i++;
-        if (i >= end)
-            return data;
+    while (query.next()) {
+        JsonArray room;
+        for(int i = 0; i < 4; i++)
+            room << query.value(i);
+        data << QVariant(room);
     }
 
-    QMapIterator<ClientSocket *, QVariant> iter2(remoteRooms);
-    while (iter2.hasNext()) {
-        iter2.next();
-        if (i >= offset)
-            data << iter2.value();
-        i++;
-        if (i >= end)
-            return data;
-    }
     return data;
 }

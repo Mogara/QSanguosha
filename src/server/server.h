@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QMutex>
+#include <QSqlDatabase>
 
 class Room;
 class ServerPlayer;
@@ -114,7 +115,8 @@ protected:
     ClientSocket *lobby;
 
     QList<LobbyPlayer *> lobbyPlayers;
-    QMap<ClientSocket *, QVariant> remoteRooms;
+    QMap<ClientSocket *, unsigned> remoteRoomId;
+    QSqlDatabase db;
 
     UdpSocket *daemon;
 

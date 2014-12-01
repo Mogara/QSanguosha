@@ -19,6 +19,8 @@
     *********************************************************************/
 
 #include <QCryptographicHash>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 #include "server.h"
 #include "nativesocket.h"
@@ -49,6 +51,14 @@ Server::Server(QObject *parent, Role role)
     ServerInfo.parse(Sanguosha->getSetupString());
 
     connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
+
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(":memory:");
+    if (db.open()) {
+        db.exec("CREATE TABLE `room` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `setupstring` text, `hostaddress` varchar(21), `playernum` int)");
+    } else {
+        qFatal("SQLite database can't be opened.");
+    }
 }
 
 void Server::daemonize()
@@ -94,7 +104,7 @@ void Server::broadcast(const AbstractPacket *packet)
     }
 
     if (destination & S_DEST_ROOM) {
-        QMapIterator<ClientSocket *, QVariant> iter(remoteRooms);
+        QMapIterator<ClientSocket *, unsigned> iter(remoteRoomId);
         while (iter.hasNext()) {
             iter.next();
             ClientSocket *socket = iter.key();

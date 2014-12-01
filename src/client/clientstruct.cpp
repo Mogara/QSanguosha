@@ -100,10 +100,10 @@ bool ServerInfoStruct::parse(const QString &str) {
 bool RoomInfoStruct::parse(const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 4 || !ServerInfoStruct::parse(args.at(0).toString())) {
+    if (args.size() != 4 || !ServerInfoStruct::parse(args.at(1).toString())) {
         return false;
     }
-    RoomId = args.at(1).toInt();
+    RoomId = args.at(0).toInt();
     HostAddress = args.at(2).toString();
     PlayerNum = args.at(3).toInt();
     return true;

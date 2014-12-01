@@ -155,7 +155,6 @@ void Server::checkVersion(const QVariant &server_version)
     if (lobby_version == client_version) {
         JsonArray data;
         data << Sanguosha->getSetupString();
-        data << 0;
         data << serverPort();
         data << players.size();
         notifyLobby(S_COMMAND_SETUP, data);
