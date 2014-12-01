@@ -659,10 +659,8 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	local slash = self.player:getTag("liuli-card"):toCard()
 	local nature = sgs.Slash_Natures[slash:getClassName()]
 
-	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1)
-	or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
-	and source:getMark("drank") <= 0
-	then
+	if ((not self:willShowForDefence() and self:getCardsNum("Jink") > 1) or (not self:willShowForMasochism() and self:getCardsNum("Jink") == 0))
+		and source:getMark("drank") == 0 then
 			return "."
 	end
 
