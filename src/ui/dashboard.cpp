@@ -267,8 +267,8 @@ void Dashboard::_createRight() {
     _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), rightFrame);
     _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), rightFrame);
 
-    connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::onHeadSkillPreshowed);
-    connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::onDeputySkillPreshowed);
+    connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateLeftHiddenMark);
+    connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::updateRightHiddenMark);
 
 
 
@@ -592,9 +592,9 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
         dock = head ? m_leftSkillDock : m_rightSkillDock;
 
     if (dock == m_leftSkillDock)
-        onHeadSkillPreshowed();
+        updateLeftHiddenMark();
     else
-        onDeputySkillPreshowed();
+        updateRightHiddenMark();
 
     return dock->addSkillButtonByName(skillName);
 }
@@ -1400,7 +1400,7 @@ void Dashboard::onHeadStateChanged() {
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer1->setBrush(Qt::NoBrush);
-    onHeadSkillPreshowed();
+    updateLeftHiddenMark();
 }
 
 void Dashboard::onDeputyStateChanged() {
@@ -1408,17 +1408,17 @@ void Dashboard::onDeputyStateChanged() {
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer2->setBrush(Qt::NoBrush);
-    onDeputySkillPreshowed();
+    updateRightHiddenMark();
 }
 
-void Dashboard::onHeadSkillPreshowed() {
+void Dashboard::updateLeftHiddenMark() {
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral1())
         leftHiddenMark->setVisible(m_player->isHidden(true));
     else
         leftHiddenMark->setVisible(false);
 }
 
-void Dashboard::onDeputySkillPreshowed() {
+void Dashboard::updateRightHiddenMark() {
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         rightHiddenMark->setVisible(m_player->isHidden(false));
     else

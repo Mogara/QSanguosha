@@ -168,6 +168,8 @@ public slots:
 
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
+    void updateLeftHiddenMark();
+    void updateRightHiddenMark();
 
 protected:
     void _createExtraButtons();
@@ -285,8 +287,6 @@ private slots:
     void onMarkChanged();
     void onHeadStateChanged();
     void onDeputyStateChanged();
-    void onHeadSkillPreshowed();
-    void onDeputySkillPreshowed();
     void updateTrustButton();
     void bringSenderToTop();
     void resetSenderZValue();

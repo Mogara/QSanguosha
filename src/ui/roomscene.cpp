@@ -530,6 +530,11 @@ void RoomScene::handleGameEvent(const QVariant &args) {
                         }
                     }
                 }
+
+                if (Self->inHeadSkills(skill))
+                    dashboard->updateLeftHiddenMark();
+                else
+                    dashboard->updateRightHiddenMark();
             }
         }
         break;
