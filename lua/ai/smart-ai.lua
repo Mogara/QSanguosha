@@ -309,7 +309,6 @@ function SmartAI:getTurnUse()
 
 		if dummy_use.card then
 			if dummy_use.card:isKindOf("Slash") then
-				if dummy_use.to and dummy_use.to:isEmpty() then continue end
 				if dummy_use.card:hasFlag("AIGlobal_KillOff") then table.insert(slashes, dummy_use.card) break end
 				table.insert(slashes, dummy_use.card)
 			else
@@ -1419,8 +1418,11 @@ end
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		for _, p in ipairs(sgs.ais[other:objectName()].friends) do
-			if p:objectName() == another:objectName() then return true end
+		if other:isFriendWith(another) then return true end
+		if sgs.ais[other:objectName()] then
+			for _, p in ipairs(sgs.ais[other:objectName()].friends) do
+				if p:objectName() == another:objectName() then return true end
+			end
 		end
 		return false
 	end
@@ -1435,8 +1437,10 @@ end
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		for _, p in ipairs(sgs.ais[other:objectName()].enemies) do
-			if p:objectName() == another:objectName() then return true end
+		if sgs.ais[other:objectName()] then
+			for _, p in ipairs(sgs.ais[other:objectName()].enemies) do
+				if p:objectName() == another:objectName() then return true end
+			end
 		end
 		return false
 	end
