@@ -170,7 +170,11 @@ void LobbyScene::setRoomList(const QList<RoomInfoStruct> *data)
         Tile *tile = new Tile(info.Name, QSizeF(200.0, 100.0));
         tile->setAutoHideTitle(false);
         QStringList scrollTexts;
-        scrollTexts << tr("Player Number: %1 / %2").arg(info.PlayerNum).arg(Sanguosha->getPlayerCount(info.GameMode));
+
+        if (info.PlayerNum >= 0)
+            scrollTexts << tr("Player Number: %1 / %2").arg(info.PlayerNum).arg(Sanguosha->getPlayerCount(info.GameMode));
+        else
+            scrollTexts << tr("Player Number: %1 / %2").arg('-').arg(Sanguosha->getPlayerCount(info.GameMode));
 
         scrollTexts << (info.OperationTimeout == 0 ?
             tr("There is no time limit") :

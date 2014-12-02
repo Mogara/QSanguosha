@@ -211,13 +211,13 @@ bool RoomConfig::isBanned(const QString &first, const QString &second) {
 RoomInfoStruct::RoomInfoStruct()
 {
     RoomId = 0;
-    PlayerNum = 0;
+    PlayerNum = -1;
 }
 
 RoomInfoStruct::RoomInfoStruct(const Settings *config)
 {
     RoomId = 0;
-    PlayerNum = 0;
+    PlayerNum = -1;
     Name = config->ServerName;
     GameMode = config->GameMode;
     BanPackages = config->BanPackages.toSet();
@@ -235,7 +235,7 @@ RoomInfoStruct::RoomInfoStruct(const Settings *config)
 RoomInfoStruct::RoomInfoStruct(const RoomConfig &config)
 {
     RoomId = 0;
-    PlayerNum = 0;
+    PlayerNum = -1;
     Name = config.ServerName;
     GameMode = config.GameMode;
     BanPackages = config.BanPackages;
