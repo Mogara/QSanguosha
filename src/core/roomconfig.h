@@ -33,7 +33,6 @@ struct RoomConfig {
     int PileSwappingLimitation;
     int HegemonyMaxChoice;
     bool AIChat;
-    bool OperationNoLimit;
     bool RandomSeat;
     bool EnableCheat;
     bool FreeChoose;

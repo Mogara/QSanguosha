@@ -30,8 +30,7 @@ RoomConfig::RoomConfig(const Settings *config)
     ServerName = config->ServerName;
     if (!config->RoomPassword.isEmpty())
         Password = QCryptographicHash::hash(config->RoomPassword.toLatin1(), QCryptographicHash::Md5).toHex();
-    OperationTimeout = config->OperationTimeout;
-    OperationNoLimit = config->OperationNoLimit;
+    OperationTimeout = config->OperationNoLimit ? 0 : config->OperationTimeout;
     RandomSeat = config->RandomSeat;
     EnableCheat = config->EnableCheat;
     FreeChoose = config->FreeChoose;
@@ -98,7 +97,6 @@ bool RoomConfig::parse(const QVariant &data)
     getFlag(FreeChoose);
     getFlag(EnableCheat);
     getFlag(RandomSeat);
-    getFlag(OperationNoLimit);
     getFlag(AIChat);
 #undef getFlag
 
@@ -153,7 +151,6 @@ QVariant RoomConfig::toVariant() const
 
     int flag = AIChat;
 #define setFlag(var) flag = (flag << 1) | (var ? 1 : 0)
-    setFlag(OperationNoLimit);
     setFlag(RandomSeat);
     setFlag(EnableCheat);
     setFlag(FreeChoose);
@@ -221,7 +218,7 @@ RoomInfoStruct::RoomInfoStruct(const Settings *config)
     Name = config->ServerName;
     GameMode = config->GameMode;
     BanPackages = config->BanPackages.toSet();
-    OperationTimeout = config->OperationTimeout;
+    OperationTimeout = config->OperationNoLimit ? 0 : config->OperationTimeout;
     NullificationCountDown = config->NullificationCountDown;
     RandomSeat = config->RandomSeat;
     EnableCheat = config->EnableCheat;
