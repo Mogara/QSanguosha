@@ -369,7 +369,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		end
 
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
-		return newvalue - damage * 2 - (dmg * 2 or 0)
+		return newvalue - damage * 2 - (dmg and dmg * 2 or 0)
 	end
 
 	local value = getChainedPlayerValue(to)
