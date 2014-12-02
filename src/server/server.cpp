@@ -21,6 +21,7 @@
 #include <QCryptographicHash>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QFile>
 
 #include "server.h"
 #include "nativesocket.h"
@@ -48,14 +49,18 @@ Server::Server(QObject *parent, Role role)
     if (roomFunctions.isEmpty())
         initRoomFunctions();
 
-    ServerInfo.parse(Sanguosha->getSetupString());
+    ServerInfo = RoomInfoStruct(SettingsInstance);
 
     connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(":memory:");
     if (db.open()) {
-        db.exec("CREATE TABLE `room` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `setupstring` text, `hostaddress` varchar(21))");
+        QFile sql("data/lobby.sql");
+        if (sql.open(QFile::ReadOnly)) {
+            db.exec(QString::fromUtf8(sql.readAll()));
+            sql.close();
+        }
     } else {
         qFatal("SQLite database can't be opened.");
     }

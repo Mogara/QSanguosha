@@ -71,12 +71,7 @@ Room::Room(QObject *parent, const RoomConfig &config)
     _m_raceStarted(false), provided(NULL), has_provided(false),
     m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
 {
-    QSqlQuery query;
-    query.prepare("INSERT INTO `room` (`setupstring`) VALUES (:setupstring)");
-    query.bindValue(":setupstring", getSetupString());
-    query.exec();
-
-    _m_Id = query.lastInsertId().toLongLong();
+    _m_Id = RoomInfoStruct(config).save();
     _m_lastMovementId = 0;
     player_count = Sanguosha->getPlayerCount(config.GameMode);
     scenario = Sanguosha->getScenario(config.GameMode);
@@ -1984,7 +1979,7 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     ServerPlayer *player = new ServerPlayer(this);
     player->setSocket(socket);
     m_players << player;
-    player->notify(S_COMMAND_SETUP, getSetupString());
+    player->notify(S_COMMAND_SETUP, RoomInfoStruct(config).toQVariant());
     signupMutex.unlock();
 
     connect(player, &ServerPlayer::disconnected, this, &Room::reportDisconnection);
@@ -2022,47 +2017,6 @@ void Room::tryPause() {
 
 int Room::getLack() const{
     return player_count - m_players.length();
-}
-
-QString Room::getSetupString() const
-{
-    int timeout = config.OperationNoLimit ? 0 : config.OperationTimeout;
-    QString flags;
-    if (config.RandomSeat)
-        flags.append("R");
-    if (config.EnableCheat)
-        flags.append("C");
-    if (config.EnableCheat && config.FreeChoose)
-        flags.append("F");
-    if (config.ForbidAddingRobot)
-        flags.append("A");
-    if (config.DisableChat)
-        flags.append("M");
-    if (config.RewardTheFirstShowingPlayer)
-        flags.append("S");
-    if (!config.Password.isEmpty())
-        flags.append("P");
-
-    QString ban_packages;
-    if (!config.BanPackages.isEmpty()) {
-        QSetIterator<QString> iter(config.BanPackages);
-        ban_packages = iter.next();
-        while (iter.hasNext()) {
-            ban_packages.append('+');
-            ban_packages.append(iter.next());
-        }
-    }
-
-    QString server_name = config.ServerName;
-    QStringList setup_items;
-    setup_items << server_name
-        << config.GameMode
-        << QString::number(timeout)
-        << QString::number(config.NullificationCountDown)
-        << ban_packages
-        << flags;
-
-    return setup_items.join(":");
 }
 
 const Scenario *Room::getScenario() const{
@@ -2654,7 +2608,7 @@ ServerPlayer *Room::getOwner() const{
 
 void Room::restartCommand(ServerPlayer *player, const QVariant &)
 {
-    player->notify(S_COMMAND_SETUP, getSetupString());
+    player->notify(S_COMMAND_SETUP, RoomInfoStruct(config).toQVariant());
     player->notifyProperty("objectName");
     player->notifyProperty("owner");
 
@@ -3568,7 +3522,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
-    player->notify(S_COMMAND_SETUP, getSetupString());
+    player->notify(S_COMMAND_SETUP, RoomInfoStruct(config).toQVariant());
     player->setSocket(socket);
     player->setState("online");
 

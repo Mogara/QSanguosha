@@ -149,10 +149,9 @@ void Server::checkVersion(const QVariant &server_version)
     QSanVersionNumber lobby_version(lobby_version_str);
 
     if (lobby_version == client_version) {
-        JsonArray data;
-        data << Sanguosha->getSetupString();
-        data << serverPort();
-        notifyLobby(S_COMMAND_SETUP, data);
+        RoomInfoStruct config(SettingsInstance);
+        config.HostAddress = QString(":%1").arg(serverPort());
+        notifyLobby(S_COMMAND_SETUP, config.toQVariant());
     } else {
         emit serverMessage(tr("Failed to setup for the version is different from the lobby."));
         lobby->disconnectFromHost();

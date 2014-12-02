@@ -57,31 +57,22 @@ void Server::cleanupLobbyPlayer()
 
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
-    JsonArray args = data.value<JsonArray>();
-    if (args.size() != 2) return;
+    RoomInfoStruct config;
+    if (!config.parse(data)) {
+        emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
+        return;
+    }
 
-    QString setupString = args.at(0).toString();
-    ushort hostPort = args.at(1).toUInt();
+    config.HostAddress.remove(QRegExp("[^0-9]"));
+    ushort hostPort = config.HostAddress.toUInt();
 
     //check if the room server can be connected
     QTcpSocket socket;
     socket.connectToHost(from->peerAddress(), hostPort);
     if (socket.waitForConnected(2000)) {
-        ServerInfoStruct info;
-        if (!info.parse(args.at(0).toString())) {
-            emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
-            return;
-        }
-
         emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(hostPort));
-
-        QSqlQuery query;
-        query.prepare("INSERT INTO `room` (`hostaddress`, `setupstring`) VALUES (:hostaddress, :setupstring)");
-        query.bindValue(":hostaddress", QString("%1:%2").arg(from->peerAddress()).arg(hostPort));
-        query.bindValue(":setupstring", setupString);
-        query.exec();
-
-        remoteRoomId[from] = query.lastInsertId().toUInt();
+        config.HostAddress = QString("%1:%2").arg(from->peerAddress()).arg(hostPort);
+        remoteRoomId[from] = config.save();
 
         connect(from, &ClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
     }
@@ -119,16 +110,22 @@ QVariant Server::getRoomList(int page)
 
     JsonArray data;
     while (query.next()) {
-        JsonArray row;
-        for(int i = 0; i < 3; i++)
-            row << query.value(i);
-        row << 0;
-        if (row.at(2).isNull()) {
-            Room *room = getRoom(row.at(0).toLongLong());
-            if (room)
-                row[3] = room->getPlayers().length();
+        RoomInfoStruct info(query.record());
+        if (info.HostAddress.isEmpty()) {
+            Room *room = rooms.value(info.RoomId);
+            if (room) {
+                info.PlayerNum = room->getPlayers().length();
+                if (room->isRunning())
+                    info.RoomState = RoomInfoStruct::Playing;
+                else if (room->isFinished())
+                    info.RoomState = RoomInfoStruct::Finished;
+                else
+                    info.RoomState = RoomInfoStruct::Playing;
+            } else {
+                continue;
+            }
         }
-        data << QVariant(row);
+        data << info.toQVariant();
     }
 
     return data;

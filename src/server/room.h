@@ -67,7 +67,6 @@ public:
     int getLack() const;
 
     const RoomConfig &getConfig() const {return config;}
-    QString getSetupString() const;
     QString getMode() const {return config.GameMode;}
     const Scenario *getScenario() const;
     QStringList getBanPackages() const {return config.BanPackages.toList();}

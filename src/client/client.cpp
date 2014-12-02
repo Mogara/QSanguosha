@@ -365,19 +365,18 @@ void Client::checkVersion(const QVariant &server_version) {
     emit version_checked(version_number, mod_name);
 }
 
-void Client::setup(const QVariant &setup_json) {
+void Client::setup(const QVariant &setup) {
     if (socket && !socket->isConnected())
         return;
 
-    QString setup_str = setup_json.toString();
-    if (ServerInfo.parse(setup_str)) {
+    if (ServerInfo.parse(setup)) {
         if (replayer) {
             ServerInfo.OperationTimeout = 0;
         } else {
             recorder = new Recorder(this);
 
             Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-            setup_packet.setMessageBody(setup_json);
+            setup_packet.setMessageBody(setup);
             recorder->recordLine(setup_packet.toJson());
         }
 
@@ -392,6 +391,8 @@ void Client::setup(const QVariant &setup_json) {
         emit roomServerConnected();
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
+        JsonDocument doc(setup);
+        QString setup_str = QString::fromUtf8(doc.toJson());
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }
 }

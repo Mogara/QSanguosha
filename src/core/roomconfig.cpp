@@ -19,6 +19,7 @@
     *********************************************************************/
 
 #include <QCryptographicHash>
+#include <QSqlQuery>
 
 #include "roomconfig.h"
 #include "json.h"
@@ -205,4 +206,178 @@ bool RoomConfig::isBanned(const QString &first, const QString &second) {
 
     BanPair pair(first, second);
     return BannedGeneralPairs.contains(pair);
+}
+
+RoomInfoStruct::RoomInfoStruct()
+{
+    RoomId = 0;
+    PlayerNum = 0;
+}
+
+RoomInfoStruct::RoomInfoStruct(const Settings *config)
+{
+    RoomId = 0;
+    PlayerNum = 0;
+    Name = config->ServerName;
+    GameMode = config->GameMode;
+    BanPackages = config->BanPackages.toSet();
+    OperationTimeout = config->OperationTimeout;
+    NullificationCountDown = config->NullificationCountDown;
+    RandomSeat = config->RandomSeat;
+    EnableCheat = config->EnableCheat;
+    FreeChoose = config->FreeChoose;
+    ForbidAddingRobot = config->ForbidAddingRobot;
+    DisableChat = config->DisableChat;
+    FirstShowingReward = config->RewardTheFirstShowingPlayer;
+    RequirePassword = !config->RoomPassword.isEmpty();
+}
+
+RoomInfoStruct::RoomInfoStruct(const RoomConfig &config)
+{
+    RoomId = 0;
+    PlayerNum = 0;
+    Name = config.ServerName;
+    GameMode = config.GameMode;
+    BanPackages = config.BanPackages;
+    OperationTimeout = config.OperationTimeout;
+    NullificationCountDown = config.NullificationCountDown;
+    RandomSeat = config.RandomSeat;
+    EnableCheat = config.EnableCheat;
+    FreeChoose = config.FreeChoose;
+    ForbidAddingRobot = config.ForbidAddingRobot;
+    DisableChat = config.DisableChat;
+    FirstShowingReward = config.RewardTheFirstShowingPlayer;
+    RequirePassword = !config.Password.isEmpty();
+}
+
+RoomInfoStruct::RoomInfoStruct(const QSqlRecord &record)
+{
+    RoomId = record.value("id").toLongLong();
+    PlayerNum = record.value("playernum").toInt();
+    HostAddress = record.value("hostaddress").toString();
+    Name = record.value("name").toString();
+    GameMode = record.value("gamemode").toString();
+    QStringList ban_packages = record.value("banpackages").toString().split('+');
+    foreach(const QString &package, ban_packages)
+        BanPackages.insert(package);
+    OperationTimeout = record.value("operationtimeout").toInt();
+    NullificationCountDown = record.value("nullificationcountdown").toInt();
+    RandomSeat = record.value("randomseat").toBool();
+    EnableCheat = record.value("enablecheat").toBool();
+    FreeChoose = record.value("freechoose").toBool();
+    ForbidAddingRobot = record.value("forbidaddingrobot").toBool();
+    DisableChat = record.value("disablechat").toBool();
+    FirstShowingReward = record.value("firstshowingreward").toBool();
+    RequirePassword = record.value("requirepassword").toBool();
+}
+
+time_t RoomInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance) {
+    time_t timeOut;
+    if (OperationTimeout == 0)
+        return 0;
+    else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
+        timeOut = OperationTimeout * 1500;
+    else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
+        || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
+        timeOut = OperationTimeout * 2000;
+    else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
+        timeOut = NullificationCountDown * 1000;
+    else
+        timeOut = OperationTimeout * 1000;
+
+    if (instance == QSanProtocol::S_SERVER_INSTANCE)
+        timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+    return timeOut;
+}
+
+bool RoomInfoStruct::parse(const QVariant &var)
+{
+    JsonArray data = var.value<JsonArray>();
+    if (data.size() != 10)
+        return false;
+
+    RoomId = data.at(0).toLongLong();
+    HostAddress = data.at(1).toString();
+    PlayerNum = data.at(2).toInt();
+    RoomState = static_cast<State>(data.at(3).toInt());
+
+    Name = data.at(4).toString();
+    GameMode = data.at(5).toString();
+    BanPackages.clear();
+    JsonArray banned_packages = data.at(6).value<JsonArray>();
+    foreach (const QVariant &package, banned_packages)
+        BanPackages.insert(package.toString());
+    OperationTimeout = data.at(7).toInt();
+    NullificationCountDown = data.at(8).toInt();
+
+    int flags = data.at(9).toInt();
+#define getFlag(flag) flag = ((flags & 0x1) == 0x1); flags >>= 1
+    getFlag(RequirePassword);
+    getFlag(FirstShowingReward);
+    getFlag(DisableChat);
+    getFlag(ForbidAddingRobot);
+    getFlag(FreeChoose);
+    getFlag(EnableCheat);
+    getFlag(RandomSeat);
+#undef getFlag
+
+    return true;
+}
+
+QVariant RoomInfoStruct::toQVariant() const
+{
+    JsonArray data;
+    data << RoomId;
+    data << HostAddress;
+    data << PlayerNum;
+    data << RoomState;
+
+    data << Name;
+    data << GameMode;
+    JsonArray banned_packages;
+    foreach (const QString &package, BanPackages)
+        banned_packages << package;
+    data << QVariant(banned_packages);
+    data << OperationTimeout;
+    data << NullificationCountDown;
+
+    int flags = 0;
+#define setFlag(flag) flags = (flags << 1) | (flag ? 1 : 0)
+    setFlag(RandomSeat);
+    setFlag(EnableCheat);
+    setFlag(FreeChoose);
+    setFlag(ForbidAddingRobot);
+    setFlag(DisableChat);
+    setFlag(FirstShowingReward);
+    setFlag(RequirePassword);
+#undef setFlag
+    data << flags;
+
+    return data;
+}
+
+qlonglong RoomInfoStruct::save()
+{
+    if (RoomId <= 0) {
+        QSqlQuery query;
+        query.prepare("INSERT INTO `room` (`hostaddress`, `name`,`gamemode`,`banpackages`,`operationtimeout`,`nullificationcountdown`,`randomseat`,`enablecheat`,`freechoose`,`forbidaddingrobot`,`disablechat`,`firstshowingreward`,`requirepassword`) VALUES (:hostaddress, :name, :gamemode, :banpackages, :operationtimeout, :nullificationcountdown, :randomseat, :enablecheat, :freechoose, :forbidaddingrobot, :disablechat, :firstshowingreward, :requirepassword)");
+        query.bindValue(":hostaddress", HostAddress);
+        query.bindValue(":name", Name);
+        query.bindValue(":gamemode", GameMode);
+        query.bindValue(":banpackages", QStringList(BanPackages.toList()).join("+"));
+        query.bindValue(":operationtimeout", OperationTimeout);
+        query.bindValue(":nullificationcountdown", NullificationCountDown);
+        query.bindValue(":randomseat", RandomSeat);
+        query.bindValue(":enablecheat", EnableCheat);
+        query.bindValue(":freechoose", FreeChoose);
+        query.bindValue(":forbidaddingrobot", ForbidAddingRobot);
+        query.bindValue(":disablechat", DisableChat);
+        query.bindValue(":firstshowingreward", FirstShowingReward);
+        query.bindValue(":requirepassword", RequirePassword);
+        query.exec();
+
+        RoomId = query.lastInsertId().toLongLong();
+    }
+
+    return RoomId;
 }
