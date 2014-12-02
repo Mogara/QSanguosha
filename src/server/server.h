@@ -108,7 +108,7 @@ protected:
 
     Room *current;
     QMutex currentRoomMutex;
-    QSet<Room *> rooms;
+    QMap<qlonglong, Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;
     ClientSocket *lobby;

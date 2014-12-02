@@ -50,7 +50,7 @@ void Server::connectToLobby()
 Room *Server::createNewRoom(const RoomConfig &config)
 {
     Room *new_room = new Room(this, config);
-    rooms.insert(new_room);
+    rooms.insert(new_room->getId(), new_room);
 
     connect(new_room, &Room::room_message, this, &Server::serverMessage);
     connect(new_room, &Room::game_end, this, &Server::cleanupRoom);
@@ -60,11 +60,7 @@ Room *Server::createNewRoom(const RoomConfig &config)
 
 Room *Server::getRoom(qlonglong room_id)
 {
-    foreach (Room *room, rooms) {
-        if (room->getId() == room_id)
-            return room;
-    }
-    return NULL;
+    return rooms.value(room_id);
 }
 
 void Server::processLobbyPacket(const Packet &packet)
@@ -84,7 +80,7 @@ void Server::signupPlayer(ServerPlayer *player) {
 
 void Server::cleanupRoom() {
     Room *room = qobject_cast<Room *>(sender());
-    rooms.remove(room);
+    rooms.remove(room->getId());
 
     bool someone_stays = false;
     QList<ServerPlayer *> room_players = room->getPlayers();
