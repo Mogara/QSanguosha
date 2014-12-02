@@ -582,6 +582,8 @@ void MainWindow::on_actionStart_Server_triggered() {
     server = new Server(this);
     if (!server->listen(QHostAddress::Any, Config.ServerPort)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        server = NULL;
         return;
     }
 
@@ -1048,6 +1050,8 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     ushort port = Config.ServerPort;
     if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        server = NULL;
         return;
     }
     if (Config.ConnectToLobby)
@@ -1371,6 +1375,7 @@ void MainWindow::on_actionStart_Lobby_triggered()
     if (!server->listen(QHostAddress::Any, Config.ServerPort)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         server->deleteLater();
+        server = NULL;
         return;
     }
 
@@ -1413,6 +1418,8 @@ void MainWindow::onCreateRoomClicked()
         server = new Server(this);
         if (!server->listen(QHostAddress::Any, 0)) {
             QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+            server->deleteLater();
+            server = NULL;
             return;
         }
         server->daemonize();
