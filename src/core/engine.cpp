@@ -673,36 +673,6 @@ QStringList Engine::getChattingEasyTexts() const{
     return easy_texts;
 }
 
-QString Engine::getSetupString() const{
-    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
-    QString flags;
-    if (Config.RandomSeat)
-        flags.append("R");
-    if (Config.EnableCheat)
-        flags.append("C");
-    if (Config.EnableCheat && Config.FreeChoose)
-        flags.append("F");
-    if (Config.ForbidAddingRobot)
-        flags.append("A");
-    if (Config.DisableChat)
-        flags.append("M");
-    if (Config.RewardTheFirstShowingPlayer)
-        flags.append("S");
-    if (!Config.RoomPassword.isEmpty())
-        flags.append("P");
-
-    QString server_name = Config.ServerName;
-    QStringList setup_items;
-    setup_items << server_name
-        << Config.GameMode
-        << QString::number(timeout)
-        << QString::number(Config.NullificationCountDown)
-        << getBanPackages().join("+")
-        << flags;
-
-    return setup_items.join(":");
-}
-
 QMap<QString, QString> Engine::getAvailableModes() const{
     return modes;
 }

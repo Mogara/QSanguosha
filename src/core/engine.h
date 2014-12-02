@@ -94,7 +94,6 @@ public:
     QMap<QString, QColor> getSkillColorMap() const;
     QColor getSkillColor(const QString &skill_type) const;
     QStringList getChattingEasyTexts() const;
-    QString getSetupString() const;
 
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;

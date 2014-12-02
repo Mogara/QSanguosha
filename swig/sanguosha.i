@@ -1147,7 +1147,6 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QStringList getChattingEasyTexts() const;
-    QString getSetupString() const;
 
     QString getModeName(const char *mode) const;
     int getPlayerCount(const char *mode) const;
