@@ -356,12 +356,12 @@ function SmartAI:activate(use)
 				self.toUse = nil
 				return
 			end
-			if use.card and use.card:isKindOf("Slash") and not use.to or use.to:isEmpty() then
+			if use.card and use.card:isKindOf("Slash") and (not use.to or use.to:isEmpty()) then
 				self.toUse = nil
 				return
 			end
 
-			if use.card then self:speak(use.card:getClassName(), use) end
+			if use.card then self:speak(use.card:getClassName(), self.player:isFemale()) end
 		end
 	end
 	self.toUse = nil
@@ -384,7 +384,7 @@ function SmartAI:objectiveLevel(player)
 		end
 	end
 
-	local upperlimit = player:getLord() and 99 or math.floor(self.room:getPlayers():length() / 2)
+	local upperlimit = self.player:getLord() and 99 or math.floor(self.room:getPlayers():length() / 2)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
@@ -520,12 +520,12 @@ function SmartAI:evaluateKingdom(player, other)
 	if self.room:getMode() == "jiange_defense" then return player:getKingdom() end
 	if sgs.ai_explicit[player:objectName()] ~= "unknown" then return sgs.ai_explicit[player:objectName()] end
 	if player:getMark(string.format("KnownBoth_%s_%s", other:objectName(), player:objectName())) > 0 then
-		local upperlimit = player:getLord() and 99 or math.ceil( self.room:getPlayers():length() / 2)
+		local upperlimit = player:getLord() and 99 or math.floor( self.room:getPlayers():length() / 2)
 		return sgs.shown_kingdom[player:getKingdom()] < upperlimit and player:getKingdom() or "careerist"
 	end
 
 	if player:getMark("KnownBothFriend" .. other:objectName()) > 0 then
-		local upperlimit = self.player:getLord() and 99 or math.ceil(self.room:getPlayers():length() / 2)
+		local upperlimit = self.player:getLord() and 99 or math.floor(self.room:getPlayers():length() / 2)
 		return sgs.shown_kingdom[player:getKingdom()] < upperlimit and other:getKingdom() or "careerist"
 	end
 
