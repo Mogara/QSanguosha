@@ -1585,15 +1585,7 @@ function SmartAI:sort(players, key)
 	if not pcall(_sort, players) then self.room:writeToConsole(debug.traceback()) end
 end
 
-function sgs.updateAlivePlayerRoles(data)
-	if data then
-		local who = data:toDeath().who
-		local n = 0
-		for _, aplayer in sgs.qlist(global_room:getOtherPlayers(who)) do
-			if aplayer:isFriendWith(who) then n = n + 1 end
-		end
-		if n == 0 then table.removeOne(sgs.KingdomsTable, who:getKingdom()) end
-	end
+function sgs.updateAlivePlayerRoles()
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
 		sgs.current_mode_players[kingdom] = 0
 	end
@@ -1808,7 +1800,7 @@ function SmartAI:filterEvent(event, player, data)
 	end
 
 	if event == sgs.BuryVictim then
-		if self == sgs.recorder then sgs.updateAlivePlayerRoles(data) end
+		if self == sgs.recorder then sgs.updateAlivePlayerRoles() end
 	end
 
 	if self.player:objectName() == player:objectName() and event == sgs.AskForPeaches then
