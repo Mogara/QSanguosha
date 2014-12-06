@@ -675,6 +675,7 @@ end
 function SmartAI:useCardThreatenEmperor(card, use)
 	if not card:isAvailable(self.player) then return end
 	if self.player:getCardCount(true) < 2 then return end
+	if not self:hasTrickEffective(card, self.player, self.player) then return end
 	use.card = card
 end
 sgs.ai_use_value.ThreatenEmperor = 8
