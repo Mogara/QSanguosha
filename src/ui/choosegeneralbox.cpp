@@ -236,7 +236,11 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2){
     const General *g1 = Sanguosha->getGeneral(gen1);
     const General *g2 = Sanguosha->getGeneral(gen2);
 
-    return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
+    if (g1 != NULL && g2 != NULL)
+        return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
+    else
+        return false;
+
 }
 
 void ChooseGeneralBox::setBannedPairs(const QSet<BanPair> &pairs)

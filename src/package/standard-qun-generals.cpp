@@ -844,17 +844,25 @@ public:
             choice = room->askForChoice(player, objectName(), choices.join("+"), QVariant::fromValue(target));
         } else {
             QStringList generals;
-            if (!target->getGeneral()->objectName().contains("sujiang"))
-                generals << target->getGeneral()->objectName();
+            if (!target->getGeneral()->objectName().contains("sujiang")) {
+                QString g = target->getGeneral()->objectName();
+                if (g.contains("anjiang"))
+                    g.append("_head");
+                generals << g;
+            }
 
-            if (!target->getGeneral2()->objectName().contains("sujiang"))
-                generals << target->getGeneral2()->objectName();
+            if (target->getGeneral2() && !target->getGeneral2()->objectName().contains("sujiang")) {
+                QString g = target->getGeneral2()->objectName();
+                if (g.contains("anjiang"))
+                    g.append("_deputy");
+                generals << g;
+            }
 
             QString general = generals.first();
             if (generals.length() == 2)
                 general = room->askForGeneral(player, generals.join("+"), generals.first(), true, objectName(), QVariant::fromValue(target));
 
-            if (general == target->getGeneral()->objectName())
+            if (general == target->getGeneral()->objectName() || general == "anjiang_head")
                 choice = "head_general";
             else
                 choice = "deputy_general";
