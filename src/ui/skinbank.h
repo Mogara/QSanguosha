@@ -90,7 +90,7 @@ public:
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
         const QString &audioConfigFileName, const QString &animationConfigFileName);
-    QPixmap getPixmap(const QString &key, const QString &arg = QString(), const QString &arg2 = QString()) const;
+    QPixmap getPixmap(const QString &key, const QString &arg = QString(), const QString &arg2 = QString(), bool addDefaultArg = false) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
     QStringList getAudioFileNames(const QString &key) const;
@@ -355,7 +355,7 @@ public:
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1, const Player *player = NULL) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
-    bool doesGeneralHaveSkin(const QString &general, const int skinId = 1, const bool isCard = false) const;
+    bool generalHasSkin(const QString &general, const int skinId = 1, const bool isCard = false) const;
 
     // static consts
     // main keys
