@@ -54,6 +54,8 @@ return
 	["GameRule:TriggerOrder"] = "请选择先发动的技能",
 	["trigger_none"] = "不发动",
 	["anjiang"] = "暗将",
+	["anjiang_head"] = "暗将（主）" ,
+	["anjiang_deputy"] = "暗将（副）" ,
 	["#BasaraGeneralChosen"] = "你选择的武将为 %arg",
 	["#BasaraGeneralChosenDual"] = "你选择的武将为 %arg 和 %arg2",
 	["Hegemony"] = "国战",
