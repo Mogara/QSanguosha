@@ -277,6 +277,16 @@ private:
 
     QPointF getHeroSkinContainerPosition() const;
 
+    void moveProgressBarUp();
+    void moveProgressBarDown();
+
+    enum ProgressBarPostion {
+        Up,
+        Down
+    } m_progressBarPositon;
+
+    int maxCardsNumInFirstLine() const;
+
 protected slots:
     virtual void _onEquipSelectChanged();
 

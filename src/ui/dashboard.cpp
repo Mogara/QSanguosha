@@ -54,8 +54,8 @@ Dashboard::Dashboard(QGraphicsItem *widget)
       headIcon(NULL), deputyIcon(NULL),
       pendingCard(NULL), viewAsSkill(NULL), filter(NULL),
       m_changeHeadHeroSkinButton(NULL), m_changeDeputyHeroSkinButton(NULL),
-      m_headHeroSkinContainer(NULL), m_deputyHeroSkinContainer(NULL)
-
+      m_headHeroSkinContainer(NULL), m_deputyHeroSkinContainer(NULL),
+      m_progressBarPositon(Down)
 {
     Q_ASSERT(buttonWidget);
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
@@ -407,6 +407,9 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
         if (card_item->getTransferButton() && !_transferButtons.contains(card_item->getTransferButton()))
             _transferButtons << card_item->getTransferButton();
     }
+
+    if (m_handCards.size() > maxCardsNumInFirstLine() && m_progressBarPositon != Up)
+        moveProgressBarUp();
 }
 
 void Dashboard::_createRoleComboBox() {
@@ -904,7 +907,37 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
         ? m_headHeroSkinContainer->boundingRect()
         : m_deputyHeroSkinContainer->boundingRect();;
     return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120,
-        avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
+                   avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
+}
+
+void Dashboard::moveProgressBarUp()
+{
+    QPoint pos = _m_progressBar->pos();
+    pos.setY(pos.y() - 20);
+    _m_progressBar->move(pos);
+    m_progressBarPositon = Up;
+}
+
+void Dashboard::moveProgressBarDown()
+{
+    QPoint pos = _m_progressBar->pos();
+    pos.setY(pos.y() + 20);
+    _m_progressBar->move(pos);
+    m_progressBarPositon = Down;
+}
+
+int Dashboard::maxCardsNumInFirstLine() const
+{
+    int maxCards = Config.MaxCards;
+
+    int n = m_handCards.length();
+
+    if (maxCards >= n)
+        maxCards = n;
+    else if (maxCards <= (n - 1) / 2 + 1)
+        maxCards = (n - 1) / 2 + 1;
+
+    return maxCards;
 }
 
 void Dashboard::adjustCards(bool playAnimation) {
@@ -914,15 +947,7 @@ void Dashboard::adjustCards(bool playAnimation) {
 }
 
 void Dashboard::_adjustCards() {
-    int maxCards = Config.MaxCards;
-
-    int n = m_handCards.length();
-    if (n == 0) return;
-
-    if (maxCards >= n)
-        maxCards = n;
-    else if (maxCards <= (n - 1) / 2 + 1)
-        maxCards = (n - 1) / 2 + 1;
+    int maxCards = maxCardsNumInFirstLine();
     QList<CardItem *> row;
     QSanRoomSkin::DashboardLayout *layout = (QSanRoomSkin::DashboardLayout *)_m_layout;
     int leftWidth = layout->m_leftWidth;
@@ -932,6 +957,7 @@ void Dashboard::_adjustCards() {
     for (int i = 0; i < maxCards; i++)
         row.push_back(m_handCards[i]);
 
+    int n = m_handCards.size();
     _m_highestZ = n;
     _disperseCards(row, rowRect, Qt::AlignLeft, true, true);
 
@@ -1000,6 +1026,11 @@ QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids) {
         }
     }
     updateHandcardNum();
+
+    if (m_handCards.size() <= maxCardsNumInFirstLine()
+            && m_progressBarPositon != Down)
+        moveProgressBarDown();
+
     return result;
 }
 
