@@ -958,6 +958,9 @@ void Dashboard::_adjustCards() {
         row.push_back(m_handCards[i]);
 
     int n = m_handCards.size();
+    if (n == 0)
+        return;
+
     _m_highestZ = n;
     _disperseCards(row, rowRect, Qt::AlignLeft, true, true);
 
