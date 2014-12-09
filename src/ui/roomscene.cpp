@@ -2572,7 +2572,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     }
     case Client::ExecDialog: {
         if (m_choiceDialog != NULL) {
-            m_choiceDialog->setParent(main_window, Qt::Dialog);
+            m_choiceDialog->setParent(main_window, m_choiceDialog->windowFlags() | Qt::Dialog);
             m_choiceDialog->show();
             ok_button->setEnabled(false);
             cancel_button->setEnabled(true);
