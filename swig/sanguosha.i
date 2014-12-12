@@ -1306,6 +1306,34 @@ public:
     void delay(unsigned long msecs = 1000);
 };
 
+struct RoomConfig {
+    bool isBanned(const QString &first, const QString &second);
+
+    QString GameMode;
+    QString ServerName;
+    int OperationTimeout;
+    int CountDownSeconds;
+    int NullificationCountDown;
+    int OriginAIDelay;
+    int AIDelay;
+    int AIDelayAD;
+    int LuckCardLimitation;
+    int PileSwappingLimitation;
+    int HegemonyMaxChoice;
+    bool AIChat;
+    bool RandomSeat;
+    bool EnableCheat;
+    bool FreeChoose;
+    bool DisableChat;
+    bool EnableMinimizeDialog;
+    bool RewardTheFirstShowingPlayer;
+    bool ForbidAddingRobot;
+    bool AlterAIDelayAD;
+    bool DisableLua;
+    bool SurrenderAtDeath;
+    bool EnableLordConvertion;
+};
+
 class Room: public QThread {
 public:
     enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
@@ -1316,6 +1344,7 @@ public:
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
     void tryPause();
+    const RoomConfig &getConfig() const;
     QString getMode() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
