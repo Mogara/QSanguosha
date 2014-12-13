@@ -875,10 +875,12 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        if (choice == "head_general")
-            room->setPlayerProperty(target, "Duanchang", "head");
-        else
-            room->setPlayerProperty(target, "Duanchang", "deputy");
+        QStringList duanchangList = target->property("Duanchang").toStringList();
+        if (choice == "head_general" && !duanchangList.contains("head"))
+            duanchangList << "head";
+        else if (choice == "deputy_general" && !duanchangList.contains("deputy"))
+            duanchangList << "deputy";
+        room->setPlayerProperty(target, "Duanchang", QVariant::fromValue(duanchangList));
 
         QList<const Skill *> skills = choice == "head_general" ? target->getActualGeneral1()->getVisibleSkillList()
             : target->getActualGeneral2()->getVisibleSkillList();

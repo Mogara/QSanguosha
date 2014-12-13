@@ -1325,7 +1325,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         sendSkillsToOthers();
 
-        if (property("Duanchang").toString() != "head")
+        if (!property("Duanchang").toStringList().contains("head"))
             foreach(const Skill *skill, getHeadSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                 && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
@@ -1395,7 +1395,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         sendSkillsToOthers(false);
 
-        if (property("Duanchang").toString() != "deputy"){
+        if (!property("Duanchang").toStringList().contains("deputy")){
             foreach(const Skill *skill, getDeputySkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))

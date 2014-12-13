@@ -1432,7 +1432,7 @@ public:
         Config.AIDelay = aidelay;
         if (invoke){
             room->setEmotion(dfowner, "weapon/dragonphoenix");
-            room->setPlayerProperty(player, "Duanchang", "");
+            room->setPlayerProperty(player, "Duanchang", QVariant());
             QString to_change = room->askForGeneral(player, avaliable_generals, QString(), true, "DragonPhoenix", dfowner->getKingdom());
 
             if (!to_change.isEmpty()){
