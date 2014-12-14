@@ -1538,7 +1538,7 @@ void Client::askForSuit(const QVariant &) {
     QStringList suits;
     suits << "spade" << "club" << "heart" << "diamond";
     emit suits_got(suits);
-    setStatus(ExecDialog);
+    setStatus(AskForSuit);
 }
 
 void Client::askForKingdom(const QVariant &) {
@@ -1622,8 +1622,8 @@ void Client::setMark(const QVariant &mark_var) {
         player->setMark(mark, value);
 }
 
-void Client::onPlayerChooseSuit() {
-    replyToServer(S_COMMAND_CHOOSE_SUIT, sender()->objectName());
+void Client::onPlayerChooseSuit(const QString &suit) {
+    replyToServer(S_COMMAND_CHOOSE_SUIT, suit);
     setStatus(NotActive);
 }
 

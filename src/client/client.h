@@ -60,6 +60,7 @@ public:
         AskForChoice = 0x01000F,
         AskForTriggerOrder = 0x010010,
         AskForCardChosen = 0x010011,
+        AskForSuit = 0x010012,
 
         RespondingUse = 0x000101,
         RespondingForDiscard = 0x000201,
@@ -246,7 +247,7 @@ public slots:
     void onPlayerChoosePlayer(const Player *player);
     void onPlayerChooseTriggerOrder(const QString &choice);
     void onPlayerChangeSkin(int skin_id, bool is_head = true);
-    void onPlayerChooseSuit();
+    void onPlayerChooseSuit(const QString &suit);
     void onPlayerChooseKingdom();
     void onPlayerChooseRoom(qlonglong room_id);
     void preshow(const QString &skill_name, const bool isPreshowed);
