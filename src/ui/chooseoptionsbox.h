@@ -21,10 +21,11 @@
 #ifndef _CHOOSE_OPTIONS_BOX_H
 #define _CHOOSE_OPTIONS_BOX_H
 
-#include "timedprogressbar.h"
 #include "graphicsbox.h"
 
 class Button;
+class QSanCommandProgressBar;
+class QGraphicsProxyWidget;
 
 class ChooseOptionsBox : public GraphicsBox {
     Q_OBJECT
@@ -32,7 +33,6 @@ class ChooseOptionsBox : public GraphicsBox {
 public:
     explicit ChooseOptionsBox();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
 
     inline void setSkillName(const QString &skillName) { this->skillName = skillName; }

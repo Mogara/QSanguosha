@@ -87,7 +87,6 @@ class ChooseTriggerOrderBox : public GraphicsBox {
 public:
     explicit ChooseTriggerOrderBox();
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QRectF boundingRect() const;
     void chooseOption(const QString &reason, const QStringList &options, const bool optional);
     void clear();
@@ -104,7 +103,6 @@ private:
     static const int interval;
     static const int m_leftBlankWidth;
 
-    QString reason;
     QStringList options;
     bool optional;
     int m_minimumWidth;

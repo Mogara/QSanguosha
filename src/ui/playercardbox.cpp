@@ -168,10 +168,8 @@ QRectF PlayerCardBox::boundingRect() const
     return QRectF(0, 0, width, height);
 }
 
-void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void PlayerCardBox::paintLayout(QPainter *painter)
 {
-    GraphicsBox::paint(painter, option, widget);
-
     if (nameRects.isEmpty())
         return;
 
@@ -298,6 +296,4 @@ void PlayerCardBox::reply()
         id = item->getId();
 
     ClientInstance->onPlayerChooseCard(id);
-
-    clear();
 }

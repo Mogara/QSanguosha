@@ -266,12 +266,6 @@ void ChooseTriggerOrderBox::storeMinimumWidth()
     m_minimumWidth = width + optionButtonHeight + 20;
 }
 
-void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    title = Sanguosha->translate(reason);
-    GraphicsBox::paint(painter, option, widget);
-}
-
 QRectF ChooseTriggerOrderBox::boundingRect() const
 {
     const int generalNum = getGeneralNum();
@@ -300,9 +294,9 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
 
 void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringList &options, const bool optional)
 {
-    this->reason = reason;
     this->options = options;
     this->optional = optional;
+    title = Sanguosha->translate(reason);
 
     storeMinimumWidth();
 
@@ -443,5 +437,4 @@ void ChooseTriggerOrderBox::reply()
             choice = options.first();
     }
     ClientInstance->onPlayerChooseTriggerOrder(choice);
-    clear();
 }

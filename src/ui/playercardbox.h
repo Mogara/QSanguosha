@@ -44,7 +44,7 @@ public:
 protected:
     // GraphicsBox interface
     QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paintLayout(QPainter *painter);
 
 private:
     void paintArea(const QString &name, QPainter *painter);

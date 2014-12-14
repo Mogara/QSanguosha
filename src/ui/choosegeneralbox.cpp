@@ -101,7 +101,7 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 ChooseGeneralBox::ChooseGeneralBox()
-    : general_number(0), single_result(false), view_only(false),
+    : general_number(0), single_result(false), m_viewOnly(false),
       confirm(new Button(tr("fight"), 0.6)),
       progress_bar(NULL)
 {
@@ -110,7 +110,7 @@ ChooseGeneralBox::ChooseGeneralBox()
     connect(confirm, &Button::clicked, this, &ChooseGeneralBox::reply);
 }
 
-void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void ChooseGeneralBox::paintLayout(QPainter *painter) {
     //============================================================
     //||========================================================||
     //||      Please select the same nationality generals       ||
@@ -161,16 +161,8 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||             ==================               ||
     //||                                              ||
     //==================================================
-    if (!view_only) {
-        title = single_result ? tr("Please select one general")
-                              : tr("Please select the same nationality generals");
-        if (!single_result && Self->getSeat() > 0)
-            title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
-                          + " ");
-    }
-    GraphicsBox::paint(painter, option, widget);
 
-    if (view_only || single_result) return;
+    if (m_viewOnly || single_result) return;
 
     int split_line_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line;
     if (general_number > 5)
@@ -216,7 +208,7 @@ QRectF ChooseGeneralBox::boundingRect() const {
     //No need to reserve space for button
     if (single_result) {
         height -= 30;
-    } else if (!view_only) {
+    } else if (!m_viewOnly) {
         height += G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat;
     }
 
@@ -254,8 +246,8 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     this->single_result = single_result;
     if (view_only)
         title = reason;
-    if (this->view_only != view_only) {
-        this->view_only = view_only;
+    if (this->m_viewOnly != view_only) {
+        this->m_viewOnly = view_only;
         confirm->setText(view_only ? tr("confirm") : tr("fight"));
     }
     foreach(QString general, _generals){
@@ -264,6 +256,14 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     }
 
     general_number = generals.length();
+    if (!view_only) {
+        title = single_result ? tr("Please select one general")
+                              : tr("Please select the same nationality generals");
+        if (!single_result && Self->getSeat() > 0)
+            title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
+                          + " ");
+    }
+
     prepareGeometryChange();
 
     items.clear();
@@ -496,7 +496,7 @@ void ChooseGeneralBox::_initializeItems() {
 }
 
 void ChooseGeneralBox::reply() {
-    if (view_only)
+    if (m_viewOnly)
         return clear();
 
     QString generals;
@@ -510,7 +510,6 @@ void ChooseGeneralBox::reply() {
         progress_bar->deleteLater();
     }
     ClientInstance->onPlayerChooseGeneral(generals);
-    clear();
 }
 
 void ChooseGeneralBox::clear() {
