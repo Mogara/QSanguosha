@@ -27,6 +27,13 @@
 
 #include <QGraphicsProxyWidget>
 
+const int ChooseSuitBox::outerBlankWidth = 37;
+const int ChooseSuitBox::buttonWidth = 35;
+const int ChooseSuitBox::buttonHeight = 30;
+const int ChooseSuitBox::interval = 15;
+const int ChooseSuitBox::topBlankWidth = 42;
+const int ChooseSuitBox::bottomBlankWidth = 25;
+
 ChooseSuitBox::ChooseSuitBox()
     : progressBar(NULL)
 {

@@ -42,12 +42,12 @@ private:
     QStringList m_suits;
     QList<Button *> buttons;
 
-    static const int outerBlankWidth = 37;
-    static const int buttonWidth = 35;
-    static const int buttonHeight = 30;
-    static const int interval = 15;
-    static const int topBlankWidth = 42;
-    static const int bottomBlankWidth = 25;
+    static const int outerBlankWidth;
+    static const int buttonWidth;
+    static const int buttonHeight;
+    static const int interval;
+    static const int topBlankWidth;
+    static const int bottomBlankWidth;
 
     QGraphicsProxyWidget *progressBarItem;
     QSanCommandProgressBar *progressBar;
