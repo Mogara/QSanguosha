@@ -29,30 +29,86 @@
 static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale)
-    : label(label), size(ButtonRect.size() * scale),
-      font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize())
+    : label(label), size(ButtonRect.size() * scale)
 {
     init();
+    initTextItems();
+    prepareIcons();
+}
+
+Button::Button(const QPixmap &pixmap, qreal scale)
+    : size(ButtonRect.size() * scale),
+      m_icon(new QGraphicsPixmapItem(pixmap, this)), m_colorReversedIcon(NULL)
+{
+    init();
+    prepareIcons();
 }
 
 Button::Button(const QString &label, const QSizeF &size)
-    : label(label), size(size),
-      font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize())
+    : label(label), size(size)
 {
     init();
+    initTextItems();
+    prepareIcons();
+}
+
+Button::Button(const QPixmap &pixmap, const QSizeF &size)
+    : size(size),
+      m_icon(new QGraphicsPixmapItem(pixmap, this)), m_colorReversedIcon(NULL)
+{
+    init();
+    prepareIcons();
 }
 
 void Button::init()
 {
     setAcceptHoverEvents(true);
 
+    font_name = "wqy-microhei";
+    font_size = Config.TinyFont.pixelSize();
+
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlags(ItemIsFocusable);
     connect(this, &Button::enabledChanged, this, &Button::onEnabledChanged);
 }
 
-void Button::mousePressEvent(QGraphicsSceneMouseEvent *)
+void Button::initTextItems()
 {
+    //@todo:modify the properties of QSanSimpleTextFont directly instead
+    IQSanComponentSkin::QSanSimpleTextFont ft;
+    JsonArray val;
+    val << font_name;
+    val << font_size;
+    val << 2;
+
+    JsonArray val3;
+    val3 << 255 << 255 << 255; //white
+    val << QVariant(val3);
+
+    ft.tryParse(val);
+
+    QRect rect = boundingRect().toRect();
+
+    m_icon = new QGraphicsPixmapItem(this);
+    ft.paintText(m_icon, rect, Qt::AlignCenter, label);
+
+    val3.clear();
+    val3 << 0 << 0 << 0; //black
+    val[3] = val3;
+    ft.tryParse(val);
+
+    m_colorReversedIcon = new QGraphicsPixmapItem(this);
+    ft.paintText(m_colorReversedIcon, rect, Qt::AlignCenter, label);
+    m_colorReversedIcon->hide();
+}
+
+void Button::prepareIcons()
+{
+    m_icon->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
+    if (m_colorReversedIcon != NULL)
+        m_colorReversedIcon->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
+
+    updateIconsPosition();
 }
 
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
@@ -63,11 +119,47 @@ void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     setFocus(Qt::MouseFocusReason);
+    setTextColorReversed(true);
 }
 
 void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     clearFocus();
+    setTextColorReversed(false);
+}
+
+void Button::setTextColorReversed(bool reversed)
+{
+    if (m_colorReversedIcon != NULL) {
+        m_icon->setVisible(!reversed);
+        m_colorReversedIcon->setVisible(reversed);
+    }
+}
+
+void Button::updateIconsPosition()
+{
+    const qreal width = m_icon->boundingRect().width();
+    const qreal height = m_icon->boundingRect().height();
+
+    const QRectF rect = boundingRect();
+    m_icon->setPos((rect.width() - width) / 2, (rect.height() - height) / 2);
+
+    if (m_colorReversedIcon != NULL)
+        m_colorReversedIcon->setPos(m_icon->pos());
+}
+
+QColor Button::backgroundColor() const
+{
+    QColor color;
+
+    if (hasFocus())
+        color = Qt::white;
+    else
+        color = Qt::black;
+
+    color.setAlphaF(0.8);
+
+    return color;
 }
 
 QRectF Button::boundingRect() const
@@ -82,53 +174,15 @@ QFont Button::defaultFont()
     return font;
 }
 
-static QColor ReverseColor(const QColor &color)
-{
-    int r = 0xFF - color.red();
-    int g = 0xFF - color.green();
-    int b = 0xFF - color.blue();
-
-    return QColor::fromRgb(r, g, b);
-}
-
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
     QRectF rect = boundingRect();
 
-    QColor edgeColor = Qt::white, boxColor;
-    int edgeWidth = 1;
-    boxColor = Qt::black;
-    if (hasFocus()) boxColor = ReverseColor(boxColor);
-    boxColor.setAlphaF(0.8);
-    edgeWidth = 2;
-
-    painter->fillRect(rect, boxColor);
-
-    QPen pen(edgeColor);
-    pen.setWidth(edgeWidth);
+    QPen pen(edgeColor());
+    pen.setWidth(edgeWidth());
     painter->setPen(pen);
+    painter->setBrush(backgroundColor());
     painter->drawRect(rect);
-
-    QColor textColor = Qt::white;
-
-    if (hasFocus())
-        textColor = ReverseColor(textColor);
-
-    IQSanComponentSkin::QSanSimpleTextFont ft;
-    JsonArray val;
-    val << font_name;
-    val << font_size;
-    val << 2;
-
-    JsonArray val3;
-    val3 << textColor.red();
-    val3 << textColor.green();
-    val3 << textColor.blue();
-    val << QVariant(val3);
-
-    ft.tryParse(val);
-    ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);
 }
 
 void Button::onEnabledChanged()

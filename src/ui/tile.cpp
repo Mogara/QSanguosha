@@ -20,7 +20,6 @@
 
 #include "tile.h"
 
-#include <QPainter>
 #include <QFile>
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
@@ -31,36 +30,29 @@
 static QRectF ButtonRect(0, 0, 154, 154);
 
 Tile::Tile(const QString &label, const QSizeF &size)
-    : Button(label, size),
+    : Button(QPixmap(), size),
       down(false), auto_hide_title(true), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL), frame(NULL)
+      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL)
 {
+    this->label = label;
     init();
 }
 
 Tile::Tile(const QString &label, qreal scale)
-    : Button(label, scale),
+    : Button(QPixmap(), scale),
       down(false), auto_hide_title(true), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL), frame(NULL)
+      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL)
 {
+    this->label = label;
     size = ButtonRect.size() * scale;
     init();
 }
 
 void Tile::init()
 {
-    Button::init();
-
     title = new Title(this, label, font_name, font_size);
     title->setPos(8, boundingRect().height() - title->boundingRect().height() - 8);
     title->hide();
-
-    frame = new QGraphicsDropShadowEffect(this);
-    frame->setOffset(0);
-    frame->setColor(Qt::white);
-    frame->setBlurRadius(12);
-    frame->setEnabled(false);
-    setGraphicsEffect(frame);
 
     setFlag(ItemIsFocusable, false);
 }
@@ -72,9 +64,10 @@ void Tile::setIcon(QString path)
         path = QString("image/system/button/icon/%1.png").arg(path);
     }
 
-    if (QFile::exists(path)) {
-        icon.load(path);
-    }
+    if (QFile::exists(path))
+        m_icon->setPixmap(QPixmap(path));
+
+    updateIconsPosition();
 }
 
 void Tile::addScrollTexts(const QStringList &texts)
@@ -145,26 +138,6 @@ void Tile::scrollToNextContent()
     scroll_timer->start(((qrand() % 3) + 3) * 1000);
 }
 
-void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
-{
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QRectF rect = boundingRect();
-
-    QColor edgeColor = Qt::white, boxColor;
-    int edgeWidth = 1;
-    boxColor = QColor(120, 212, 120);
-    edgeColor.setAlphaF(0.3);
-
-    painter->fillRect(rect, boxColor);
-
-    QPen pen(edgeColor);
-    pen.setWidth(edgeWidth);
-    painter->setPen(pen);
-    painter->drawRect(rect);
-
-    painter->drawPixmap(rect.toRect(), icon);
-}
-
 void Tile::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF pos = event->pos();
@@ -172,7 +145,7 @@ void Tile::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if (down && !inside) {
         down = false;
         reset();
-    } else if(inside && boundingRect().contains(event->buttonDownPos(Qt::LeftButton))) {
+    } else if (inside && boundingRect().contains(event->buttonDownPos(Qt::LeftButton))) {
         down = true;
         if (mouse_area != getMouseArea(pos))
             doTransform(pos);
@@ -303,14 +276,12 @@ void Tile::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     if (auto_hide_title)
         title->show();
-    frame->setEnabled(true);
 }
 
 void Tile::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     if (auto_hide_title)
         title->hide();
-    frame->setEnabled(false);
 }
 
 
