@@ -142,7 +142,7 @@ GameRule::GameRule(QObject *parent)
     setParent(parent);
 
     events << GameStart << TurnStart
-           << EventPhaseStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
+           << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
            << PreCardUsed << CardUsed << CardFinished << CardEffected
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
@@ -325,24 +325,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
         break;
     }
-    case EventPhaseStart: {
-        if (player->getPhase() == Player::NotActive && room->getTag("ImperialOrderInvoke").toBool()) {
-            room->setTag("ImperialOrderInvoke", false);
-            LogMessage log;
-            log.type = "#ImperialOrderEffect";
-            log.from = player;
-            log.arg = "imperial_order";
-            room->sendLog(log);
-            const Card *io = room->getTag("ImperialOrderCard").value<const Card *>();
-            if (io) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (!p->hasShownOneGeneral() && !Sanguosha->isProhibited(NULL, p, io)) // from is NULL!
-                        room->cardEffect(io, NULL, p);
-                }
-            }
-        }
-        break;
-    }
     case EventPhaseProceeding: {
         onPhaseProceed(player);
         break;
@@ -365,6 +347,21 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     room->sendLog(log);
 
                     room->setPlayerMark(p, "drank", 0);
+                }
+            }
+            if (room->getTag("ImperialOrderInvoke").toBool()) {
+                room->setTag("ImperialOrderInvoke", false);
+                LogMessage log;
+                log.type = "#ImperialOrderEffect";
+                log.from = player;
+                log.arg = "imperial_order";
+                room->sendLog(log);
+                const Card *io = room->getTag("ImperialOrderCard").value<const Card *>();
+                if (io) {
+                    foreach(ServerPlayer *p, room->getAllPlayers()) {
+                        if (!p->hasShownOneGeneral() && !Sanguosha->isProhibited(NULL, p, io)) // from is NULL!
+                            room->cardEffect(io, NULL, p);
+                    }
                 }
             }
         }
