@@ -32,7 +32,7 @@ FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
     : QDialog(parent)
 {
 #ifdef Q_OS_WIN
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     mousePressed = false;
 
