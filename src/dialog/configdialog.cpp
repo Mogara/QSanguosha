@@ -38,13 +38,9 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     connect(this, &ConfigDialog::windowTitleChanged, ui->windowTitle, &QLabel::setText);
 
     // tab 1
-    QString bg_path = Config.value("BackgroundImage").toString();
-    if (!bg_path.startsWith(":"))
-        ui->bgPathLineEdit->setText(bg_path);
+    ui->bgPathLineEdit->setText(Config.BackgroundImage);
 
-    QString tableBg_path = Config.value("TableBgImage").toString();
-    if (!tableBg_path.startsWith(":"))
-        ui->tableBgPathLineEdit->setText(tableBg_path);
+    ui->tableBgPathLineEdit->setText(Config.TableBgImage);
 
     QFont font = Config.AppFont;
     showFont(ui->appFontLineEdit, font);
@@ -60,7 +56,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->textEditFontLineEdit->setPalette(palette);
 
     // tab 2
-    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/system/background.ogg").toString());
+    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic",
+                                                  qApp->applicationDirPath() + "audio/system/background.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
 
@@ -117,53 +114,51 @@ ConfigDialog::~ConfigDialog() {
 }
 
 void ConfigDialog::on_browseBgButton_clicked() {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QString fileName = QFileDialog::getOpenFileName(this,
         tr("Select a background image"),
         "image/backdrop/",
         tr("Images (*.png *.bmp *.jpg)"));
 
-    if (!filename.isEmpty()) {
-        ui->bgPathLineEdit->setText(filename);
+    if (!fileName.isEmpty()) {
+        ui->bgPathLineEdit->setText(fileName);
 
-        Config.BackgroundImage = filename;
-        Config.setValue("BackgroundImage", filename);
+        Config.BackgroundImage = fileName;
+        Config.setValue("BackgroundImage", fileName);
 
         emit bg_changed();
     }
 }
 
 void ConfigDialog::on_resetBgButton_clicked() {
-    ui->bgPathLineEdit->clear();
-
-    QString filename = "image/backdrop/new-version.jpg";
-    Config.BackgroundImage = filename;
-    Config.setValue("BackgroundImage", filename);
+    QString fileName = qApp->applicationDirPath() + "/image/backdrop/bg.jpg";
+    ui->bgPathLineEdit->setText(fileName);
+    Config.BackgroundImage = fileName;
+    Config.setValue("BackgroundImage", fileName);
 
     emit bg_changed();
 }
 
 void ConfigDialog::on_browseTableBgButton_clicked() {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QString fileName = QFileDialog::getOpenFileName(this,
         tr("Select a tableBg image"),
         "image/backdrop/",
         tr("Images (*.png *.bmp *.jpg)"));
 
-    if (!filename.isEmpty()) {
-        ui->tableBgPathLineEdit->setText(filename);
+    if (!fileName.isEmpty()) {
+        ui->tableBgPathLineEdit->setText(fileName);
 
-        Config.TableBgImage = filename;
-        Config.setValue("TableBgImage", filename);
+        Config.TableBgImage = fileName;
+        Config.setValue("TableBgImage", fileName);
 
         emit tableBg_changed();
     }
 }
 
 void ConfigDialog::on_resetTableBgButton_clicked() {
-    ui->tableBgPathLineEdit->clear();
-
-    QString filename = "image/backdrop/default.jpg";
-    Config.TableBgImage = filename;
-    Config.setValue("TableBgImage", filename);
+    QString fileName = qApp->applicationDirPath() + "/image/backdrop/table.jpg";
+    ui->tableBgPathLineEdit->setText(fileName);
+    Config.TableBgImage = fileName;
+    Config.setValue("TableBgImage", fileName);
 
     emit tableBg_changed();
 }
