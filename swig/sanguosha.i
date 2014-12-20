@@ -789,6 +789,24 @@ struct PlayerNumStruct {
     QString m_reason;
 };
 
+struct ServerInfoStruct {
+    const QString Name;
+    const QString GameMode;
+    const int OperationTimeout;
+    const int NullificationCountDown;
+    const QStringList Extensions;
+    const bool RandomSeat;
+    const bool EnableCheat;
+    const bool FreeChoose;
+	const bool ForbidAddingRobot;
+    const bool DisableChat;
+    const bool FirstShowingReward;
+
+    const bool DuringGame;
+};
+
+extern ServerInfoStruct ServerInfo;
+
 enum TriggerEvent {
     NonTrigger,
 

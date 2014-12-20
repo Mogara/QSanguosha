@@ -27,7 +27,7 @@ public:
     void setCanPreshow(bool preshow);
 
     virtual int getPriority() const;
-
+	
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
@@ -122,7 +122,7 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;
-
+				   
     LuaFunction view_filter;
     LuaFunction view_as;
 
@@ -216,7 +216,7 @@ public:
     void setCanRecast(bool can_recast);
     void setHandlingMethod(Card::HandlingMethod handling_method);
     LuaSkillCard *clone() const;
-
+	
     LuaFunction filter;
     LuaFunction feasible;
     LuaFunction about_to_use;
@@ -1061,10 +1061,11 @@ void LuaSkillCard::pushSelf(lua_State *L) const{
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaSkillCard, 0);
 }
 
-bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const{
-    if (filter == 0)
-        return SkillCard::targetFilter(targets, to_select, self);
-
+bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self,
+        int &maxVotes) const{
+    if (filter == 0){
+        return SkillCard::targetFilter(targets, to_select, self, maxVotes);
+	}
     lua_State *L = Sanguosha->getLuaState();
 
     // the callback
@@ -1087,9 +1088,22 @@ bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
     }
     else {
-        bool result = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        return result;
+		if (lua_isnumber(L,-1)){
+			int vote = lua_tointeger(L, -1);
+			maxVotes = vote;
+			lua_pop(L,1);
+			return vote > 0;
+		} else {
+			bool result = lua_toboolean(L,-1);
+			if (result){
+				maxVotes = 1;
+			}else{
+				maxVotes = 0;
+			}
+			lua_pop(L,1);
+			return result;
+		}
+		
     }
 }
 
