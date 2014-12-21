@@ -52,7 +52,7 @@ public:
         }
     }
 
-    bool isPlaying() const{
+    bool isPlaying() const {
         if (channel == NULL) return false;
 
         FMOD_BOOL is_playing = false;
@@ -125,6 +125,7 @@ void Audio::playBGM(const QString &filename) {
         FMOD_Sound_SetLoopCount(BGM, -1);
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, BGM, false, &BGMChannel);
 
+        FMOD_Channel_SetVolume(BGMChannel, Config.BGMVolume);
         FMOD_System_Update(System);
     }
 }
