@@ -10,6 +10,8 @@ Rectangle {
         id: logo
         anchors.centerIn: parent
         source: "../image/logo/logo.png"
+
+        AnchorAnimation { duration: 1000; easing.type: Easing.InOutQuad; }
     }
 
     //---------------Bubbles-----------------
@@ -164,6 +166,14 @@ Rectangle {
             loops: Animation.Infinite
             NumberAnimation { from: 10; to: -10; duration: 8000; easing.type: Easing.InOutSine }
             NumberAnimation { from: -10; to: 10; duration: 8000; easing.type: Easing.InOutSine }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            water.height = 0
+            logo.anchors.verticalCenterOffset = -parent.width / 4
         }
     }
 }
