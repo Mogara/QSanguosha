@@ -109,6 +109,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     if (player->hasFlag("HalberdSlashFilter")) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
         room->setPlayerMark(player, "halberd_count", card_use.to.length() - 1);
     }
@@ -198,7 +200,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setPlayerFlag(player, "-slashNoDistanceLimit");
     if (player->hasFlag("slashDisableExtraTarget"))
         room->setPlayerFlag(player, "-slashDisableExtraTarget");
-
+    // for Paoxiao
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn")) {
         if (player->hasSkill("paoxiao")) {
             if (!player->hasShownSkill("paoxiao"))
@@ -208,14 +210,17 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
+    // for Tianyi
     if ((use.to.size() > 1 + player->getMark("halberd_count")
         || (player->hasFlag("Global_MoreSlashInOneTurn") && player->getSlashCount() == 2))
         && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play) {
         if (player->hasFlag("Global_MoreSlashInOneTurn")) // Tianyi just let player could use one more Slash
             room->setPlayerFlag(player, "-Global_MoreSlashInOneTurn");
         room->broadcastSkillInvoke("tianyi", 1, player);
-    } else if (use.to.size() > 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, player, this)
-               && player->hasSkill("duanbing")) {
+    }
+    // for Duanbing
+    if (use.to.size() > 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, player, this)
+        && player->hasSkill("duanbing")) {
         if (!player->hasShownSkill("duanbing"))
             player->showGeneral(player->inHeadSkills("duanbing"));
         room->broadcastSkillInvoke("duanbing", player);
@@ -279,6 +284,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 
     effect.to = card_effect.to;
     effect.drank = this->drank;
+    effect.nullified = card_effect.nullified;
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
@@ -333,12 +339,14 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if (Self->hasFlag("HalberdSlashFilter")) {
         QSet<QString> kingdoms;
         foreach (const Player *p, targets) {
-            if (!p->hasShownOneGeneral())
+            if (!p->hasShownOneGeneral() || p->getRole() == "careerist")
                 continue;
             kingdoms << p->getKingdom();
         }
         if (to_select->getMark("Equips_of_Others_Nullified_to_You") > 0)
             return false;
+        if (to_select->hasShownOneGeneral() && to_select->getRole() == "careerist") // careerist!
+            return true;
         if (to_select->hasShownOneGeneral() && kingdoms.contains(to_select->getKingdom()))
             return false;
     } else if (targets.length() >= slash_targets) {

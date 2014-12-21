@@ -27,6 +27,7 @@
 #include "client.h"
 #include "namespace.h"
 #include "standard.h"
+#include "roomthread.h"
 
 #include <QDir>
 
@@ -394,6 +395,7 @@ public:
     int getMaxCards(MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     void drawCards(int n, const char *reason = NULL);
     bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
+    bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QList<int> handCards() const;
     virtual QList<const Card *> getHandcards() const;
@@ -613,6 +615,8 @@ struct CardEffectStruct {
 
     ServerPlayer *from;
     ServerPlayer *to;
+
+    bool nullified;
 };
 
 struct SlashEffectStruct {
@@ -629,6 +633,8 @@ struct SlashEffectStruct {
     int drank;
 
     DamageStruct::Nature nature;
+
+    bool nullified;
 };
 
 struct CardUseStruct {
@@ -650,6 +656,8 @@ struct CardUseStruct {
     QList<ServerPlayer *> to;
     bool m_isOwnerUse;
     bool m_addHistory;
+    bool m_isHandcard;
+    QStringList nullified_list;
 };
 
 struct CardsMoveStruct {
@@ -765,6 +773,8 @@ struct CardResponseStruct {
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
+    bool m_isRetrial;
+    bool m_isHandcard;
 };
 
 struct PlayerNumStruct {
@@ -872,6 +882,8 @@ enum TriggerEvent {
     GeneralShown, // For Official Hegemony mode
     GeneralHidden, // For Official Hegemony mode
     GeneralRemoved, // For Official Hegemony mode
+
+    DFDebut,
 
     NumOfEvents
 };
@@ -1135,7 +1147,6 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QStringList getChattingEasyTexts() const;
-    QString getSetupString() const;
 
     QString getModeName(const char *mode) const;
     int getPlayerCount(const char *mode) const;
@@ -1295,6 +1306,34 @@ public:
     void delay(unsigned long msecs = 1000);
 };
 
+struct RoomConfig {
+    bool isBanned(const QString &first, const QString &second);
+
+    QString GameMode;
+    QString ServerName;
+    int OperationTimeout;
+    int CountDownSeconds;
+    int NullificationCountDown;
+    int OriginAIDelay;
+    int AIDelay;
+    int AIDelayAD;
+    int LuckCardLimitation;
+    int PileSwappingLimitation;
+    int HegemonyMaxChoice;
+    bool AIChat;
+    bool RandomSeat;
+    bool EnableCheat;
+    bool FreeChoose;
+    bool DisableChat;
+    bool EnableMinimizeDialog;
+    bool RewardTheFirstShowingPlayer;
+    bool ForbidAddingRobot;
+    bool AlterAIDelayAD;
+    bool DisableLua;
+    bool SurrenderAtDeath;
+    bool EnableLordConvertion;
+};
+
 class Room: public QThread {
 public:
     enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
@@ -1305,6 +1344,7 @@ public:
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
     void tryPause();
+    const RoomConfig &getConfig() const;
     QString getMode() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
@@ -1348,7 +1388,7 @@ public:
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
-    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
+    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to, bool multiple = false);
     bool cardEffect(const CardEffectStruct &effect);
     bool isJinkEffected(ServerPlayer *user, const Card *jink);
     void judge(JudgeStruct &judge_struct);
@@ -1363,7 +1403,9 @@ public:
     void clearAG(ServerPlayer *player = NULL);
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
-    void sendLog(const LogMessage &log);
+    void sendLog(const LogMessage &log, QList<ServerPlayer *> players = QList<ServerPlayer *>());
+    void sendLog(const LogMessage &log, ServerPlayer *player);
+    void sendCompulsoryTriggerLog(ServerPlayer *player, const char *skill_name, bool notify_skill = true);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const char *skill_name, bool exchange = false);

@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "engine.h"
 #include "room.h"
-#include "roomthread.h"
 
 class JiangeDefenseScenarioRule: public ScenarioRule {
 public:
@@ -36,7 +35,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
     QStringList wei_generals, shu_generals;
-    foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
+    foreach (QString general, room->getLimitedGeneralNames()) {
         if (general.startsWith("lord_")) continue;
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
         if (kingdom == "wei")

@@ -45,8 +45,8 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
         cardItem->setAutoBack(false);
         cardItem->setFlag(QGraphicsItem::ItemIsFocusable);
 
-        connect(cardItem, SIGNAL(released()), this, SLOT(onItemReleased()));
-        connect(cardItem, SIGNAL(clicked()), this, SLOT(onItemClicked()));
+        connect(cardItem, &CardItem::released, this, &GuanxingBox::onItemReleased);
+        connect(cardItem, &CardItem::clicked, this, &GuanxingBox::onItemClicked);
 
         upItems << cardItem;
         cardItem->setParentItem(this);

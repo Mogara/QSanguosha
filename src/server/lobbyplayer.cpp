@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+
 #include "lobbyplayer.h"
 #include "server.h"
 #include "json.h"
@@ -50,8 +52,8 @@ void LobbyPlayer::setSocket(ClientSocket *new_socket)
 
     if (new_socket) {
         socket = new_socket;
-        connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
+        connect(socket, &ClientSocket::disconnected, this, &LobbyPlayer::disconnected);
+        connect(socket, &ClientSocket::message_got, this, &LobbyPlayer::processMessage);
     }
 }
 
@@ -60,6 +62,12 @@ void LobbyPlayer::notify(CommandType command, const QVariant &data)
     Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(data);
     unicast(packet.toJson());
+}
+
+void LobbyPlayer::kick()
+{
+    warn(S_WARNING_KICKED);
+    socket->disconnectFromHost();
 }
 
 void LobbyPlayer::processMessage(const QByteArray &message)
@@ -112,7 +120,6 @@ void LobbyPlayer::createRoomCommand(const QVariant &data)
     }
 
     Room *room = server->createNewRoom(config);
-    notify(S_COMMAND_SETUP, room->getSetupString());
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
@@ -123,30 +130,42 @@ void LobbyPlayer::createRoomCommand(const QVariant &data)
 
 void LobbyPlayer::enterRoomCommand(const QVariant &data)
 {
-    int room_id = data.toInt();
-
-    Room *room = server->getRoom(room_id);
-    if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
-        //@todo: return an error message
+    JsonArray args = data.value<JsonArray>();
+    if (args.isEmpty())
         return;
-    } else if (room->isFull()) {
-        //@todo: return an error message
+
+    Room *room = server->getRoom(args.at(0).toLongLong());
+
+    if (room == NULL || room->isFinished() || room->getPlayers().isEmpty()) {
+        warn(S_WARNING_GAME_OVER);
         return;
     }
 
-    notify(S_COMMAND_SETUP, room->getSetupString());
+    if (!room->getConfig().Password.isEmpty()) {
+        QString password;
+        if (args.size() >= 2) {
+            password = args.at(1).toString();
+            password = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Md5).toHex();
+        }
+
+        if (password != room->getConfig().Password) {
+            warn(S_WARNING_WRONG_PASSWORD);
+            return;
+        }
+    }
 
     ServerPlayer *player = room->addSocket(socket);
-    if (player) {
-        socket->disconnect(this);
-        this->disconnect(socket);
-        socket = NULL;
-
-        room->signup(player, screenName, avatar, false);
-
-        emit disconnected();
-        deleteLater();
-    } else {
-        //@todo: return an error message
+    if (player == NULL) {
+        warn(S_WARNING_ROOM_IS_FULL);
+        return;
     }
+
+    socket->disconnect(this);
+    this->disconnect(socket);
+    socket = NULL;
+
+    room->signup(player, screenName, avatar, false);
+
+    emit disconnected();
+    deleteLater();
 }

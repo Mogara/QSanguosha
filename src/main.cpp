@@ -43,30 +43,7 @@
 #endif
 
 #ifdef USE_BREAKPAD
-#include <client/windows/handler/exception_handler.h>
-#include <QProcess>
-
-using namespace google_breakpad;
-
-static bool callback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINTERS *, MDRawAssertionInfo *, bool succeeded) {
-    if (succeeded && QFile::exists("QSanSMTPClient.exe")){
-        char ID[16000];
-        memset(ID, 0, sizeof(ID));
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4996)
-#endif
-        wcstombs(ID, id, wcslen(id));
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-        QProcess *process = new QProcess(qApp);
-        QStringList args;
-        args << QString(ID) + ".dmp";
-        process->start("QSanSMTPClient", args);
-    }
-    return succeeded;
-}
+#include "exceptionhandler.h"
 #endif
 
 int main(int argc, char *argv[]) {
@@ -78,7 +55,7 @@ int main(int argc, char *argv[]) {
         new QApplication(argc, argv);
 
 #ifdef USE_BREAKPAD
-    ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
+    ExceptionHandler eh("./dmp");
 #endif
 
 #if defined(Q_OS_MAC) && defined(QT_NO_DEBUG)
@@ -104,7 +81,20 @@ int main(int argc, char *argv[]) {
         }
         if (!found) {
             QDir root("/sdcard/Android/data/org.qsanguosha");
-            QDir::setCurrent(root.absolutePath());
+            if (root.exists("lua/config.lua")) {
+                QDir::setCurrent(root.absolutePath());
+                found = true;
+            }
+        }
+
+        if (!found) {
+            QString m = QObject::tr("Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.qsanguosha");
+            if (!noGui)
+                QMessageBox::critical(NULL, QObject::tr("Error"), m);
+            else
+                puts(m.toLatin1().constData());
+
+            return -2;
         }
 #endif
     }
@@ -157,7 +147,7 @@ int main(int argc, char *argv[]) {
         Server *server = new Server(qApp);
         printf("Server is starting on port %u\n", Config.ServerPort);
 
-        if (server->listen())
+        if (server->listen(QHostAddress::Any, Config.ServerPort))
             printf("Starting successfully\n");
         else
             printf("Starting failed!\n");

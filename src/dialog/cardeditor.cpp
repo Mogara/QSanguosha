@@ -524,7 +524,7 @@ void SkillBox::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *){
 }
 
 AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
-    :QGraphicsRectItem(0, 0, width, height)
+    : QGraphicsRectItem(0, 0, width, height)
 {
     QPen thick_pen(Qt::black);
     thick_pen.setWidth(4);
@@ -568,7 +568,7 @@ void AvatarRectItem::setName(const QString &name){
 }
 
 CardScene::CardScene()
-    :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL), max_hp(0), trans_max_hp(0)
+    : QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL), max_hp(0), trans_max_hp(0)
 {
     photo = NULL;
     frame = new QGraphicsPixmapItem;
@@ -594,12 +594,8 @@ CardScene::CardScene()
 
     resetPhoto();
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
-#else
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup;
     addItem(magatama_group);
-#endif
 
     for (int i = 0; i < 7; i++){
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
@@ -641,7 +637,8 @@ CardScene::CardScene()
     done_menu = new QMenu();
 
     QAction *done_action = new QAction(tr("Done"), done_menu);
-    connect(done_action, SIGNAL(triggered()), this, SLOT(doneMakingAvatar()));
+
+    connect(done_action, &QAction::triggered, this, &CardScene::doneMakingAvatar);
     done_menu->addAction(done_action);
 }
 
@@ -855,11 +852,7 @@ void CardScene::resetPhoto(){
 }
 
 void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    QGraphicsItem *item = itemAt(event->scenePos());
-#else
     QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
-#endif
     if (item){
         if (item->parentItem() == skill_box){
             QGraphicsScene::contextMenuEvent(event);
@@ -894,8 +887,8 @@ void CardScene::setCompanionVisible(bool visible)
     companion_box->setVisible(visible);
 }
 
-CardEditor::CardEditor(QWidget *parent) :
-QMainWindow(parent)
+CardEditor::CardEditor(QWidget *parent)
+    : QMainWindow(parent)
 {
     setWindowTitle(tr("Card editor"));
 
@@ -908,7 +901,7 @@ QMainWindow(parent)
         );
 
     card_scene = new CardScene;
-    connect(card_scene, SIGNAL(avatar_snapped(QRectF)), this, SLOT(saveAvatar(QRectF)));
+    connect(card_scene, &CardScene::avatar_snapped, this, &CardEditor::saveAvatar);
 
     view->setScene(card_scene);
     view->setFixedSize(card_scene->sceneRect().width() + 2,
@@ -940,58 +933,58 @@ QMainWindow(parent)
 
     menu_bar->addMenu(file_menu);
 
-    connect(import, SIGNAL(triggered()), this, SLOT(import()));
-    connect(save, SIGNAL(triggered()), this, SLOT(saveImage()));
-    connect(exit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(import, &QAction::triggered, this, &CardEditor::import);
+    connect(save, &QAction::triggered, this, &CardEditor::saveImage);
+    connect(exit, &QAction::triggered, this, &CardEditor::close);
 
     QMenu *tool_menu = new QMenu(tr("Tool"));
     QAction *add_skill = new QAction(tr("Add skill"), tool_menu);
     add_skill->setShortcut(Qt::ALT + Qt::Key_S);
-    connect(add_skill, SIGNAL(triggered()), this, SLOT(addSkill()));
+    connect(add_skill, &QAction::triggered, this, &CardEditor::addSkill);
     tool_menu->addAction(add_skill);
 
     QAction *remove_skill = new QAction(tr("Remove skill"), tool_menu);
     remove_skill->setShortcut(Qt::ALT + Qt::Key_D);
-    connect(remove_skill, SIGNAL(triggered()), card_scene->getSkillBox(), SLOT(removeSkill()));
+    connect(remove_skill, &QAction::triggered, card_scene->getSkillBox(), &SkillBox::removeSkill);
     tool_menu->addAction(remove_skill);
 
     QAction *edit_skill = new QAction(tr("Edit skill title ..."), tool_menu);
     edit_skill->setShortcut(Qt::ALT + Qt::Key_E);
-    connect(edit_skill, SIGNAL(triggered()), this, SLOT(editSkill()));
+    connect(edit_skill, &QAction::triggered, this, &CardEditor::editSkill);
     tool_menu->addAction(edit_skill);
 
     tool_menu->addSeparator();
 
     QAction *making_big = new QAction(tr("Make big avatar"), tool_menu);
     making_big->setShortcut(Qt::ALT + Qt::Key_B);
-    connect(making_big, SIGNAL(triggered()), card_scene, SLOT(makeBigAvatar()));
+    connect(making_big, &QAction::triggered, card_scene, &CardScene::makeBigAvatar);
     tool_menu->addAction(making_big);
 
     QAction *making_small = new QAction(tr("Make small avatar"), tool_menu);
     making_small->setShortcut(Qt::ALT + Qt::Key_M);
-    connect(making_small, SIGNAL(triggered()), card_scene, SLOT(makeSmallAvatar()));
+    connect(making_small, &QAction::triggered, card_scene, &CardScene::makeSmallAvatar);
     tool_menu->addAction(making_small);
 
     QAction *making_tiny = new QAction(tr("Make tiny avatar"), tool_menu);
     making_tiny->setShortcut(Qt::ALT + Qt::Key_T);
-    connect(making_tiny, SIGNAL(triggered()), card_scene, SLOT(makeTinyAvatar()));
+    connect(making_tiny, &QAction::triggered, card_scene, &CardScene::makeTinyAvatar);
     tool_menu->addAction(making_tiny);
 
     QAction *hiding_rect = new QAction(tr("Hide avatar rect"), tool_menu);
     hiding_rect->setShortcut(Qt::ALT + Qt::Key_H);
-    connect(hiding_rect, SIGNAL(triggered()), card_scene, SLOT(hideAvatarRects()));
+    connect(hiding_rect, &QAction::triggered, card_scene, &CardScene::hideAvatarRects);
     tool_menu->addAction(hiding_rect);
 
     tool_menu->addSeparator();
 
     QAction *reset_photo = new QAction(tr("Reset photo"), tool_menu);
     reset_photo->setShortcut(Qt::ALT + Qt::Key_R);
-    connect(reset_photo, SIGNAL(triggered()), card_scene, SLOT(resetPhoto()));
+    connect(reset_photo, &QAction::triggered, card_scene, &CardScene::resetPhoto);
     tool_menu->addAction(reset_photo);
 
     QAction *copy_photo = new QAction(tr("Copy photo to clipboard"), tool_menu);
     copy_photo->setShortcut(Qt::CTRL + Qt::Key_C);
-    connect(copy_photo, SIGNAL(triggered()), this, SLOT(copyPhoto()));
+    connect(copy_photo, &QAction::triggered, this, &CardEditor::copyPhoto);
     tool_menu->addAction(copy_photo);
 
     menu_bar->addMenu(tool_menu);
@@ -1036,8 +1029,8 @@ void CardEditor::saveAvatar(const QRectF &rect){
 void CardEditor::setMapping(QFontDialog *dialog, QPushButton *button){
     dialog2button.insert(dialog, button);
 
-    connect(dialog, SIGNAL(currentFontChanged(QFont)), this, SLOT(updateButtonText(QFont)));
-    connect(button, SIGNAL(clicked()), dialog, SLOT(exec()));
+    connect(dialog, &QFontDialog::currentFontChanged, this, &CardEditor::updateButtonText);
+    connect(button, &QPushButton::clicked, dialog, &QFontDialog::exec);
 }
 
 QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font, int skip, BlackEdgeTextItem *item) {
@@ -1062,9 +1055,9 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
     QFontDialog *font_dialog = new QFontDialog(this);
     setMapping(font_dialog, font_button);
 
-    connect(edit, SIGNAL(textChanged(QString)), item, SLOT(setText(QString)));
-    connect(font_dialog, SIGNAL(currentFontChanged(QFont)), item, SLOT(setFont(QFont)));
-    connect(space_spinbox, SIGNAL(valueChanged(int)), item, SLOT(setSkip(int)));
+    connect(edit, &QLineEdit::textChanged, item, &BlackEdgeTextItem::setText);
+    connect(font_dialog, &QFontDialog::currentFontChanged, item, &BlackEdgeTextItem::setFont);
+    connect(space_spinbox, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), item, &BlackEdgeTextItem::setSkip);
 
     edit->setText(text);
     font_dialog->setCurrentFont(font);
@@ -1097,7 +1090,7 @@ QWidget *CardEditor::createPropertiesBox() {
     ratio_spinbox->setSuffix(" %");
 
     QLineEdit *companion_edit = new QLineEdit;
-    connect(companion_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setCompanion(QString)));
+    connect(companion_edit, &QLineEdit::textChanged, card_scene, &CardScene::setCompanion);
 
     QFormLayout *layout = new QFormLayout;
     QHBoxLayout *klayout = new QHBoxLayout;
@@ -1116,7 +1109,7 @@ QWidget *CardEditor::createPropertiesBox() {
     QPushButton *companion_font_button = new QPushButton;
     QFontDialog *companion_font_dialog = new QFontDialog(this);
 
-    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setCompanionFont(QFont)));
+    connect(companion_font_dialog, &QFontDialog::currentFontChanged, card_scene, &CardScene::setCompanionFont);
     setMapping(companion_font_dialog, companion_font_button);
 
     companion_font_dialog->setCurrentFont(Config.value("CardEditor/CompanionFont", QFont("", 9)).value<QFont>());
@@ -1128,12 +1121,12 @@ QWidget *CardEditor::createPropertiesBox() {
     layout->addRow(tr("Companion"), companion_edit);
     layout->addRow(hlayout2);
 
-    connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
-    connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
-    connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
-    connect(trans_hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setTransMaxHp(int)));
-    connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
-    connect(show_companion_box, SIGNAL(toggled(bool)), card_scene, SLOT(setCompanionVisible(bool)));
+    connect(kingdom_ComboBox, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &CardEditor::setCardFrame);
+    connect(lord_checkbox, &QCheckBox::toggled, this, &CardEditor::setCardFrame);
+    connect(hp_spinbox, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), card_scene, &CardScene::setMaxHp);
+    connect(trans_hp_spinbox, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), card_scene, &CardScene::setTransMaxHp);
+    connect(ratio_spinbox, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), card_scene, &CardScene::setRatio);
+    connect(show_companion_box, &QCheckBox::toggled, card_scene, &CardScene::setCompanionVisible);
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
     bool is_lord = Config.value("CardEditor/IsLord", false).toBool();
 
@@ -1173,9 +1166,9 @@ QWidget *CardEditor::createSkillBox() {
     layout->addRow(tr("Tiny font"), tiny_font_button);
 
     SkillBox *skill_box = card_scene->getSkillBox();
-    connect(title_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillTitleFont(QFont)));
-    connect(desc_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setSkillDescriptionFont(QFont)));
-    connect(tiny_font_dialog, SIGNAL(currentFontChanged(QFont)), skill_box, SLOT(setTinyFont(QFont)));
+    connect(title_font_dialog, &QFontDialog::currentFontChanged, skill_box, &SkillBox::setSkillTitleFont);
+    connect(desc_font_dialog, &QFontDialog::currentFontChanged, skill_box, &SkillBox::setSkillDescriptionFont);
+    connect(tiny_font_dialog, &QFontDialog::currentFontChanged, skill_box, &SkillBox::setTinyFont);
 
     setMapping(title_font_dialog, title_font_button);
     setMapping(desc_font_dialog, desc_font_button);
@@ -1198,7 +1191,7 @@ QWidget *CardEditor::createSkillBox() {
     suit_ComboBox->setEnabled(false);
     suit_ComboBox->setToolTip(tr("<font color=%1>This function cannot be used now, we will try to fix it.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
-    connect(suit_ComboBox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit(int)));
+    connect(suit_ComboBox, (void (QComboBox::*)(int))(&QComboBox::activated), skill_box, &SkillBox::insertSuit);
 
     QComboBox *bold_ComboBox = new QComboBox;
     bold_ComboBox->setEditable(true);
@@ -1209,7 +1202,7 @@ QWidget *CardEditor::createSkillBox() {
     bold_ComboBox->addItem(tr("Deputy skill"));
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
-    connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
+    connect(bold_ComboBox, (void (QComboBox::*)(const QString &))(&QComboBox::activated), skill_box, &SkillBox::insertBoldText);
 
     box->setLayout(layout);
     return box;
@@ -1244,7 +1237,7 @@ QWidget *CardEditor::createLeft(){
         card_scene->getNameItem());
 
     QLineEdit *name_edit = box->findChild<QLineEdit *>("name");
-    connect(name_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setAvatarNameBox(QString)));
+    connect(name_edit, &QLineEdit::textChanged, card_scene, &CardScene::setAvatarNameBox);
 
     box->setTitle(tr("Name"));
     layout->addWidget(box);

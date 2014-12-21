@@ -42,14 +42,14 @@ public:
     void adjustRoomTiles();
 
 signals:
-    void roomSelected(int room_id);
+    void roomSelected(qlonglong room_id);
     void roomSelected();
     void createRoomClicked();
     void roomListRequested(int page);
     void exit();
 
 public slots:
-    void setRoomList(const QVariant &data);
+    void setRoomList(const QList<RoomInfoStruct> *data);
 
 private slots:
     void speakToServer();
@@ -62,6 +62,7 @@ private slots:
     void onCreateRoomClicked();
     void onClientDestroyed();
     void onSceneRectChanged(const QRectF &rect);
+    void onRoomChanged(int index);
 
 private:
     QWidget *chatWidget;
@@ -77,7 +78,7 @@ private:
 
     Title *roomTitle;
 
-    QList<HostInfoStruct *> rooms;
+    const QList<RoomInfoStruct> *rooms;
     QList<Tile *> roomTiles;
     Tile *createRoomTile;
     int currentPage;

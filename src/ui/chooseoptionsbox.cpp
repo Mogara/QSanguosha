@@ -23,6 +23,7 @@
 #include "button.h"
 #include "client.h"
 #include "clientstruct.h"
+#include "timedprogressbar.h"
 
 #include <QGraphicsProxyWidget>
 
@@ -30,9 +31,6 @@ ChooseOptionsBox::ChooseOptionsBox()
     : optionsNumber(0), progressBar(NULL)
 {
 }
-
-void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
     //====================
     //||================||
     //|| Please Choose: ||
@@ -46,10 +44,6 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||   |   3   |    ||
     //||    -------     ||
     //====================
-
-    title = QString("%1 %2").arg(Sanguosha->translate(skillName)).arg(tr("Please choose:"));
-    GraphicsBox::paint(painter, option, widget);
-}
 
 QRectF ChooseOptionsBox::boundingRect() const
 {
@@ -68,13 +62,13 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     //repaint background
     this->options = options;
     optionsNumber = options.length();
+    title = QString("%1 %2").arg(Sanguosha->translate(skillName)).arg(tr("Please choose:"));
     prepareGeometryChange();
 
     const int buttonWidth = getButtonWidth();
     foreach (QString option, options) {
         Button *button = new Button(translate(option), QSizeF(buttonWidth,
                                                       defaultButtonHeight));
-        button->setFlag(QGraphicsItem::ItemIsFocusable);
         button->setObjectName(option);
         buttons << button;
         button->setParentItem(this);
@@ -85,7 +79,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             original_tooltip = QString(":%1").arg(option);
             tooltip = Sanguosha->translate(original_tooltip);
         }
-        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
+        connect(button, &Button::clicked, this, &ChooseOptionsBox::reply);
         if (tooltip != original_tooltip)
             button->setToolTip(QString("<font color=%1>%2</font>")
                                .arg(Config.SkillDescriptionInToolTipColor.name())
@@ -114,7 +108,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
             progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseOptionsBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
         progressBar->show();
@@ -127,7 +121,6 @@ void ChooseOptionsBox::reply()
     if (choice.isEmpty())
         choice = options.first();
     ClientInstance->onPlayerMakeChoice(choice);
-    clear();
 }
 
 int ChooseOptionsBox::getButtonWidth() const

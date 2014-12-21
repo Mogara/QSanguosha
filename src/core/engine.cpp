@@ -120,7 +120,7 @@ Engine::Engine()
 
     BanPair::loadBanPairs();
 
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(qApp, &QApplication::aboutToQuit, this, &Engine::deleteLater);
 
     foreach (const Skill *skill, skills) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
@@ -673,34 +673,6 @@ QStringList Engine::getChattingEasyTexts() const{
     return easy_texts;
 }
 
-QString Engine::getSetupString() const{
-    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
-    QString flags;
-    if (Config.RandomSeat)
-        flags.append("R");
-    if (Config.EnableCheat)
-        flags.append("C");
-    if (Config.EnableCheat && Config.FreeChoose)
-        flags.append("F");
-    if (Config.ForbidAddingRobot)
-        flags.append("A");
-    if (Config.DisableChat)
-        flags.append("M");
-    if (Config.RewardTheFirstShowingPlayer)
-        flags.append("S");
-
-    QString server_name = Config.ServerName;
-    QStringList setup_items;
-    setup_items << server_name
-        << Config.GameMode
-        << QString::number(timeout)
-        << QString::number(Config.NullificationCountDown)
-        << Sanguosha->getBanPackages().join("+")
-        << flags;
-
-    return setup_items.join(":");
-}
-
 QMap<QString, QString> Engine::getAvailableModes() const{
     return modes;
 }
@@ -849,6 +821,16 @@ QList<int> Engine::getRandomCards() const{
     qShuffle(list);
 
     return list;
+}
+
+QList<const Card *> Engine::getCards() const
+{
+    QList<const Card *> all_cards;
+    all_cards.reserve(cards.size());
+    foreach (Card *card, cards) {
+        all_cards << card;
+    }
+    return all_cards;
 }
 
 QString Engine::getRandomGeneralName() const{

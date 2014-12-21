@@ -24,14 +24,13 @@
 class Room;
 class AI;
 class Recorder;
-
+class ClientSocket;
 class CardMoveReason;
 struct PhaseStruct;
 struct PindianStruct;
 
 #include "structs.h"
 #include "player.h"
-#include "socket.h"
 #include "protocol.h"
 #include "namespace.h"
 
@@ -83,6 +82,7 @@ public:
     int getMaxCards(MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     void drawCards(int n, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
+    bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QList<int> handCards() const;
     virtual QList<const Card *> getHandcards() const;
@@ -142,6 +142,10 @@ public:
     QString getIp() const;
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
+    void notifyProperty(const char *propertyName){ notifyProperty(propertyName, property(propertyName)); }
+    void notifyProperty(const char *propertyName, const QVariant &value);
+    void notifyPropertyTo(ServerPlayer *playerToNotify, const char *propertyName) const{ notifyPropertyTo(playerToNotify, propertyName, property(propertyName)); }
+    void notifyPropertyTo(ServerPlayer *playerToNotify, const char *propertyName, const QVariant &value) const;
 
     void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());

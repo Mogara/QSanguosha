@@ -53,7 +53,7 @@ Settings::Settings()
 {
     Q_ASSERT(SettingsInstance == NULL);
     SettingsInstance = this;
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(qApp, &QApplication::aboutToQuit, this, &Settings::deleteLater);
 }
 
 void Settings::init() {
@@ -102,6 +102,7 @@ void Settings::init() {
     ServerPort = value("ServerPort", 9527u).toUInt();
     DisableLua = value("DisableLua", false).toBool();
     RewardTheFirstShowingPlayer = value("RewardTheFirstShowingPlayer", false).toBool();
+    BannedIp = value("BannedIP").toStringList().toSet();
 
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
@@ -120,7 +121,6 @@ void Settings::init() {
     //Set Cao Cao as default avatar to pay tribute to Moligaloo, the founder of QSanguosha.
     UserAvatar = value("UserAvatar", "caocao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
-    DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
 
     EnableHotKey = value("EnableHotKey", true).toBool();

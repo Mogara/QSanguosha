@@ -332,7 +332,7 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
     return QPixmap();
 }
 
-bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general, const int skinId, const bool isCard) const
+bool QSanRoomSkin::generalHasSkin(const QString &general, const int skinId, const bool isCard) const
 {
     const QString id = QString::number(skinId);
     QString key;
@@ -372,7 +372,7 @@ QPixmap QSanRoomSkin::getGeneralCardPixmap(const QString generalName, const int 
             || isImageKeyDefined(key.arg(id).arg(S_SKIN_KEY_DEFAULT))) {
         return getPixmap(key.arg(id), generalName);
     } else {
-        return getPixmap(key.arg(S_SKIN_KEY_DEFAULT), generalName, id);
+        return getPixmap(key, generalName, id, true);
     }
 }
 
@@ -416,8 +416,8 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
         return getPixmap(key, name);
 
     key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON) //try the default match
-            .arg(size).arg(S_SKIN_KEY_DEFAULT);
-    return getPixmap(key, name, id);
+            .arg(size);
+    return getPixmap(key, name, id, true);
 }
 
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index, const Player *player) const
@@ -705,7 +705,7 @@ QHash<QString, QList<QString> > IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
 QHash<QString, QPixmap> IQSanComponentSkin::S_IMAGE_KEY2PIXMAP;
 QHash<QString, int> IQSanComponentSkin::S_HERO_SKIN_INDEX;
 
-QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, const QString &arg2) const
+QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, const QString &arg2, bool addDefaultArg) const
 {
     // the order of attempts are:
     // 1. if no arg, then just use key to find fileName.
@@ -719,21 +719,32 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
     bool clipping = false;
     bool scaled = false;
 
+    QString initialKey = key;
+    QString cacheKey;
+
+    if (addDefaultArg)
+        initialKey = initialKey.arg(S_SKIN_KEY_DEFAULT);
+
     // case 1 and 2
     if (arg.isNull())
-        totalKey = key;
+        totalKey = initialKey;
     else
-        totalKey = key.arg(arg);
+        totalKey = initialKey.arg(arg);
+
+    cacheKey = totalKey;
+    if (addDefaultArg && !arg2.isNull())
+        cacheKey = key.arg(arg).arg(arg2);
+
     //bool from_cache = false;
-    if (S_IMAGE_KEY2FILE.contains(totalKey)) { // first, search cache
-        fileName = S_IMAGE_KEY2FILE[totalKey];
+    if (S_IMAGE_KEY2FILE.contains(cacheKey)) { // first, search cache
+        fileName = S_IMAGE_KEY2FILE[cacheKey];
         //from_cache = true;
     } else if (isImageKeyDefined(totalKey)) { // then, read from config file
         fileName = _readImageConfig(totalKey, clipRegion, clipping, scaleRegion, scaled);
-        S_IMAGE_KEY2FILE[totalKey].append(fileName);
+        S_IMAGE_KEY2FILE[cacheKey].append(fileName);
     } else { // case 3: use default
         Q_ASSERT(!arg.isNull());
-        groupKey = key.arg(S_SKIN_KEY_DEFAULT);
+        groupKey = initialKey.arg(S_SKIN_KEY_DEFAULT);
         S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
         QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
         fileName = fileNameToResolve.arg(arg);
@@ -741,7 +752,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
             if (!arg2.isNull() && fileName.contains("%2"))
                 fileName = fileName.arg(arg2);
             if (!QFile::exists(fileName)) {
-                groupKey = key.arg(S_SKIN_KEY_DEFAULT_SECOND);
+                groupKey = initialKey.arg(S_SKIN_KEY_DEFAULT_SECOND);
                 S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
                 QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
                 fileName = fileNameToResolve.arg(arg);
@@ -777,9 +788,9 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
                 pixmap = QPixmap(1, 1);
             pixmap.fill();
         }
-        S_IMAGE_KEY2PIXMAP[totalKey] = pixmap;
+        S_IMAGE_KEY2PIXMAP[cacheKey] = pixmap;
     }
-    return S_IMAGE_KEY2PIXMAP[totalKey];
+    return S_IMAGE_KEY2PIXMAP[cacheKey];
 }
 
 QPixmap IQSanComponentSkin::getPixmapFileName(const QString &key) const{

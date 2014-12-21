@@ -23,6 +23,7 @@
 #include "engine.h"
 #include "standard-tricks.h"
 #include "standard-basics.h"
+#include "roomthread.h"
 
 class JGJizhen : public PhaseChangeSkill{
 public:
@@ -45,18 +46,13 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
 
         QList<ServerPlayer *> draw_list;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -85,7 +81,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->askForSkillInvoke(objectName());
+        return player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -159,7 +155,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
@@ -357,7 +353,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->askForSkillInvoke(objectName());
+        return player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -454,16 +450,11 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
-        return player->hasShownSkill(this) || ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player));
+        return player->hasShownSkill(this) || ask_who->askForSkillInvoke(this, QVariant::fromValue(player));
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = ask_who;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(ask_who, objectName());
+        room->sendCompulsoryTriggerLog(ask_who, objectName());
 
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
 
@@ -489,7 +480,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
@@ -591,17 +582,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         QList<ServerPlayer *> targets;
 
@@ -645,16 +631,11 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         CardUseStruct use = data.value<CardUseStruct>();
 
@@ -680,18 +661,14 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         QList<ServerPlayer *> targets;
         Room *room = player->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
+        room->sendCompulsoryTriggerLog(player, objectName(), false);
 
         ArcheryAttack *aa = new ArcheryAttack(Card::NoSuit, 0);
         aa->setSkillName("_" + objectName());
@@ -748,17 +725,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         ServerPlayer *victim = NULL;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -849,7 +821,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
@@ -885,7 +857,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())) {
+        if (player->askForSkillInvoke(this)) {
             player->turnOver();
             return true;
         }
@@ -939,7 +911,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
-        return ask_who->hasShownSkill(objectName()) || ask_who->askForSkillInvoke(objectName());
+        return ask_who->hasShownSkill(objectName()) || ask_who->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
@@ -1178,7 +1150,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         player->setMark("jgkonghun", 0);
-        return player->askForSkillInvoke(objectName());
+        return player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
@@ -1225,17 +1197,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
         room->loseHp(target);
         return false;
     }
@@ -1264,17 +1231,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
 
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1363,7 +1325,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who /* = NULL */) const{
-        return ask_who->askForSkillInvoke(objectName());
+        return ask_who->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
@@ -1430,7 +1392,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->askForSkillInvoke(objectName());
+        return player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
@@ -1464,17 +1426,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual int getDrawNum(ServerPlayer *player, int n) const{
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = player;
-        log.arg = objectName();
         Room *room = player->getRoom();
-        room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
+        room->sendCompulsoryTriggerLog(player, objectName());
         return n - 1;
     }
 };
@@ -1502,18 +1459,13 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+        return player->hasShownSkill(this) || player->askForSkillInvoke(this);
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = target;
-        log.arg = objectName();
-        room->sendLog(log);
-        room->notifySkillInvoked(target, objectName());
+        room->sendCompulsoryTriggerLog(target, objectName());
 
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1547,7 +1499,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())) {
+        if (player->askForSkillInvoke(this)) {
             player->turnOver();
             return true;
         }

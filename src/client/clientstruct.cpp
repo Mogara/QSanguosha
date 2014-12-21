@@ -24,92 +24,12 @@
 #include "settings.h"
 #include "json.h"
 
-ServerInfoStruct ServerInfo;
+RoomInfoStruct ServerInfo;
 
 #include <QFormLayout>
 #include <QLabel>
 #include <QListWidget>
 #include <QCheckBox>
-
-time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance) {
-    time_t timeOut;
-    if (OperationTimeout == 0)
-        return 0;
-    else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
-        timeOut = OperationTimeout * 1500;
-    else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
-        || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
-        timeOut = OperationTimeout * 2000;
-    else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
-        timeOut = NullificationCountDown * 1000;
-    else
-        timeOut = OperationTimeout * 1000;
-
-    if (instance == QSanProtocol::S_SERVER_INSTANCE)
-        timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
-    return timeOut;
-}
-
-bool ServerInfoStruct::parse(const QString &str) {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([\\w-]+(?:\\+[\\w-]+)*)?:([RCFAMS]*)");
-    if (!rx.exactMatch(str)) {
-        // older version, just take the player count
-        int count = str.split(":").at(1).toInt();
-        GameMode = QString("%1p").arg(count, 2, 10, QChar('0'));
-        return false;
-    }
-
-    QStringList texts = rx.capturedTexts();
-    if (texts.isEmpty()) {
-        DuringGame = false;
-    }
-    else {
-        DuringGame = true;
-
-        Name = texts.at(1);
-
-        GameMode = texts.at(2);
-        OperationTimeout = texts.at(3).toInt();
-        NullificationCountDown = texts.at(4).toInt();
-
-        QStringList ban_packages = texts.at(5).split("+");
-        const QList<const Package *> &packages = Sanguosha->getPackages();
-        Extensions.clear();
-        foreach(const Package *package, packages) {
-            QString package_name = package->objectName();
-            if (ban_packages.contains(package_name))
-                package_name = "!" + package_name;
-
-            Extensions << package_name;
-        }
-
-        QString flags = texts.at(6);
-
-        RandomSeat = flags.contains("R");
-        EnableCheat = flags.contains("C");
-        FreeChoose = EnableCheat && flags.contains("F");
-        ForbidAddingRobot = flags.contains("A");
-        DisableChat = flags.contains("M");
-        FirstShowingReward = flags.contains("S");
-    }
-
-    return true;
-}
-
-bool HostInfoStruct::parse(const QVariant &data)
-{
-    JsonArray args = data.value<JsonArray>();
-    if (args.size() != 7 || !ServerInfoStruct::parse(args.at(0).toString())) {
-        return false;
-    }
-    HostAddress = args.at(1).toString();
-    PlayerNum = args.at(2).toInt();
-    RoomNum = args.at(3).toInt();
-    MaxRoomNum = args.at(4).toInt();
-    AIDelay = args.at(5).toInt();
-    RewardTheFirstShowingPlayer = args.at(6).toBool();
-    return true;
-}
 
 ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     name_label = new QLabel;
@@ -152,7 +72,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     setLayout(layout);
 }
 
-void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address) {
+void ServerInfoWidget::fill(const RoomInfoStruct &info, const QString &address) {
     name_label->setText(info.Name);
     address_label->setText(address);
     game_mode_label->setText(Sanguosha->getModeName(info.GameMode));
@@ -176,11 +96,9 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     static QIcon enabled_icon("image/system/enabled.png");
     static QIcon disabled_icon("image/system/disabled.png");
 
-    foreach(QString extension, info.Extensions) {
-        bool checked = !extension.startsWith("!");
-        if (!checked)
-            extension.remove("!");
-
+    QStringList extentions = Sanguosha->getExtensions();
+    foreach (const QString &extension, extentions) {
+        bool checked = !info.BanPackages.contains(extension);
         QString package_name = Sanguosha->translate(extension);
         QCheckBox *checkbox = new QCheckBox(package_name);
         checkbox->setChecked(checked);

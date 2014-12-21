@@ -26,15 +26,17 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QUdpSocket>
+#include <QTimer>
 
-NativeServerSocket::NativeServerSocket() {
+const qint64 NativeClientSocket::KEEP_ALIVE_INTERVAL = 30000;
+const qint64 NativeClientSocket::TIMEOUT_LIMIT = 10000;
+
+NativeServerSocket::NativeServerSocket(QObject *parent)
+{
+    setParent(parent);
     server = new QTcpServer(this);
     daemon = NULL;
-    connect(server, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
-}
-
-bool NativeServerSocket::listen() {
-    return server->listen(QHostAddress::Any, Config.ServerPort);
+    connect(server, &QTcpServer::newConnection, this, &NativeServerSocket::processNewConnection);
 }
 
 bool NativeServerSocket::listen(const QHostAddress &address, ushort port)
@@ -47,25 +49,6 @@ ushort NativeServerSocket::serverPort() const
     return server->serverPort();
 }
 
-void NativeServerSocket::daemonize() {
-    daemon = new QUdpSocket(this);
-    daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);
-    connect(daemon, SIGNAL(readyRead()), this, SLOT(processNewDatagram()));
-}
-
-void NativeServerSocket::processNewDatagram() {
-    while (daemon->hasPendingDatagrams()) {
-        QHostAddress from;
-        char ask_str[256];
-
-        daemon->readDatagram(ask_str, sizeof(ask_str), &from);
-
-        QByteArray data = Config.ServerName.toUtf8();
-        daemon->writeDatagram(data, from, Config.DetectorPort);
-        daemon->flush();
-    }
-}
-
 void NativeServerSocket::processNewConnection() {
     QTcpSocket *socket = server->nextPendingConnection();
     NativeClientSocket *connection = new NativeClientSocket(socket);
@@ -74,55 +57,45 @@ void NativeServerSocket::processNewConnection() {
 
 // ---------------------------------
 
-NativeClientSocket::NativeClientSocket()
+NativeClientSocket::NativeClientSocket(QObject *parent)
     : socket(new QTcpSocket(this))
 {
+    setParent(parent);
     init();
 }
 
-NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
+NativeClientSocket::NativeClientSocket(QTcpSocket *socket, QObject *parent)
     : socket(socket)
 {
+    setParent(parent);
     socket->setParent(this);
     init();
 }
 
 void NativeClientSocket::init() {
-    connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
-        this, SLOT(raiseError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
+    connect(socket, &QTcpSocket::disconnected, this, &NativeClientSocket::disconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &NativeClientSocket::getMessage);
+    connect(socket, (void (QTcpSocket::*)(QAbstractSocket::SocketError))(&QTcpSocket::error), this, &NativeClientSocket::raiseError);
+    connect(socket, &QTcpSocket::connected, this, &NativeClientSocket::connected);
+
+    is_alive = false;
+
+    keep_alive_timer = new QTimer(this);
+    keep_alive_timer->setSingleShot(false);
+    keep_alive_timer->setInterval(KEEP_ALIVE_INTERVAL);
+    keep_alive_timer->start();
+    connect(keep_alive_timer, &QTimer::timeout, this, &NativeClientSocket::keepAlive);
 }
 
-void NativeClientSocket::connectToHost() {
-    QString address = "127.0.0.1";
-    ushort port = 9527u;
-
-    if (Config.HostAddress.contains(QChar(':'))) {
-        QStringList texts = Config.HostAddress.split(QChar(':'));
-        address = texts.value(0);
-        port = texts.value(1).toUShort();
-    } else {
-        address = Config.HostAddress;
-        if (address == "127.0.0.1")
-            port = Config.value("ServerPort", 9527u).toUInt();
-    }
-
-    socket->connectToHost(address, port);
-}
-
-void NativeClientSocket::connectToHost(QString address)
+void NativeClientSocket::connectToHost(const QString &address)
 {
-    ushort port;
     if (address.contains(':')) {
         QStringList texts = address.split(':');
-        address = texts.first();
-        port = texts.at(1).toUInt();
+        socket->connectToHost(texts.first(), texts.at(1).toUInt());
     } else {
-        port = Config.value("ServerPort", 9527u).toUInt();
+        ushort port = Config.value("ServerPort", 9527u).toUInt();
+        socket->connectToHost(address, port);
     }
-    socket->connectToHost(address, port);
 }
 
 void NativeClientSocket::connectToHost(const QHostAddress &address, ushort port)
@@ -131,12 +104,33 @@ void NativeClientSocket::connectToHost(const QHostAddress &address, ushort port)
 }
 
 void NativeClientSocket::getMessage() {
-    while (socket->canReadLine()) {
-        QByteArray msg = socket->readLine();
-#ifndef QT_NO_DEBUG
-        printf("recv: %s", msg.constData());
-#endif
-        emit message_got(msg);
+    is_alive = true;
+    keep_alive_timer->start();
+
+    char type;
+    while (socket->read(&type, 1) == 1) {
+        switch (type) {
+        case InlineTextPacket:
+            if (socket->canReadLine()) {
+                QByteArray text = socket->readLine();
+        #ifndef QT_NO_DEBUG
+                printf("recv: %s", text.constData());
+        #endif
+                emit message_got(text);
+            } else {
+                socket->ungetChar(type);
+                return;
+            }
+            break;
+        case KeepAlivePacket:
+            socket->putChar(AcknowledgePacket);
+            socket->flush();
+            break;
+        case AcknowledgePacket:
+            break;
+        default:
+            qDebug() << "Unknown packet: " << type;
+        }
     }
 }
 
@@ -145,12 +139,10 @@ void NativeClientSocket::disconnectFromHost() {
 }
 
 void NativeClientSocket::send(const QByteArray &message) {
-    if (message.isEmpty())
-        return;
-
+    socket->putChar(InlineTextPacket);
     socket->write(message);
     if (!message.endsWith('\n')){
-        socket->write("\n");
+        socket->putChar('\n');
     }
 
 #ifndef QT_NO_DEBUG
@@ -185,14 +177,8 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     switch (socket_error) {
     case QAbstractSocket::ConnectionRefusedError:
         reason = tr("Connection was refused or timeout"); break;
-    case QAbstractSocket::RemoteHostClosedError:{
-        if (Self && Self->hasFlag("is_kicked"))
-            reason = tr("You are kicked from server");
-        else
-            reason = tr("Remote host close this connection");
-
-        break;
-    }
+    case QAbstractSocket::RemoteHostClosedError:
+        reason = tr("Remote host close this connection"); break;
     case QAbstractSocket::HostNotFoundError:
         reason = tr("Host not found"); break;
     case QAbstractSocket::SocketAccessError:
@@ -205,3 +191,61 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
 }
 
+void NativeClientSocket::keepAlive()
+{
+    is_alive = false;
+    socket->putChar(KeepAlivePacket);
+    QTimer::singleShot(TIMEOUT_LIMIT, this, SLOT(checkConnectionState()));
+}
+
+void NativeClientSocket::checkConnectionState()
+{
+    if (!is_alive) {
+        socket->abort();
+        keep_alive_timer->stop();
+    }
+}
+
+NativeUdpSocket::NativeUdpSocket(QObject *parent)
+    : socket(new QUdpSocket(this))
+{
+    setParent(parent);
+    connect(socket, &QUdpSocket::readyRead, this, &NativeUdpSocket::processNewDatagram);
+}
+
+void NativeUdpSocket::bind(const QHostAddress &address, ushort port)
+{
+    socket->bind(address, port);
+}
+
+void NativeUdpSocket::writeDatagram(const QByteArray &data, const QString &to)
+{
+    QHostAddress address(QHostAddress::Broadcast);
+    ushort port = 0;
+    if (to.contains(QChar(':'))) {
+        QStringList texts = to.split(QChar(':'));
+        address.setAddress(texts.at(0));
+        port = texts.at(1).toUShort();
+    } else {
+        address.setAddress(to);
+    }
+
+    socket->writeDatagram(data, address, port);
+}
+
+void NativeUdpSocket::writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port)
+{
+    socket->writeDatagram(data, to, port);
+}
+
+void NativeUdpSocket::processNewDatagram() {
+    while (socket->hasPendingDatagrams()) {
+        QHostAddress from;
+        QByteArray data;
+        quint16 port;
+
+        data.resize(socket->pendingDatagramSize());
+        socket->readDatagram(data.data(), data.size(), &from, &port);
+        emit new_datagram(data, from, port);
+    }
+}

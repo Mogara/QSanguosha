@@ -166,6 +166,9 @@ signals:
     void general_changed();
     void hoverChanged(const bool &enter);
 
+private slots:
+    void currentAnimationDestroyed();
+
 public slots:
     virtual void changeGeneral(const QString &generalName);
     void onTransferEnabledChanged();

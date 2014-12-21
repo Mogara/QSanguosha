@@ -50,9 +50,10 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
     setLayout(layout);
 
     detector = NULL;
-    connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chooseAddress(QListWidgetItem *)));
+
+    connect(detect_button, &QPushButton::clicked, this, &UdpDetectorDialog::startDetection);
+    connect(cancel_button, &QPushButton::clicked, this, &UdpDetectorDialog::reject);
+    connect(list, &QListWidget::itemDoubleClicked, this, &UdpDetectorDialog::chooseAddress);
 
     detect_button->click();
 }
@@ -62,7 +63,7 @@ void UdpDetectorDialog::startDetection() {
     detect_button->setEnabled(false);
 
     detector = new UdpDetector;
-    connect(detector, SIGNAL(detected(QString, QString)), this, SLOT(addServerAddress(QString, QString)));
+    connect(detector, &UdpDetector::detected, this, &UdpDetectorDialog::addServerAddress);
     QTimer::singleShot(2000, this, SLOT(stopDetection()));
 
     detector->detect();

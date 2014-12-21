@@ -36,7 +36,7 @@ CardContainer::CardContainer()
 {
     confirm_button->setParentItem(this);
     confirm_button->hide();
-    connect(confirm_button, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(confirm_button, &Button::clicked, this, &CardContainer::clear);
 
     GraphicsBox::stylize(this);
 }
@@ -225,8 +225,8 @@ int CardContainer::getFirstEnabled() const{
 void CardContainer::startChoose() {
     confirm_button->hide();
     foreach(CardItem *item, items) {
-        connect(item, SIGNAL(leave_hover()), this, SLOT(grabItem()));
-        connect(item, SIGNAL(clicked()), this, SLOT(chooseItem()));
+        connect(item, &CardItem::leave_hover, this, &CardContainer::grabItem);
+        connect(item, &CardItem::clicked, this, &CardContainer::chooseItem);
     }
 }
 
@@ -235,7 +235,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
     foreach(CardItem *item, items) {
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->getEffectiveId()))
-            connect(item, SIGNAL(clicked()), this, SLOT(gongxinItem()));
+            connect(item, &CardItem::clicked, this, &CardContainer::gongxinItem);
         else
             item->setEnabled(false);
     }

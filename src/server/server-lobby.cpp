@@ -18,6 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QSqlQuery>
+
 #include "server.h"
 #include "lobbyplayer.h"
 #include "json.h"
@@ -55,39 +57,24 @@ void Server::cleanupLobbyPlayer()
 
 void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
 {
-    JsonArray args = data.value<JsonArray>();
-    if (args.size() != 7) return;
+    RoomInfoStruct config;
+    if (!config.parse(data)) {
+        emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
+        return;
+    }
+
+    config.HostAddress.remove(QRegExp("[^0-9]"));
+    ushort hostPort = config.HostAddress.toUInt();
 
     //check if the room server can be connected
-    ushort port = args.at(1).toUInt();
     QTcpSocket socket;
-    socket.connectToHost(from->peerAddress(), port);
+    socket.connectToHost(from->peerAddress(), hostPort);
     if (socket.waitForConnected(2000)) {
-        /*args.at(0).toString();  //SetupString
-        args.at(1).toUInt();    //HostPort
-        args.at(2).toInt();     //PlayerNum
-        args.at(3).toInt();     //RoomNum
-        args.at(4).toInt();     //MaxRoomNum
-        args.at(5).toInt();     //AIDelay
-        args.at(6).toBool();    //RewardTheFirstShowingPlayer*/
-        ServerInfoStruct info;
-        if (!info.parse(args.at(0).toString())) {
-            emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
-            return;
-        }
+        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(hostPort));
+        config.HostAddress = QString("%1:%2").arg(from->peerAddress()).arg(hostPort);
+        remoteRoomId[from] = config.save();
 
-        int maxRoomNum = args.at(4).toInt();
-        if (maxRoomNum < -1 || (maxRoomNum != -1 && args.at(3).toInt() > maxRoomNum)) {
-            emit serverMessage(tr("%1 Invalid room number or max room number").arg(from->peerName()));
-            return;
-        }
-
-        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
-
-        args[1] = QString("%1:%2").arg(from->peerAddress()).arg(port);
-        remoteRooms.insert(from, args);
-
-        connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRemoteRoom()));
+        connect(from, &ClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
     }
 }
 
@@ -98,54 +85,48 @@ void Server::cleanupRemoteRoom()
     if (socket == NULL) return;
 
     emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));
-    remoteRooms.remove(socket);
+    unsigned id = remoteRoomId.value(socket);
+    if (id > 0) {
+        QSqlQuery query;
+        query.prepare("DELETE FROM `room` WHERE `id`=?");
+        query.addBindValue(id);
+        query.exec();
+    }
+    remoteRoomId.remove(socket);
     socket->disconnect(this);
     this->disconnect(socket);
 }
 
 QVariant Server::getRoomList(int page)
 {
-    if (rooms.isEmpty() && remoteRooms.isEmpty()) {
-        return QVariant();
-    }
+    static const int limit = 10;
+    int offset = (page - 1) * 10;
 
-    static const int pageLimit = 10;
-    int offset = page * pageLimit;
-    if (offset >= rooms.size() + remoteRooms.size())
-        return QVariant();
+    QSqlQuery query;
+    query.prepare("SELECT * FROM `room` WHERE 1 LIMIT :offset,:limit");
+    query.bindValue(":offset", offset);
+    query.bindValue(":limit", limit);
+    query.exec();
 
-    int end = offset + pageLimit;
     JsonArray data;
-    int i = 0;
-
-    QSetIterator<Room *> iter1(rooms);
-    while (iter1.hasNext()) {
-        Room *room = iter1.next();
-        if (i >= offset) {
-            JsonArray item;
-            item << room->getSetupString();
-            item << QVariant();//No host address. It's not a remote room.
-            item << room->getPlayers().size();
-            item << room->getId();//room number
-            item << rooms.size();//max room number
-            const RoomConfig &config = room->getConfig();
-            item << config.AIDelay;
-            item << config.RewardTheFirstShowingPlayer;
-            data << QVariant(item);
+    while (query.next()) {
+        RoomInfoStruct info(query.record());
+        if (info.HostAddress.isEmpty()) {
+            Room *room = rooms.value(info.RoomId);
+            if (room) {
+                info.PlayerNum = room->getPlayers().length();
+                if (room->isRunning())
+                    info.RoomState = RoomInfoStruct::Playing;
+                else if (room->isFinished())
+                    info.RoomState = RoomInfoStruct::Finished;
+                else
+                    info.RoomState = RoomInfoStruct::Playing;
+            } else {
+                continue;
+            }
         }
-        i++;
-        if (i >= end)
-            return data;
+        data << info.toQVariant();
     }
 
-    QMapIterator<ClientSocket *, QVariant> iter2(remoteRooms);
-    while (iter2.hasNext()) {
-        iter2.next();
-        if (i >= offset)
-            data << iter2.value();
-        i++;
-        if (i >= end)
-            return data;
-    }
     return data;
 }

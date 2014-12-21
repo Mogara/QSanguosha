@@ -20,20 +20,21 @@
 
 #include "detector.h"
 #include "settings.h"
+#include "protocol.h"
 
-#include <QApplication>
+using namespace QSanProtocol;
 
 UdpDetector::UdpDetector() {
     socket = new QUdpSocket(this);
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadReady()));
+    connect(socket, &QUdpSocket::readyRead, this, &UdpDetector::onReadReady);
 }
 
 void UdpDetector::detect() {
-    socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
+    socket->bind(0, QUdpSocket::ShareAddress);
 
-    const char *ask_str = "whoIsServer";
-    socket->writeDatagram(ask_str,
-        strlen(ask_str) + 1,
+    char ask_str = S_SERVICE_DETECT_SERVER;
+    socket->writeDatagram(&ask_str,
+        1,
         QHostAddress::Broadcast,
         Config.ServerPort);
 }
@@ -43,14 +44,16 @@ void UdpDetector::stop() {
 }
 
 void UdpDetector::onReadReady() {
+    char data[256];
+    int length;
+
     while (socket->hasPendingDatagrams()) {
         QHostAddress from;
-        QByteArray data;
-        data.resize(socket->pendingDatagramSize());
-        socket->readDatagram(data.data(), data.size(), &from);
+        length = socket->readDatagram(data, 256, &from);
 
-        QString server_name = QString::fromUtf8(data);
-        emit detected(server_name, from.toString());
+        if (length > 1) {
+            QString server_name = QString::fromUtf8(data + 1, length - 1);
+            emit detected(server_name, from.toString());
+        }
     }
 }
-

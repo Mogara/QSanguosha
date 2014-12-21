@@ -496,8 +496,13 @@ bool LuaTriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer
 }
 
 QMap<ServerPlayer *, QStringList> LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    if (can_trigger == 0)
-        return BattleArraySkill::triggerable(triggerEvent, room, player, data);
+    if (can_trigger == 0) {
+        QMap<ServerPlayer *, QStringList> r;
+        if (BattleArraySkill::triggerable(player))
+            r[player] << objectName();
+        
+        return r;
+    }
 
     lua_State *l = room->getLuaState();
 

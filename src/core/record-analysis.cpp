@@ -62,33 +62,25 @@ void RecAnalysis::initialize(const QString &dir) {
             continue;
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
-            const QVariant &body = packet.getMessageBody();
-            if (JsonUtils::isString(body)){
-                QString l = body.toString();
-                QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w-]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
-                if (!rx.exactMatch(l))
-                    continue;
-
-                QStringList texts = rx.capturedTexts();
-                m_recordGameMode = texts.at(2);
-                m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
-                QStringList ban_packages = texts.at(5).split("+");
+            RoomInfoStruct config;
+            if (config.parse(packet.getMessageBody())){
+                m_recordGameMode = config.GameMode;
+                m_recordPlayers = m_recordGameMode.split("_").first().remove(QRegExp("[^0-9]")).toInt();
                 foreach(const Package *package, Sanguosha->getPackages()) {
-                    if (!ban_packages.contains(package->objectName())
+                    if (!config.BanPackages.contains(package->objectName())
                         && Sanguosha->getScenario(package->objectName()) == NULL)
                         m_recordPackages << Sanguosha->translate(package->objectName());
                 }
 
-                QString flags = texts.at(6);
-                if (flags.contains("R")) m_recordServerOptions << tr("RandomSeats");
-                if (flags.contains("C")) m_recordServerOptions << tr("EnableCheat");
-                if (flags.contains("F")) m_recordServerOptions << tr("FreeChoose");
-                if (flags.contains("S")) m_recordServerOptions << tr("Enable2ndGeneral");
-                if (flags.contains("T")) m_recordServerOptions << tr("EnableSame");
-                if (flags.contains("N")) m_recordServerOptions << tr("EnableScene");
-                if (flags.contains("B")) m_recordServerOptions << tr("EnableBasara");
-                if (flags.contains("H")) m_recordServerOptions << tr("EnableHegemony");
-                if (flags.contains("A")) m_recordServerOptions << tr("EnableAI");
+                if (config.RandomSeat) m_recordServerOptions << tr("RandomSeats");
+                if (config.EnableCheat) m_recordServerOptions << tr("EnableCheat");
+                if (config.FreeChoose) m_recordServerOptions << tr("FreeChoose");
+                //if (config.EnableCheat) m_recordServerOptions << tr("Enable2ndGeneral");
+                //if (flags.contains("T")) m_recordServerOptions << tr("EnableSame");
+                //if (flags.contains("N")) m_recordServerOptions << tr("EnableScene");
+                //if (flags.contains("B")) m_recordServerOptions << tr("EnableBasara");
+                //if (flags.contains("H")) m_recordServerOptions << tr("EnableHegemony");
+                if (!config.ForbidAddingRobot) m_recordServerOptions << tr("EnableAI");
 
                 continue;
             }

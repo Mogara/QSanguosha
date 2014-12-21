@@ -29,6 +29,10 @@ using namespace QSanProtocol;
 void Server::initLobbyFunctions()
 {
     lobbyFunctions[S_COMMAND_CHECK_VERSION] = &Server::checkVersion;
+    lobbyFunctions[S_COMMAND_SPEAK] = &Server::forwardLobbyMessage;
+
+    serviceFunctions[S_SERVICE_DETECT_SERVER] = &Server::replyServerName;
+    serviceFunctions[S_SERVICE_PLAYER_NUM] = &Server::replyPlayerNum;
 }
 
 void Server::connectToLobby()
@@ -36,9 +40,8 @@ void Server::connectToLobby()
     if (Config.LobbyAddress.isEmpty())
         return;
 
-    lobby = new NativeClientSocket;
-    lobby->setParent(this);
-    connect(lobby, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
+    lobby = new NativeClientSocket(this);
+    connect(lobby, &NativeClientSocket::message_got, this, &Server::processMessage);
     //@todo: handle disconnection from lobby
 
     lobby->connectToHost(Config.LobbyAddress);
@@ -47,21 +50,17 @@ void Server::connectToLobby()
 Room *Server::createNewRoom(const RoomConfig &config)
 {
     Room *new_room = new Room(this, config);
-    rooms.insert(new_room);
+    rooms.insert(new_room->getId(), new_room);
 
-    connect(new_room, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
-    connect(new_room, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
+    connect(new_room, &Room::room_message, this, &Server::serverMessage);
+    connect(new_room, &Room::game_end, this, &Server::cleanupRoom);
 
     return new_room;
 }
 
-Room *Server::getRoom(int room_id)
+Room *Server::getRoom(qlonglong room_id)
 {
-    foreach (Room *room, rooms) {
-        if (room->getId() == room_id)
-            return room;
-    }
-    return NULL;
+    return rooms.value(room_id);
 }
 
 void Server::processLobbyPacket(const Packet &packet)
@@ -81,7 +80,7 @@ void Server::signupPlayer(ServerPlayer *player) {
 
 void Server::cleanupRoom() {
     Room *room = qobject_cast<Room *>(sender());
-    rooms.remove(room);
+    rooms.remove(room->getId());
 
     bool someone_stays = false;
     QList<ServerPlayer *> room_players = room->getPlayers();
@@ -120,6 +119,13 @@ void Server::cleanupRoom() {
     currentRoomMutex.unlock();
 }
 
+void Server::notifyLobby(CommandType command, const QVariant &data)
+{
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_LOBBY, command);
+    packet.setMessageBody(data);
+    lobby->send(packet.toJson());
+}
+
 void Server::checkVersion(const QVariant &server_version)
 {
     QString version = server_version.toString();
@@ -143,24 +149,38 @@ void Server::checkVersion(const QVariant &server_version)
     QSanVersionNumber lobby_version(lobby_version_str);
 
     if (lobby_version == client_version) {
-        JsonArray data;
-        data << Sanguosha->getSetupString();
-        data << serverPort();
-        data << players.size();
-        data << rooms.size();
-        data << -1;//unlimited room number
-        data << Config.AIDelay;
-        data << Config.RewardTheFirstShowingPlayer;
-        notifyLobby(S_COMMAND_SETUP, data);
+        RoomInfoStruct config(SettingsInstance);
+        config.HostAddress = QString(":%1").arg(serverPort());
+        notifyLobby(S_COMMAND_SETUP, config.toQVariant());
     } else {
         emit serverMessage(tr("Failed to setup for the version is different from the lobby."));
         lobby->disconnectFromHost();
     }
 }
 
-void Server::notifyLobby(CommandType command, const QVariant &data)
+void Server::forwardLobbyMessage(const QVariant &message)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_LOBBY, command);
-    packet.setMessageBody(data);
-    lobby->send(packet.toJson());
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    packet.setMessageBody(message);
+
+    foreach (Room *room, rooms)
+        room->broadcast(&packet);
+}
+
+void Server::replyServerName(const QByteArray &, const QHostAddress &from, ushort port)
+{
+    QByteArray data(1, S_SERVICE_DETECT_SERVER);
+    data.append(Config.ServerName.toUtf8());
+    daemon->writeDatagram(data, from, port);
+}
+
+void Server::replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port)
+{
+    QByteArray data(5, S_SERVICE_PLAYER_NUM);
+    int playerNum = current != NULL ? current->getPlayers().size() : 0;
+    for (int i = 4; i >= 1; i--) {
+        data[i] = playerNum;
+        playerNum >>= 8;
+    }
+    daemon->writeDatagram(data, from, port);
 }

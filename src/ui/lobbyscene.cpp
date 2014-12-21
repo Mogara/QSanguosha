@@ -24,11 +24,12 @@
 #include "skinbank.h"
 #include "clientstruct.h"
 #include "tile.h"
+#include "engine.h"
 
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QProcess>
+#include <QInputDialog>
 
 int LobbyScene::SCENE_PADDING = 20;
 int LobbyScene::SCENE_MARGIN_TOP = 30;
@@ -53,8 +54,8 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     chatWidget->setLayout(chatLayout);
     addWidget(chatWidget);
 
-    connect(client, SIGNAL(lineSpoken(const QString &)), chatBox, SLOT(append(QString)));
-    connect(chatLineEdit, SIGNAL(editingFinished()), SLOT(speakToServer()));
+    connect(client, &Client::lineSpoken, chatBox, &QTextEdit::append);
+    connect(chatLineEdit, &QLineEdit::editingFinished, this, &LobbyScene::speakToServer);
 
     //user profile
     userAvatarItem = addPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
@@ -72,8 +73,8 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     buttonBox->setLayout(buttonLayout);
     addWidget(buttonBox);
 
-    connect(refreshButton, SIGNAL(clicked()), SLOT(refreshRoomList()));
-    connect(exitButton, SIGNAL(clicked()), this, SIGNAL(exit()));
+    connect(refreshButton, &QPushButton::clicked, this, &LobbyScene::refreshRoomList);
+    connect(exitButton, &QPushButton::clicked, this, &LobbyScene::exit);
 
     //room tiles
     roomTitle = new Title(NULL, tr("Rooms"), "wqy-microhei", 30);
@@ -82,16 +83,17 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
 
     createRoomTile = new Tile(tr("Create Room"), QSizeF(200.0, 100.0));
     createRoomTile->setObjectName("create_room_button");
-    connect(createRoomTile, SIGNAL(clicked()), SLOT(onCreateRoomClicked()));
+    connect(createRoomTile, &Tile::clicked, this, &LobbyScene::onCreateRoomClicked);
     addItem(createRoomTile);
 
     setBackgroundBrush(QPixmap(Config.BackgroundImage));
 
-    connect(client, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
-    connect(client, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
-    connect(this, SIGNAL(roomListRequested(int)), client, SLOT(fetchRoomList(int)));
-    connect(this, SIGNAL(roomSelected(int)), client, SLOT(onPlayerChooseRoom(int)));
+    connect(client, &Client::roomListChanged, this, &LobbyScene::setRoomList);
+    connect(client, &Client::destroyed, this, &LobbyScene::onClientDestroyed);
+    connect(client, &Client::roomChanged, this, &LobbyScene::onRoomChanged);
+    connect(this, &LobbyScene::sceneRectChanged, this, &LobbyScene::onSceneRectChanged);
+    connect(this, &LobbyScene::roomListRequested, client, &Client::fetchRoomList);
+    connect(this, (void (LobbyScene::*)(qlonglong))(&LobbyScene::roomSelected), client, &Client::onPlayerChooseRoom);
 }
 
 LobbyScene::~LobbyScene()
@@ -154,12 +156,9 @@ void LobbyScene::adjustRoomTiles()
     createRoomTile->setPos(x, y);
 }
 
-void LobbyScene::setRoomList(const QVariant &data)
+void LobbyScene::setRoomList(const QList<RoomInfoStruct> *data)
 {
-    foreach (HostInfoStruct *info, rooms) {
-        delete info;
-    }
-    rooms.clear();
+    rooms = data;
 
     foreach (Tile *tile, roomTiles) {
         removeItem(tile);
@@ -167,38 +166,39 @@ void LobbyScene::setRoomList(const QVariant &data)
     }
     roomTiles.clear();
 
-    JsonArray array = data.value<JsonArray>();
-    int roomCount = array.size();
-    for (int i = 0; i < roomCount; i++) {
-        HostInfoStruct *info = new HostInfoStruct;
-        if (info->parse(array.at(i))) {
-            rooms << info;
+    foreach (const RoomInfoStruct &info, *data) {
+        Tile *tile = new Tile(info.Name, QSizeF(200.0, 100.0));
+        tile->setAutoHideTitle(false);
+        QStringList scrollTexts;
 
-            Tile *tile = new Tile(info->Name, QSizeF(200.0, 100.0));
-            tile->setAutoHideTitle(false);
-            QStringList scrollTexts;
-            scrollTexts << tr("Player Number: %1 / %2").arg(info->PlayerNum).arg(info->GameMode);
-            scrollTexts << (info->OperationTimeout == 0 ?
-                tr("There is no time limit") :
-                tr("Operation timeout is %1 seconds").arg(info->OperationTimeout));
-            scrollTexts << (info->EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
-            if (info->EnableCheat)
-                scrollTexts << (info->FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
-            if (info->RewardTheFirstShowingPlayer)
-                scrollTexts << tr("The reward of showing general first is enabled");
-            if (!info->ForbidAddingRobot)
-                scrollTexts << tr("AI is enabled\n(%1 msec delay)").arg(info->AIDelay);
-            else
-                scrollTexts << tr("AI is disabled");
+        if (info.PlayerNum >= 0)
+            scrollTexts << tr("Player Number: %1 / %2").arg(info.PlayerNum).arg(Sanguosha->getPlayerCount(info.GameMode));
+        else
+            scrollTexts << tr("Player Number: %1 / %2").arg('-').arg(Sanguosha->getPlayerCount(info.GameMode));
 
-            tile->addScrollText(scrollTexts);
+        scrollTexts << (info.OperationTimeout == 0 ?
+            tr("There is no time limit") :
+            tr("Operation timeout is %1 seconds").arg(info.OperationTimeout));
 
-            roomTiles << tile;
-            addItem(tile);
-            connect(tile, SIGNAL(clicked()), SLOT(onRoomTileClicked()));
+        if (info.EnableCheat) {
+            scrollTexts << tr("Cheat is enabled");
+            scrollTexts << (info.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
         } else {
-            delete info;
+            scrollTexts << tr("Cheat is disabled");
         }
+
+        if (info.FirstShowingReward)
+            scrollTexts << tr("The reward of showing general first is enabled");
+        if (info.ForbidAddingRobot)
+            scrollTexts << tr("AI is disabled");
+        else
+            scrollTexts << tr("AI is enabled");
+
+        tile->addScrollTexts(scrollTexts);
+
+        roomTiles << tile;
+        addItem(tile);
+        connect(tile, &Tile::clicked, this, &LobbyScene::onRoomTileClicked);
     }
 
     adjustRoomTiles();
@@ -230,7 +230,7 @@ void LobbyScene::prevPage()
 
 void LobbyScene::nextPage()
 {
-    if (!rooms.isEmpty())
+    if (!rooms->isEmpty())
         emit roomListRequested(++currentPage);
 }
 
@@ -240,13 +240,22 @@ void LobbyScene::onRoomTileClicked()
     if (tile == NULL) return;
 
     int index = roomTiles.indexOf(tile);
-    if (index == -1 || index >= rooms.size()) return;
+    if (index == -1 || index >= rooms->size()) return;
 
-    HostInfoStruct *info = rooms.at(index);
-    if (info->HostAddress.isEmpty()) {
-        emit roomSelected(info->RoomNum);
+    const RoomInfoStruct &info = rooms->at(index);
+
+    if (info.RequirePassword) {
+        QString password = QInputDialog::getText(NULL, tr("Please input the password"), tr("Password:"), QLineEdit::Password);
+        if (password.isEmpty())
+            return;
+        else
+            Config.RoomPassword = password;
+    }
+
+    if (info.HostAddress.isEmpty()) {
+        emit roomSelected(info.RoomId);
     } else {
-        Config.HostAddress = info->HostAddress;
+        Config.HostAddress = info.HostAddress;
         emit roomSelected();
     }
 }
@@ -260,5 +269,13 @@ void LobbyScene::onCreateRoomClicked()
 void LobbyScene::onClientDestroyed()
 {
     client = NULL;
-    chatLineEdit->disconnect(this, SLOT(speakToServer()));
+    disconnect(chatLineEdit, &QLineEdit::editingFinished, this, &LobbyScene::speakToServer);
+}
+
+void LobbyScene::onRoomChanged(int index)
+{
+    const RoomInfoStruct &info = rooms->at(index);
+    Tile *tile = roomTiles.at(index);
+    if (tile)
+        tile->setScrollText(0, tr("Player Number: %1 / %2").arg(info.PlayerNum).arg(Sanguosha->getPlayerCount(info.GameMode)));
 }

@@ -18,6 +18,11 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QFile>
+
 #include "server.h"
 #include "nativesocket.h"
 #include "clientstruct.h"
@@ -26,16 +31,15 @@
 #include "lobbyplayer.h"
 #include "json.h"
 
-#include <QApplication>
-
 using namespace QSanProtocol;
 
 QHash<CommandType, Server::LobbyFunction> Server::lobbyFunctions;
 QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
+QHash<ServiceType, Server::ServiceFunction> Server::serviceFunctions;
 
 Server::Server(QObject *parent, Role role)
     : QObject(parent),  role(role), server(new NativeServerSocket),
-      current(NULL), lobby(NULL)
+      current(NULL), lobby(NULL), daemon(NULL)
 {
     server->setParent(this);
 
@@ -45,10 +49,37 @@ Server::Server(QObject *parent, Role role)
     if (roomFunctions.isEmpty())
         initRoomFunctions();
 
-    ServerInfo.parse(Sanguosha->getSetupString());
+    ServerInfo = RoomInfoStruct(SettingsInstance);
 
-    connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(":memory:");
+    if (db.open()) {
+        QFile sql("data/lobby.sql");
+        if (sql.open(QFile::ReadOnly)) {
+            db.exec(QString::fromUtf8(sql.readAll()));
+            sql.close();
+        }
+    } else {
+        qFatal("SQLite database can't be opened.");
+    }
+}
+
+void Server::daemonize()
+{
+    daemon = new NativeUdpSocket(this);
+    daemon->bind(QHostAddress::Any, serverPort());
+    connect(daemon, &UdpSocket::new_datagram, this, &Server::processDatagram);
+}
+
+void Server::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    if (daemon) {
+        ServiceFunction func = serviceFunctions.value(static_cast<ServiceType>(data.at(0)));
+        if (func)
+            (this->*func)(data.mid(1), from, port);
+    }
 }
 
 void Server::broadcastSystemMessage(const QString &message)
@@ -78,8 +109,9 @@ void Server::broadcast(const AbstractPacket *packet)
     }
 
     if (destination & S_DEST_ROOM) {
-        QMapIterator<ClientSocket *, QVariant> iter(remoteRooms);
+        QMapIterator<ClientSocket *, unsigned> iter(remoteRoomId);
         while (iter.hasNext()) {
+            iter.next();
             ClientSocket *socket = iter.key();
             socket->send(packet->toJson());
         }
@@ -92,7 +124,7 @@ void Server::broadcast(const AbstractPacket *packet)
 void Server::cleanup() {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (Config.ForbidSIMC)
-        addresses.removeOne(socket->peerAddress());
+        addresses.remove(socket->peerAddress());
 
     socket->deleteLater();
 }
@@ -109,26 +141,25 @@ void Server::processNewConnection(ClientSocket *socket)
     QString address = socket->peerAddress();
     if (Config.ForbidSIMC) {
         if (addresses.contains(address)) {
-            addresses.append(address);
             socket->disconnectFromHost();
             emit serverMessage(tr("Forbid the connection of address %1").arg(address));
             return;
         } else {
-            addresses.append(address);
+            addresses.insert(address);
         }
     }
 
-    if (Config.value("BannedIP").toStringList().contains(address)){
+    if (Config.BannedIp.contains(address)){
         socket->disconnectFromHost();
         emit serverMessage(tr("Forbid the connection of address %1").arg(address));
         return;
     }
 
-    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
+    connect(socket, &ClientSocket::disconnected, this, &Server::cleanup);
     notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
 
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
-    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
+    connect(socket, &ClientSocket::message_got, this, &Server::processMessage);
 }
 
 void Server::processMessage(const QByteArray &message)
@@ -161,17 +192,17 @@ void Server::processMessage(const QByteArray &message)
 
 void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
 {
-    socket->disconnect(this, SLOT(processMessage(QByteArray)));
+    disconnect(socket, &ClientSocket::message_got, this, &Server::processMessage);
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));
-        notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
+        notifyClient(socket, S_COMMAND_WARN, S_WARNING_INVALID_SIGNUP_STRING);
         socket->disconnectFromHost();
         return;
     }
 
     JsonArray body = signup.getMessageBody().value<JsonArray>();
-    if (body.size() != 3)
+    if (body.size() < 3)
         return;
     bool is_reconnection = body.at(0).toBool();
     QString screen_name = body.at(1).toString();
@@ -184,18 +215,24 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
             ServerPlayer *player = players.value(objname);
             Room *room = player->getRoom();
             if (player && player->getState() == "offline" && room && !room->isFinished()) {
-                notifyClient(socket, S_COMMAND_SETUP, room->getSetupString());
-                player->getRoom()->reconnect(player, socket);
+                room->reconnect(player, socket);
                 return;
             }
         }
     }
 
     if (role == RoomRole) {
+        if (!Config.RoomPassword.isEmpty()) {
+            QString password = body.size() < 4 ? QString() : body.at(3).toString();
+            if (password != Config.RoomPassword) {
+                notifyClient(socket, S_COMMAND_WARN, S_WARNING_WRONG_PASSWORD);
+                return;
+            }
+        }
+
         currentRoomMutex.lock();
         if (current == NULL || current->isFull() || current->isFinished())
             current = createNewRoom(SettingsInstance);
-        notifyClient(socket, S_COMMAND_SETUP, current->getSetupString());
 
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);
@@ -212,8 +249,9 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
         player->setAvatar(avatar);
         lobbyPlayers << player;
 
-        connect(player, SIGNAL(errorMessage(QString)), SIGNAL(serverMessage(QString)));
-        connect(player, SIGNAL(disconnected()), SLOT(cleanupLobbyPlayer()));
+        connect(player, &LobbyPlayer::errorMessage, this, &Server::serverMessage);
+        connect(player, &LobbyPlayer::disconnected, this, &Server::cleanupLobbyPlayer);
+        emit newPlayer(player);
 
         emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
 

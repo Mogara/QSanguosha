@@ -280,8 +280,11 @@ QStringList ClientPlayer::getBigKingdoms(const QString &, MaxCardsType::MaxCards
     foreach (const Player *p, players) {
         if (!p->hasShownOneGeneral())
             continue;
-        QString key = p->getRole() == "careerist" ? "careerist" : p->getKingdom();
-        ++kingdom_map[key];
+        if (p->getRole() == "careerist") {
+            kingdom_map["careerist"] = 1;
+            continue;
+        }
+        ++kingdom_map[p->getKingdom()];
     }
     if (type == MaxCardsType::Max && hasLordSkill("hongfa") && !getPile("heavenly_army").isEmpty())
         kingdom_map["qun"] += getPile("heavenly_army").length();

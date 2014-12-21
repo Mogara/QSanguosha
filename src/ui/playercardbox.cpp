@@ -32,6 +32,17 @@ static QChar handcardFlag('h');
 static QChar equipmentFlag('e');
 static QChar judgingFlag('j');
 
+const int PlayerCardBox::maxCardNumberInOneRow = 10;
+
+const int PlayerCardBox::verticalBlankWidth = 37;
+const int PlayerCardBox::placeNameAreaWidth = 15;
+const int PlayerCardBox::intervalBetweenNameAndCard = 20;
+const int PlayerCardBox::topBlankWidth = 42;
+const int PlayerCardBox::bottomBlankWidth = 25;
+const int PlayerCardBox::intervalBetweenAreas = 10;
+const int PlayerCardBox::intervalBetweenRows = 5;
+const int PlayerCardBox::intervalBetweenCards = 3;
+
 PlayerCardBox::PlayerCardBox()
     : player(NULL), progressBar(NULL),
       rowCount(0), intervalsBetweenAreas(-1), intervalsBetweenRows(0), maxCardsInOneRow(0)
@@ -118,7 +129,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
             progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, &QSanCommandProgressBar::timedOut, this, &PlayerCardBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_CARD);
         progressBar->show();
@@ -157,10 +168,8 @@ QRectF PlayerCardBox::boundingRect() const
     return QRectF(0, 0, width, height);
 }
 
-void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void PlayerCardBox::paintLayout(QPainter *painter)
 {
-    GraphicsBox::paint(painter, option, widget);
-
     if (nameRects.isEmpty())
         return;
 
@@ -248,7 +257,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         } else {
             item->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
         }
-        connect(item, SIGNAL(clicked()), this, SLOT(reply()));
+        connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
         items << item;
         areaItems << item;
     }
@@ -287,6 +296,4 @@ void PlayerCardBox::reply()
         id = item->getId();
 
     ClientInstance->onPlayerChooseCard(id);
-
-    clear();
 }

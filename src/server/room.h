@@ -26,12 +26,12 @@ class ProhibitSkill;
 class Scenario;
 class TrickCard;
 class GeneralSelector;
+class RoomThread;
 
 struct lua_State;
 struct LogMessage;
 
 #include "serverplayer.h"
-#include "roomthread.h"
 #include "protocol.h"
 #include "roomstate.h"
 #include "roomconfig.h"
@@ -39,6 +39,7 @@ struct LogMessage;
 #include <QMutex>
 #include <QStack>
 #include <QWaitCondition>
+#include <QThread>
 
 typedef QMap<const ServerPlayer *, QStringList> SPlayerDataMap;
 
@@ -58,16 +59,22 @@ public:
     ~Room();
 
     ServerPlayer *addSocket(ClientSocket *socket);
-    inline int getId() const{ return _m_Id; }
+    inline qlonglong getId() const{ return _m_Id; }
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
     void tryPause();
     int getLack() const;
+
     const RoomConfig &getConfig() const {return config;}
-    QString getSetupString() const;
-    QString getMode() const;
+    QString getMode() const {return config.GameMode;}
     const Scenario *getScenario() const;
+    QStringList getBanPackages() const {return config.BanPackages.toList();}
+    int getGeneralCount(bool include_banned = false) const;
+    QStringList getLimitedGeneralNames() const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QList<int> getRandomCards() const;
+
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);
@@ -111,7 +118,7 @@ public:
     void loseMaxHp(ServerPlayer *victim, int lose = 1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
-    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
+    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to, bool multiple = false);
     bool cardEffect(const CardEffectStruct &effect);
     bool isJinkEffected(ServerPlayer *user, const Card *jink);
     void judge(JudgeStruct &judge_struct);
@@ -126,7 +133,9 @@ public:
     void clearAG(ServerPlayer *player = NULL);
     void provide(const Card *card);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
-    void sendLog(const LogMessage &log);
+    void sendLog(const LogMessage &log, QList<ServerPlayer *> players = QList<ServerPlayer *>());
+    void sendLog(const LogMessage &log, ServerPlayer *player);
+    void sendCompulsoryTriggerLog(ServerPlayer *player, const QString &skill_name, bool notify_skill = true);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false); //retrial move only, dont really do the retrial
@@ -244,7 +253,7 @@ public:
     bool notifyResetCard(ServerPlayer *player, int cardId);
     bool broadcastResetCard(const QList<ServerPlayer *> &players, int cardId);
 
-    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QString &value = QString());
+    bool broadcastProperty(ServerPlayer *player, const char *property_name, const QVariant &value = QVariant());
     void notifySkillInvoked(ServerPlayer *player, const QString &skill_name);
     void broadcastSkillInvoke(const QString &skillName, const ServerPlayer *who = NULL);
     void broadcastSkillInvoke(const QString &skillName, const QString &category);
@@ -403,7 +412,7 @@ public:
 
 protected:
     virtual void run();
-    int _m_Id;
+    qlonglong _m_Id;
 
 private:
     struct _MoveSourceClassifier {
@@ -585,7 +594,7 @@ signals:
     void room_message(const QString &msg);
     void game_start();
     void game_over(const QString &winner);
-    void game_over();
+    void game_end();
 };
 
 typedef Room *RoomStar;

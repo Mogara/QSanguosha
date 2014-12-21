@@ -64,7 +64,7 @@ StartScene::StartScene(QObject *parent)
 
     setBackgroundBrush(QBrush(QPixmap(Config.BackgroundImage)));
 
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    connect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
 }
 
 void StartScene::addButton(QAction *action) {
@@ -73,7 +73,7 @@ void StartScene::addButton(QAction *action) {
     icon.remove(0, 6);
     button->setIcon(icon.toLower());
 
-    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+    connect(button, &Button::clicked, action, &QAction::trigger);
     addItem(button);
 
     QRectF rect = button->boundingRect();
@@ -148,7 +148,7 @@ void StartScene::switchToServer(Server *server) {
 
     this->server = server;
     printServerInfo();
-    connect(server, SIGNAL(serverMessage(QString)), serverLog, SLOT(append(QString)));
+    connect(server, &Server::serverMessage, serverLog, &QTextEdit::append);
     update();
 }
 
@@ -227,9 +227,9 @@ void StartScene::onSceneRectChanged(const QRectF &rect)
         newRect.setHeight(rect.height() * scale);
     }
     newRect.moveTopLeft(newRect.bottomRight() * -0.5);
-    disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    disconnect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
     setSceneRect(newRect);
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    connect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
 }
 
 void StartScene::printServerInfo() {

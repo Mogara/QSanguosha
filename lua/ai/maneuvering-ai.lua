@@ -152,7 +152,7 @@ function SmartAI:shouldUseAnaleptic(target, card_use)
 	end
 
 	if getKnownCard(target, self.player, "Jink", true, "he") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
-	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1 or self:getOverflow() > 0
+	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1 or self:getOverflow() > 0
 end
 
 function SmartAI:useCardAnaleptic(card, use)
@@ -291,7 +291,7 @@ end
 
 function SmartAI:isGoodChainPartner(player)
 	player = player or self.player
-	if hasBuquEffect(player) or (self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0) or self:needToLoseHp(player) or self:getDamagedEffects(player) then
+	if hasBuquEffect(player) or hasNiepanEffect(player) or self:needToLoseHp(player) or self:getDamagedEffects(player) then
 		return true
 	end
 	return false
@@ -328,7 +328,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 	end
 
 	if not self:damageIsEffective_(damageStruct) then return end
-	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
+	if card and card:isKindOf("TrickCard") and not self:hasTrickEffective(card, to, self.player) then return end
 
 	local jiaren_zidan = sgs.findPlayerByShownSkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
@@ -341,6 +341,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 
 	if to:hasArmorEffect("SilverLion") then damage = 1 end
 
+	local punish
 	local kills, the_enemy = 0
 	local good, bad, F_count, E_count = 0, 0, 0, 0
 	local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
@@ -351,22 +352,25 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		if self:isWeak(target) then newvalue = newvalue - 1 end
 		if dmg and nature == sgs.DamageStruct_Fire then
 			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
-			if target:getMark("@gale") > 0 then damage = damage + 1 end
+			if target:getMark("@gale") > 0 then dmg = dmg + 1 end
 		end
 		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
-		if damage + (dmg or 0) >= target:getHp() and self:isFriend(from) then
-			newvalue = newvalue - 2
+		if damage + (dmg or 0) >= target:getHp() then
+			if self:isFriend(target) or self:isFriend(from) then newvalue = newvalue - sgs.getReward(to) end
+			if self:isFriend(from) and self:isFriend(target) and not punish and getCardsNum("Peach", from, self.player) + getCardsNum("Peach", target, self.player) == 0 then
+				punish = true
+				newvalue = newvalue - from:getCardCount(true)
+			end
 			if self:isEnemy(target) then kills = kills + 1 end
 			if target:objectName() == self.player:objectName() and #self.friends_noself == 0 and peach_num < damage + (dmg or 0) then newvalue = newvalue - 100 end
 		else
-			if self:isEnemy(target) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
+			if self:isEnemy(target) and self:isFriend(from) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
 				and self:damageIsEffective(from, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
 		end
 
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
-		return newvalue - damage - (dmg or 0)
+		return newvalue - damage * 2 - (dmg and dmg * 2 or 0)
 	end
-
 
 	local value = getChainedPlayerValue(to)
 	if self:isFriend(to) then
@@ -377,7 +381,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		E_count = E_count + 1
 	end
 
-	if nature == sgs.DamageStruct_Normal then return good >= bad end
+	if nature == sgs.DamageStruct_Normal then return good > bad end
 
 	if card and card:isKindOf("FireAttack") and from:objectName() == to:objectName() then good = good - 1 end
 
@@ -389,7 +393,8 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 			and not (card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player)) then
 			local getvalue = getChainedPlayerValue(player, 0)
 			if kills == #self.enemies and sgs.getDefenseSlash(player, self) < 2 then
-				if card then self.room:setCardFlag(card, "AIGlobal_KillOff") end
+				if card and from:objectName() == self.room:getCurrent():objectName() and from:getPhase() == sgs.Player_Play then
+					self.room:setCardFlag(card, "AIGlobal_KillOff") end
 				return true
 			end
 			if self:isFriend(player) then
@@ -411,7 +416,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 
 	if F_count > 0 and E_count <= 0 then return end
 
-	return good >= bad
+	return good > bad
 end
 
 function SmartAI:useCardIronChain(card, use)
@@ -433,7 +438,7 @@ function SmartAI:useCardIronChain(card, use)
 	table.insertTable(friendtargets, friendtargets2)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isChained() --[[and not sgs.Sanguosha:isProhibited(self.player, enemy, card)]]
+		if not enemy:isChained()
 			and self:hasTrickEffective(card, enemy, self.player) and self:objectiveLevel(enemy) > 3
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)
@@ -441,7 +446,7 @@ function SmartAI:useCardIronChain(card, use)
 	end
 
 	local chainSelf = self:hasTrickEffective(card, self.player, self.player) and not self.player:isChained()
-						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player))
+						and (self:needToLoseHp(self.player, nil, nil, true) or self:getDamagedEffects(self.player))
 						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash")
 							or (self:getCardId("Slash") and self.player:hasWeapon("Fan"))
 							or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
@@ -595,7 +600,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
 
-		if self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0 then
+		if hasNiepanEffect(self.player) then
 			table.insert(targets, self.player)
 		elseif hasBuquEffect(self.player)then
 			table.insert(targets, self.player)
@@ -613,8 +618,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	for _, enemy in ipairs(enemies) do
 		if enemy:getHandcardNum() == 1 then
 			local handcards = sgs.QList2Table(enemy:getHandcards())
-			local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
-			if handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag) then
+			if sgs.cardIsVisible(handcards[1], enemy, self.player) then
 				local suitstring = handcards[1]:getSuitString()
 				if not lack[suitstring] and not table.contains(targets, enemy) then
 					table.insert(targets, enemy)

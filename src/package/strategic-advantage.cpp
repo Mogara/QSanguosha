@@ -23,6 +23,7 @@
 #include "standard-tricks.h"
 #include "engine.h"
 #include "client.h"
+#include "roomthread.h"
 
 Blade::Blade(Card::Suit suit, int number)
     : Weapon(suit, number, 3)
@@ -104,8 +105,12 @@ const Card *HalberdCard::validate(CardUseStruct &card_use) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
+    if (player->getWeapon() != NULL)
+        room->setCardFlag(player->getWeapon()->getId(), "using");
     bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
@@ -118,8 +123,12 @@ const Card *HalberdCard::validateInResponse(ServerPlayer *player) const{
     Room *room = player->getRoom();
     room->setPlayerFlag(player, "HalberdUse");
     room->setPlayerFlag(player, "HalberdSlashFilter");
+    if (player->getWeapon() != NULL)
+        room->setCardFlag(player->getWeapon()->getId(), "using");
     bool use = room->askForUseCard(player, "slash", "@Halberd");
     if (!use) {
+        if (player->getWeapon() != NULL)
+            room->setCardFlag(player->getWeapon()->getId(), "-using");
         room->setPlayerFlag(player, "Global_HalberdFailed");
         room->setPlayerFlag(player, "-HalberdUse");
         room->setPlayerFlag(player, "-HalberdSlashFilter");
@@ -244,7 +253,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->askForSkillInvoke(objectName());
+        return player->askForSkillInvoke(this);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
@@ -539,6 +548,11 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
         foreach(const TargetModSkill *tarmod, tarmods_copy){
+            if (tarmod->getExtraTargetNum(from, this) == 0) {
+                tarmods.removeOne(tarmod);
+                continue;
+            }
+
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             if (from->hasShownSkill(main_skill)){
                 tarmods.removeOne(tarmod);
@@ -634,11 +648,15 @@ bool LureTiger::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach(ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
         effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
 
         room->cardEffect(effect);
     }
@@ -682,6 +700,11 @@ QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
         foreach(const TargetModSkill *tarmod, tarmods_copy){
+            if (tarmod->getExtraTargetNum(from, this) == 0) {
+                tarmods.removeOne(tarmod);
+                continue;
+            }
+
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             if (from->hasShownSkill(main_skill)){
                 tarmods.removeOne(tarmod);
@@ -954,11 +977,15 @@ void AllianceFeast::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void AllianceFeast::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach(ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
         effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
 
         if (target == source) {
             int n = 0;
@@ -1034,10 +1061,10 @@ bool ThreatenEmperor::isAvailable(const Player *player) const{
     if (invoke) {
         if (big_kingdoms.length() == 1 && big_kingdoms.first().startsWith("sgs")) // for JadeSeal
             invoke = big_kingdoms.contains(player->objectName());
-        else {
-            QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
-            invoke = big_kingdoms.contains(kingdom);
-        }
+        else if (player->getRole() == "careerist")
+            invoke = false;
+        else
+            invoke = big_kingdoms.contains(player->getKingdom());
     }
     return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);
 }
@@ -1051,7 +1078,7 @@ void ThreatenEmperor::onEffect(const CardEffectStruct &effect) const{
 class ThreatenEmperorSkill : public TriggerSkill {
 public:
     ThreatenEmperorSkill() : TriggerSkill("threaten_emperor") {
-        events << EventPhaseStart;
+        events << EventPhaseChanging;
         global = true;
     }
 
@@ -1059,9 +1086,10 @@ public:
         return 1;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QMap<ServerPlayer *, QStringList> list;
-        if (player->getPhase() != Player::NotActive)
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::NotActive)
             return list;
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("ThreatenEmperorExtraTurn") > 0)

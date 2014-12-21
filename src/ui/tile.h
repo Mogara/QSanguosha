@@ -36,7 +36,8 @@ public:
     bool autoHideTitle() const { return auto_hide_title; }
 
     void setIcon(QString path);
-    void addScrollText(const QStringList &texts);
+    void addScrollTexts(const QStringList &texts);
+    void setScrollText(int index, const QString &text);
 
 protected slots:
     void scrollToNextContent();
@@ -52,7 +53,6 @@ protected:
         Outside
     };
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     MouseArea getMouseArea(const QPointF &pos) const;
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -65,6 +65,10 @@ protected:
     void doTransform(const QPointF &pos);
     void reset();
 
+    virtual QColor edgeColor() const { return QColor(255, 255, 255, 77); }
+    virtual QColor backgroundColor() const { return QColor(120, 212, 120); }
+    virtual int edgeWidth() const { return 1; }
+
     bool down;
     bool auto_hide_title;
 
@@ -73,12 +77,9 @@ protected:
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
     Title *title;
-    QPixmap icon;
     QList<QGraphicsObject *> scroll_contents;
     int current_text_id;
     QTimer *scroll_timer;
-
-    QGraphicsDropShadowEffect *frame;
 };
 
 #endif // TILE_H

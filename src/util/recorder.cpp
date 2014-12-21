@@ -116,6 +116,20 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     }
 
     delete device;
+
+    int time_offset = 0;
+    pair_offset = 0;
+    foreach (const Pair &pair, pairs) {
+        Packet packet;
+        if (packet.parse(pair.cmd)) {
+            if (packet.getCommandType() == S_COMMAND_START_IN_X_SECONDS) {
+                time_offset = pair.elapsed;
+                break;
+            }
+        }
+        pair_offset++;
+    }
+    duration = pairs.last().elapsed - time_offset;
 }
 
 QByteArray Replayer::PNG2TXT(const QString &filename) {
@@ -127,10 +141,6 @@ QByteArray Replayer::PNG2TXT(const QString &filename) {
     data = qUncompress(data);
 
     return data;
-}
-
-int Replayer::getDuration() const{
-    return pairs.last().elapsed / 1000.0;
 }
 
 qreal Replayer::getSpeed() {
@@ -183,34 +193,33 @@ void Replayer::toggle() {
 }
 
 void Replayer::run() {
+    int i = 0;
+    const int pair_num = pairs.length();
+
+    while (i < pair_offset) {
+        const Pair &pair = pairs.at(i);
+        emit command_parsed(pair.cmd);
+        i++;
+    }
+
     int last = 0;
+    const int time_offset = pairs.at(pair_offset).elapsed;
+    while (i < pair_num) {
+        const Pair &pair = pairs.at(i);
 
-    static QList<CommandType> nondelays;
-    if (nondelays.isEmpty())
-        nondelays << S_COMMAND_ADD_PLAYER << S_COMMAND_REMOVE_PLAYER << S_COMMAND_SPEAK;
+        int delay = qMax(0, qMin(pair.elapsed - last, 2500));
+        delay /= getSpeed();
+        msleep(delay);
 
-    foreach(Pair pair, pairs) {
-        int delay = qMin(pair.elapsed - last, 2500);
-        last = pair.elapsed;
+        emit elasped((pair.elapsed - time_offset) / 1000);
 
-        Packet packet;
-        bool delayed = true;
-        if (packet.parse(pair.cmd)) {
-            if (nondelays.contains(packet.getCommandType()))
-                delayed = false;
-        }
-
-        if (delayed) {
-            delay /= getSpeed();
-
-            msleep(delay);
-            emit elasped(pair.elapsed / 1000.0);
-
-            if (!playing)
-                play_sem.acquire();
-        }
+        if (!playing)
+            play_sem.acquire();
 
         emit command_parsed(pair.cmd);
+
+        last = pair.elapsed;
+        i++;
     }
 }
 

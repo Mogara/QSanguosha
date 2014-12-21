@@ -24,53 +24,22 @@
 #include "player.h"
 #include "qsanselectableitem.h"
 #include "protocol.h"
+#include "roomconfig.h"
+
 #include <QMap>
 #include <QWidget>
 
-struct ServerInfoStruct {
-    bool parse(const QString &str);
-    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
-    //@param command: type of command
-    //@return countdown for command in milliseconds.
-    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance);
-
-    QString Name;
-    QString GameMode;
-    int OperationTimeout;
-    int NullificationCountDown;
-    QStringList Extensions;
-    bool RandomSeat;
-    bool EnableCheat;
-    bool FreeChoose;
-    bool ForbidAddingRobot;
-    bool DisableChat;
-    bool FirstShowingReward;
-
-    bool DuringGame;
-};
-
-extern ServerInfoStruct ServerInfo;
-
-struct HostInfoStruct : public ServerInfoStruct {
-    QString HostAddress;
-    int PlayerNum;
-    int RoomNum;
-    int MaxRoomNum;
-    int AIDelay;
-    bool RewardTheFirstShowingPlayer;
-
-    bool parse(const QVariant &data);
-};
-
 class QLabel;
 class QListWidget;
+
+extern RoomInfoStruct ServerInfo;
 
 class ServerInfoWidget : public QWidget {
     Q_OBJECT
 
 public:
     ServerInfoWidget(bool show_lack = false);
-    void fill(const ServerInfoStruct &info, const QString &address);
+    void fill(const RoomInfoStruct &info, const QString &address);
     void updateLack(int count);
     void clear();
 

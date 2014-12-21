@@ -93,7 +93,7 @@ void CardItem::setEnabled(bool enabled) {
 CardItem::~CardItem() {
     m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
-        delete m_currentAnimation;
+        m_currentAnimation->deleteLater();
         m_currentAnimation = NULL;
     }
     m_animationMutex.unlock();
@@ -181,8 +181,15 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         m_currentAnimation = goback;
     }
     m_animationMutex.unlock();
-    connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
+    connect(m_currentAnimation, &QAbstractAnimation::finished, this, &CardItem::movement_animation_finished);
+    connect(m_currentAnimation, &QAbstractAnimation::destroyed, this, &CardItem::currentAnimationDestroyed);
     return m_currentAnimation;
+}
+
+void CardItem::currentAnimationDestroyed() {
+    QObject *ca = sender();
+    if (ca == m_currentAnimation)
+        m_currentAnimation = NULL;
 }
 
 void CardItem::showFrame(const QString &result) {
@@ -247,10 +254,10 @@ void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
             outerGlowEffect->setEnabled(false);
             setGraphicsEffect(outerGlowEffect);
         }
-        connect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+        connect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
     } else {
         if (outerGlowEffect != NULL) {
-            disconnect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+            disconnect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
             outerGlowEffect->setEnabled(false);
         }
     }
@@ -282,9 +289,9 @@ void CardItem::setTransferable(const bool transferable)
         _transferButton->setPos(0, -20);
         _transferButton->setEnabled(false);
         _transferButton->hide();
-        connect(_transferButton, SIGNAL(_activated()), RoomSceneInstance, SLOT(onTransferButtonActivated()));
-        connect(_transferButton, SIGNAL(_deactivated()), RoomSceneInstance, SLOT(onSkillDeactivated()));
-        connect(_transferButton, SIGNAL(enabledChanged()), SLOT(onTransferEnabledChanged()));
+        connect(_transferButton, &TransferButton::_activated, RoomSceneInstance, &RoomScene::onTransferButtonActivated);
+        connect(_transferButton, &TransferButton::_deactivated, RoomSceneInstance, &RoomScene::onSkillDeactivated);
+        connect(_transferButton, &TransferButton::enabledChanged, this, &CardItem::onTransferEnabledChanged);
     } else if (!transferable) {
         _transferButton->hide();
     }
@@ -419,7 +426,7 @@ TransferButton::TransferButton(CardItem *parent)
     : QSanButton("carditem", "give", parent), _id(parent->getId()), _cardItem(parent)
 {
     _m_style = S_STYLE_TOGGLE;
-    connect(this, SIGNAL(clicked()), SLOT(onClicked()));
+    connect(this, &TransferButton::clicked, this, &TransferButton::onClicked);
 }
 
 void TransferButton::onClicked()

@@ -54,7 +54,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
 
     QSanButton *closeButton = new QSanButton("heroskin", "close", this);
     closeButton->setPos(387, 5);
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(closeButton, &QSanButton::clicked, this, &HeroSkinContainer::close);
 
     QGraphicsPixmapItem *nameBgItem = NULL;
     PlayerCardContainer::_paintPixmap(nameBgItem, QRect(11, 6, 87, 18),
@@ -119,7 +119,7 @@ void HeroSkinContainer::initSkins()
 void HeroSkinContainer::createSkinItem(int skinId, QGraphicsItem *parent, bool used/* = false*/)
 {
     SkinItem *skinItem = new SkinItem(m_generalName, skinId, used, parent);
-    connect(skinItem, SIGNAL(clicked(int)), this, SLOT(skinSelected(int)));
+    connect(skinItem, &SkinItem::clicked, this, &HeroSkinContainer::skinSelected);
     m_skins << skinItem;
     m_skinIndexToItem[skinId] = skinItem;
 }
@@ -141,8 +141,7 @@ void HeroSkinContainer::fillSkins()
         m_vScrollBar = new QScrollBar(Qt::Vertical);
         m_vScrollBar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
         m_vScrollBar->setFocusPolicy(Qt::StrongFocus);
-        connect(m_vScrollBar, SIGNAL(valueChanged(int)), this,
-                SLOT(scrollBarValueChanged(int)));
+        connect(m_vScrollBar, &QScrollBar::valueChanged, this, &HeroSkinContainer::scrollBarValueChanged);
 
         m_vScrollBar->setMaximum((rows - 1) * (SKIN_ITEM_HEIGHT + Y_STEP));
         m_vScrollBar->setPageStep(12 + (rows - 1) * 3);

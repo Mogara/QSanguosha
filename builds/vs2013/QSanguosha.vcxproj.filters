@@ -938,6 +938,9 @@
     <ClCompile Include="Release\moc_lobbyplayer.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\exceptionhandler.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\core\roomconfig.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -1321,6 +1324,9 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\json.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\exceptionhandler.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\roomconfig.h">

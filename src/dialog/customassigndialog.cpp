@@ -359,56 +359,55 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     hLayout->addLayout(vLayout2);
     layout->addLayout(hLayout);
 
-    connect(nationalitiesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateKingdom(int)));
-    connect(m_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-        this, SLOT(on_list_itemSelectionChanged(QListWidgetItem *)));
-    connect(m_moveListUpButton, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
-    connect(m_moveListDownButton, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
-    connect(m_moveListCheck, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
-    connect(m_movePileCheck, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
-    connect(m_numComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateNumber(int)));
-    connect(m_generalLabel, SIGNAL(clicked()), this, SLOT(doGeneralAssign()));
-    connect(m_generalLabel2, SIGNAL(clicked()), this, SLOT(doGeneralAssign2()));
-    connect(m_maxHpPrompt, SIGNAL(toggled(bool)), m_maxHpSpin, SLOT(setEnabled(bool)));
-    connect(m_hpPrompt, SIGNAL(toggled(bool)), m_hpSpin, SLOT(setEnabled(bool)));
-    connect(m_hpPrompt, SIGNAL(toggled(bool)), this, SLOT(setPlayerHpEnabled(bool)));
-    connect(m_maxHpPrompt, SIGNAL(toggled(bool)), this, SLOT(setPlayerMaxHpEnabled(bool)));
-    connect(m_selfSelectGeneral, SIGNAL(toggled(bool)), this, SLOT(freeChoose(bool)));
-    connect(m_selfSelectGeneral2, SIGNAL(toggled(bool)), this, SLOT(freeChoose2(bool)));
-    connect(m_selfSelectGeneral, SIGNAL(toggled(bool)), m_generalLabel, SLOT(setDisabled(bool)));
-    connect(m_selfSelectGeneral2, SIGNAL(toggled(bool)), m_generalLabel2, SLOT(setDisabled(bool)));
-    connect(m_headShownSetter, SIGNAL(toggled(bool)), this, SLOT(doPlayerShows(bool)));
-    connect(m_deputyShownSetter, SIGNAL(toggled(bool)), this, SLOT(doPlayerShows2(bool)));
-    connect(m_turnedSetter, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
-    connect(m_chainedSetter, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
-    connect(m_nationalityIsSelectableCheckBox, SIGNAL(toggled(bool)), nationalitiesComboBox, SLOT(setEnabled(bool)));
-    connect(m_nationalityIsSelectableCheckBox, SIGNAL(toggled(bool)), this, SLOT(setNationalityEnable(bool)));
-    connect(nationalitiesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setNationality(int)));
-    connect(m_randomRolesBox, SIGNAL(toggled(bool)), this, SLOT(updateAllKingdoms(bool)));
-    connect(m_extraSkillSetter, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
-    connect(m_hpSpin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
-    connect(m_maxHpSpin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
-    connect(m_playerDraw, SIGNAL(valueChanged(int)), this, SLOT(setPlayerStartDraw(int)));
-    connect(m_starterCheckBox, SIGNAL(toggled(bool)), this, SLOT(setStarter(bool)));
-    connect(m_marksCount, SIGNAL(valueChanged(int)), this, SLOT(setPlayerMarks(int)));
-    connect(m_marksComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(getPlayerMarks(int)));
-    connect(m_pileList, SIGNAL(currentRowChanged(int)), this, SLOT(updatePileInfo(int)));
-    connect(m_removeEquipButton, SIGNAL(clicked()), this, SLOT(removeEquipCard()));
-    connect(m_removeHandButton, SIGNAL(clicked()), this, SLOT(removeHandCard()));
-    connect(m_removeJudgeButton, SIGNAL(clicked()), this, SLOT(removeJudgeCard()));
-    connect(m_removePileButton, SIGNAL(clicked()), this, SLOT(removePileCard()));
-    connect(equipAssign, SIGNAL(clicked()), this, SLOT(doEquipCardAssign()));
-    connect(handcardAssign, SIGNAL(clicked()), this, SLOT(doHandCardAssign()));
-    connect(judgeAssign, SIGNAL(clicked()), this, SLOT(doJudgeCardAssign()));
-    connect(pileAssign, SIGNAL(clicked()), this, SLOT(doPileCardAssign()));
-    connect(m_endedByPileCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkEndedByPileBox(bool)));
-    connect(m_singleTurnCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBeforeNextBox(bool)));
-    connect(m_beforeNextCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkSingleTurnBox(bool)));
-    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(loadButton, SIGNAL(clicked()), this, SLOT(load()));
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(save()));
-    connect(defaultLoadButton, SIGNAL(clicked()), this, SLOT(load()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(nationalitiesComboBox, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &CustomAssignDialog::updateKingdom);
+    connect(m_list, &QListWidget::currentItemChanged, this, &CustomAssignDialog::on_list_itemSelectionChanged);
+    connect(m_moveListUpButton, &QPushButton::clicked, this, &CustomAssignDialog::exchangeListItem);
+    connect(m_moveListDownButton, &QPushButton::clicked, this, &CustomAssignDialog::exchangeListItem);
+    connect(m_moveListCheck, &QCheckBox::toggled, this, &CustomAssignDialog::setMoveButtonAvaliable);
+    connect(m_movePileCheck, &QCheckBox::toggled, this, &CustomAssignDialog::setMoveButtonAvaliable);
+    connect(m_numComboBox, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &CustomAssignDialog::updateNumber);
+    connect(m_generalLabel, &LabelButton::clicked, this, &CustomAssignDialog::doGeneralAssign);
+    connect(m_generalLabel2, &LabelButton::clicked, this, &CustomAssignDialog::doGeneralAssign2);
+    connect(m_maxHpPrompt, &QCheckBox::toggled, this, &CustomAssignDialog::setEnabled);
+    connect(m_hpPrompt, &QCheckBox::toggled, this, &CustomAssignDialog::setEnabled);
+    connect(m_hpPrompt, &QCheckBox::toggled, this, &CustomAssignDialog::setPlayerHpEnabled);
+    connect(m_maxHpPrompt, &QCheckBox::toggled, this, &CustomAssignDialog::setPlayerMaxHpEnabled);
+    connect(m_selfSelectGeneral, &QCheckBox::toggled, this, &CustomAssignDialog::freeChoose);
+    connect(m_selfSelectGeneral2, &QCheckBox::toggled, this, &CustomAssignDialog::freeChoose2);
+    connect(m_selfSelectGeneral, &QCheckBox::toggled, m_generalLabel, &LabelButton::setDisabled);
+    connect(m_selfSelectGeneral2, &QCheckBox::toggled, m_generalLabel2, &LabelButton::setDisabled);
+    connect(m_headShownSetter, &QCheckBox::toggled, this, &CustomAssignDialog::doPlayerShows);
+    connect(m_deputyShownSetter, &QCheckBox::toggled, this, &CustomAssignDialog::doPlayerShows2);
+    connect(m_turnedSetter, &QCheckBox::toggled, this, &CustomAssignDialog::doPlayerTurns);
+    connect(m_chainedSetter, &QCheckBox::toggled, this, &CustomAssignDialog::doPlayerChains);
+    connect(m_nationalityIsSelectableCheckBox, &QCheckBox::toggled, nationalitiesComboBox, &QComboBox::setEnabled);
+    connect(m_nationalityIsSelectableCheckBox, &QCheckBox::toggled, this, &CustomAssignDialog::setNationalityEnable);
+    connect(nationalitiesComboBox, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &CustomAssignDialog::setNationality);
+    connect(m_randomRolesBox, &QCheckBox::toggled, this, &CustomAssignDialog::updateAllKingdoms);
+    connect(m_extraSkillSetter, &QPushButton::clicked, this, &CustomAssignDialog::doSkillSelect);
+    connect(m_hpSpin, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), this, &CustomAssignDialog::getPlayerHp);
+    connect(m_maxHpSpin, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), this, &CustomAssignDialog::getPlayerMaxHp);
+    connect(m_playerDraw, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), this, &CustomAssignDialog::setPlayerStartDraw);
+    connect(m_starterCheckBox, &QCheckBox::toggled, this, &CustomAssignDialog::setStarter);
+    connect(m_marksCount, (void (QSpinBox::*)(int))(&QSpinBox::valueChanged), this, &CustomAssignDialog::setPlayerMarks);
+    connect(m_marksComboBox, (void (QComboBox::*)(int))(&QComboBox::currentIndexChanged), this, &CustomAssignDialog::getPlayerMarks);
+    connect(m_pileList, &QListWidget::currentRowChanged, this, &CustomAssignDialog::updatePileInfo);
+    connect(m_removeEquipButton, &QPushButton::clicked, this, &CustomAssignDialog::removeEquipCard);
+    connect(m_removeHandButton, &QPushButton::clicked, this, &CustomAssignDialog::removeHandCard);
+    connect(m_removeJudgeButton, &QPushButton::clicked, this, &CustomAssignDialog::removeJudgeCard);
+    connect(m_removePileButton, &QPushButton::clicked, this, &CustomAssignDialog::removePileCard);
+    connect(equipAssign, &QPushButton::clicked, this, &CustomAssignDialog::doEquipCardAssign);
+    connect(handcardAssign, &QPushButton::clicked, this, &CustomAssignDialog::doHandCardAssign);
+    connect(judgeAssign, &QPushButton::clicked, this, &CustomAssignDialog::doJudgeCardAssign);
+    connect(pileAssign, &QPushButton::clicked, this, &CustomAssignDialog::doPileCardAssign);
+    connect(m_endedByPileCheckBox, &QCheckBox::toggled, this, &CustomAssignDialog::checkEndedByPileBox);
+    connect(m_singleTurnCheckBox, &QCheckBox::toggled, this, &CustomAssignDialog::checkBeforeNextBox);
+    connect(m_beforeNextCheckBox, &QCheckBox::toggled, this, &CustomAssignDialog::checkSingleTurnBox);
+    connect(okButton, &QPushButton::clicked, this, &CustomAssignDialog::accept);
+    connect(loadButton, &QPushButton::clicked, this, &CustomAssignDialog::load);
+    connect(saveButton, &QPushButton::clicked, this, (bool (CustomAssignDialog::*)())(&CustomAssignDialog::save));
+    connect(defaultLoadButton, &QPushButton::clicked, this, &CustomAssignDialog::load);
+    connect(cancelButton, &QPushButton::clicked, this, &CustomAssignDialog::reject);
 }
 
 void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidgetItem *second) {
@@ -510,8 +509,8 @@ void CustomAssignDialog::doEquipCardAssign() {
 
     CardAssignDialog *dialog = new CardAssignDialog(this, "equip", "", excluded);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getEquipCard(int)));
+    connect(dialog, &CardAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &CardAssignDialog::cardChosen, this, &CustomAssignDialog::getEquipCard);
     dialog->exec();
 }
 
@@ -543,8 +542,8 @@ void CustomAssignDialog::doHandCardAssign() {
 
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getHandCard(int)));
+    connect(dialog, &CardAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &CardAssignDialog::cardChosen, this, &CustomAssignDialog::getHandCard);
     dialog->exec();
 }
 
@@ -569,8 +568,8 @@ void CustomAssignDialog::doJudgeCardAssign() {
 
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "DelayedTrick", excluded);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getJudgeCard(int)));
+    connect(dialog, &CardAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &CardAssignDialog::cardChosen, this, &CustomAssignDialog::getJudgeCard);
     dialog->exec();
 }
 
@@ -602,8 +601,8 @@ void CustomAssignDialog::doPileCardAssign() {
 
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getPileCard(int)));
+    connect(dialog, &CardAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &CardAssignDialog::cardChosen, this, &CustomAssignDialog::getPileCard);
     dialog->exec();
 }
 
@@ -907,8 +906,8 @@ void CustomAssignDialog::doGeneralAssign() {
     m_enableGeneral2 = false;
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getChosenGeneral(QString)));
+    connect(dialog, &GeneralAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &GeneralAssignDialog::generalChosen, this, &CustomAssignDialog::getChosenGeneral);
     dialog->exec();
 }
 
@@ -916,9 +915,9 @@ void CustomAssignDialog::doGeneralAssign2() {
     m_enableGeneral2 = true;
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this, true);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getChosenGeneral(QString)));
-    connect(dialog, SIGNAL(generalCleared()), this, SLOT(clearGeneral2()));
+    connect(dialog, &GeneralAssignDialog::accepted, this, &CustomAssignDialog::accept);
+    connect(dialog, &GeneralAssignDialog::generalChosen, this, &CustomAssignDialog::getChosenGeneral);
+    connect(dialog, &GeneralAssignDialog::generalCleared, this, &CustomAssignDialog::clearGeneral2);
     dialog->exec();
 }
 
@@ -1009,7 +1008,7 @@ void CustomAssignDialog::doSkillSelect() {
     QString name = m_list->currentItem()->data(Qt::UserRole).toString();
     SkillAssignDialog *dialog = new SkillAssignDialog(this, name, m_playersExtraSkills[name]);
 
-    connect(dialog, SIGNAL(skillUpdated(QStringList)), this, SLOT(updatePlayerExSkills(QStringList)));
+    connect(dialog, &SkillAssignDialog::skillUpdated, this, &CustomAssignDialog::updatePlayerExSkills);
     dialog->exec();
 }
 
@@ -1405,7 +1404,11 @@ void CustomAssignDialog::load() {
     file.close();
 }
 
-bool CustomAssignDialog::save(QString path) {
+bool CustomAssignDialog::save() {
+    return save(QString());
+}
+
+bool CustomAssignDialog::save(const QString &path) {
     if (m_starter.isEmpty()) {
         QMessageBox::warning(NULL, tr("Warning"), tr("There is not a starter"));
         return false;
@@ -1575,15 +1578,15 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool canBan)
     }
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
+    connect(ok_button, &QPushButton::clicked, this, &GeneralAssignDialog::chooseGeneral);
 
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(cancel_button, &QPushButton::clicked, this, &GeneralAssignDialog::reject);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     if (canBan) {
         QPushButton *clear_button = new QPushButton(tr("Clear General"));
-        connect(clear_button, SIGNAL(clicked()), this, SLOT(clearGeneral()));
+        connect(clear_button, &QPushButton::clicked, this, &GeneralAssignDialog::clearGeneral);
 
         button_layout->addWidget(clear_button);
     }
@@ -1671,9 +1674,9 @@ CardAssignDialog::CardAssignDialog(QWidget *parent, QString cardType, QString cl
     hLayout->addLayout(vLayout);
     layout->addLayout(hLayout);
 
-    connect(back, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    connect(CustomInstance, SIGNAL(card_addin(int)), this, SLOT(updateExcluded(int)));
+    connect(back, &QPushButton::clicked, this, &CardAssignDialog::reject);
+    connect(getCardButton, &QPushButton::clicked, this, &CardAssignDialog::askCard);
+    connect(CustomInstance, &CustomAssignDialog::card_addin, this, &CardAssignDialog::updateExcluded);
 }
 
 void CardAssignDialog::addCard(const Card *card) {
@@ -1751,9 +1754,7 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString playerName, QStrin
     m_skillList->verticalScrollBar()->setStyleSheet(styleSheet);
 
     m_skillInput = new QLineEdit;
-#if QT_VERSION >= 0x040700
     m_skillInput->setPlaceholderText(tr("Input the Skill Name"));
-#endif
     m_skillInput->setToolTip(tr("<font color=%1>Internal skill name is a phonetic form, "
         "the rest of the special circumstances, "
         "please see the translation of documents in the lang directory.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
@@ -1791,12 +1792,12 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString playerName, QStrin
 
     layout->addLayout(hLayout);
 
-    connect(addSkill, SIGNAL(clicked()), this, SLOT(addSkill()));
-    connect(m_selectSkillButton, SIGNAL(clicked()), this, SLOT(selectSkill()));
-    connect(m_deleteSkillButton, SIGNAL(clicked()), this, SLOT(deleteSkill()));
-    connect(m_skillList, SIGNAL(itemSelectionChanged()), this, SLOT(updateSkillInfo()));
-    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(addSkill, &QPushButton::clicked, this, &SkillAssignDialog::addSkill);
+    connect(m_selectSkillButton, &QPushButton::clicked, this, &SkillAssignDialog::selectSkill);
+    connect(m_deleteSkillButton, &QPushButton::clicked, this, &SkillAssignDialog::deleteSkill);
+    connect(m_skillList, &QListWidget::itemSelectionChanged, this, &SkillAssignDialog::updateSkillInfo);
+    connect(okButton, &QPushButton::clicked, this, &SkillAssignDialog::accept);
+    connect(cancelButton, &QPushButton::clicked, this, &SkillAssignDialog::reject);
 }
 
 void SkillAssignDialog::updateSkillInfo() {
@@ -1809,7 +1810,7 @@ void SkillAssignDialog::updateSkillInfo() {
 void SkillAssignDialog::selectSkill() {
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
 
-    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getSkillFromGeneral(QString)));
+    connect(dialog, &GeneralAssignDialog::generalChosen, this, &SkillAssignDialog::getSkillFromGeneral);
     dialog->exec();
 }
 
@@ -1832,8 +1833,8 @@ void SkillAssignDialog::getSkillFromGeneral(QString general_name) {
         button->setText(Sanguosha->translate(skill->objectName()));
         button->setToolTip(Sanguosha->translate(":" + skill->objectName()));
 
-        connect(button, SIGNAL(clicked()), select_dialog, SLOT(accept()));
-        connect(button, SIGNAL(clicked()), this, SLOT(addSkill()));
+        connect(button, &QPushButton::clicked, select_dialog, &QDialog::accept);
+        connect(button, &QPushButton::clicked, this, &SkillAssignDialog::addSkill);
 
         layout->addWidget(button);
     }

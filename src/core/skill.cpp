@@ -55,10 +55,10 @@ bool Skill::isAttachedLordSkill() const{
     return attached_lord_skill;
 }
 
-QString Skill::getDescription(bool inToolTip) const{
-    QString desc = "<br/>";
+QString Skill::getDescription(bool inToolTip) const {
+    QString desc;
     if (!canPreshow())
-        desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
+        desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
 
     QString skill_name = objectName();
 
@@ -69,6 +69,7 @@ QString Skill::getDescription(bool inToolTip) const{
     QString des_src = Sanguosha->translate(":" + skill_name);
     if (des_src == ":" + skill_name)
         return desc;
+
     foreach(QString skill_type, Sanguosha->getSkillColorMap().keys()) {
         QString to_replace = Sanguosha->translate(skill_type);
         if (to_replace == skill_type) continue;
@@ -440,6 +441,10 @@ BattleArraySkill::BattleArraySkill(const QString &name, const HegemonyMode::Arra
 {
     if (!inherits("LuaBattleArraySkill")) //extremely dirty hack!!!
         view_as_skill = new ArraySummonSkill(objectName());
+}
+
+bool BattleArraySkill::triggerable(const ServerPlayer *player) const {
+    return TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
 }
 
 void BattleArraySkill::summonFriends(ServerPlayer *player) const {

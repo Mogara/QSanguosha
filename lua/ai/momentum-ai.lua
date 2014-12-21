@@ -18,21 +18,27 @@
   QSanguosha-Rara
 *********************************************************************]]
 sgs.ai_skill_invoke.xunxun = function(self, data)
-	if not self:willShowForDefence() then
+	if not (self:willShowForDefence() or self:willShowForAttack()) then
 		return false
 	end
 	return true
 end
 
 function sgs.ai_skill_invoke.wangxi(self, data)
+	if not self:willShowForMasochism() then return false end
 	local target = data:toPlayer()
-	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then
-		return not self:needKongcheng(target, true)
-	elseif target and  not ( target:hasWeapon("Crossbow") or target:hasShownSkills("paoxiao|luanji|shuangxiong|qingnang|jizhi|xiaoji")	) then
-		return not self:needKongcheng(target, true)
-	else
-		return self:needKongcheng(target, true)
+	if target then
+		if (self.player:isFriendWith(target) or self:isFriend(target)) and not self:needKongcheng(target)then
+				return true
+		else
+			if	not ( target:getPhase() ~= sgs.Player_NotActive and (target:hasShownSkills(sgs.Active_cardneed_skill) or target:hasWeapon("Crossbow")) )
+				and not ( target:getPhase() == sgs.Player_NotActive and target:hasShownSkills(sgs.notActive_cardneed_skill) )
+				or self:needKongcheng(target) then
+				return true
+			end
+		end
 	end
+return false
 end
 
 
@@ -52,6 +58,7 @@ sgs.ai_choicemade_filter.skillInvoke.wangxi = function(self, player, promptlist)
 end
 
 function sgs.ai_skill_invoke.hengjiang(self, data)
+	if not self:willShowForMasochism() then return false end
 	local target = data:toPlayer()
 	if not target then return end
 	if self:isFriend(target) then
@@ -277,6 +284,13 @@ sgs.ai_skill_invoke.fenming = function(self)
 	return value / count >= 0.2
 end
 
+sgs.ai_skill_invoke.jiang = function(self, data)
+	if not self:willShowForAttack() and not self:willShowForDefence() then
+		return false
+	end
+	return true
+end
+
 sgs.ai_skill_invoke.hengzheng = function(self, data)
 	local value = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -313,13 +327,13 @@ end
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
 
-	if  damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") ~= 0 then
+	if damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") > 0 then
 		return true
 	end
 
 	return not self:isFriend(damage.to)
-	and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
-	and not (damage.to:getHp() == 1 and not damage.to:getArmor())
+		and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
+		and not (damage.to:getHp() == 1 and not damage.to:getArmor())
 end
 
 sgs.ai_skill_choice.chuanxin = "discard"
@@ -468,6 +482,11 @@ sgs.ai_skill_use["@@hongfa2"] = function(self)
 	if pn.m_reason == "wuxin" or "hongfa" == pn.m_reason or pn.m_reason == "PeaceSpell" then
 		return "@HongfaTianbingCard=" .. table.concat(ints, "+")
 	elseif pn.m_reason == "DragonPhoenix" or pn.m_reason == "xiongyi" then
+		return "."
+	elseif pn.m_reason == "fight_together" then
+		--@todo
+		return "."
+	elseif pn.m_reason == "IronArmor" then
 		return "."
 	else
 		self.room:writeToConsole("@@hongfa2 " .. pn.m_reason .. " is empty!")

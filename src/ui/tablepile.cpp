@@ -82,6 +82,10 @@ void TablePile::_markClearance(CardItem *item) {
         item->m_uiHelper.tablePileClearTimeStamp = m_currentTime;
 }
 
+void TablePile::clear() {
+    clear(true);
+}
+
 void TablePile::clear(bool delayRequest) {
     if (m_visibleCards.isEmpty()) return;
     _m_mutex_pileCards.lock();
@@ -94,8 +98,7 @@ void TablePile::clear(bool delayRequest) {
     if (delayRequest) {
         foreach(CardItem *toRemove, m_visibleCards)
             _markClearance(toRemove);
-    }
-    else {
+    } else {
         _fadeOutCardsLocked(m_visibleCards);
         m_visibleCards.clear();
     }
@@ -104,7 +107,7 @@ void TablePile::clear(bool delayRequest) {
 }
 
 void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards) {
-    QParallelAnimationGroup *group = new QParallelAnimationGroup;
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     foreach(CardItem *toRemove, cards) {
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
@@ -190,6 +193,6 @@ void TablePile::adjustCards() {
     QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
     foreach(CardItem *card_item, m_visibleCards)
         animation->addAnimation(card_item->getGoBackAnimation(true));
-    animation->start();
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 

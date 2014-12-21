@@ -48,14 +48,14 @@ public:
     Role getRole() const {return role;}
     void broadcastSystemMessage(const QString &msg);
 
-    bool listen() { return server->listen(); }
     bool listen(const QHostAddress &address, ushort port) { return server->listen(address, port); }
     ushort serverPort() const {return server->serverPort(); }
-    void daemonize() { server->daemonize(); }
+
+    void daemonize();
 
     void connectToLobby();
     Room *createNewRoom(const RoomConfig &config);
-    Room *getRoom(int room_id);
+    Room *getRoom(qlonglong room_id);
     void signupPlayer(ServerPlayer *player);
 
     void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);
@@ -72,6 +72,8 @@ protected slots:
     void cleanupLobbyPlayer();
     void cleanupRemoteRoom();
 
+    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
+
 protected:
     void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void notifyLobby(QSanProtocol::CommandType command, const QVariant &data = QVariant());
@@ -82,13 +84,18 @@ protected:
 
     //callbacks for lobby server
     void checkVersion(const QVariant &server_version);
+    void forwardLobbyMessage(const QVariant &message);
 
     //callbacks for room servers
     void setupNewRemoteRoom(ClientSocket *socket, const QVariant &data);
 
+    //callbacks for daemon
+    void replyServerName(const QByteArray &, const QHostAddress &from, ushort port);
+    void replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port);
+
     Role role;
     ServerSocket *server;
-    QStringList addresses;
+    QSet<QString> addresses;
 
     typedef void (Server::*LobbyFunction)(const QVariant &);
     static QHash<QSanProtocol::CommandType, LobbyFunction> lobbyFunctions;
@@ -96,15 +103,20 @@ protected:
     typedef void (Server::*RoomFunction)(ClientSocket *socket, const QVariant &);
     static QHash<QSanProtocol::CommandType, RoomFunction> roomFunctions;
 
+    typedef void (Server::*ServiceFunction)(const QByteArray &, const QHostAddress &, ushort);
+    static QHash<QSanProtocol::ServiceType, ServiceFunction> serviceFunctions;
+
     Room *current;
     QMutex currentRoomMutex;
-    QSet<Room *> rooms;
+    QMap<qlonglong, Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;
     ClientSocket *lobby;
 
     QList<LobbyPlayer *> lobbyPlayers;
-    QMap<ClientSocket *, QVariant> remoteRooms;
+    QMap<ClientSocket *, unsigned> remoteRoomId;
+
+    UdpSocket *daemon;
 
 private:
     void initLobbyFunctions();
@@ -113,6 +125,7 @@ private:
 signals:
     void serverMessage(const QString &);
     void newPlayer(ServerPlayer *player);
+    void newPlayer(LobbyPlayer *player);
 };
 
 #endif // SERVER_H

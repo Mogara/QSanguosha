@@ -21,26 +21,13 @@
 #ifndef _ROOM_THREAD_H
 #define _ROOM_THREAD_H
 
+#include "structs.h"
+
 #include <QThread>
 #include <QSemaphore>
 #include <QVariant>
 
-#include "structs.h"
-
 class GameRule;
-
-struct LogMessage {
-    LogMessage();
-    QString toString() const;
-    QVariant toVariant() const;
-
-    QString type;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
-    QString card_str;
-    QString arg;
-    QString arg2;
-};
 
 class EventTriplet {
 public:

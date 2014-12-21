@@ -801,9 +801,9 @@ void Player::setRemoved(bool removed) {
 }
 
 bool Player::isDuanchang(const bool head) const{
-    if (head && property("Duanchang").toString() == "head")
+    if (head && property("Duanchang").toStringList().contains("head"))
         return true;
-    else if (!head && property("Duanchang").toString() == "deputy")
+    else if (!head && property("Duanchang").toStringList().contains("deputy"))
         return true;
     else
         return false;
@@ -1292,7 +1292,7 @@ void Player::preshowSkill(const QString &skill_name) {
 }
 
 bool Player::inHeadSkills(const QString &skill_name) const {
-    return (head_skills.keys() + head_acquired_skills.toList()).contains(skill_name);
+    return head_skills.contains(skill_name) || head_acquired_skills.contains(skill_name);
 }
 
 bool Player::inHeadSkills(const Skill *skill) const {
@@ -1303,7 +1303,7 @@ bool Player::inHeadSkills(const Skill *skill) const {
 }
 
 bool Player::inDeputySkills(const QString &skill_name) const {
-    return (deputy_skills.keys() + deputy_acquired_skills.toList()).contains(skill_name);
+    return deputy_skills.contains(skill_name) || deputy_acquired_skills.contains(skill_name);
 }
 
 bool Player::inDeputySkills(const Skill *skill) const {
@@ -1345,13 +1345,13 @@ void Player::setActualGeneral2(const General *general) {
 
 void Player::setActualGeneral1Name(const QString &name) {
     const General *general = Sanguosha->getGeneral(name);
-    Q_ASSERT(name.isNull() || name.isEmpty() || general != NULL);
+    Q_ASSERT(!(name.isNull() || name.isEmpty() || general == NULL));
     setActualGeneral1(general);
 }
 
 void Player::setActualGeneral2Name(const QString &name) {
     const General *general = Sanguosha->getGeneral(name);
-    Q_ASSERT(name.isNull() || name.isEmpty() || general != NULL);
+    Q_ASSERT(!(name.isNull() || name.isEmpty() || general == NULL));
     setActualGeneral2(general);
 }
 
@@ -1425,7 +1425,7 @@ bool Player::isHidden(const bool &head_general) const {
 }
 
 bool Player::ownSkill(const QString &skill_name) const {
-    return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
+    return head_skills.contains(skill_name) || deputy_skills.contains(skill_name);
 }
 
 bool Player::ownSkill(const Skill *skill) const{

@@ -41,8 +41,11 @@
 using namespace QSanProtocol;
 
 Client *ClientInstance = NULL;
+
 QHash<CommandType, Client::Callback> Client::callbacks;
 QHash<CommandType, Client::Callback> Client::interactions;
+QHash<WarningType, QString> Client::warning_translation;
+QHash<ServiceType, Client::ServiceFunction> Client::services;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent), m_isDiscardActionRefusable(true),
@@ -51,6 +54,9 @@ Client::Client(QObject *parent, const QString &filename)
 {
     ClientInstance = this;
     m_isGameOver = false;
+
+    m_noNullificationThisTime = false;
+    m_noNullificationTrickName = ".";
 
     if (callbacks.isEmpty()) {
         callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
@@ -111,10 +117,8 @@ Client::Client(QObject *parent, const QString &filename)
         callbacks[S_COMMAND_TAKE_GENERAL] = &Client::takeGeneral;
         callbacks[S_COMMAND_RECOVER_GENERAL] = &Client::recoverGeneral;
         callbacks[S_COMMAND_REVEAL_GENERAL] = &Client::revealGeneral;
-    }
 
-    // interactive methods
-    if (interactions.isEmpty()) {
+
         interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
         interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
         interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
@@ -142,28 +146,40 @@ Client::Client(QObject *parent, const QString &filename)
 
         // 3v3 mode & 1v1 mode
         interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
+
+        services[S_SERVICE_PLAYER_NUM] = &Client::updateRoomPlayerNum;
+
+        warning_translation[S_WARNING_GAME_OVER] = tr("Game is over now");
+        warning_translation[S_WARNING_INVALID_SIGNUP_STRING] = tr("Invalid signup string");
+        warning_translation[S_WARNING_LEVEL_LIMITATION] = tr("Your level is not enough");
+        warning_translation[S_WARNING_ROOM_IS_FULL] = tr("The room is already full");
+        warning_translation[S_WARNING_WRONG_PASSWORD] = tr("Sorry, your password is incorrect");
+        warning_translation[S_WARNING_KICKED] = tr("You are kicked from server");
     }
 
-    m_noNullificationThisTime = false;
-    m_noNullificationTrickName = ".";
-
+    recorder = NULL;
     if (!filename.isEmpty()) {
         socket = NULL;
-        recorder = NULL;
 
         replayer = new Replayer(this, filename);
-        connect(replayer, SIGNAL(command_parsed(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
-    }
-    else {
-        socket = new NativeClientSocket;
-        socket->setParent(this);
+        connect(replayer, &Replayer::command_parsed, this, &Client::processServerPacket);
+    } else {
+        socket = new NativeClientSocket(this);
+        connect(socket, &NativeClientSocket::message_got, this, &Client::processServerPacket);
+        connect(socket, &NativeClientSocket::error_message, this, &Client::error_message);
 
-        recorder = new Recorder(this);
-
-        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
-        connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
-        connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
-        socket->connectToHost();
+        QHostAddress address(QHostAddress::LocalHost);
+        ushort port = 9527u;
+        if (Config.HostAddress.contains(QChar(':'))) {
+            QStringList texts = Config.HostAddress.split(QChar(':'));
+            address.setAddress(texts.value(0));
+            port = texts.value(1).toUShort();
+        } else {
+            address.setAddress(Config.HostAddress);
+            if (address.isLoopback())
+                port = Config.ServerPort;
+        }
+        socket->connectToHost(address, port);
 
         replayer = NULL;
     }
@@ -177,6 +193,9 @@ Client::Client(QObject *parent, const QString &filename)
 #else
     prompt_doc->setDefaultFont(QFont("SimHei"));
 #endif
+
+    detector = new NativeUdpSocket(this);
+    connect(detector, &UdpSocket::new_datagram, this, &Client::processDatagram);
 }
 
 Client::~Client() {
@@ -257,6 +276,8 @@ void Client::signup() {
         arg << Config.value("EnableReconnection", false).toBool();
         arg << Config.UserName;
         arg << Config.UserAvatar;
+        if (!Config.RoomPassword.isEmpty())
+            arg << Config.RoomPassword;
         notifyServer(S_COMMAND_SIGNUP, arg);
     }
 }
@@ -279,8 +300,7 @@ void Client::restart()
 
     if (recorder) {
         recorder->deleteLater();
-        recorder = new Recorder(this);
-        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
+        recorder = NULL;
     }
 
     notifyServer(S_COMMAND_SIGNUP);
@@ -345,23 +365,34 @@ void Client::checkVersion(const QVariant &server_version) {
     emit version_checked(version_number, mod_name);
 }
 
-void Client::setup(const QVariant &setup_json) {
+void Client::setup(const QVariant &setup) {
     if (socket && !socket->isConnected())
         return;
 
-    QString setup_str = setup_json.toString();
-    if (ServerInfo.parse(setup_str)) {
+    if (ServerInfo.parse(setup)) {
+        if (replayer) {
+            ServerInfo.OperationTimeout = 0;
+        } else {
+            recorder = new Recorder(this);
+
+            Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+            setup_packet.setMessageBody(setup);
+            recorder->recordLine(setup_packet.toJson());
+        }
+
         Self = new ClientPlayer(this);
         Self->setScreenName(Config.UserName);
         Self->setProperty("avatar", Config.UserAvatar);
-        connect(Self, SIGNAL(phase_changed()), this, SLOT(alertFocus()));
-        connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+        connect(Self, &ClientPlayer::phase_changed, this, &Client::alertFocus);
+        connect(Self, &ClientPlayer::role_changed, this, &Client::notifyRoleChange);
 
         players << Self;
 
         emit roomServerConnected();
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
+        JsonDocument doc(setup);
+        QString setup_str = QString::fromUtf8(doc.toJson());
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }
 }
@@ -371,9 +402,21 @@ void Client::enterLobby(const QVariant &)
     emit lobbyServerConnected();
 }
 
-void Client::updateRoomList(const QVariant &list)
+void Client::updateRoomList(const QVariant &data)
 {
-    emit roomListChanged(list);
+    rooms.clear();
+
+    JsonArray array = data.value<JsonArray>();
+    QByteArray command(1, S_SERVICE_PLAYER_NUM);
+    RoomInfoStruct info;
+    foreach (const QVariant &item, array) {
+        if (info.parse(item)) {
+            rooms << info;
+            if (!info.HostAddress.isEmpty())
+                detector->writeDatagram(command, info.HostAddress);
+        }
+    }
+    emit roomListChanged(&rooms);
 }
 
 void Client::disconnectFromHost() {
@@ -383,10 +426,12 @@ void Client::disconnectFromHost() {
     }
 }
 
-typedef char buffer_t[65535];
-
 void Client::processServerPacket(const QByteArray &cmd) {
     if (m_isGameOver) return;
+
+    if (recorder)
+        recorder->recordLine(cmd);
+
     Packet packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
@@ -395,12 +440,16 @@ void Client::processServerPacket(const QByteArray &cmd) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
-                Callback callback = interactions[S_COMMAND_CHOOSE_GENERAL];
-                if (callback)
-                    (this->*callback)(packet.getMessageBody());
-            } else if (!replayer)
+            if (!replayer) {
                 processServerRequest(packet);
+            } else {
+                moveFocus(Self->objectName(), packet.getCommandType());
+                if (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
+                    Callback callback = interactions[S_COMMAND_CHOOSE_GENERAL];
+                    if (callback)
+                        (this->*callback)(packet.getMessageBody());
+                }
+            }
         }
     } else {
         processObsoleteServerPacket(cmd);
@@ -413,13 +462,11 @@ bool Client::processServerRequest(const Packet &packet) {
     _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
 
-    if (!replayer) {
-        Countdown countdown;
-        countdown.current = 0;
-        countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
-        countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-        setCountdown(countdown);
-    }
+    Countdown countdown;
+    countdown.current = 0;
+    countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+    countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    setCountdown(countdown);
 
     Callback callback = interactions[command];
     if (callback) {
@@ -433,6 +480,13 @@ bool Client::processServerRequest(const Packet &packet) {
 void Client::processObsoleteServerPacket(const QString &cmd) {
     // invoke methods
     QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(cmd));
+}
+
+void Client::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    ServiceFunction func = services.value(static_cast<ServiceType>(data.at(0)));
+    if (func)
+        (this->*func)(data.mid(1), from, port);
 }
 
 void Client::addPlayer(const QVariant &player_info) {
@@ -463,7 +517,7 @@ void Client::updateProperty(const QVariant &arg) {
     QString object_name = args[0].toString();
     ClientPlayer *player = getPlayer(object_name);
     if (!player) return;
-    player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
+    player->setProperty(args[1].toString().toLatin1().constData(), args[2]);
 
     //for shuangxiong { RoomScene::detachSkill(const QString &) }
     if (args[1] == "phase" && player->getPhase() == Player::Finish
@@ -827,12 +881,10 @@ void Client::setNullification(const QVariant &str) {
     QString astr = str.toString();
     if (astr != ".") {
         if (m_noNullificationTrickName == ".") {
-            m_noNullificationThisTime = false;
             m_noNullificationTrickName = astr;
             emit nullification_asked(true);
         }
-    }
-    else {
+    } else {
         m_noNullificationThisTime = false;
         m_noNullificationTrickName = ".";
         emit nullification_asked(false);
@@ -1097,10 +1149,8 @@ void Client::askForNullification(const QVariant &arg) {
         }
     }
     if (m_noNullificationThisTime && m_noNullificationTrickName == trick_name) {
-        if (trick_card->isKindOf("AOE") || trick_card->isKindOf("GlobalEffect")) {
-            onPlayerResponseCard(NULL);
-            return;
-        }
+        onPlayerResponseCard(NULL);
+        return;
     }
 
     if (source == NULL) {
@@ -1151,9 +1201,13 @@ void Client::onPlayerChangeSkin(int skin_id, bool is_head)
     notifyServer(S_COMMAND_CHANGE_SKIN, args);
 }
 
-void Client::onPlayerChooseRoom(int room_id)
+void Client::onPlayerChooseRoom(qlonglong room_id)
 {
-    notifyServer(S_COMMAND_ENTER_ROOM, room_id);
+    JsonArray data;
+    data << room_id;
+    if (!Config.RoomPassword.isEmpty())
+        data << Config.RoomPassword;
+    notifyServer(S_COMMAND_ENTER_ROOM, data);
 }
 
 void Client::trust() {
@@ -1452,19 +1506,12 @@ void Client::revivePlayer(const QVariant &player) {
 }
 
 
-void Client::warn(const QVariant &reason_var) {
-    QString reason = reason_var.toString();
-    QString msg;
-    if (reason == "GAME_OVER")
-        msg = tr("Game is over now");
-    else if (reason == "INVALID_FORMAT")
-        msg = tr("Invalid signup string");
-    else if (reason == "LEVEL_LIMITATION")
-        msg = tr("Your level is not enough");
-    else
-        msg = tr("Unknown warning: %1").arg(reason);
+void Client::warn(const QVariant &reason) {
+    WarningType type = static_cast<WarningType>(reason.toInt());
+    QString msg = warning_translation.value(type);
+    if (msg.isEmpty())
+        msg = tr("Unknown warning: %1").arg(type);
 
-    disconnectFromHost();
     QMessageBox::warning(NULL, tr("Warning"), msg);
 }
 
@@ -1473,7 +1520,17 @@ void Client::askForGeneral(const QVariant &arg) {
     QStringList generals;
     if (!JsonUtils::tryParse(args[0], generals)) return;
     bool single_result = args[1].toBool();
-    emit generals_got(generals, single_result);
+    QSet<BanPair> banned_pairs;
+    if (args.size() >= 3) {
+        JsonArray pairs = args.at(2).value<JsonArray>();
+        foreach (const QVariant &pair, pairs) {
+            QStringList generals = pair.toString().split('+');
+            if (generals.size() == 2)
+                banned_pairs << BanPair(generals.first(), generals.last());
+        }
+    }
+
+    emit generals_got(generals, single_result, banned_pairs);
     setStatus(AskForGeneralChosen);
 }
 
@@ -1481,7 +1538,7 @@ void Client::askForSuit(const QVariant &) {
     QStringList suits;
     suits << "spade" << "club" << "heart" << "diamond";
     emit suits_got(suits);
-    setStatus(ExecDialog);
+    setStatus(AskForSuit);
 }
 
 void Client::askForKingdom(const QVariant &) {
@@ -1565,8 +1622,8 @@ void Client::setMark(const QVariant &mark_var) {
         player->setMark(mark, value);
 }
 
-void Client::onPlayerChooseSuit() {
-    replyToServer(S_COMMAND_CHOOSE_SUIT, sender()->objectName());
+void Client::onPlayerChooseSuit(const QString &suit) {
+    replyToServer(S_COMMAND_CHOOSE_SUIT, suit);
     setStatus(NotActive);
 }
 
@@ -2132,4 +2189,24 @@ void Client::setAvailableCards(const QVariant &pile) {
     QList<int> drawPile;
     if (JsonUtils::tryParse(pile, drawPile))
         available_cards = drawPile;
+}
+
+void Client::updateRoomPlayerNum(const QByteArray &data, const QHostAddress &from, ushort port)
+{
+    if (data.size() != 4)
+        return;
+    QString host_address = QString("%1:%2").arg(from.toString()).arg(port);
+    for (int index = 0; index < rooms.size(); index++) {
+        RoomInfoStruct &info = rooms[index];
+        if (info.HostAddress == host_address) {
+            int num = data.at(0);
+            for(int i = 1; i <= 3; i++) {
+                num <<= 8;
+                num |= data.at(i);
+            }
+            info.PlayerNum = num;
+            emit roomChanged(index);
+            break;
+        }
+    }
 }

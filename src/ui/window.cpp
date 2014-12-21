@@ -110,7 +110,7 @@ Button *Window::addCloseButton(const QString &label) {
     qreal y = size.height() - ok_button->boundingRect().height() - 25;
     ok_button->setPos(x, y);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));
+    connect(ok_button, &Button::clicked, this, &Window::disappear);
     return ok_button;
 }
 
@@ -170,7 +170,7 @@ void Window::disappear() {
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     if (!keep_when_disappear)
-        connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
+        connect(group, &QParallelAnimationGroup::finished, this, &Window::deleteLater);
 }
 
 void Window::setTitle(const QString &title) {

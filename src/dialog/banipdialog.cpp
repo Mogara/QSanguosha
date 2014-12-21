@@ -22,6 +22,7 @@
 #include "server.h"
 #include "room.h"
 #include "serverplayer.h"
+#include "lobbyplayer.h"
 #include "settings.h"
 
 #include <QVBoxLayout>
@@ -30,13 +31,9 @@
 #include <QMessageBox>
 
 BanIpDialog::BanIpDialog(QWidget *parent, Server *server)
-    : FlatDialog(parent), server(server) {
-    /*
-        if (Sanguosha->currentRoom() == NULL){
-        QMessageBox::warning(this, tr("Warining!"), tr("Game is not started!"));
-        return;
-        }
-        */
+    : FlatDialog(parent), server(server)
+{
+
     QVBoxLayout *left_layout = new QVBoxLayout;
     QVBoxLayout *right_layout = new QVBoxLayout;
 
@@ -74,17 +71,20 @@ BanIpDialog::BanIpDialog(QWidget *parent, Server *server)
     layout->addLayout(up_layout);
     layout->addLayout(down_layout);
 
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(save()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(insert, SIGNAL(clicked()), this, SLOT(insertClicked()));
-    connect(remove, SIGNAL(clicked()), this, SLOT(removeClicked()));
-    connect(kick, SIGNAL(clicked()), this, SLOT(kickClicked()));
+    connect(ok, &QPushButton::clicked, this, &BanIpDialog::accept);
+    connect(this, &BanIpDialog::accepted, this, &BanIpDialog::save);
+    connect(cancel, &QPushButton::clicked, this, &BanIpDialog::reject);
+    connect(insert, &QPushButton::clicked, this, &BanIpDialog::insertClicked);
+    connect(remove, &QPushButton::clicked, this, &BanIpDialog::removeClicked);
+    connect(kick, &QPushButton::clicked, this, &BanIpDialog::kickClicked);
 
-    if (server)
+    if (server) {
+        connect(server, (void (Server::*)(ServerPlayer *)) (&Server::newPlayer), this, (void (BanIpDialog::*)(ServerPlayer *)) (&BanIpDialog::addPlayer));
+        connect(server, (void (Server::*)(LobbyPlayer *)) (&Server::newPlayer), this, (void (BanIpDialog::*)(LobbyPlayer *)) (&BanIpDialog::addPlayer));
         loadIPList();
-    else
+    } else {
         QMessageBox::warning(this, tr("Warning!"), tr("There is no server running!"));
+    }
 
     loadBannedList();
 
@@ -92,24 +92,21 @@ BanIpDialog::BanIpDialog(QWidget *parent, Server *server)
 }
 
 void BanIpDialog::loadIPList(){
-    foreach(Room *room, server->rooms){
-        foreach(ServerPlayer *p, room->getPlayers()){
-            if (p->getState() != "offline" && p->getState() != "robot") {
-                sp_list << p;
-            }
+    left->clear();
+
+    foreach (Room *room, server->rooms) {
+        foreach (ServerPlayer *p, room->getPlayers()) {
+            if (p->getState() != "offline" && p->getState() != "robot")
+                addPlayer(p);
         }
     }
 
-    left->clear();
-
-    foreach(ServerPlayer *p, sp_list){
-        QString parsed_string = QString("%1::%2").arg(p->screenName(), p->getIp());
-        left->addItem(parsed_string);
-    }
+    foreach (LobbyPlayer *p, server->lobbyPlayers)
+        addPlayer(p);
 }
 
 void BanIpDialog::loadBannedList() {
-    QStringList banned = Config.value("BannedIP", QStringList()).toStringList();
+    QStringList banned = Config.BannedIp.toList();
 
     right->clear();
     right->addItems(banned);
@@ -136,14 +133,22 @@ void BanIpDialog::removeClicked(){
 
 void BanIpDialog::kickClicked(){
     int row = left->currentRow();
-    if (row != -1){
-        ServerPlayer *p = sp_list[row];
+    if (row >= 0) {
         QStringList split_data = left->currentItem()->text().split("::");
         QString ip = split_data.takeLast();
         QString screenName = split_data.join("::");
-        if (p->screenName() == screenName && p->getIp() == ip){
-            //procedure kick
-            p->kick();
+
+        if (row < sp_list.length()) {
+            QObject *p = sp_list.at(row);
+            if (p->inherits("ServerPlayer")) {
+                ServerPlayer *player = qobject_cast<ServerPlayer *>(p);
+                if (player->screenName() == screenName && player->getIp() == ip)
+                    player->kick();
+            } else if (p->inherits("LobbyPlayer")) {
+                LobbyPlayer *player = qobject_cast<LobbyPlayer *>(p);
+                if (player->getScreenName() == screenName && player->getIp() == ip)
+                    player->kick();
+            }
         }
     }
 }
@@ -160,18 +165,25 @@ void BanIpDialog::save(){
 
 void BanIpDialog::addPlayer(ServerPlayer *player)
 {
-    if (player->getState() != "offline" && player->getState() != "robot") {
-        sp_list << player;
-    }
+    sp_list << player;
 
     QString parsed_string = QString("%1::%2").arg(player->screenName(), player->getIp());
     left->addItem(parsed_string);
-    connect(player, SIGNAL(disconnected()), this, SLOT(removePlayer()));
+    connect(player, &ServerPlayer::disconnected, this, &BanIpDialog::removePlayer);
+}
+
+void BanIpDialog::addPlayer(LobbyPlayer *player)
+{
+    sp_list << player;
+
+    QString parsed_string = QString("%1::%2").arg(player->getScreenName(), player->getIp());
+    left->addItem(parsed_string);
+    connect(player, &LobbyPlayer::disconnected, this, &BanIpDialog::removePlayer);
 }
 
 void BanIpDialog::removePlayer()
 {
-    ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+    QObject *player = sender();
     if (player) {
         int row = sp_list.indexOf(player);
         if (row != -1) {

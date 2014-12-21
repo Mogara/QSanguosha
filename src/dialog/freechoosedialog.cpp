@@ -47,6 +47,12 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
         if (general->isTotallyHidden())
             continue;
 
+        if (general->isLord())
+            continue;
+
+        if (general->getPackage() == "jiange-defense")
+            continue;
+
         map[general->getKingdom()] << general;
     }
 
@@ -64,10 +70,10 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
     }
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
+    connect(ok_button, &QPushButton::clicked, this, &FreeChooseDialog::chooseGeneral);
 
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(cancel_button, &QPushButton::clicked, this, &FreeChooseDialog::reject);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -164,8 +170,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     tab->setLayout(tablayout);
 
     if (type == Pair) {
-        connect(group, SIGNAL(buttonClicked(QAbstractButton *)),
-            this, SLOT(disableButtons(QAbstractButton *)));
+        connect(group, (void (QButtonGroup::*)(QAbstractButton *))(&QButtonGroup::buttonClicked), this, &FreeChooseDialog::disableButtons);
     }
 
     return tab;

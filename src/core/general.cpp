@@ -321,7 +321,7 @@ int General::skinCount() const
         return skin_count;
 
     forever {
-        if (!G_ROOM_SKIN.doesGeneralHaveSkin(objectName(), (++skin_count) + 1))
+        if (!G_ROOM_SKIN.generalHasSkin(objectName(), (++skin_count) + 1))
             return skin_count;
     }
 }
