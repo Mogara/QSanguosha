@@ -10,8 +10,6 @@ Rectangle {
         id: logo
         anchors.centerIn: parent
         source: "../image/logo/logo.png"
-
-        AnchorAnimation { duration: 1000; easing.type: Easing.InOutQuad; }
     }
 
     //---------------Bubbles-----------------
@@ -173,7 +171,6 @@ Rectangle {
         anchors.fill: parent
         onClicked: {
             water.height = 0
-            logo.anchors.verticalCenterOffset = -parent.width / 4
         }
     }
 }

@@ -27,7 +27,6 @@ QuickWindow::QuickWindow()
 {
     restoreFromConfig();
     setTitle(tr("QSanguosha"));
-    connect(this, &QuickWindow::destroyed, this, &QuickWindow::saveWindowState);
 }
 
 void QuickWindow::restoreFromConfig()
@@ -38,11 +37,14 @@ void QuickWindow::restoreFromConfig()
         QApplication::setFont(Config.UIFont, "QTextEdit");
 }
 
-void QuickWindow::saveWindowState()
+bool QuickWindow::event(QEvent *e)
 {
-    if (!(windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))) {
-        Config.setValue("WindowSize", size());
-        Config.setValue("WindowPosition", position());
+    if (e->type() == QEvent::Close) {
+        if (!(windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))) {
+            Config.setValue("WindowSize", size());
+            Config.setValue("WindowPosition", position());
+        }
+        Config.setValue("WindowState", (int)windowState());
     }
-    Config.setValue("WindowState", (int)windowState());
+    return QQuickView::event(e);
 }
