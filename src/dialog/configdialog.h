@@ -18,8 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _CONFIG_DIALOG_H
-#define _CONFIG_DIALOG_H
+#ifndef CONFIGDIALOG_H
+#define CONFIGDIALOG_H
 
 #include "flatdialog.h"
 
@@ -39,6 +39,29 @@ private:
     Ui::ConfigDialog *ui;
     void showFont(QLineEdit *lineedit, const QFont &font);
 
+    typedef void (ConfigDialog::*Callback) (const QVariant &);
+    QList<Callback> resetCallbacks;
+    QVariantList callbackArgs;
+
+    void doCallback(Callback callback, const QVariant &oldValue, const QVariant &newValue);
+
+    //callbacks
+    void setBackground(const QVariant &path);
+    void setTableBg(const QVariant &path);
+    void setTooltipBackgroundColor(const QVariant &color);
+    void setAppFont(const QVariant &font);
+    void setTextEditFont(const QVariant &font);
+    void setTextEditColor(const QVariant &color);
+    void setTooltipFontColor(const QVariant &color);
+    void setOverviewFontColor(const QVariant &color);
+    void setBgMusic(const QVariant &path);
+    void setEffectsEnabled(const QVariant &enabled);
+    void setLastWordEnabled(const QVariant &enabled);
+    void setBGMEnabled(const QVariant &enabled);
+    void setBGMVolume(const QVariant &volume);
+    void setEffectVolume(const QVariant &volume);
+    void setRecordsSavePath(const QVariant &path);
+
 private slots:
     void on_setTextEditColorButton_clicked();
     void on_setTextEditFontButton_clicked();
@@ -49,20 +72,24 @@ private slots:
     void on_browseBgButton_clicked();
     void on_resetTableBgButton_clicked();
     void on_browseTableBgButton_clicked();
-    void on_resetRecordPathsButton_clicked();
-    void on_browseRecordPathsButton_clicked();
-    void saveConfig();
+    void on_resetRecordPathButton_clicked();
+    void on_browseRecordPathButton_clicked();
 
     void on_toolTipFontColorButton_clicked();
-
     void on_overviewFontColorButton_clicked();
-
     void on_toolTipBackgroundColorButton_clicked();
+
+    void onEffectsEnabledChanged(bool enabled);
+    void onLastWordEnabledChanged(bool enabled);
+    void onBGMVolumeChanged(int volume);
+    void onEffectVolumeChanged(int volume);
+    void saveConfig();
+    void discardSettings();
 
 signals:
     void bg_changed();
     void tableBg_changed();
 };
 
-#endif
+#endif // CONFIGDIALOG_H
 
