@@ -28,12 +28,11 @@ class QuickWindow : public QQuickView
 public:
     QuickWindow();
 
-protected:
-    virtual bool event(QEvent * e);
-
 private:
     void restoreFromConfig();
 
+private slots:
+    void saveWindowState();
 };
 
 #endif // QUICKWINDOW_H

@@ -18,9 +18,11 @@
     QSanguosha-Rara
     *********************************************************************/
 
+/*
 #if defined(WIN32) && !defined(GPP) && !defined(QT_NO_DEBUG) && !defined(WINRT)
 #include <vld/vld.h>
 #endif
+*/
 
 #include <QCoreApplication>
 #include <QApplication>
@@ -117,6 +119,8 @@ int main(int argc, char *argv[]) {
 
     new Settings;
     Config.init();
+
+    QApplication::setFont(Config.AppFont);
 
     QuickWindow window;
     window.rootContext()->setContextProperty("winSize", Config.value("WindowSize", QSizeF(1024, 768)));
