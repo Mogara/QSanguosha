@@ -145,7 +145,7 @@ void Settings::init() {
 
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();
-    RecordSavePaths = value("RecordSavePaths", "records/").toString();
+    RecordSavePath = value("RecordSavePath", appDir + "/records/").toString();
 
     EnableAutoPreshow = value("EnableAutoPreshowInConsoleMode", false).toBool();
 
