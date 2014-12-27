@@ -302,6 +302,11 @@ public:
             room->setCardFlag(armor_id, "-using");
 
         if (judge.isGood()) {
+
+            // effect for bazhen
+            if (player->hasArmorEffect("bazhen"))
+                room->broadcastSkillInvoke("bazhen", player);
+
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->setSkillName(objectName());
             room->provide(jink);
