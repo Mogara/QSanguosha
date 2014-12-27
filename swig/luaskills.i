@@ -1082,29 +1082,21 @@ bool LuaSkillCard::targetFilter(const QList<const Player *> &targets, const Play
     SWIG_NewPointerObj(L, to_select, SWIGTYPE_p_Player, 0);
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_Player, 0);
 
-    int error = lua_pcall(L, 4, 1, 0);
+    int error = lua_pcall(L, 4, 2, 0);
     if (error) {
         Error(L);
         return false;
     }
     else {
-		if (lua_isnumber(L,-1)){
+		if (lua_isnumber(L,-1) && lua_isboolean(L,-2)){
 			int vote = lua_tointeger(L, -1);
 			maxVotes = vote;
-			lua_pop(L,1);
-			return vote > 0;
-		} else {
-			bool result = lua_toboolean(L,-1);
-			if (result){
-				maxVotes = 1;
-			}else{
-				maxVotes = 0;
-			}
-			lua_pop(L,1);
+			bool result = lua_toboolean(L,-2);
+			lua_pop(L,2);
 			return result;
 		}
-		
     }
+	return false;
 }
 
 bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const Player *self) const{

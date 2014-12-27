@@ -252,8 +252,19 @@ function sgs.CreateSkillCard(spec)
 	if type(spec.handling_method) == "number" then
 		card:setHandlingMethod(spec.handling_method)
 	end
-
-	card.filter = spec.filter
+	function card:filter(...)
+		local result,vote = spec.filter(self,...)
+		if type(result) == "boolean" and type(vote) == "number" then
+			return result,vote
+		elseif type(result) == "boolean" and vote == nil then
+			if result then vote = 1 else vote = 0 end
+			return result,vote
+		elseif type(result) == "number" then
+			return result > 0,result
+		else
+			return false,0
+		end
+	end
 	card.feasible = spec.feasible
 	card.about_to_use = spec.about_to_use
 	card.on_use = spec.on_use
