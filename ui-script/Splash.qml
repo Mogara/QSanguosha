@@ -1,12 +1,16 @@
-import QtQuick 2.3
+import QtQuick 2.4
 import QtQuick.Particles 2.0
 
 Rectangle {
     id: splash
     anchors.fill: parent
     color: "#bc3b3b"
+    z: 100
 
     property bool loading: true
+
+    signal disappearing
+    signal disappeared
 
     //---------------Logo-------------------
     Image {
@@ -86,19 +90,16 @@ Rectangle {
         height: 0
         width: parent.width
         anchors.bottom: parent.bottom
-        Behavior on height {
-            SequentialAnimation {
-                NumberAnimation { duration: 10000; }
-                PauseAnimation { duration: 1000; }
-                PropertyAction { target: text; property: "text"; value: qsTr("Press Any Key...") }
+        SequentialAnimation on height {
+            running: true
+            NumberAnimation { to: parent.height * 0.8; duration: 10000; }
+            PauseAnimation { duration: 1000; }
+            PropertyAction { target: text; property: "text"; value: qsTr("Press Any Key...") }
 
-                PropertyAction { target: splash; property: "loading"; value: false }
-            }
+            PropertyAction { target: splash; property: "loading"; value: false }
         }
         color: "#73c0d6"
         opacity: 0.5
-
-        Component.onCompleted: height = parent.height * 0.8
     }
 
     //---------------Waves---------------
@@ -177,7 +178,10 @@ Rectangle {
 
     //--------------------Disappear--------------
     Behavior on opacity {
-        NumberAnimation { duration: 2000; easing.type: Easing.InOutQuad }
+        SequentialAnimation {
+            NumberAnimation { duration: 2000; easing.type: Easing.InOutQuad }
+            ScriptAction { script: disappeared() }
+        }
     }
     MouseArea {
         anchors.fill: parent
@@ -195,7 +199,8 @@ Rectangle {
     }
 
     function disappear() {
-        logo.anchors.horizontalCenterOffset = -root.width / 4;
+        disappearing();
+        logo.anchors.horizontalCenterOffset = -width / 4;
         opacity = 0;
     }
 }

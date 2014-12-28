@@ -541,11 +541,8 @@ TRANSLATIONS += builds/sanguosha.ts
 
 OTHER_FILES += \
     sanguosha.qss \
-    ui-script/animation.qml \
     resource/android/AndroidManifest.xml \
     builds/sanguosha.ts \
-    ui-script/main.qml \
-    ui-script/Splash.qml
 
 LIBS += -lfreetype
 
@@ -553,3 +550,10 @@ INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/resource/android
+
+DISTFILES += \
+    ui-script/animation.qml \
+    ui-script/StartScene.qml \
+    ui-script/main.qml \
+    ui-script/Splash.qml \
+    ui-script/functions.js
