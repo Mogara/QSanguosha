@@ -6,10 +6,16 @@ Rectangle {
     anchors.fill: parent
     color: "#bc3b3b"
 
+    property bool loading: true
+
+    //---------------Logo-------------------
     Image {
         id: logo
         anchors.centerIn: parent
         source: "../image/logo/logo.png"
+        Behavior on anchors.horizontalCenterOffset {
+            NumberAnimation { duration: 1000; easing.type: Easing.InOutQuad }
+        }
     }
 
     //---------------Bubbles-----------------
@@ -85,6 +91,8 @@ Rectangle {
                 NumberAnimation { duration: 10000; }
                 PauseAnimation { duration: 1000; }
                 PropertyAction { target: text; property: "text"; value: qsTr("Press Any Key...") }
+
+                PropertyAction { target: splash; property: "loading"; value: false }
             }
         }
         color: "#73c0d6"
@@ -167,10 +175,27 @@ Rectangle {
         }
     }
 
+    //--------------------Disappear--------------
+    Behavior on opacity {
+        NumberAnimation { duration: 2000; easing.type: Easing.InOutQuad }
+    }
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            water.height = 0
+            if (!loading) {
+                disappear();
+            }
         }
+    }
+
+    Keys.onPressed: {
+        if (!loading) {
+            disappear();
+        }
+    }
+
+    function disappear() {
+        logo.anchors.horizontalCenterOffset = -root.width / 4;
+        opacity = 0;
     }
 }
