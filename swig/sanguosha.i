@@ -37,6 +37,7 @@
 %include "native.i"
 %include "qvariant.i"
 %include "list.i"
+%include "set.i"
 
 // ----------------------------------------
 
@@ -789,23 +790,22 @@ struct PlayerNumStruct {
     QString m_reason;
 };
 
-struct ServerInfoStruct {
-    const QString Name;
-    const QString GameMode;
-    const int OperationTimeout;
-    const int NullificationCountDown;
-    const QStringList Extensions;
-    const bool RandomSeat;
-    const bool EnableCheat;
-    const bool FreeChoose;
-	const bool ForbidAddingRobot;
-    const bool DisableChat;
-    const bool FirstShowingReward;
-
-    const bool DuringGame;
+struct RoomInfoStruct {
+    QString Name;
+    QString GameMode;
+    QSet<QString> BanPackages;
+    int OperationTimeout;
+    int NullificationCountDown;
+    bool RandomSeat;
+    bool EnableCheat;
+    bool FreeChoose;
+    bool ForbidAddingRobot;
+    bool DisableChat;
+    bool FirstShowingReward;
+    bool RequirePassword;
 };
 
-extern ServerInfoStruct ServerInfo;
+extern RoomInfoStruct ServerInfo;
 
 enum TriggerEvent {
     NonTrigger,
