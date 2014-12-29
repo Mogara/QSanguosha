@@ -224,6 +224,11 @@ public:
         m_card->setTransferable(transferbale);
     }
 
+    inline virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const {
+        Q_ASSERT(m_card != NULL);
+        return m_card->checkTargetModSkillShow(use);
+    }
+
 protected:
     Card *m_card;
     mutable bool m_isModified;
