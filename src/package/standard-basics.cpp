@@ -493,6 +493,9 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
 }
 
 QStringList Analeptic::checkTargetModSkillShow(const CardUseStruct &use) const{
+    if (use.card == NULL)
+        return QStringList();
+
     if (use.from->usedTimes(getClassName()) >= 2){
         const ServerPlayer *from = use.from;
         QList<const Skill *> skills = from->getSkillList(false, false);
@@ -512,10 +515,15 @@ QStringList Analeptic::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
         foreach(const TargetModSkill *tarmod, tarmods_copy){
+            if (tarmod->getResidueNum(from, use.card) == 0) {
+                tarmods.removeOne(tarmod);
+                continue;
+            }
+
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             if (from->hasShownSkill(main_skill)){
                 tarmods.removeOne(tarmod);
-                n -= tarmod->getResidueNum(from, this);
+                n -= tarmod->getResidueNum(from, use.card);
             }
         }
 

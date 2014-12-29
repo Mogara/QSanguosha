@@ -11,6 +11,7 @@ records/*
 QSanguosha.pro.user*
 QSanguosha.exe
 QSanguosha
+QSanguosha-bin*
 debugQSanguosha
 lib/jsoncpp.lib
 lib/lua.lib

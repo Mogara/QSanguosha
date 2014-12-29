@@ -759,7 +759,7 @@
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
                   <item>
-                   <widget class="QLabel" name="recordPathsSetupLabel">
+                   <widget class="QLabel" name="recordPathSetupLabel">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -769,7 +769,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="recordPathsSetupLineEdit">
+                   <widget class="QLineEdit" name="recordPathSetupLineEdit">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -793,7 +793,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="browseRecordPathsButton">
+                   <widget class="QPushButton" name="browseRecordPathButton">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -803,7 +803,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="resetRecordPathsButton">
+                   <widget class="QPushButton" name="resetRecordPathButton">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>

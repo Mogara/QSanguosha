@@ -116,7 +116,7 @@ public:
 
     QString BackgroundImage;
     QString TableBgImage;
-    QString RecordSavePaths;
+    QString RecordSavePath;
 
     int BubbleChatBoxKeepSeconds;
     bool IgnoreOthersSwitchesOfSkin;

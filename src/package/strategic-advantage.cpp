@@ -529,6 +529,9 @@ bool Drowning::isAvailable(const Player *player) const{
 }
 
 QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
+    if (use.card == NULL)
+        return QStringList();
+
     if (use.to.length() >= 2){
         const ServerPlayer *from = use.from;
         QList<const Skill *> skills = from->getSkillList(false, false);
@@ -548,7 +551,7 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
         foreach(const TargetModSkill *tarmod, tarmods_copy){
-            if (tarmod->getExtraTargetNum(from, this) == 0) {
+            if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
             }
@@ -556,7 +559,7 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             if (from->hasShownSkill(main_skill)){
                 tarmods.removeOne(tarmod);
-                n -= tarmod->getExtraTargetNum(from, this);
+                n -= tarmod->getExtraTargetNum(from, use.card);
             }
         }
 
@@ -681,6 +684,9 @@ void LureTiger::onEffect(const CardEffectStruct &effect) const{
 }
 
 QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
+    if (use.card == NULL)
+        return QStringList();
+
     if (use.to.length() >= 3){
         const ServerPlayer *from = use.from;
         QList<const Skill *> skills = from->getSkillList(false, false);
@@ -700,7 +706,7 @@ QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
         foreach(const TargetModSkill *tarmod, tarmods_copy){
-            if (tarmod->getExtraTargetNum(from, this) == 0) {
+            if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
             }
@@ -708,7 +714,7 @@ QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             if (from->hasShownSkill(main_skill)){
                 tarmods.removeOne(tarmod);
-                n -= tarmod->getExtraTargetNum(from, this);
+                n -= tarmod->getExtraTargetNum(from, use.card);
             }
         }
 

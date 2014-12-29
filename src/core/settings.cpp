@@ -139,12 +139,13 @@ void Settings::init() {
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundImage = value("BackgroundImage", "image/backdrop/new-version.jpg").toString();
-    TableBgImage = value("TableBgImage", "image/backdrop/default.jpg").toString();
+    const QString appDir = qApp->applicationDirPath();
+    BackgroundImage = value("BackgroundImage", appDir + "/image/backdrop/bg.jpg").toString();
+    TableBgImage = value("TableBgImage", appDir + "/image/backdrop/table.jpg").toString();
 
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();
-    RecordSavePaths = value("RecordSavePaths", "records/").toString();
+    RecordSavePath = value("RecordSavePath", appDir + "/records/").toString();
 
     EnableAutoPreshow = value("EnableAutoPreshowInConsoleMode", false).toBool();
 

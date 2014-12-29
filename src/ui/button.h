@@ -28,7 +28,7 @@
 
 class QGraphicsDropShadowEffect;
 
-class Button : public QGraphicsObject{
+class Button : public QGraphicsObject {
     Q_OBJECT
 
 public:
@@ -39,7 +39,7 @@ public:
 
     inline void setFontName(const QString &name) { this->font_name = name; }
     inline void setFontSize(const int &size) { this->font_size = size; }
-    inline void setText(const QString &text) { label = text; }
+    void setText(const QString &text);
 
     virtual QRectF boundingRect() const;
 
