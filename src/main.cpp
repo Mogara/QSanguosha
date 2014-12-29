@@ -113,7 +113,9 @@ int main(int argc, char *argv[]) {
     QApplication::setFont(Config.AppFont);
 
     QuickWindow window;
-    window.rootContext()->setContextProperty("winSize", Config.value("WindowSize", QSizeF(1024, 768)));
+    QQmlContext *context = window.rootContext();
+    context->setContextProperty("winSize", Config.value("WindowSize", QSizeF(1024, 768)));
+    context->setContextProperty("Config", &Config);
     window.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
     window.setResizeMode(QQuickView::SizeRootObjectToView);
 

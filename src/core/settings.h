@@ -33,6 +33,7 @@ class Settings : public QSettings {
 
 public:
     explicit Settings();
+    Q_PROPERTY(QString BackgroundImage MEMBER BackgroundImage NOTIFY backgroundImageChanged)
     //************************************
     // Method:    init
     // FullName:  Settings::init
@@ -127,6 +128,10 @@ public:
     static const int S_MOVE_CARD_ANIMATION_DURATION;
     static const int S_JUDGE_ANIMATION_DURATION;
     static const int S_JUDGE_LONG_DELAY;
+
+signals:
+    void backgroundImageChanged();
+
 };
 
 extern Settings *SettingsInstance;
