@@ -791,18 +791,18 @@ struct PlayerNumStruct {
 };
 
 struct RoomInfoStruct {
-    QString Name;
-    QString GameMode;
-    QSet<QString> BanPackages;
-    int OperationTimeout;
-    int NullificationCountDown;
-    bool RandomSeat;
-    bool EnableCheat;
-    bool FreeChoose;
-    bool ForbidAddingRobot;
-    bool DisableChat;
-    bool FirstShowingReward;
-    bool RequirePassword;
+    const QString Name;
+    const QString GameMode;
+    const QSet<QString> BanPackages;
+    const int OperationTimeout;
+    const int NullificationCountDown;
+    const bool RandomSeat;
+    const bool EnableCheat;
+    const bool FreeChoose;
+    const bool ForbidAddingRobot;
+    const bool DisableChat;
+    const bool FirstShowingReward;
+    const bool RequirePassword;
 };
 
 extern RoomInfoStruct ServerInfo;
