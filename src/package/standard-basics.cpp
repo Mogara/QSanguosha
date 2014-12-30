@@ -502,7 +502,7 @@ QStringList Analeptic::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const TargetModSkill *> tarmods;
 
         foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
