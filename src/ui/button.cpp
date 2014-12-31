@@ -81,6 +81,7 @@ void Button::init()
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlags(ItemIsFocusable);
     connect(this, &Button::enabledChanged, this, &Button::onEnabledChanged);
+    connect(this, &Button::visibleChanged, this, &Button::onVisibleChanged);
 }
 
 void Button::initTextItems()
@@ -199,4 +200,11 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 void Button::onEnabledChanged()
 {
     setOpacity(isEnabled() ? 1.0 : 0.2);
+}
+
+void Button::onVisibleChanged()
+{
+    //reset hover state
+    if (!isVisible())
+        setTextColorReversed(false);
 }

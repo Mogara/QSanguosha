@@ -407,7 +407,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
 
 void ChooseTriggerOrderBox::clear()
 {
-    if (progressBar != NULL){
+    if (progressBar != NULL) {
         progressBar->hide();
         progressBar->deleteLater();
         progressBar = NULL;

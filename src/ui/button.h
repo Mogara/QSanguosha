@@ -75,6 +75,7 @@ signals:
 
 private slots:
     void onEnabledChanged();
+    void onVisibleChanged();
 
 };
 
