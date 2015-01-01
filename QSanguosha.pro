@@ -307,7 +307,13 @@ win32-g++{
 winrt{
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += WINRT
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    !winphone {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    } else {
+        DEFINES += WINPHONE
+        contains($$QMAKESPEC, arm): LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/arm"
+        else : LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
+    }
 }
 macx{
     DEFINES += MAC
