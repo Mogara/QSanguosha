@@ -5,6 +5,7 @@ Rectangle {
     id: splash
     anchors.fill: parent
     color: "#bc3b3b"
+    focus: true
     z: 100
 
     property bool loading: true
@@ -107,7 +108,7 @@ Rectangle {
         id: waves1
         height: childrenRect.height
         anchors.bottom: water.top
-        anchors.bottomMargin: -20
+        anchors.bottomMargin: -22
         Image {
             id: wave
             width: splash.width
@@ -117,18 +118,29 @@ Rectangle {
             width: splash.width
             source:"../image/system/splash/wave.png"
         }
-        NumberAnimation on x { from: 0; to: -(wave.width); duration: 16000; loops: Animation.Infinite }
-        SequentialAnimation on y {
+        // The commented line doesn't work if splash is created dynamically
+//        NumberAnimation on anchors.horizontalCenterOffset { from: 0; to: -(wave.width); duration: 16000; loops: Animation.Infinite }
+        SequentialAnimation on anchors.bottomMargin {
             loops: Animation.Infinite
-            NumberAnimation { from: y - 2; to: y + 2; duration: 1600; easing.type: Easing.InOutQuad }
-            NumberAnimation { from: y + 2; to: y - 2; duration: 1600; easing.type: Easing.InOutQuad }
+            NumberAnimation {
+                from: -24
+                to: -20
+                duration: 1600
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                from: -20
+                to: -24
+                duration: 1600
+                easing.type: Easing.InOutQuad
+            }
         }
     }
 
     Row {
         id: waves2
         anchors.bottom: water.top
-        anchors.bottomMargin: -15
+        anchors.bottomMargin: -17
         opacity: 0.5
         Image {
             id: wave2
@@ -139,11 +151,22 @@ Rectangle {
             width: splash.width
             source:"../image/system/splash/wave.png"
         }
-        NumberAnimation on x { from: -(wave2.width); to: 0; duration: 32000; loops: Animation.Infinite }
-        SequentialAnimation on y {
+        // The commented line doesn't work if splash is created dynamically
+//        NumberAnimation on anchors.horizontalCenterOffset { from: -(wave2.width); to: 0; duration: 32000; loops: Animation.Infinite }
+        SequentialAnimation on anchors.bottomMargin {
             loops: Animation.Infinite
-            NumberAnimation { from: y + 2; to: y - 2; duration: 1600; easing.type: Easing.InOutQuad }
-            NumberAnimation { from: y - 2; to: y + 2; duration: 1600; easing.type: Easing.InOutQuad }
+            NumberAnimation {
+                from: -19
+                to: -15
+                duration: 1600
+                easing.type: Easing.InOutQuad
+            }
+            NumberAnimation {
+                from: -15
+                to: -19
+                duration: 1600
+                easing.type: Easing.InOutQuad
+            }
         }
     }
 
@@ -195,6 +218,7 @@ Rectangle {
     Keys.onPressed: {
         if (!loading) {
             disappear();
+            event.accepted = true
         }
     }
 
