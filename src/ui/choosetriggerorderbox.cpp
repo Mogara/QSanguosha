@@ -273,7 +273,7 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
     if (generalNum == 2)
         width += generalButtonSize.width() + interval;
 
-    width = qMax(m_minimumWidth + optionButtonHeight + 20, width) + m_leftBlankWidth * 2;
+    width = qMax(m_minimumWidth, width) + m_leftBlankWidth * 2;
 
     int height = m_topBlankWidth
             + (options.size() - generalNum) * optionButtonHeight
@@ -352,7 +352,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         break;
     }
 
-    width = qMax(width, m_minimumWidth + optionButtonHeight + 20);
+    width = qMax(width, m_minimumWidth);
 
     foreach (const QString &option, options) {
         QStringList pair = option.split(":");
