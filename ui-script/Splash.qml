@@ -1,5 +1,4 @@
-import QtQuick 2.4
-import QtQuick.Particles 2.0
+import QtQuick 2.2
 
 Rectangle {
     id: splash
@@ -18,185 +17,133 @@ Rectangle {
         id: logo
         anchors.centerIn: parent
         source: "../image/logo/logo.png"
-        Behavior on anchors.horizontalCenterOffset {
-            NumberAnimation { duration: 1000; easing.type: Easing.InOutQuad }
-        }
-    }
-
-    //---------------Bubbles-----------------
-    ParticleSystem {
-        id: particles
-        anchors.fill: parent
-
-        ImageParticle {
-            id: bubble
-            anchors.fill: parent
-            source: "../image/system/splash/bubble.png"
-            opacity: 0.25
-        }
-
-        Wander {
-            xVariance: 25;
-            pace: 25;
-        }
-
-        Emitter {
-            width: parent.width
-            height: 150
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 3
-            startTime: 15000
-
-            emitRate: 2
-            lifeSpan: 15000
-
-            acceleration: PointDirection{ y: -6; xVariation: 2; yVariation: 2 }
-
-            size: 24
-            sizeVariation: 16
-        }
-    }
-
-    Age {
-        system: particles
-        anchors.bottom: waves1.bottom
-        anchors.top: parent.top
-        width: parent.width
-        lifeLeft: 50
-        advancePosition: false
     }
 
     //--------------Text-------------
     Text {
-        height: 50; width: 150
-        id: text
-        text: qsTr("Loading...")
+        id: qsan
+        text: qsTr("QSanguosha")
         color: "#ffffff"
         font.family: "微软雅黑"
         font.pointSize: 30
+        anchors.left: logo.right
+        anchors.leftMargin: 30
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -20
+        opacity: 0
+    }
+
+    Row {
+        height: childrenRect.height
+        width: childrenRect.width
+        anchors.horizontalCenter: qsan.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 20
+        spacing: 8
+
+        Text {
+            id: free
+            text: qsTr("Free")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
+
+        Text {
+            id: open
+            text: qsTr("Open")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
+
+        Text {
+            id: flexible
+            text: qsTr("Flexible")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
+    }
+
+    Text {
+        id: text
+        text: qsTr("Press Any Key...")
+        color: "#ffffff"
+        opacity: 0
+        font.family: "微软雅黑"
+        font.pointSize: 15
         horizontalAlignment: Text.AlignHCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 150
         anchors.horizontalCenter: parent.horizontalCenter
         SequentialAnimation on opacity {
+            id: textAni
+            running: false
             loops: Animation.Infinite
             NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutQuad; }
             NumberAnimation { from: 0; to: 1; duration: 1600; easing.type: Easing.InOutQuad; }
         }
     }
 
-    //---------------Water---------------
-    Rectangle {
-        id: water
-        height: 0
-        width: parent.width
+    SequentialAnimation {
+        running: true
+        NumberAnimation {
+            target: logo
+            property: "anchors.horizontalCenterOffset"
+            to: -parent.width / 4
+            duration: 1000
+            easing.type: Easing.InOutQuad
+        }
+
+        NumberAnimation {
+            target: qsan
+            property: "opacity"
+            duration: 500
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
+
+        NumberAnimation {
+            target: free
+            property: "opacity"
+            duration: 200
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
+
+        NumberAnimation {
+            target: open
+            property: "opacity"
+            duration: 200
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
+
+        NumberAnimation {
+            target: flexible
+            property: "opacity"
+            duration: 200
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
+
+
+        ScriptAction { script: textAni.start(); }
+
+        PropertyAction { target: splash; property: "loading"; value: false }
+    }
+
+    Text {
+        text: qsTr("Powered by qsanguosha.org")
+        color: "#ffffff"
+        font.family: "微软雅黑"
+        font.pointSize: 15
         anchors.bottom: parent.bottom
-        SequentialAnimation on height {
-            running: true
-            NumberAnimation { to: parent.height * 0.8; duration: 10000; }
-            PauseAnimation { duration: 1000; }
-            PropertyAction { target: text; property: "text"; value: qsTr("Press Any Key...") }
-
-            PropertyAction { target: splash; property: "loading"; value: false }
-        }
-        color: "#73c0d6"
-        opacity: 0.5
-    }
-
-    //---------------Waves---------------
-    Row {
-        id: waves1
-        height: childrenRect.height
-        anchors.bottom: water.top
-        anchors.bottomMargin: -22
-        Image {
-            id: wave
-            width: splash.width
-            source:"../image/system/splash/wave.png"
-        }
-        Image {
-            width: splash.width
-            source:"../image/system/splash/wave.png"
-        }
-        // The commented line doesn't work if splash is created dynamically
-//        NumberAnimation on anchors.horizontalCenterOffset { from: 0; to: -(wave.width); duration: 16000; loops: Animation.Infinite }
-        SequentialAnimation on anchors.bottomMargin {
-            loops: Animation.Infinite
-            NumberAnimation {
-                from: -24
-                to: -20
-                duration: 1600
-                easing.type: Easing.InOutQuad
-            }
-            NumberAnimation {
-                from: -20
-                to: -24
-                duration: 1600
-                easing.type: Easing.InOutQuad
-            }
-        }
-    }
-
-    Row {
-        id: waves2
-        anchors.bottom: water.top
-        anchors.bottomMargin: -17
-        opacity: 0.5
-        Image {
-            id: wave2
-            width: splash.width
-            source:"../image/system/splash/wave.png"
-        }
-        Image {
-            width: splash.width
-            source:"../image/system/splash/wave.png"
-        }
-        // The commented line doesn't work if splash is created dynamically
-//        NumberAnimation on anchors.horizontalCenterOffset { from: -(wave2.width); to: 0; duration: 32000; loops: Animation.Infinite }
-        SequentialAnimation on anchors.bottomMargin {
-            loops: Animation.Infinite
-            NumberAnimation {
-                from: -19
-                to: -15
-                duration: 1600
-                easing.type: Easing.InOutQuad
-            }
-            NumberAnimation {
-                from: -15
-                to: -19
-                duration: 1600
-                easing.type: Easing.InOutQuad
-            }
-        }
-    }
-
-    //---------------Sunlight-----------------
-    Image {
-        source: "../image/system/splash/sunlight.png"
-        opacity: 0.02
-        y: -20
-        width: parent.width * 3
-        anchors.horizontalCenter: parent.horizontalCenter
-        transformOrigin: Item.Top
-        SequentialAnimation on rotation {
-            loops: Animation.Infinite
-            NumberAnimation { from: -10; to: 10; duration: 8000; easing.type: Easing.InOutSine }
-            NumberAnimation { from: 10; to: -10; duration: 8000; easing.type: Easing.InOutSine }
-        }
-    }
-
-    Image {
-        source: "../image/system/splash/sunlight.png"
-        opacity: 0.04
-        y: 0
-        width: parent.width * 3
-        anchors.horizontalCenter: parent.horizontalCenter
-        transformOrigin: Item.Top
-        SequentialAnimation on rotation {
-            loops: Animation.Infinite
-            NumberAnimation { from: 10; to: -10; duration: 8000; easing.type: Easing.InOutSine }
-            NumberAnimation { from: -10; to: 10; duration: 8000; easing.type: Easing.InOutSine }
-        }
+        anchors.right: parent.right
     }
 
     //--------------------Disappear--------------
@@ -222,9 +169,19 @@ Rectangle {
         }
     }
 
+
+    NumberAnimation {
+        id: logoMover
+        target: logo
+        property: "anchors.horizontalCenterOffset"
+        to: -parent.width
+        duration: 1000
+        easing.type: Easing.InOutQuad
+    }
+
     function disappear() {
         disappearing();
-        logo.anchors.horizontalCenterOffset = -width / 4;
+        logoMover.start();
         opacity = 0;
     }
 }
