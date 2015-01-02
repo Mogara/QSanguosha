@@ -1,5 +1,5 @@
 .pragma library
-.import QtQuick 2.4 as QQ
+.import QtQuick 2.2 as QQ
 
 function createObject(parent, fileName) {
     var component = Qt.createComponent(fileName);
