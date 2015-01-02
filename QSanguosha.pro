@@ -4,6 +4,7 @@
 TARGET = QSanguosha
 QT += network widgets sql
 !winrt:QT += declarative
+android:QT += androidextras
 TEMPLATE = app
 CONFIG += audio
 
@@ -121,6 +122,7 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
+    src/util/wifimanager.cpp \
     swig/sanguosha_wrap.cxx
 
 HEADERS += \
@@ -234,7 +236,8 @@ HEADERS += \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
-    src/util/socket.h
+    src/util/socket.h \
+    src/util/wifimanager.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
