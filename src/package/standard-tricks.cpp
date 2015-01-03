@@ -663,10 +663,15 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
     else
         sub << getEffectiveId();
     foreach (int id, sub) {
-        if (Self->getPile("wooden_ox").contains(id)) {
-            rec = false;
-            break;
+        foreach(QString pile,Self->getPileNames()){
+            if (pile.startsWith("&") || pile == "wooden_ox") {
+                if (Self->getPile(pile).contains(id)) {
+                    rec = false;
+                    break;
+                }
+            }
         }
+
     }
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))

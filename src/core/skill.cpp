@@ -300,7 +300,13 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
             if (Self->isJilei(to_select)) return false;
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
-            pat.replace("hand", "hand,wooden_ox");
+            QStringList handlist;
+            handlist.append("hand");
+            foreach(QString pile,Self->getPileNames()){
+                if (pile.startsWith("&") || pile == "wooden_ox")
+                    handlist.append(pile);
+            }
+            pat.replace("hand", handlist.join(","));
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);

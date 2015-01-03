@@ -138,6 +138,16 @@ function table:indexOf(value, from)
 	return -1
 end
 
+function table:toSet()
+	local set = {}
+	for _,ele in pairs(self)do
+		if not table.contains(set,ele) then
+			table.insert(set,ele)
+		end
+	end
+	return set
+end
+
 function string:matchOne(option)
 	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
 end

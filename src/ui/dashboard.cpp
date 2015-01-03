@@ -739,7 +739,10 @@ void Dashboard::skillButtonDeactivated() {
 }
 
 void Dashboard::selectAll() {
-    retractPileCards("wooden_ox");
+    foreach(QString pile,Self->getPileNames()){
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            retractPileCards(pile);
+    }
     selectCards(".");
 }
 
@@ -1173,7 +1176,10 @@ void Dashboard::disableAllCards() {
 
 void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
-    expandPileCards("wooden_ox");
+    foreach(QString pile,Self->getPileNames()){
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            expandPileCards(pile);
+    }
     foreach(CardItem *card_item, m_handCards) {
         const bool frozen = !card_item->getCard()->isAvailable(Self);
         card_item->setFrozen(frozen, false);
@@ -1208,9 +1214,15 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 
     retractAllSkillPileCards();
     if (expand) {
-        expandPileCards("wooden_ox");
+        foreach(QString pile,Self->getPileNames()){
+            if (pile.startsWith("&") || pile == "wooden_ox")
+                expandPileCards(pile);
+        }
     } else {
-        retractPileCards("wooden_ox");
+        foreach(QString pile,Self->getPileNames()){
+            if (pile.startsWith("&") || pile == "wooden_ox")
+                retractPileCards(pile);
+        }
         if (skill && !skill->getExpandPile().isEmpty()) {
             foreach (QString pile_name, skill->getExpandPile().split(","))
                 expandPileCards(pile_name);
@@ -1236,7 +1248,10 @@ void Dashboard::stopPending() {
 
     viewAsSkill = NULL;
     pendingCard = NULL;
-    retractPileCards("wooden_ox");
+    foreach(QString pile,Self->getPileNames()){
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            retractPileCards(pile);
+    }
     emit card_selected(NULL);
 
     foreach(CardItem *item, m_handCards)
@@ -1314,8 +1329,10 @@ void Dashboard::retractPileCards(const QString &pile_name) {
 void Dashboard::retractAllSkillPileCards()
 {
     foreach (const QString &pileName, _m_pile_expanded) {
-        if (pileName != "wooden_ox")
-            retractPileCards(pileName);
+        foreach(QString pile,Self->getPileNames()){
+            if ((pile.startsWith("&") || pile == "wooden_ox") && (pileName != pile))
+               retractPileCards(pileName);
+        }
     }
 }
 

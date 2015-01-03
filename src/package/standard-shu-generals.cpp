@@ -889,7 +889,13 @@ public:
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        return !player->isKongcheng() || !player->getPile("wooden_ox").isEmpty();
+        QStringList handlist;
+        bool allEmpty = true;
+        foreach(QString pile,player->getPileNames()){
+            if (pile.startsWith("&") || pile == "wooden_ox")
+                allEmpty = false;
+        }
+        return !player->isKongcheng() || !allEmpty;
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
