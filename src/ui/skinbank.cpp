@@ -569,7 +569,7 @@ bool IQSanComponentSkin::_loadImageConfig(const QVariant &config) {
             S_IMAGE_KEY2PIXMAP.remove(key);
             if (S_IMAGE_GROUP_KEYS.contains(key)) {
                 const QList<QString> &mappedKeys = S_IMAGE_GROUP_KEYS[key];
-                foreach(QString mkey, mappedKeys) {
+                foreach (const QString &mkey, mappedKeys) {
                     S_IMAGE_KEY2FILE.remove(mkey);
                     S_IMAGE_KEY2PIXMAP.remove(mkey);
                 }
@@ -872,7 +872,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
     tryParse(config["roleNormalBgSize"], _m_commonLayout.m_roleNormalBgSize);
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeAll("god");
-    foreach(QString kingdom, kingdoms) {
+    foreach (const QString &kingdom, kingdoms) {
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_RECT).arg(kingdom)], _m_commonLayout.m_rolesRect[kingdom]);
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_COLOR).arg(kingdom)], _m_commonLayout.m_rolesColor[kingdom]);
     }

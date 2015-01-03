@@ -81,7 +81,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
     QString generalName;
     const ClientPlayer *player = ClientInstance->getPlayer(playerName);
     if (skillName == arrayString) {
-        foreach(const Skill *skill, player->getVisibleSkillList()) {
+        foreach (const Skill *skill, player->getVisibleSkillList()) {
             if (!skill->inherits("BattleArraySkill")) continue;
             if (player->inHeadSkills(skill))
                 generalName = player->getGeneralName();
@@ -413,10 +413,10 @@ void ChooseTriggerOrderBox::clear()
         progressBar = NULL;
     }
 
-    foreach(TriggerOptionButton *button, optionButtons)
+    foreach (TriggerOptionButton *button, optionButtons)
         button->deleteLater();
 
-    foreach(GeneralButton *button, generalButtons)
+    foreach (GeneralButton *button, generalButtons)
         button->deleteLater();
 
     optionButtons.clear();

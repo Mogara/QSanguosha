@@ -32,10 +32,10 @@ void Package::insertRelatedSkills(const QString &main_skill, int n, ...) {
 }
 
 Package::~Package() {
-    foreach(const Skill *skill, skills)
+    foreach (const Skill *skill, skills)
         delete skill;
 
-    foreach(const QString key, patterns.keys())
+    foreach (const QString key, patterns.keys())
         delete patterns[key];
 }
 

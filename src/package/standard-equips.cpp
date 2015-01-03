@@ -442,7 +442,7 @@ public:
     }
 
     virtual int getExtra(const Player *target, bool) const{
-        foreach(const Player *p, target->getAliveSiblings()){
+        foreach (const Player *p, target->getAliveSiblings()){
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)
                 return 1;
         }
@@ -493,7 +493,7 @@ public:
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
             QList<ServerPlayer *> players;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)){
                 if (damage.to->distanceTo(p) == 1){
                     players << p;
                     room->setPlayerFlag(p, "TribladeCanBeSelected");
@@ -504,7 +504,7 @@ public:
             room->askForUseCard(player, "@@Triblade", "@Triblade");
         }
 
-        foreach(ServerPlayer *p, room->getAllPlayers())
+        foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->hasFlag("TribladeCanBeSelected"))
                 room->setPlayerFlag(p, "-TribladeCanBeSelected");
 

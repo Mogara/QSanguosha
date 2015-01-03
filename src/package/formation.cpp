@@ -84,7 +84,7 @@ public:
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
         QMap<ServerPlayer *, QStringList> skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName("tuntian");
-        foreach(ServerPlayer *dengai, dengais) {
+        foreach (ServerPlayer *dengai, dengais) {
             int postponed = dengai->getMark("tuntian_postpone");
             if (postponed > 0){
                 dengai->removeMark("tuntian_postpone");
@@ -197,7 +197,7 @@ public:
         QMap<ServerPlayer *, QStringList> skill_list;
         if (player == NULL || player->isDead()) return skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *dengai, dengais)
+        foreach (ServerPlayer *dengai, dengais)
             if (!dengai->getPile("field").isEmpty() && dengai->isFriendWith(player))
                 skill_list.insert(dengai, QStringList(objectName()));
         return skill_list;
@@ -316,7 +316,7 @@ public:
         ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
 
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (target->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
                 targets << p;
         }
@@ -372,9 +372,9 @@ public:
         }
         if (room->alivePlayerCount() < 4) return QStringList();
         QList<ServerPlayer *> caohongs = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *caohong, caohongs) {
+        foreach (ServerPlayer *caohong, caohongs) {
             if (caohong->hasShownSkill(this)) {
-                foreach(ServerPlayer *p, room->getOtherPlayers(caohong)) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(caohong)) {
                     if (caohong->inFormationRalation(p)) {
                         room->setPlayerMark(p, "feiying", 1);
                         room->attachSkillToPlayer(p, "feiying");
@@ -526,7 +526,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (current && current->isAlive() && current->getPhase() != Player::NotActive) {
             QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
-            foreach(ServerPlayer *jiangwei, jiangweis) {
+            foreach (ServerPlayer *jiangwei, jiangweis) {
                 if (jiangwei->hasShownSkill(this) && jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")) {
                     jiangwei->setMark("tianfu_kanpo", 1);
                     room->attachSkillToPlayer(jiangwei, "kanpo");
@@ -648,7 +648,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     if (choice == "handcards") {
         room->broadcastSkillInvoke("shangyi", 1, effect.from);
         QList<int> blacks;
-        foreach(int card_id, effect.to->handCards()){
+        foreach (int card_id, effect.to->handCards()){
             if (Sanguosha->getCard(card_id)->isBlack())
                 blacks << card_id;
         }
@@ -664,7 +664,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
             list << effect.to->getActualGeneral1Name();
         if (!effect.to->hasShownGeneral2())
             list << effect.to->getActualGeneral2Name();
-        foreach(QString name, list) {
+        foreach (const QString &name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
             log.from = effect.from;
@@ -850,7 +850,7 @@ public:
         if (player == NULL) return skill_list;
         QList<ServerPlayer *> yujis = room->findPlayersBySkillName(objectName());
         if (triggerEvent == Damaged && player->isAlive()) {
-            foreach(ServerPlayer *yuji, yujis)
+            foreach (ServerPlayer *yuji, yujis)
                 if (yuji->isFriendWith(player) || yuji->willBeFriendWith(player))
                     skill_list.insert(yuji, QStringList(objectName()));
         } else if (triggerEvent == TargetConfirming) {
@@ -859,7 +859,7 @@ public:
                 || use.card->getTypeId() == Card::TypeSkill || !use.to.contains(player))
                 return skill_list;
             if (use.to.length() != 1) return skill_list;
-            foreach(ServerPlayer *yuji, yujis) {
+            foreach (ServerPlayer *yuji, yujis) {
                 if (yuji->getPile("sorcery").isEmpty()) continue;
                 if (yuji->isFriendWith(use.to.first()) || yuji->willBeFriendWith(use.to.first()))
                     skill_list.insert(yuji, QStringList(objectName()));
@@ -914,7 +914,7 @@ public:
             int id = room->drawCard();
             Card::Suit suit = Sanguosha->getCard(id)->getSuit();
             bool duplicate = false;
-            foreach(int card_id, yuji->getPile("sorcery")) {
+            foreach (int card_id, yuji->getPile("sorcery")) {
                 if (Sanguosha->getCard(card_id)->getSuit() == suit) {
                     duplicate = true;
                     break;
@@ -949,7 +949,7 @@ public:
         if (player == NULL) return skill_list;
         if (player->getPhase() != Player::Play) return skill_list;
         QList<ServerPlayer *> hetaihous = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *hetaihou, hetaihous) {
+        foreach (ServerPlayer *hetaihou, hetaihous) {
             if (hetaihou->canDiscard(hetaihou, "h") && hetaihou != player)
                 skill_list.insert(hetaihou, QStringList(objectName()));
         }
@@ -1108,7 +1108,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         const Card *dragonPhoenix = NULL;
         int dragonPhoenixId = -1;
-        foreach(int id, move.card_ids){
+        foreach (int id, move.card_ids){
             const Card *card = Sanguosha->getCard(id);
             if (card->isKindOf("DragonPhoenix")){
                 dragonPhoenixId = id;
@@ -1147,7 +1147,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to_place == Player::DrawPileBottom){
             int fldfid = -1;
-            foreach(int id, move.card_ids){
+            foreach (int id, move.card_ids){
                 if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
                     fldfid = id;
                     break;
@@ -1366,7 +1366,7 @@ public:
             return false;
 
         ServerPlayer *dfowner = NULL;
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->hasWeapon("DragonPhoenix")) {
                 dfowner = p;
                 break;
@@ -1384,7 +1384,7 @@ public:
         kingdom_list << "careerist";
         bool broken = false;
         int n = dfowner->getPlayerNumWithSameKingdom("DragonPhoenix", QString(), MaxCardsType::Min); // could be canceled later
-        foreach (QString kingdom, Sanguosha->getKingdoms()) {
+        foreach (const QString &kingdom, Sanguosha->getKingdoms()) {
             if (kingdom == "god") continue;
             if (dfowner->getRole() == "careerist") {
                 if (kingdom == "careerist")
@@ -1404,12 +1404,12 @@ public:
         QStringList generals = room->getLimitedGeneralNames();
         QStringList avaliable_generals;
 
-        foreach(QString general, generals){
+        foreach (const QString &general, generals){
             if (Sanguosha->getGeneral(general)->getKingdom() != dfowner->getKingdom())
                 continue;
 
             bool continue_flag = false;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
+            foreach (ServerPlayer *p, room->getAlivePlayers()){
                 QStringList generals_of_player = room->getTag(p->objectName()).toStringList();
                 if (generals_of_player.contains(general)){
                     continue_flag = true;
@@ -1440,11 +1440,11 @@ public:
                 change_list << to_change;
 
                 player->removeGeneral(false);
-                foreach(const Skill *skill, player->getSkills())
+                foreach (const Skill *skill, player->getSkills())
                     player->loseSkill(skill->objectName());
                 player->detachAllSkills();
                 room->setPlayerProperty(player, "general1_showed", true);
-                foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
+                foreach (const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
                     player->addSkill(skill->objectName());
                     JsonArray args;
                     args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
@@ -1476,7 +1476,7 @@ public:
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
                 room->setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(dfowner->getKingdom()));
 
-                foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
+                foreach (const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
                         room->setPlayerMark(player, skill->getLimitMark(), 1);
                 }

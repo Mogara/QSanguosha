@@ -84,7 +84,7 @@ StandardCardPackage::StandardCardPackage()
 
     cards << basicCards() << equipCards() << trickCards();
 
-    foreach(Card *card, cards)
+    foreach (Card *card, cards)
         card->setParent(this);
 
     addEquipSkills();

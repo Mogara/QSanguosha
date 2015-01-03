@@ -91,7 +91,7 @@ bool AI::isEnemy(const ServerPlayer *other) const{
 QList<ServerPlayer *> AI::getEnemies() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> enemies;
-    foreach(ServerPlayer *p, players)
+    foreach (ServerPlayer *p, players)
         if (isEnemy(p)) enemies << p;
 
     return enemies;
@@ -100,7 +100,7 @@ QList<ServerPlayer *> AI::getEnemies() const{
 QList<ServerPlayer *> AI::getFriends() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> friends;
-    foreach(ServerPlayer *p, players)
+    foreach (ServerPlayer *p, players)
         if (isFriend(p)) friends << p;
 
     return friends;
@@ -122,7 +122,7 @@ TrustAI::~TrustAI(){
 
 void TrustAI::activate(CardUseStruct &card_use) {
     QList<const Card *> cards = self->getHandcards();
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if (card->targetFixed()) {
             if (useCard(card)) {
                 card_use.card = card;
@@ -197,7 +197,7 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, c
 
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
-    foreach(const Card *card, cards)
+    foreach (const Card *card, cards)
         if (response_skill->matchPattern(self, card)) return card;
 
     return NULL;
@@ -243,7 +243,7 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, 
 const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
     if (isFriend(dying)) {
         QList<const Card *> cards = self->getHandcards();
-        foreach(const Card *card, cards) {
+        foreach (const Card *card, cards) {
             if (card->isKindOf("Peach") && !self->hasFlag("Global_PreventPeach"))
                 return card;
             if (card->isKindOf("Analeptic") && dying == self)

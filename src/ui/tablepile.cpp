@@ -30,7 +30,7 @@ QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player:
     _m_mutex_pileCards.lock();
     result = _createCards(card_ids);
     _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false, true);
-    foreach(CardItem *card, result) {
+    foreach (CardItem *card, result) {
         for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
             if (m_visibleCards[i]->getCard() && m_visibleCards[i]->getCard()->getId() == card->getId()) {
                 card->setPos(m_visibleCards[i]->pos());
@@ -57,7 +57,7 @@ void TablePile::timerEvent(QTimerEvent *) {
     QList<CardItem *> oldCards;
     _m_mutex_pileCards.lock();
     m_currentTime++;
-    foreach(CardItem *toRemove, m_visibleCards) {
+    foreach (CardItem *toRemove, m_visibleCards) {
         if (m_currentTime - toRemove->m_uiHelper.tablePileClearTimeStamp > S_CLEARANCE_DELAY_BUCKETS) {
             oldCards.append(toRemove);
             m_visibleCards.removeOne(toRemove);
@@ -96,7 +96,7 @@ void TablePile::clear(bool delayRequest) {
     }
 
     if (delayRequest) {
-        foreach(CardItem *toRemove, m_visibleCards)
+        foreach (CardItem *toRemove, m_visibleCards)
             _markClearance(toRemove);
     } else {
         _fadeOutCardsLocked(m_visibleCards);
@@ -108,7 +108,7 @@ void TablePile::clear(bool delayRequest) {
 
 void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards) {
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
-    foreach(CardItem *toRemove, cards) {
+    foreach (CardItem *toRemove, cards) {
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
         toRemove->setHomePos(QPointF(toRemove->homePos().x(), toRemove->homePos().y()));
@@ -144,7 +144,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         return false;
     else if (moveInfo.from_place == Player::PlaceDelayedTrick
         && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
-        foreach(CardItem *item, card_items) {
+        foreach (CardItem *item, card_items) {
             item->deleteLater();
             card_items.clear();
         }
@@ -168,7 +168,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         _markClearance(toRemove);
     }
 
-    foreach(CardItem *card_item, card_items) {
+    foreach (CardItem *card_item, card_items) {
         card_item->setHomeOpacity(1.0);
         card_item->showFootnote();
         if (moveInfo.from_place == Player::DrawPile
@@ -191,7 +191,7 @@ void TablePile::adjustCards() {
     if (m_visibleCards.length() == 0) return;
     _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
     QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
-    foreach(CardItem *card_item, m_visibleCards)
+    foreach (CardItem *card_item, m_visibleCards)
         animation->addAnimation(card_item->getGoBackAnimation(true));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }

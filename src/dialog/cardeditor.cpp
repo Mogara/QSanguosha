@@ -320,7 +320,7 @@ SkillBox::SkillBox()
 void SkillBox::setKingdom(const QString &kingdom){
     this->kingdom = kingdom;
 
-    foreach(SkillTitle *skill_title, skill_titles)
+    foreach (SkillTitle *skill_title, skill_titles)
         skill_title->setKingdom(kingdom);
 }
 
@@ -354,20 +354,18 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         QString thisline = lines[i];
         QStringList s1 = thisline.split(']', QString::SkipEmptyParts);
         QStringList s_non_bold, s_bold;
-        foreach(QString s, s1){
+        foreach (const QString &s, s1){
             if (!s.contains('[')){
                 s_non_bold << s;
                 s_bold << QString();
-            }
-            else if (!s.startsWith('[')){
+            } else if (!s.startsWith('[')){
                 QStringList s2 = s.split('[', QString::SkipEmptyParts);
                 s_non_bold << s2.first();
                 s_bold << s2.last();
-            }
-            else {
-                s = s.mid(1);
+            } else {
+                QString s3 = s.mid(1);
                 s_non_bold << QString();
-                s_bold << s;
+                s_bold << s3;
             }
         }
 
@@ -415,7 +413,7 @@ SkillTitle *SkillBox::getFocusTitle() const{
     if (skill_titles.length() == 1)
         return skill_titles.first();
     else{
-        foreach(SkillTitle *skill_title, skill_titles){
+        foreach (SkillTitle *skill_title, skill_titles){
             if (skill_title->hasFocus()){
                 return skill_title;
             }
@@ -482,7 +480,7 @@ void SkillBox::loadConfig(){
 
 
 void SkillBox::setSkillTitleFont(const QFont &font){
-    foreach(SkillTitle *item, skill_titles){
+    foreach (SkillTitle *item, skill_titles){
         item->setFont(font);
     }
 }
@@ -1072,7 +1070,7 @@ QWidget *CardEditor::createPropertiesBox() {
     kingdom_ComboBox = new QComboBox;
     lord_checkbox = new QCheckBox(tr("Lord"));
     QStringList kingdom_names = Sanguosha->getKingdoms();
-    foreach(QString kingdom, kingdom_names){
+    foreach (const QString &kingdom, kingdom_names){
         if ("god" == kingdom) continue;
         QIcon icon(QString("image/kingdom/icon/%1.png").arg(kingdom));
         kingdom_ComboBox->addItem(icon, Sanguosha->translate(kingdom), kingdom);

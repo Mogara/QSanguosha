@@ -116,7 +116,7 @@ QWidget *ServerDialog::createPackageTab() {
     int i = 0, j = 0;
     int row = 0, column = 0;
     const QList<const Package *> &packages = Sanguosha->getPackages();
-    foreach(const Package *package, packages) {
+    foreach (const Package *package, packages) {
         if (package->inherits("Scenario"))
             continue;
 
@@ -433,7 +433,7 @@ QLayout *ServerDialog::createButtonLayout() {
 void ServerDialog::onDetectButtonClicked() {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach(QHostAddress address, vAddressList) {
+    foreach (const QHostAddress &address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost
             && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
@@ -513,7 +513,7 @@ bool ServerDialog::config() {
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
-    foreach(QAbstractButton *checkbox, checkboxes) {
+    foreach (QAbstractButton *checkbox, checkboxes) {
         if (!checkbox->isChecked()) {
             QString package_name = checkbox->objectName();
             Sanguosha->addBanPackage(package_name);

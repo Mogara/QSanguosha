@@ -228,7 +228,7 @@ void CardItem::setFrozen(bool is_frozen, bool update_movable) {
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
-    foreach(CardItem *item, items) {
+    foreach (CardItem *item, items) {
         if (item->getCard() == NULL) {
             if (card_id == Card::S_UNKNOWN_CARD_ID)
                 return item;

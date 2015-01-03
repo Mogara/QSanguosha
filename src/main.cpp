@@ -197,7 +197,8 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    foreach(QString arg, qApp->arguments()) {
+    foreach (const QString &_arg, qApp->arguments()) {
+        QString arg = _arg;
         if (arg.startsWith("-connect:")) {
             arg.remove("-connect:");
             Config.HostAddress = arg;

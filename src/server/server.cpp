@@ -116,7 +116,7 @@ void Server::broadcast(const AbstractPacket *packet)
             socket->send(packet->toJson());
         }
 
-        foreach(Room *room, rooms)
+        foreach (Room *room, rooms)
             room->broadcast(packet);
     }
 }
@@ -211,7 +211,7 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
         return;
 
     if (is_reconnection) {
-        foreach (QString objname, name2objname.values(screen_name)) {
+        foreach (const QString &objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
             Room *room = player->getRoom();
             if (player && player->getState() == "offline" && room && !room->isFinished()) {

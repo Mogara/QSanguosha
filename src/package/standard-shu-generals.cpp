@@ -805,7 +805,7 @@ public:
         room->removePlayerMark(pangtong, "@nirvana");
         pangtong->throwAllHandCardsAndEquips();
         QList<const Card *> tricks = pangtong->getJudgingArea();
-        foreach(const Card *trick, tricks) {
+        foreach (const Card *trick, tricks) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, pangtong->objectName());
             room->throwCard(trick, reason, NULL);
         }
@@ -891,7 +891,7 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
         QStringList handlist;
         bool allEmpty = true;
-        foreach(QString pile,player->getPileNames()){
+        foreach (const QString &pile,player->getPileNames()){
             if (pile.startsWith("&") || pile == "wooden_ox")
                 allEmpty = false;
         }
@@ -1304,7 +1304,7 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (TriggerSkill::triggerable(player)) {
             QList<ServerPlayer *> friends;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (player->isFriendWith(p) || player->willBeFriendWith(p))
                     friends << p;
             }
@@ -1324,7 +1324,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> friends;
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)){
             if (player->isFriendWith(p) || player->willBeFriendWith(p))
                 friends << p;
         }
@@ -1351,7 +1351,7 @@ public:
 
         ServerPlayer *to = NULL;
 
-        foreach(ServerPlayer *p, player->getRoom()->getPlayers()){
+        foreach (ServerPlayer *p, player->getRoom()->getPlayers()){
             if (p->objectName() == target_name){
                 to = p;
                 break;
@@ -1393,7 +1393,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *ganfuren) const{
         int handcard_num = 0;
-        foreach(const Card *card, ganfuren->getHandcards()) {
+        foreach (const Card *card, ganfuren->getHandcards()) {
             if (!ganfuren->isJilei(card))
                 handcard_num++;
         }

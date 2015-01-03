@@ -35,7 +35,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
     QStringList wei_generals, shu_generals;
-    foreach (QString general, room->getLimitedGeneralNames()) {
+    foreach (const QString &general, Sanguosha->getLimitedGeneralNames()) {
         if (general.startsWith("lord_")) continue;
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
         if (kingdom == "wei")
@@ -51,7 +51,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     for (int i = 0; i < 8; i++) {
         if (players[i]->getState() == "online") {
             QStringList choices;
-            foreach (QString kingdom, roles.keys())
+            foreach (const QString &kingdom, roles.keys())
                 if (roles[kingdom].contains("human"))
                     choices << kingdom;
             QString choice = choices.at(qrand() % choices.length());
@@ -92,7 +92,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
             generals2 << answer.takeFirst();
         } else {
             QStringList kingdom_choices;
-            foreach (QString kingdom, roles.keys())
+            foreach (const QString &kingdom, roles.keys())
                 if (!roles[kingdom].isEmpty())
                     kingdom_choices << kingdom;
             QString kingdom = kingdom_choices.at(qrand() % kingdom_choices.length());

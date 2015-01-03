@@ -118,7 +118,7 @@ bool General::hasSkill(const QString &skill_name) const{
 
 QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
-    foreach(QString skill_name, skillname_list) {
+    foreach (const QString &skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != NULL);
         if (relate_to_place && !skill->relateToPlace(!head_only))
@@ -130,7 +130,7 @@ QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only)
 
 QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
-    foreach(const Skill *skill, getSkillList(relate_to_place, head_only)) {
+    foreach (const Skill *skill, getSkillList(relate_to_place, head_only)) {
         if (skill->isVisible())
             skills << skill;
     }
@@ -144,7 +144,7 @@ QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_on
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const{
     QSet<const TriggerSkill *> skills;
-    foreach(QString skill_name, skillname_list) {
+    foreach (const QString &skill_name, skillname_list) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill)
             skills << skill;
@@ -172,10 +172,10 @@ QString General::getCompanions() const{
     if (isLord())
         return tr("%1 Generals").arg(Sanguosha->translate(getKingdom()));
     QStringList name;
-    foreach(QString general, companions)
+    foreach (const QString &general, companions)
         name << QString("%1").arg(Sanguosha->translate(general));
     GeneralList generals(Sanguosha->getGeneralList());
-    foreach(const General *gnr, generals) {
+    foreach (const General *gnr, generals) {
         if (!gnr)
             continue;
         if (gnr->companions.contains(objectName()))
@@ -187,7 +187,7 @@ QString General::getCompanions() const{
 QString General::getSkillDescription(bool include_name, bool inToolTip) const{
     QString description;
 
-    foreach(const Skill *skill, getVisibleSkillList()) {
+    foreach (const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(inToolTip);
         desc.replace("\n", "<br/>");
