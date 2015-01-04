@@ -54,7 +54,7 @@ void RecAnalysis::initialize(const QString &dir) {
     records_line.removeAll(QByteArray());
 
     QStringList role_list;
-    foreach(QByteArray line, records_line) {
+    foreach (QByteArray line, records_line) {
         line.remove(0, line.indexOf(' '));
 
         Packet packet;
@@ -66,7 +66,7 @@ void RecAnalysis::initialize(const QString &dir) {
             if (config.parse(packet.getMessageBody())){
                 m_recordGameMode = config.GameMode;
                 m_recordPlayers = m_recordGameMode.split("_").first().remove(QRegExp("[^0-9]")).toInt();
-                foreach(const Package *package, Sanguosha->getPackages()) {
+                foreach (const Package *package, Sanguosha->getPackages()) {
                     if (!config.BanPackages.contains(package->objectName())
                         && Sanguosha->getScenario(package->objectName()) == NULL)
                         m_recordPackages << Sanguosha->translate(package->objectName());
@@ -251,7 +251,7 @@ void RecAnalysis::initialize(const QString &dir) {
 }
 
 RecAnalysis::~RecAnalysis(){
-    foreach(PlayerRecordStruct *s, m_recordMap)
+    foreach (PlayerRecordStruct *s, m_recordMap)
         delete s;
 }
 
@@ -298,7 +298,7 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
     }
     else if (!m_recordMap.contains(object_name)) {
         bool inQueue = false;
-        foreach(QString name, m_recordMap.keys()) {
+        foreach (const QString &name, m_recordMap.keys()) {
             if (m_recordMap[name]->m_additionName == object_name) {
                 object_name = name;
                 inQueue = true;
@@ -486,10 +486,10 @@ void RecAnalysis::addDesignation(const QString &designation,
     for (int i = 0; i < m_recordMap.size(); i++)
         player_test_mask *= 2;
 
-    foreach(QString objectName, m_recordMap.keys()) {
+    foreach (const QString &objectName, m_recordMap.keys()) {
         player_test_mask /= 2;
         bool has_player = custom_condition;
-        foreach(DesignationType type, des_union)
+        foreach (DesignationType type, des_union)
             if (!m_recordMap[objectName]->m_designEnum.contains(type)) { has_player = false; break; }
 
         if (need_win
@@ -602,14 +602,22 @@ void RecAnalysis::initialDesignation() {
         if (s->m_kill == 0) s->m_designEnum << ZeroKill;
     }
 
-    foreach(QString player, maxDamagedPlayer) m_recordMap[player]->m_designEnum << MostDamaged;
-    foreach(QString player, maxDamagePlayer) m_recordMap[player]->m_designEnum << MostDamage;
-    foreach(QString player, maxRecoverPlayer) m_recordMap[player]->m_designEnum << MostRecover;
-    foreach(QString player, maxKillPlayer) m_recordMap[player]->m_designEnum << MostKill;
-    foreach(QString player, leastDamagedPlayer) m_recordMap[player]->m_designEnum << LeastDamaged;
-    foreach(QString player, leastDamagePlayer) m_recordMap[player]->m_designEnum << LeastDamage;
-    foreach(QString player, leastRecoverPlayer) m_recordMap[player]->m_designEnum << LeastRecover;
-    foreach(QString player, leastKillPlayer) m_recordMap[player]->m_designEnum << LeastKill;
+    foreach (const QString &player, maxDamagedPlayer)
+        m_recordMap[player]->m_designEnum << MostDamaged;
+    foreach (const QString &player, maxDamagePlayer)
+        m_recordMap[player]->m_designEnum << MostDamage;
+    foreach (const QString &player, maxRecoverPlayer)
+        m_recordMap[player]->m_designEnum << MostRecover;
+    foreach (const QString &player, maxKillPlayer)
+        m_recordMap[player]->m_designEnum << MostKill;
+    foreach (const QString &player, leastDamagedPlayer)
+        m_recordMap[player]->m_designEnum << LeastDamaged;
+    foreach (const QString &player, leastDamagePlayer)
+        m_recordMap[player]->m_designEnum << LeastDamage;
+    foreach (const QString &player, leastRecoverPlayer)
+        m_recordMap[player]->m_designEnum << LeastRecover;
+    foreach (const QString &player, leastKillPlayer)
+        m_recordMap[player]->m_designEnum << LeastKill;
 }
 
 PlayerRecordStruct::PlayerRecordStruct()

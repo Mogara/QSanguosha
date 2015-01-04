@@ -639,7 +639,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
     if (skill_names.isEmpty()) return;
     QList<bool> isLost;
     QStringList triggerList;
-    foreach (const QString &skill_name, skill_names) {
+    foreach (QString skill_name, skill_names) {
         if (skill_name.startsWith("-")) {
             QString actual_skill = skill_name.mid(1);
             if (!player->ownSkill(actual_skill) && !player->getAcquiredSkills().contains(actual_skill)) continue;

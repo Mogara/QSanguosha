@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent)
         << ui->actionCard_Overview
         << ui->actionAbout;
 
-    foreach(QAction *action, actions)
+    foreach (QAction *action, actions)
         start_scene->addButton(action);
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
@@ -679,7 +679,7 @@ void MainWindow::networkError(const QString &error_msg) {
 void BackLoader::preload() {
     QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
-    foreach(QString emotion, emotions) {
+    foreach (const QString &emotion, emotions) {
         int n = PixmapAnimation::GetFrameCount(emotion);
         for (int i = 0; i < n; i++) {
             QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
@@ -791,7 +791,7 @@ void MainWindow::exitScene() {
             << ui->actionCard_Overview
             << ui->actionAbout;
 
-        foreach(QAction *action, actions)
+        foreach (QAction *action, actions)
             start_scene->addButton(action);
 
         setCentralWidget(view);
