@@ -542,7 +542,7 @@ TRANSLATIONS += builds/sanguosha.ts
 OTHER_FILES += \
     sanguosha.qss \
     resource/android/AndroidManifest.xml \
-    builds/sanguosha.ts \
+    builds/sanguosha.ts
 
 LIBS += -lfreetype
 
@@ -558,4 +558,6 @@ DISTFILES += \
     ui-script/Splash.qml \
     ui-script/functions.js \
     ui-script/ToolTip.qml \
-    ui-script/ToolTipArea.qml
+    ui-script/ToolTipArea.qml \
+    ui-script/TileButton.qml \
+    ui-script/MetroButton.qml
