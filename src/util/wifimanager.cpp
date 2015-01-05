@@ -17,7 +17,7 @@ WifiManager::WifiManager(const QString &serverName)
 bool WifiManager::enableHotspot()
 {
 #ifdef Q_OS_ANDROID
-    manager.callMethod<jboolean>("setWifiEnabled", "(Z)Z", false);
+    setWifiEnabled(false);
 
     QAndroidJniObject ssid = QAndroidJniObject::fromString(QString("QSanguoshaServer-%1").arg(mServerName));
     QAndroidJniObject key = QAndroidJniObject::fromString("QSanguosha");
@@ -31,8 +31,13 @@ bool WifiManager::enableHotspot()
 #endif
 }
 
-void WifiManager::disableHotspot()
+bool WifiManager::disableHotspot()
 {
+}
+
+bool WifiManager::setWifiEnabled(bool enabled)
+{
+    return manager.callMethod<jboolean>("setWifiEnabled", "(Z)Z", enabled);
 }
 
 QStringList WifiManager::detect()

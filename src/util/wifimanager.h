@@ -9,7 +9,9 @@ public:
     WifiManager(const QString &serverName);
 
     bool enableHotspot();
-    void disableHotspot();
+    bool disableHotspot();
+
+    bool setWifiEnabled(bool enabled);
 
     QStringList detect();
     bool connect(const QString &ssid);
