@@ -6,6 +6,10 @@ Item {
     width: winSize.width
     height: winSize.height
 
+    FontLoader {
+        source: "../font/wqy-microhei.ttc"
+    }
+
     property Item splash: createObject("Splash")
 
     Connections {
