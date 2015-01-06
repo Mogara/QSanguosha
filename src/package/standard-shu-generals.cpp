@@ -135,7 +135,10 @@ public:
     Paoxiao() : TargetModSkill("paoxiao") {
     }
 
-    virtual int getResidueNum(const Player *from, const Card *) const{
+    virtual int getResidueNum(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasSkill(objectName()))
             return 1000;
         else
@@ -614,7 +617,10 @@ public:
         pattern = "TrickCard";
     }
 
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
+    virtual int getDistanceLimit(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasSkill(objectName()))
             return 1000;
         else

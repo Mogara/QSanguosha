@@ -769,21 +769,30 @@ public:
     TianyiTargetMod() : TargetModSkill("#tianyi-target") {
     }
 
-    virtual int getResidueNum(const Player *from, const Card *) const{
+    virtual int getResidueNum(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasFlag("TianyiSuccess"))
             return 1;
         else
             return 0;
     }
 
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
+    virtual int getDistanceLimit(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasFlag("TianyiSuccess"))
             return 1000;
         else
             return 0;
     }
 
-    virtual int getExtraTargetNum(const Player *from, const Card *) const{
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasFlag("TianyiSuccess"))
             return 1;
         else

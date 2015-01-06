@@ -892,7 +892,10 @@ public:
         pattern = "SupplyShortage";
     }
 
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
+    virtual int getDistanceLimit(const Player *from, const Card *card) const{
+        if (!Sanguosha->matchExpPattern(pattern, from, card))
+            return 0;
+
         if (from->hasSkill("duanliang"))
             return 1;
         else
