@@ -2010,8 +2010,7 @@ void Client::speak(const QVariant &speak) {
 
     QString title;
     if (from) {
-        title = from->getGeneralName();
-        title = Sanguosha->translate(title);
+        title = getPlayerName(from->objectName());
         title.append(QString("(%1)").arg(from->screenName()));
     } else {
         title = who;
