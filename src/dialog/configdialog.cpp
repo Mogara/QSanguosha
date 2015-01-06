@@ -58,8 +58,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->textEditFontLineEdit->setPalette(palette);
 
     // tab 2
-    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic",
-                                                  qApp->applicationDirPath() + "audio/system/background.ogg").toString());
+    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/system/background.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
     connect(ui->enableEffectCheckBox, &QCheckBox::toggled, this,
@@ -293,7 +292,7 @@ void ConfigDialog::on_browseBgButton_clicked() {
 }
 
 void ConfigDialog::on_resetBgButton_clicked() {
-    QString fileName = qApp->applicationDirPath() + "/image/backdrop/bg.jpg";
+    QString fileName = "image/backdrop/bg.jpg";
     if (fileName != ui->bgPathLineEdit->text())
         doCallback(&ConfigDialog::setBackground, Config.BackgroundImage, fileName);
 }
@@ -309,7 +308,7 @@ void ConfigDialog::on_browseTableBgButton_clicked() {
 }
 
 void ConfigDialog::on_resetTableBgButton_clicked() {
-    QString fileName = qApp->applicationDirPath() + "/image/backdrop/table.jpg";
+    QString fileName = "image/backdrop/table.jpg";
     if (fileName != ui->tableBgPathLineEdit->text())
         doCallback(&ConfigDialog::setTableBg, Config.TableBgImage, fileName);
 }
@@ -326,7 +325,7 @@ void ConfigDialog::on_browseRecordPathButton_clicked() {
 void ConfigDialog::on_resetRecordPathButton_clicked() {
     ui->recordPathSetupLineEdit->clear();
 
-    QString path = qApp->applicationDirPath() + "/records/";
+    QString path = "records/";
     if (ui->recordPathSetupLineEdit->text() != path)
         doCallback(&ConfigDialog::setRecordsSavePath, Config.RecordSavePath, path);
 }
@@ -420,7 +419,7 @@ void ConfigDialog::on_browseBgMusicButton_clicked() {
 }
 
 void ConfigDialog::on_resetBgMusicButton_clicked() {
-    QString defaultMusic = qApp->applicationDirPath() + "/audio/system/background.ogg";
+    QString defaultMusic = "audio/system/background.ogg";
     if (defaultMusic != ui->bgMusicPathLineEdit->text()) {
         doCallback(&ConfigDialog::setBgMusic, Config.value("BackgroundMusic"),
                    defaultMusic);
