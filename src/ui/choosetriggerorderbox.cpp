@@ -65,7 +65,10 @@ static int getSkinId(const QString &playerName, const QString &generalName)
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
 {
-    const Skill *sk = Sanguosha->getSkill(skill);
+    QString real_skill = skill;
+    if (real_skill.contains("!"))
+        real_skill = real_skill.split("!").first();
+    const Skill *sk = Sanguosha->getSkill(real_skill);
     if (sk)
         setToolTip(sk->getDescription());
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -89,7 +92,10 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
                 generalName = player->getGeneral2Name();
         }
     } else {
-        if (player->inHeadSkills(Sanguosha->getMainSkill(skillName)))
+        QString realSkillName = skillName;
+        if (realSkillName.contains("!"))
+            realSkillName = realSkillName.split("!").first();
+        if (player->inHeadSkills(Sanguosha->getMainSkill(realSkillName)))
             generalName = player->getGeneralName();
         else
             generalName = player->getGeneral2Name();
@@ -124,9 +130,17 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     QRect textArea(optionButtonHeight, 0, width - optionButtonHeight,
                    optionButtonHeight);
+    QString translated_text = Sanguosha->translate(skillName);
+    if (skillName.contains("!") && skillName.contains("&")) {
+        QString real_skill = skillName.split("!").first();
+        QString target_obj = skillName.split("!").last().split("&").first();
+        translated_text = QString("%1(%2%3)").arg(Sanguosha->translate(real_skill))
+                                             .arg(Sanguosha->translate("use upon"))
+                                             .arg(Sanguosha->translate(ClientInstance->getPlayer(target_obj)->getFootnoteName()));
+    }
     G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea,
                                                Qt::AlignCenter,
-                                               Sanguosha->translate(skillName));
+                                               translated_text);
 }
 
 QRectF TriggerOptionButton::boundingRect() const {

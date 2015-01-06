@@ -89,7 +89,7 @@ return {
 	["chuanxin:remove"] = "移除副将的武将牌",
 	["fengshi"] = "锋矢",
 	[":fengshi"] = "阵法技，在你为围攻角色的围攻关系中，每当围攻角色使用【杀】指定一个被围攻的目标后，该围攻角色令该被围攻角色弃置装备区里的一张牌。",
-	["@fengshi-discard"] = "%dest 触发 %src 的“锋矢”，你需弃置装备区里的一张牌。" ,
+	["@fengshi-discard"] = "%src 的“锋矢”被触发，你需弃置装备区里的一张牌。" ,
 	["FengshiSummon"] = "锋矢",
 	
 	["#lord_zhangjiao"] = "时代的先驱",

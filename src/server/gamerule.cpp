@@ -440,8 +440,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
                 }
                 if (card_use.from && !card_use.to.isEmpty()) {
-                    foreach (ServerPlayer *p, room->getAllPlayers())
-                        thread->trigger(TargetChosen, room, p, data);
+                    thread->trigger(TargetChosen, room, card_use.from, data);
                     foreach (ServerPlayer *p, room->getAllPlayers())
                         thread->trigger(TargetConfirmed, room, p, data);
                 }

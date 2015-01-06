@@ -286,12 +286,36 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         will_trigger.clear();
                         QStringList names, back_up;
                         QStringList _names;
-                        foreach (QString skill_name, who_skills) {
-                            _names.append(skill_name);
-                            if (names.contains(skill_name))
-                                back_up << skill_name;
-                            else
-                                names << skill_name;
+                        foreach (const QString &skill_name, who_skills) {
+                            if (skill_name.contains("!") && skill_name.endsWith("&")) {
+                                QString realSkillName = skill_name.split("!").first();
+                                QStringList targets = skill_name.split("!").last().remove("&").split("+");
+                                int index = 1; // this index is for UI only
+                                bool cannotSkip = false;
+                                const TriggerSkill *trskill = Sanguosha->getTriggerSkill(realSkillName);
+                                if (trskill && p->hasShownSkill(trskill)
+                                    && (trskill->getFrequency() == Skill::Compulsory
+                                        //|| trskill->getFrequency() == Skill::NotCompulsory //for Paoxia, Anjian, etc.
+                                        || trskill->getFrequency() == Skill::Wake))
+                                    cannotSkip = true;
+                                foreach (const QString &target, targets) {
+                                    QString name = QString("%1!%2&%3").arg(realSkillName).arg(target).arg(index);
+                                    _names.append(name);
+                                    if (names.contains(name))
+                                        back_up << name;
+                                    else
+                                        names << name;
+                                    if (cannotSkip)
+                                        break;
+                                    ++index;
+                                }
+                            } else {
+                                _names.append(skill_name);
+                                if (names.contains(skill_name))
+                                    back_up << skill_name;
+                                else
+                                    names << skill_name;
+                            }
                         }
 
                         if (names.isEmpty()) break;
@@ -322,7 +346,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                     reason = "GameRule:TurnStart";
                                 SPlayerDataMap map;
                                 foreach (const QString &skillName, names) {
-                                    if (skillName.contains("!")) {
+                                    if (skillName.contains("!") && !skillName.contains("&")) {
                                         ServerPlayer *owner = room->findPlayer(skillName.split("!").last());
                                         map[owner] << skillName;
                                     } else
@@ -341,12 +365,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             name = name.split(":").last();
                         
                         ServerPlayer *skill_target = target;
-                        QString result_skill_name = who_skills[_names.indexOf(name)];
+                        //QString result_skill_name = who_skills[_names.indexOf(name)];
+                        QString result_skill_name = name;
                         const TriggerSkill *result_skill = Sanguosha->getTriggerSkill(result_skill_name);
                         if (!result_skill) {
                             QStringList list = result_skill_name.split("!");
                             result_skill = Sanguosha->getTriggerSkill(list.first());
-                            skill_target = room->findPlayer(list.last());
+                            skill_target = room->findPlayer(list.last().split("&").first());
                         }
 
                         //----------------------------------------------- TriggerSkill::cost
@@ -400,9 +425,37 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             }
                         }
 
-                        foreach (const QString &s, already_triggered)
-                            if (trigger_who[p].contains(s))
-                                trigger_who[p].removeOne(s);
+                        foreach (const QString &s, already_triggered) {
+                            if (s.contains("&")) {
+                                // s is "skillName!targetObjectName&number"
+                                QString skillName_copy = s.split("!").first();
+                                QString triggered_target = s.split("!").last().split("&").first();
+                                foreach (const QString &skill, trigger_who[p]) {
+                                    if (skill.contains("!") && skill.endsWith("&")) {
+                                        if (skill.split("!").first() == skillName_copy) { // check skill
+                                            QStringList targets = skill.split("!").last().remove("&").split("+");
+                                            if (!targets.contains(triggered_target)) { // this skill is triggered.
+                                                continue;
+                                            } else {
+                                                int n = targets.indexOf(triggered_target);
+                                                if (n == targets.length() - 1)
+                                                    trigger_who[p].removeOne(skill);
+                                                else {
+                                                    QStringList targets_after = targets.mid(n + 1);
+                                                    QString skill_after = QString("%1!%2&").arg(skillName_copy).arg(targets_after.join("+"));
+                                                    trigger_who[p].replaceInStrings(skill, skill_after);
+                                                }
+                                            }
+                                        } else {
+                                            continue;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (trigger_who[p].contains(s))
+                                    trigger_who[p].removeOne(s);
+                            }
+                        }
 
                         if (has_compulsory) {
                             has_compulsory = false;

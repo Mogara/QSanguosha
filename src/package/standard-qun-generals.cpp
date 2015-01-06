@@ -91,32 +91,28 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (player == NULL)
             return QStringList();
-        if (triggerEvent == TargetChosen || triggerEvent == TargetConfirmed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.to.contains(player))
-                return QStringList();
-            
-            if (use.card != NULL) {
-                if (use.card->isKindOf("Slash")) {
-                    if (triggerEvent == TargetChosen && TriggerSkill::triggerable(use.from)) {
-                        ask_who = use.from;
-                        return QStringList(objectName());
-                    }
-                } else if (use.card->isKindOf("Duel")) {
-                    if (triggerEvent == TargetChosen && TriggerSkill::triggerable(use.from)) {
-                        ask_who = use.from;
-                        return QStringList(objectName());
-                    } else if (triggerEvent == TargetConfirmed && TriggerSkill::triggerable(player)) {
-                        ask_who = player;
-                        return QStringList(objectName());
-                    }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (triggerEvent == TargetChosen) {
+            if (use.card && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"))) {
+                if (TriggerSkill::triggerable(player)) {
+                    QStringList targets;
+                    foreach (ServerPlayer *to, use.to)
+                        targets << to->objectName();
+                    if (!targets.isEmpty())
+                        return QStringList(objectName() + "!" + targets.join("+") + "&");
                 }
             }
+        } else if (triggerEvent == TargetConfirmed) {
+            if (!use.to.contains(player))
+                return QStringList();
+
+            if (use.card && use.card->isKindOf("Duel") && TriggerSkill::triggerable(player)) {
+                return QStringList(objectName() + "!" + use.from->objectName() + "&");
+            }
         } else if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Duel")) {
                 foreach (ServerPlayer *lvbu, room->getAllPlayers()) {
                     if (lvbu->getMark("WushuangTarget") > 0)
@@ -128,8 +124,10 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
-        bool invoke = ask_who->hasShownSkill(this) ? true : ask_who->askForSkillInvoke(this, data);
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+        ask_who->tag["WushuangData"] = data; // for AI
+        bool invoke = ask_who->hasShownSkill(this) ? true : ask_who->askForSkillInvoke(this, QVariant::fromValue(target));
+        ask_who->tag.remove("WushuangData");
         if (invoke) {
             room->broadcastSkillInvoke(objectName(), ask_who);
             return true;
@@ -137,18 +135,17 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
         room->notifySkillInvoked(ask_who, objectName());
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash")) {
             if (triggerEvent != TargetChosen)
                 return false;
 
-            int x = use.to.indexOf(player);
+            int x = use.to.indexOf(target);
             QVariantList jink_list = ask_who->tag["Jink_" + use.card->toString()].toList();
             if (jink_list.at(x).toInt() == 1)
                 jink_list[x] = 2;
-
             ask_who->tag["Jink_" + use.card->toString()] = jink_list;
         } else if (use.card->isKindOf("Duel"))
             room->setPlayerMark(ask_who, "WushuangTarget", 1);

@@ -158,8 +158,9 @@ public:
     //    such as: "songwei!sgs1", "baonue!sgs10", etc. (must use the exclamatory mark to concatenate)
     // 3. Skill name combines multitargets' object names. @todo
     //    If you use this kind of type, it means the skill's trigger order of targets should be according to the order you write,
-    //    such as: "tieqi!sgs4+sgs8+sgs1+sgs2"
-    //    (must use the exclamatory mark to concatenate skill name to targets and plus sign to concatenate targets' object names)
+    //    such as: "tieqi!sgs4+sgs8+sgs1+sgs2&"
+    //    (must use the exclamatory mark to concatenate skill name to targets and plus sign to concatenate targets' object names,
+    //     end with an ampersand)
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
