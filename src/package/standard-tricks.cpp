@@ -539,7 +539,7 @@ QStringList Snatch::checkTargetModSkillShow(const CardUseStruct &use) const{
                 }
             }
 
-            if (tarmods.isEmpty() || n <= 0) {
+            if (!(tarmods.isEmpty() || n <= 0)) {
                 tarmods_copy = tarmods;
 
                 foreach (const TargetModSkill *tarmod, tarmods_copy) {
