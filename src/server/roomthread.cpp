@@ -321,7 +321,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 if (names.length() == 2 && names.contains("GameRule_AskForGeneralShowHead"))
                                     reason = "GameRule:TurnStart";
                                 SPlayerDataMap map;
-                                map[p] = names;
+                                foreach (const QString &skillName, names) {
+                                    if (skillName.contains("!")) {
+                                        ServerPlayer *owner = room->findPlayer(skillName.split("!").last());
+                                        map[owner] << skillName;
+                                    } else
+                                        map[p] << skillName;
+                                }
                                 name = room->askForTriggerOrder(p, reason, map, !has_compulsory, data);
                             } else {
                                 name = names.last();

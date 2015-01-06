@@ -1729,8 +1729,12 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
     QString answer;
     QStringList all_pairs;
     foreach (const ServerPlayer *p, skills.keys()) {
-        foreach (const QString &str, skills.value(p))
-            all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
+        foreach (const QString &str, skills.value(p)) {
+            if (str.contains("!"))
+                all_pairs << QString("%1:%2").arg(p->objectName()).arg(str.split("!").first());
+            else
+                all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
+        }
     }
 
     if (!optional && skills.values().length() == 1 && skills.values().first().length() == 1) {
