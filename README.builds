@@ -220,7 +220,7 @@ Notice: Android version is still not fully supported.
        Working Directory: %{buildDir}
    Click build (Ctrl + B) and you'll get an APK in < YOUR build directory >/android-build/bin, and install the APK manually.
 
-7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.qsanguosha
+7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.mogara.qsanguosha
    ai-selector
    audio
    diy
@@ -236,4 +236,4 @@ Notice: Android version is still not fully supported.
 
 8. (optional) Add the Chinese language pack.
    run lrelease QSanguosha.pro
-   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.qsanguosha mentioned in step 7.
+   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.mogara.qsanguosha mentioned in step 7.

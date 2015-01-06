@@ -2901,8 +2901,8 @@
     </message>
     <message>
         <location filename="../src/main.cpp" line="116"/>
-        <source>Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.qsanguosha</source>
-        <translation>找不到游戏资源，请下载太阳神三国杀PC版，然后将文件放入/sdcard/Android/data/org.qsanguosha</translation>
+        <source>Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.mogara.qsanguosha</source>
+        <translation>找不到游戏资源，请下载太阳神三国杀PC版，然后将文件放入/sdcard/Android/data/org.mogara.qsanguosha</translation>
     </message>
     <message>
         <location filename="../src/main.cpp" line="118"/>

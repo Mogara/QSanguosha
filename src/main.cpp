@@ -36,6 +36,7 @@
 #include "mainwindow.h"
 #include "audio.h"
 #include "stylehelper.h"
+#include "wifimanager.h"
 
 #ifndef WINDOWS
 #include <QDir>
@@ -97,7 +98,7 @@ int main(int argc, char *argv[]) {
         QDir storageDir("/storage");
         QStringList sdcards = storageDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         foreach (const QString &sdcard, sdcards) {
-            QDir root(QString("/storage/%1/Android/data/org.qsanguosha").arg(sdcard));
+            QDir root(QString("/storage/%1/Android/data/org.mogara.qsanguosha").arg(sdcard));
             if (root.exists("lua/config.lua")) {
                 QDir::setCurrent(root.absolutePath());
                 found = true;
@@ -105,7 +106,7 @@ int main(int argc, char *argv[]) {
             }
         }
         if (!found) {
-            QDir root("/sdcard/Android/data/org.qsanguosha");
+            QDir root("/sdcard/Android/data/org.mogara.qsanguosha");
             if (root.exists("lua/config.lua")) {
                 QDir::setCurrent(root.absolutePath());
                 found = true;
@@ -113,7 +114,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (!found) {
-            QString m = QObject::tr("Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.qsanguosha");
+            QString m = QObject::tr("Game data not found, please download QSanguosha PC version, and put the files and folders into /sdcard/Android/data/org.mogara.qsanguosha");
             if (!noGui)
                 QMessageBox::critical(NULL, QObject::tr("Error"), m);
             else
