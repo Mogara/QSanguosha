@@ -1313,15 +1313,13 @@ public:
         return false;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList m;
         ServerPlayer *zhanghe = room->findPlayerBySkillName(objectName());
-        if (zhanghe != NULL && zhanghe->isAlive() && !player->isFriendWith(zhanghe) && player->isWounded() && data.toInt() > 0) {
-            QMap<ServerPlayer *, QStringList> m;
+        if (zhanghe != NULL && zhanghe->isAlive() && !player->isFriendWith(zhanghe) && player->isWounded() && data.toInt() > 0)
             m.insert(zhanghe, QStringList(objectName()));
-            return m;
-        }
 
-        return QMap<ServerPlayer *, QStringList>();
+        return m;
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who /* = NULL */) const{

@@ -1184,8 +1184,8 @@ public:
         events << EventPhaseStart;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        TriggerList skill_list;
         if (player != NULL && player->getPhase() == Player::Finish) {
             QList<ServerPlayer *> yuejins = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *yuejin, yuejins){

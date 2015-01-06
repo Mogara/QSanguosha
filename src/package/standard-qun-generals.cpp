@@ -711,8 +711,8 @@ public:
         events << Damaged << FinishJudge;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList skill_list;
         if (player == NULL) return skill_list;
         if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -1408,8 +1408,8 @@ public:
         }
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QMap<ServerPlayer *, QStringList> r;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList r;
         if (player == NULL)
             return r;
         if (triggerEvent != Death && !player->isAlive())

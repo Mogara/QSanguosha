@@ -344,8 +344,8 @@ int TriggerSkill::getPriority() const{
     return 3;
 }
 
-QMap<ServerPlayer *, QStringList> TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    QMap<ServerPlayer *, QStringList> skill_lists;
+TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    TriggerList skill_lists;
     if (objectName() == "game_rule") return skill_lists;
     ServerPlayer *ask_who = player;
     QStringList skill_list = triggerable(triggerEvent, room, player, data, ask_who);

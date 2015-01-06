@@ -175,8 +175,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList skill_list;
         if (!player) return skill_list;
         if (triggerEvent == TurnStart) {
             room->setPlayerMark(player, "@hengjiang", 0);
@@ -687,8 +687,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        TriggerList skill_list;
         if (player == NULL) return skill_list;
         QList<ServerPlayer *> sunces = room->findPlayersBySkillName(objectName());
         PindianStruct *pindian = data.value<PindianStruct *>();

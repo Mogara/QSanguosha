@@ -105,8 +105,8 @@ public:
         global = true;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        QMap<ServerPlayer *, QStringList> trigger_map;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        TriggerList trigger_map;
 
         if (!room->getConfig().EnableLordConvertion)
             return trigger_map;

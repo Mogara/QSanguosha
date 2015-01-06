@@ -81,8 +81,8 @@ public:
         return -1;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
+        TriggerList skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName("tuntian");
         foreach (ServerPlayer *dengai, dengais) {
             int postponed = dengai->getMark("tuntian_postpone");
@@ -193,8 +193,8 @@ public:
         view_as_skill = new ZiliangVS;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        TriggerList skill_list;
         if (player == NULL || player->isDead()) return skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *dengai, dengais)
@@ -784,8 +784,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList skill_list;
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash")) return skill_list;
         if (use.to.contains(player)) {
@@ -845,8 +845,8 @@ public:
         view_as_skill = new QianhuanVS;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        TriggerList skill_list;
         if (player == NULL) return skill_list;
         QList<ServerPlayer *> yujis = room->findPlayersBySkillName(objectName());
         if (triggerEvent == Damaged && player->isAlive()) {
@@ -944,8 +944,8 @@ public:
         events << EventPhaseStart;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        TriggerList skill_list;
         if (player == NULL) return skill_list;
         if (player->getPhase() != Player::Play) return skill_list;
         QList<ServerPlayer *> hetaihous = room->findPlayersBySkillName(objectName());
@@ -995,8 +995,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
-        QMap<ServerPlayer *, QStringList> skill_list;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        TriggerList skill_list;
         if (player == NULL) return skill_list;
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
