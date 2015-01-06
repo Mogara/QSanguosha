@@ -151,6 +151,15 @@ public:
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 
+    // You are expected to return a QMap<ServerPlayer *, QStringList> in TriggerSkill::triggerable.
+    // And the QStringList of QMap is expected to include some items as the examples below:
+    // 1. Skill name, such as: "yiji", "fankui", etc.
+    // 2. Skill name combines someone's object name who is the owner of the skill,
+    //    such as: "songwei!sgs1", "baonue!sgs10", etc. (must use the exclamatory mark to concatenate)
+    // 3. Skill name combines multitargets' object names. @todo
+    //    If you use this kind of type, it means the skill's trigger order of targets should be according to the order you write,
+    //    such as: "tieqi!sgs4+sgs8+sgs1+sgs2"
+    //    (must use the exclamatory mark to concatenate skill name to targets and plus sign to concatenate targets' object names)
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
