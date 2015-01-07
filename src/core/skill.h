@@ -156,7 +156,7 @@ public:
     // 1. Skill name, such as: "yiji", "fankui", etc.
     // 2. Skill name combines someone's object name who is the owner of the skill,
     //    such as: "songwei!sgs1", "baonue!sgs10", etc. (must use the exclamatory mark to concatenate)
-    // 3. Skill name combines multitargets' object names. @todo
+    // 3. Skill name combines multitargets' object names.
     //    If you use this kind of type, it means the skill's trigger order of targets should be according to the order you write,
     //    such as: "tieqi!sgs4+sgs8+sgs1+sgs2&"
     //    (must use the exclamatory mark to concatenate skill name to targets and plus sign to concatenate targets' object names,

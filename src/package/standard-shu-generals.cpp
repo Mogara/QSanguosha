@@ -507,8 +507,7 @@ class Tieqi : public TriggerSkill {
 public:
     Tieqi() : TriggerSkill("tieqi") {
         events << TargetChosen;
-        //frequency = Frequent;
-        frequency = Compulsory;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
@@ -524,13 +523,13 @@ public:
         return QStringList();
     }
 
-    /*virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &, ServerPlayer *player) const {
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &, ServerPlayer *player) const {
         if (player->askForSkillInvoke(this, QVariant::fromValue(skill_target))) {
             room->broadcastSkillInvoke(objectName(), 1, player);
             return true;
         }
         return false;
-    }*/
+    }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *skill_target, QVariant &data, ServerPlayer *machao) const {
         CardUseStruct use = data.value<CardUseStruct>();
