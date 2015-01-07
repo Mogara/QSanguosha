@@ -49,7 +49,7 @@ public:
                     targets << to->objectName();
             }
             if (!targets.isEmpty())
-                return QStringList(objectName() + "!" + targets.join("+") + "&");
+                return QStringList(objectName() + "->" + targets.join("+"));
         }
         return QStringList();
     }
@@ -105,7 +105,7 @@ public:
             foreach (ServerPlayer *to, use.to)
                 targets << to->objectName();
             if (!targets.isEmpty())
-                return QStringList(objectName() + "!" + targets.join("+") + "&");
+                return QStringList(objectName() + "->" + targets.join("+"));
         }
         return QStringList();
     }

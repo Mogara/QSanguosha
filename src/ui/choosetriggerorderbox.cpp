@@ -66,8 +66,10 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString 
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
 {
     QString real_skill = skill;
-    if (real_skill.contains("!"))
-        real_skill = real_skill.split("!").first();
+    if (real_skill.contains("'")) // "sgs1'songwei"
+        real_skill = real_skill.split("'").last();
+    else if (real_skill.contains("->")) // "tieqi->sgs4&1"
+        real_skill = real_skill.split("->").first();
     const Skill *sk = Sanguosha->getSkill(real_skill);
     if (sk)
         setToolTip(sk->getDescription());
@@ -96,8 +98,10 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
         }
     } else {
         QString realSkillName = remove_times;
-        if (realSkillName.contains("!"))
-            realSkillName = realSkillName.split("!").first();
+        if (realSkillName.contains("'")) // "sgs1'songwei"
+            realSkillName = realSkillName.split("'").last();
+        else if (realSkillName.contains("->")) // "tieqi->sgs4&1"
+            realSkillName = realSkillName.split("->").first();
         if (player->inHeadSkills(Sanguosha->getMainSkill(realSkillName)))
             generalName = player->getGeneralName();
         else
@@ -140,9 +144,9 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
         remove_times = skillName.split("*").first();
     }
     QString translated_text = Sanguosha->translate(remove_times);
-    if (remove_times.contains("!") && remove_times.contains("&")) {
-        QString real_skill = remove_times.split("!").first();
-        QString target_obj = remove_times.split("!").last().split("&").first();
+    if (remove_times.contains("->")) { // "tieqi->sgs4&1"
+        QString real_skill = remove_times.split("->").first(); // "tieqi"
+        QString target_obj = remove_times.split("->").last().split("&").first(); // "sgs4"
         translated_text = QString("%1(%2%3)").arg(Sanguosha->translate(real_skill))
                                              .arg(Sanguosha->translate("use upon"))
                                              .arg(Sanguosha->translate(ClientInstance->getPlayer(target_obj)->getFootnoteName()));
@@ -188,12 +192,12 @@ bool TriggerOptionButton::isPreferentialSkillOf(const TriggerOptionButton *other
 {
     if (this == other)
         return true;
-    QRegExp rx("([_A-Za-z]+)!sgs\\d+&\\d+");
+    QRegExp rx("([_A-Za-z]+)->sgs\\d+&\\d+");
     if (!rx.exactMatch(this->skillName) || !rx.exactMatch(other->skillName))
         return false;
-    QString thisName = this->skillName.split("!").first();
+    QString thisName = this->skillName.split("->").first();
     int thisIndex = this->skillName.split("&").last().toInt();
-    QString otherName = other->skillName.split("!").first();
+    QString otherName = other->skillName.split("->").first();
     int otherIndex = other->skillName.split("&").last().toInt();
     return thisName == otherName && thisIndex < otherIndex;
 }

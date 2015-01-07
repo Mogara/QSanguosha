@@ -1094,7 +1094,7 @@ public:
                         targets << to->objectName();
                 }
                 if (!targets.isEmpty())
-                    skill_list.insert(skill_owner, QStringList(objectName() + "!" + targets.join("+") + "&"));
+                    skill_list.insert(skill_owner, QStringList(objectName() + "->" + targets.join("+")));
             }
         }
         return skill_list;

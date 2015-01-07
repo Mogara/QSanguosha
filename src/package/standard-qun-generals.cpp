@@ -102,7 +102,7 @@ public:
                     foreach (ServerPlayer *to, use.to)
                         targets << to->objectName();
                     if (!targets.isEmpty())
-                        return QStringList(objectName() + "!" + targets.join("+") + "&");
+                        return QStringList(objectName() + "->" + targets.join("+"));
                 }
             }
         } else if (triggerEvent == TargetConfirmed) {
@@ -110,7 +110,7 @@ public:
                 return QStringList();
 
             if (use.card && use.card->isKindOf("Duel") && TriggerSkill::triggerable(player)) {
-                return QStringList(objectName() + "!" + use.from->objectName() + "&");
+                return QStringList(objectName() + "->" + use.from->objectName());
             }
         } else if (triggerEvent == CardFinished) {
             if (use.card->isKindOf("Duel")) {

@@ -171,7 +171,7 @@ public:
                     foreach (ServerPlayer *to, use.to)
                         targets << to->objectName();
                     if (!targets.isEmpty())
-                        return QStringList(objectName() + "!" + targets.join("+") + "&");
+                        return QStringList(objectName() + "->" + targets.join("+"));
                 }
             }
         }
@@ -510,15 +510,14 @@ public:
         frequency = Frequent;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
         CardUseStruct use = data.value<CardUseStruct>();
         if (TriggerSkill::triggerable(player) && use.card != NULL && use.card->isKindOf("Slash")) {
             QStringList targets;
-            room->sortByActionOrder(use.to);
             foreach (ServerPlayer *to, use.to)
                 targets << to->objectName();
             if (!targets.isEmpty())
-                return QStringList(objectName() + "!" + targets.join("+") + "&");
+                return QStringList(objectName() + "->" + targets.join("+"));
         }
         return QStringList();
     }
@@ -640,18 +639,17 @@ public:
         events << TargetChosen;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
         CardUseStruct use = data.value<CardUseStruct>();
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play && use.card != NULL && use.card->isKindOf("Slash")) {
             QStringList targets;
-            room->sortByActionOrder(use.to);
             foreach (ServerPlayer *to, use.to) {
                 int handcard_num = to->getHandcardNum();
                 if (handcard_num >= player->getHp() || handcard_num <= player->getAttackRange())
                     targets << to->objectName();
             }
             if (!targets.isEmpty())
-                return QStringList(objectName() + "!" + targets.join("+") + "&");
+                return QStringList(objectName() + "->" + targets.join("+"));
         }
         return QStringList();
     }
