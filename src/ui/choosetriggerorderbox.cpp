@@ -161,6 +161,7 @@ void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
     animation->setEndValue(1.0);
     animation->setDuration(100);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+    emit hovered(true);
 }
 
 void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
@@ -168,6 +169,36 @@ void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
     animation->setEndValue(initialOpacity);
     animation->setDuration(100);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+    emit hovered(false);
+}
+
+bool TriggerOptionButton::isPreferentialSkillOf(const TriggerOptionButton *other) const
+{
+    if (this == other)
+        return true;
+    QRegExp rx("([_A-Za-z]+)!sgs\\d+&\\d+");
+    if (!rx.exactMatch(this->skillName) || !rx.exactMatch(other->skillName))
+        return false;
+    QString thisName = this->skillName.split("!").first();
+    int thisIndex = this->skillName.split("&").last().toInt();
+    QString otherName = other->skillName.split("!").first();
+    int otherIndex = other->skillName.split("&").last().toInt();
+    return thisName == otherName && thisIndex < otherIndex;
+}
+
+void TriggerOptionButton::needDisabled(bool disabled)
+{
+    if (disabled) {
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        animation->setEndValue(0.2);
+        animation->setDuration(100);
+        animation->start(QAbstractAnimation::DeleteWhenStopped);
+    } else {
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        animation->setEndValue(initialOpacity);
+        animation->setDuration(100);
+        animation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
 }
 
 GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, const bool isHead)
@@ -375,6 +406,10 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
 
         TriggerOptionButton *button = new TriggerOptionButton(this, pair.first(), pair.last(), width);
         button->setObjectName(option);
+        foreach (TriggerOptionButton *other_button, optionButtons) {
+            if (other_button->isPreferentialSkillOf(button))
+                connect(button, &TriggerOptionButton::hovered, other_button, &TriggerOptionButton::needDisabled);
+        }
         optionButtons << button;
     }
 
