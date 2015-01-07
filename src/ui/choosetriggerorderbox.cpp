@@ -83,7 +83,10 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
 {
     QString generalName;
     const ClientPlayer *player = ClientInstance->getPlayer(playerName);
-    if (skillName == arrayString) {
+    QString remove_times = skillName;
+    if (skillName.contains("*"))
+        remove_times = skillName.split("*").first();
+    if (remove_times == arrayString) {
         foreach (const Skill *skill, player->getVisibleSkillList()) {
             if (!skill->inherits("BattleArraySkill")) continue;
             if (player->inHeadSkills(skill))
@@ -92,7 +95,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
                 generalName = player->getGeneral2Name();
         }
     } else {
-        QString realSkillName = skillName;
+        QString realSkillName = remove_times;
         if (realSkillName.contains("!"))
             realSkillName = realSkillName.split("!").first();
         if (player->inHeadSkills(Sanguosha->getMainSkill(realSkillName)))
@@ -130,17 +133,26 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     QRect textArea(optionButtonHeight, 0, width - optionButtonHeight,
                    optionButtonHeight);
-    QString translated_text = Sanguosha->translate(skillName);
-    if (skillName.contains("!") && skillName.contains("&")) {
-        QString real_skill = skillName.split("!").first();
-        QString target_obj = skillName.split("!").last().split("&").first();
+    int times = 1;
+    QString remove_times = skillName;
+    if (skillName.contains("*")) {
+        times = skillName.split("*").last().toInt();
+        remove_times = skillName.split("*").first();
+    }
+    QString translated_text = Sanguosha->translate(remove_times);
+    if (remove_times.contains("!") && remove_times.contains("&")) {
+        QString real_skill = remove_times.split("!").first();
+        QString target_obj = remove_times.split("!").last().split("&").first();
         translated_text = QString("%1(%2%3)").arg(Sanguosha->translate(real_skill))
                                              .arg(Sanguosha->translate("use upon"))
                                              .arg(Sanguosha->translate(ClientInstance->getPlayer(target_obj)->getFootnoteName()));
     }
+    QString buttonText = translated_text;
+    if (times > 1)
+        buttonText += QString(" %1%2").arg(Sanguosha->translate("times_mark")).arg(times);
     G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea,
                                                Qt::AlignCenter,
-                                               translated_text);
+                                               buttonText);
 }
 
 QRectF TriggerOptionButton::boundingRect() const {

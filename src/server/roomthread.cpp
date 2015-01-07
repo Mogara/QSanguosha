@@ -271,7 +271,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         QStringList who_skills = trigger_who.value(p);
                         if (who_skills.isEmpty()) break;
                         bool has_compulsory = false;
-                        foreach (const QString &skill, who_skills){
+                        foreach (const QString &skill, who_skills) {
                             const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill);
                             if (!trskill)
                                 trskill = Sanguosha->getTriggerSkill(skill.split("!").first());
@@ -346,11 +346,15 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                     reason = "GameRule:TurnStart";
                                 SPlayerDataMap map;
                                 foreach (const QString &skillName, names) {
+                                    int n = back_up.count(skillName) + 1;
+                                    QString skillName_times = skillName;
+                                    if (n > 1)
+                                        skillName_times = QString("%1*%2").arg(skillName).arg(n);
                                     if (skillName.contains("!") && !skillName.contains("&")) {
                                         ServerPlayer *owner = room->findPlayer(skillName.split("!").last());
-                                        map[owner] << skillName;
+                                        map[owner] << skillName_times;
                                     } else
-                                        map[p] << skillName;
+                                        map[p] << skillName_times;
                                 }
                                 name = room->askForTriggerOrder(p, reason, map, !has_compulsory, data);
                             } else {
@@ -362,7 +366,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         if (name == "cancel") break;
                         if (name.contains(":"))
-                            name = name.split(":").last();
+                            name = name.split("*").first().split(":").last();
                         
                         ServerPlayer *skill_target = target;
                         //QString result_skill_name = who_skills[_names.indexOf(name)];
