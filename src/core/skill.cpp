@@ -344,6 +344,19 @@ int TriggerSkill::getPriority() const{
     return 3;
 }
 
+/*!
+    You are expected to return a QMap<ServerPlayer *, QStringList> in TriggerSkill::triggerable.
+And the QStringList of QMap is expected to include some items as the examples below:
+    \list 1
+        \li Skill name, such as: "yiji", "fankui", etc.
+        \li Skill name combines someone's object name who is the owner of the skill, such as: "sgs1'songwei", "sgs10'baonue", etc.
+        \note must use a single quote mark to concatenate
+        \li Skill name combines multitargets' object names.
+  If you use this kind of type, it means the skill's trigger order of targets should be according to the order you write, such as: "tieqi->sgs4+sgs8+sgs1+sgs2"
+        \note must use a "->" to concatenate skill name to targets and "+" to concatenate targets' object names
+    \endlist
+*/
+
 TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     TriggerList skill_lists;
     if (objectName() == "game_rule") return skill_lists;
