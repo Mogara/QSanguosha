@@ -352,8 +352,8 @@ public:
         frequency = Frequent;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (TriggerSkill::triggerable(player)){
             DamageStruct damage = data.value<DamageStruct>();
             QStringList trigger_list;
             for (int i = 1; i <= damage.damage; i++){
@@ -367,7 +367,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data, ServerPlayer *) const {
-        if (guojia->isAlive() && guojia->askForSkillInvoke(this, data)) {
+        if (guojia->askForSkillInvoke(this, data)) {
             room->broadcastSkillInvoke(objectName(), guojia);
             return true;
         }
@@ -377,7 +377,6 @@ public:
 
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &) const {
         Room *room = guojia->getRoom();
-        room->notifySkillInvoked(guojia, objectName());
 
         QList<ServerPlayer *> _guojia;
         _guojia.append(guojia);
