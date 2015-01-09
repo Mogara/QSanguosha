@@ -197,12 +197,10 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    foreach (const QString &_arg, qApp->arguments()) {
-        QString arg = _arg;
+    foreach (const QString &arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
-            arg.remove("-connect:");
-            Config.HostAddress = arg;
-            Config.setValue("HostAddress", arg);
+            Config.HostAddress = arg.mid(9);
+            Config.setValue("HostAddress", Config.HostAddress);
 
             main_window.startConnection();
             break;
