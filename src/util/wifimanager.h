@@ -14,8 +14,9 @@ public:
     bool isWifiEnabled() const;
     bool setWifiEnabled(bool enabled);
 
-    QStringList detect();
-    bool connect(const QString &ssid);
+    QStringList detectServer();
+    bool connectToServer(const QString &server);
+    QString currentServer() const;
 
 private:
     QString mDeviceName;

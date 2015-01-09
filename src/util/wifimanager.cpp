@@ -22,7 +22,7 @@ bool WifiManager::enableHotspot()
     setWifiEnabled(false);
 
     QAndroidJniObject ssid = QAndroidJniObject::fromString(QString("%1%2").arg(SSID_PREFIX).arg(mDeviceName));
-    QAndroidJniObject key = QAndroidJniObject::fromString("QSanguosha");
+    QAndroidJniObject key = QAndroidJniObject::fromString("\"QSanguosha\"");
 
     QAndroidJniObject config("android/net/wifi/WifiConfiguration");
     config.setField<jstring>("SSID", ssid.object<jstring>());
@@ -60,14 +60,13 @@ bool WifiManager::setWifiEnabled(bool enabled)
 #endif
 }
 
-QStringList WifiManager::detect()
+QStringList WifiManager::detectServer()
 {
     if(!isWifiEnabled())
         setWifiEnabled(true);
 
     QStringList hotspots;
 #ifdef Q_OS_ANDROID
-    manager.callMethod<jboolean>("startScan");
     QAndroidJniObject results = manager.callObjectMethod("getScanResults", "()Ljava/util/List;");
     int length = results.callMethod<jint>("size");
     for (int i = 0; i < length; i++) {
@@ -82,8 +81,62 @@ QStringList WifiManager::detect()
     return hotspots;
 }
 
-bool WifiManager::connect(const QString &ssid)
+QString WifiManager::currentServer() const
 {
-    (void) ssid;
+#ifdef Q_OS_ANDROID
+    QAndroidJniObject currentConnection = manager.callObjectMethod("getConnectionInfo", "()Landroid/net/wifi/WifiInfo;");
+    QString currentSsid = currentConnection.callObjectMethod("getSSID", "()Ljava/lang/String;").toString();
+    if (currentSsid.startsWith(SSID_PREFIX))
+        return currentSsid.mid(strlen(SSID_PREFIX));
+#endif
+
+    return QString();
+}
+
+bool WifiManager::connectToServer(const QString &server)
+{
+    QString currentSsid = currentServer();
+    if (currentSsid == server)
+        return true;
+
+#ifdef Q_OS_ANDROID
+    QAndroidJniObject ssid = QAndroidJniObject::fromString(QString("\"%1%2\"").arg(SSID_PREFIX).arg(server));
+    QAndroidJniObject key = QAndroidJniObject::fromString("\"QSanguosha\"");
+
+    QAndroidJniObject configs = manager.callObjectMethod("getConfiguredNetworks", "()Ljava/util/List;");
+    int length = configs.callMethod<jint>("size");
+    int networkId = -1;
+    for (int i = 0; i < length; i++) {
+        QAndroidJniObject config = configs.callObjectMethod("get", "(I)Ljava/lang/Object;", i);
+        if (config.getObjectField("SSID", "Ljava/lang/String;").toString() == "TETSU") {
+            networkId = config.getField<jint>("networkId");
+            break;
+        }
+    }
+
+    if (networkId == -1) {
+        QAndroidJniObject config("android/net/wifi/WifiConfiguration");
+        config.setField<jstring>("SSID", ssid.object<jstring>());
+        config.setField<jstring>("preSharedKey", key.object<jstring>());
+
+        //@todo: Replace integer constants with constant identifiers
+        config.setField<jint>("status", 2);
+        QAndroidJniObject allowedGroupCiphers = config.getObjectField("allowedGroupCiphers", "Ljava/util/BitSet;");
+        allowedGroupCiphers.callMethod<void>("set", "(I)V", 2);
+        allowedGroupCiphers.callMethod<void>("set", "(I)V", 3);
+        QAndroidJniObject allowedKeyManagement = config.getObjectField("allowedKeyManagement", "Ljava/util/BitSet;");
+        allowedKeyManagement.callMethod<void>("set", "(I)V", 1);
+        QAndroidJniObject allowedPairwiseCiphers = config.getObjectField("allowedPairwiseCiphers", "Ljava/util/BitSet;");
+        allowedPairwiseCiphers.callMethod<void>("set", "(I)V", 1);
+        allowedPairwiseCiphers.callMethod<void>("set", "(I)V", 2);
+        QAndroidJniObject allowedProtocols = config.getObjectField("allowedProtocols", "Ljava/util/BitSet;");
+        allowedProtocols.callMethod<void>("set", "(I)V", 1);
+
+        networkId = manager.callMethod<jint>("addNetwork", "(Landroid/net/wifi/WifiConfiguration;)I", config.object());
+    }
+
+    return manager.callMethod<jboolean>("enableNetwork", "(IZ)Z", networkId, true);
+#else
     return false;
+#endif
 }

@@ -36,7 +36,6 @@
 #include "mainwindow.h"
 #include "audio.h"
 #include "stylehelper.h"
-#include "wifimanager.h"
 
 #ifndef WINDOWS
 #include <QDir>
