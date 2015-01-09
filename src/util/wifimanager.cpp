@@ -22,11 +22,25 @@ bool WifiManager::enableHotspot()
     setWifiEnabled(false);
 
     QAndroidJniObject ssid = QAndroidJniObject::fromString(QString("%1%2").arg(SSID_PREFIX).arg(mDeviceName));
-    QAndroidJniObject key = QAndroidJniObject::fromString("\"QSanguosha\"");
+    QAndroidJniObject key = QAndroidJniObject::fromString("QSanguosha");
 
     QAndroidJniObject config("android/net/wifi/WifiConfiguration");
     config.setField<jstring>("SSID", ssid.object<jstring>());
     config.setField<jstring>("preSharedKey", key.object<jstring>());
+
+    //@todo: Replace integer constants with constant identifiers
+    config.setField<jint>("status", 2);
+    QAndroidJniObject allowedGroupCiphers = config.getObjectField("allowedGroupCiphers", "Ljava/util/BitSet;");
+    allowedGroupCiphers.callMethod<void>("set", "(I)V", 2);
+    allowedGroupCiphers.callMethod<void>("set", "(I)V", 3);
+    QAndroidJniObject allowedKeyManagement = config.getObjectField("allowedKeyManagement", "Ljava/util/BitSet;");
+    allowedKeyManagement.callMethod<void>("set", "(I)V", 1);
+    QAndroidJniObject allowedPairwiseCiphers = config.getObjectField("allowedPairwiseCiphers", "Ljava/util/BitSet;");
+    allowedPairwiseCiphers.callMethod<void>("set", "(I)V", 1);
+    allowedPairwiseCiphers.callMethod<void>("set", "(I)V", 2);
+    QAndroidJniObject allowedProtocols = config.getObjectField("allowedProtocols", "Ljava/util/BitSet;");
+    allowedProtocols.callMethod<void>("set", "(I)V", 1);
+
     return manager.callMethod<jboolean>("setWifiApEnabled", "(Landroid/net/wifi/WifiConfiguration;Z)Z", config.object(), true);
 #else
     return false;
