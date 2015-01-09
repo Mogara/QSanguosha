@@ -1388,7 +1388,7 @@ public:
             if (triggerEvent == GeneralShown) {
                 if (player && player->isAlive() && player->hasLordSkill(objectName())) {
                     foreach (ServerPlayer *p, room->getAlivePlayers())
-                        if (p->willBeFriendWith(player) || p->getKingdom() == player->getKingdom())
+                        if (p->willBeFriendWith(player))
                             room->attachSkillToPlayer(p, "hongfa_slash");
                 } else {
                     ServerPlayer *lord = room->getLord(player->getKingdom());

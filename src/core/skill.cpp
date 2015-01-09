@@ -494,40 +494,40 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
         ArrayType type = skill->getArrayType();
         switch (type) {
         case Siege: {
-            if (player->isFriendWith(player->getNextAlive())
-                && player->isFriendWith(player->getLastAlive()))
-                return false;
-            if (!player->isFriendWith(player->getNextAlive())) {
-                if (!player->getNextAlive(2)->hasShownOneGeneral() && player->getNextAlive()->hasShownOneGeneral())
-                    return true;
-            }
-            if (!player->isFriendWith(player->getLastAlive()))
-                return !player->getLastAlive(2)->hasShownOneGeneral() && player->getLastAlive()->hasShownOneGeneral();
-        }
-            break;
-        case Formation: {
-            int n = player->aliveCount(false);
-            int asked = n;
-            for (int i = 1; i < n; ++i) {
-                Player *target = player->getNextAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else if (!target->hasShownOneGeneral())
-                    return true;
-                else {
-                    asked = i;
-                    break;
+                if (player->willBeFriendWith(player->getNextAlive())
+                    && player->willBeFriendWith(player->getLastAlive()))
+                    return false;
+                if (!player->willBeFriendWith(player->getNextAlive())) {
+                    if (!player->getNextAlive(2)->hasShownOneGeneral() && player->getNextAlive()->hasShownOneGeneral())
+                        return true;
                 }
+                if (!player->willBeFriendWith(player->getLastAlive()))
+                    return !player->getLastAlive(2)->hasShownOneGeneral() && player->getLastAlive()->hasShownOneGeneral();
+                break;
             }
-            n -= asked;
-            for (int i = 1; i < n; ++i) {
-                Player *target = player->getLastAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else return !target->hasShownOneGeneral();
+        case Formation: {
+                int n = player->aliveCount(false);
+                int asked = n;
+                for (int i = 1; i < n; ++i) {
+                    Player *target = player->getNextAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else if (!target->hasShownOneGeneral())
+                        return true;
+                    else {
+                        asked = i;
+                        break;
+                    }
+                }
+                n -= asked;
+                for (int i = 1; i < n; ++i) {
+                    Player *target = player->getLastAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else return !target->hasShownOneGeneral();
+                }
+                break;
             }
-        }
-            break;
         }
     }
     return false;

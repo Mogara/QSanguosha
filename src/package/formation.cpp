@@ -795,7 +795,7 @@ public:
         if (!use.card->isKindOf("Slash")) return skill_list;
         if (use.to.contains(player)) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-                if (p->isFriendWith(player) || p->willBeFriendWith(player))
+                if (p->willBeFriendWith(player))
                     skill_list.insert(p, QStringList(objectName()));
         }
         return skill_list;
@@ -856,7 +856,7 @@ public:
         QList<ServerPlayer *> yujis = room->findPlayersBySkillName(objectName());
         if (triggerEvent == Damaged && player->isAlive()) {
             foreach (ServerPlayer *yuji, yujis)
-                if (yuji->isFriendWith(player) || yuji->willBeFriendWith(player))
+                if (yuji->willBeFriendWith(player))
                     skill_list.insert(yuji, QStringList(objectName()));
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -866,7 +866,7 @@ public:
             if (use.to.length() != 1) return skill_list;
             foreach (ServerPlayer *yuji, yujis) {
                 if (yuji->getPile("sorcery").isEmpty()) continue;
-                if (yuji->isFriendWith(use.to.first()) || yuji->willBeFriendWith(use.to.first()))
+                if (yuji->willBeFriendWith(use.to.first()))
                     skill_list.insert(yuji, QStringList(objectName()));
             }
         }

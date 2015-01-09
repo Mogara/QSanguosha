@@ -1451,6 +1451,8 @@ bool Player::willBeFriendWith(const Player *player) const
 {
     if (this == player)
         return true;
+    if (isFriendWith(player))
+        return true;
     if (player == NULL)
         return false;
     if (!player->hasShownOneGeneral())
