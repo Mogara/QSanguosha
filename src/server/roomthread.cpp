@@ -505,14 +505,14 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 if (!broken) {
                     if (!trigger_who[NULL].isEmpty()) {
                         foreach (QString skill_name, trigger_who[NULL]) {
-                            const TriggerSkill *skill;
+                            const TriggerSkill *skill = NULL;
                             foreach (const TriggerSkill *rule, rules) { // because we cannot get a GameRule with Engine::getTriggerSkill()
                                 if (rule->objectName() == skill_name) {
                                     skill = rule;
                                     break;
                                 }
                             }
-                            Q_ASSERT(skill);
+                            Q_ASSERT(skill != NULL);
                             if (skill->cost(triggerEvent, room, target, data, NULL)) {
                                 broken = skill->effect(triggerEvent, room, target, data, NULL);
                                 if (broken)
