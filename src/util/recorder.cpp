@@ -70,10 +70,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     filename(filename), speed(1.0), playing(true)
 {
     QIODevice *device = NULL;
-    if (filename.endsWith(".png")) {
-        QByteArray *data = new QByteArray(PNG2TXT(filename));
-        device = new QBuffer(data);
-    } else if (filename.endsWith(".qsgs")) {
+    if (filename.endsWith(".qsgs")) {
         QFile *file = new QFile(filename);
         if (file->open(QFile::ReadOnly)) {
             char header;
@@ -88,8 +85,6 @@ Replayer::Replayer(QObject *parent, const QString &filename)
                 file->close();
                 device = file;
             }
-        } else {
-            return;
         }
     }
 
@@ -125,17 +120,6 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         pair_offset++;
     }
     duration = pairs.last().elapsed - time_offset;
-}
-
-QByteArray Replayer::PNG2TXT(const QString &filename) {
-    QImage image(filename);
-    image = image.convertToFormat(QImage::Format_ARGB32);
-    const uchar *imageData = image.bits();
-    qint32 actual_size = *(const qint32 *)imageData;
-    QByteArray data((const char *)(imageData + 4), actual_size);
-    data = qUncompress(data);
-
-    return data;
 }
 
 qreal Replayer::getSpeed() {

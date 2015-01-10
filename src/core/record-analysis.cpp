@@ -37,9 +37,6 @@ void RecAnalysis::initialize(const QString &dir) {
     QList<QByteArray> records_line;
     if (dir.isEmpty()) {
         records_line = ClientInstance->getRecords();
-    } else if (dir.endsWith(".png")) {
-        QByteArray data = Replayer::PNG2TXT(dir);
-        records_line = data.split('\n');
     } else if (dir.endsWith(".qsgs")) {
         QFile file(dir);
         if (file.open(QIODevice::ReadOnly)) {

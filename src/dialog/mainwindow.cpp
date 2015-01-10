@@ -653,7 +653,7 @@ void MainWindow::on_actionReplay_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a reply file"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty())
         return;
@@ -1112,7 +1112,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Load replay record"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty()) return;
 
