@@ -55,34 +55,14 @@ bool Recorder::save(const QString &filename) const{
         } else {
             return false;
         }
-    }
-    else if (filename.endsWith(".png")) {
-        return TXT2PNG(data).save(filename);
-    }
-    else
+    } else {
         return false;
+    }
 }
 
 QList<QByteArray> Recorder::getRecords() const{
     QList<QByteArray> records = data.split('\n');
     return records;
-}
-
-QImage Recorder::TXT2PNG(const QByteArray &txtData) {
-    QByteArray data = qCompress(txtData, 9);
-    qint32 actual_size = data.size();
-    data.prepend((const char *)&actual_size, sizeof(qint32));
-
-    // actual data = width * height - padding
-    int width = ceil(sqrt((double)data.size()));
-    int height = width;
-    int padding = width * height - data.size();
-    QByteArray paddingData;
-    paddingData.fill('\0', padding);
-    data.append(paddingData);
-
-    QImage image((const uchar *)data.constData(), width, height, QImage::Format_ARGB32);
-    return image;
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
