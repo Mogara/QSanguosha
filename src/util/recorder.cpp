@@ -49,10 +49,12 @@ void Recorder::recordLine(const QByteArray &line) {
 bool Recorder::save(const QString &filename) const{
     if (filename.endsWith(".qsgs")) {
         QFile file(filename);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-            return file.write(data) != -1;
-        else
+        if (file.open(QIODevice::WriteOnly)) {
+            file.putChar('\0');
+            return file.write(qCompress(data)) != -1;
+        } else {
             return false;
+        }
     }
     else if (filename.endsWith(".png")) {
         return TXT2PNG(data).save(filename);
@@ -90,12 +92,25 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     QIODevice *device = NULL;
     if (filename.endsWith(".png")) {
         QByteArray *data = new QByteArray(PNG2TXT(filename));
-        QBuffer *buffer = new QBuffer(data);
-        device = buffer;
-    }
-    else if (filename.endsWith(".qsgs")) {
+        device = new QBuffer(data);
+    } else if (filename.endsWith(".qsgs")) {
         QFile *file = new QFile(filename);
-        device = file;
+        if (file->open(QFile::ReadOnly)) {
+            char header;
+            file->getChar(&header);
+            if (header == '\0') {
+                QByteArray content = file->readAll();
+                delete file;
+
+                QByteArray *data = new QByteArray(qUncompress(content));
+                device = new QBuffer(data);
+            } else {
+                file->close();
+                device = file;
+            }
+        } else {
+            return;
+        }
     }
 
     if (device == NULL)
