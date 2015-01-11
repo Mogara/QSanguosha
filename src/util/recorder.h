@@ -56,8 +56,6 @@ public:
 
     QString getPath() const;
 
-    int m_commandSeriesCounter;
-
 public slots:
     void uniform();
     void toggle();

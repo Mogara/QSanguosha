@@ -66,8 +66,8 @@ QList<QByteArray> Recorder::getRecords() const{
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
-    : QThread(parent), m_commandSeriesCounter(1),
-    filename(filename), speed(1.0), playing(true)
+    : QThread(parent),
+      filename(filename), speed(1.0), playing(true)
 {
     QIODevice *device = NULL;
     if (filename.endsWith(".qsgs")) {
