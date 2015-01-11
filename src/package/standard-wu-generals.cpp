@@ -431,9 +431,12 @@ void JieyinCard::onEffect(const CardEffectStruct &effect) const{
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
-
-    room->recover(effect.from, recover, true);
-    room->recover(effect.to, recover, true);
+    
+    QList<ServerPlayer *> targets;
+    targets << effect.from << effect.to;
+    room->sortByActionOrder(targets);
+    foreach (ServerPlayer *target, targets)
+        room->recover(target, recover, true);
 }
 
 class Jieyin : public ViewAsSkill {
