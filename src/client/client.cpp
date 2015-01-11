@@ -161,7 +161,7 @@ Client::Client(QObject *parent, const QString &filename)
     if (!filename.isEmpty()) {
         socket = NULL;
 
-        replayer = new Replayer(this, filename);
+        replayer = new Replayer(filename, this);
         connect(replayer, &Replayer::command_parsed, this, &Client::processServerPacket);
     } else {
         socket = new NativeClientSocket(this);

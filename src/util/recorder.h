@@ -49,7 +49,7 @@ class Replayer : public QThread {
     Q_OBJECT
 
 public:
-    explicit Replayer(QObject *parent, const QString &filename);
+    explicit Replayer(const QString &filename, QObject *parent);
 
     int getDuration() const { return duration / 1000; }
     qreal getSpeed();

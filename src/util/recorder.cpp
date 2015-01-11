@@ -64,7 +64,7 @@ QList<QByteArray> Recorder::getRecords() const{
     return records;
 }
 
-Replayer::Replayer(QObject *parent, const QString &filename)
+Replayer::Replayer(const QString &filename, QObject *parent)
     : QThread(parent),
       filename(filename), speed(1.0), playing(true)
 {
