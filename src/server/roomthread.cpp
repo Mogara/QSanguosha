@@ -283,7 +283,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 trskill = Sanguosha->getTriggerSkill(skill.split("'").last()); // "sgs1'songwei"
                             if (!trskill)
                                 trskill = Sanguosha->getTriggerSkill(skill.split("->").first()); // "tieqi->sgs4+sgs8+sgs1+sgs2"
-                            if (trskill && p->hasShownSkill(skill)
+                            if (trskill && p->hasShownSkill(trskill)
                                 && (trskill->getFrequency() == Skill::Compulsory
                                     //|| trskill->getFrequency() == Skill::NotCompulsory //for Paoxia, Anjian, etc.
                                     || trskill->getFrequency() == Skill::Wake)) {
