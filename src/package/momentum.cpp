@@ -735,24 +735,6 @@ public:
     }
 };
 
-class Yinghun_Sunce : public Yinghun{
-public:
-    Yinghun_Sunce() : Yinghun(){
-        setObjectName("yinghun_sunce");
-    }
-};
-
-class Yingzi_Sunce : public Yingzi{
-public:
-    Yingzi_Sunce() : Yingzi(){
-        setObjectName("yingzi_sunce");
-    }
-
-    virtual bool canPreshow() const {
-        return false;
-    }
-};
-
 class Hunshang : public TriggerSkill {
 public:
     Hunshang() : TriggerSkill("hunshang") {
@@ -1568,7 +1550,7 @@ MomentumPackage::MomentumPackage()
     lord_zhangjiao->addSkill(new Hongfa);
     lord_zhangjiao->addSkill(new Wendao);
 
-    skills << new Yongjue << new YongjueClear << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
+    skills << new Yongjue << new YongjueClear << new Benghuai << new HongfaSlash << new Yinghun("sunce") << new Yingzi("sunce", false);
     insertRelatedSkills("yongjue", "#yongjue-clear");
 
     addMetaObject<CunsiCard>();

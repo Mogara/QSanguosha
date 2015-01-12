@@ -380,7 +380,7 @@ end
 sgs.ai_use_priority.KurouCard = 6.8
 
 
-sgs.ai_skill_invoke.yingzi = function(self, data)
+sgs.ai_skill_invoke.yingzi_zhouyu = function(self, data)
 
 	if not self:willShowForAttack() and not self:willShowForDefence() then
 		return false
@@ -488,7 +488,7 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 	if self.player:hasSkills("fenming|zhiheng|fenxun|keji") then
 		DuoTime = 1
 	end
-	if self.player:hasSkills("hongyan|yingzi") then
+	if self.player:hasSkills("hongyan|yingzi_zhouyu|yingzi_sunce") then
 		DuoTime = 3
 	end
 	if self.player:hasSkills("xiaoji|haoshi") then
@@ -946,7 +946,7 @@ sgs.xiaoji_keep_value = {
 
 sgs.ai_cardneed.xiaoji = sgs.ai_cardneed.equip
 
-sgs.ai_skill_playerchosen.yinghun = function(self, targets)
+sgs.ai_skill_playerchosen.yinghun_sunjian = function(self, targets)
 
 	if not self:willShowForAttack() and not self:willShowForDefence() then
 		return nil
@@ -1117,17 +1117,17 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 	return self.yinghun
 end
 
-sgs.ai_skill_choice.yinghun = function(self, choices)
+sgs.ai_skill_choice.yinghun_sunjian = function(self, choices)
 	return self.yinghunchoice
 end
 
-sgs.ai_playerchosen_intention.yinghun = function(self, from, to)
+sgs.ai_playerchosen_intention.yinghun_sunjian = function(self, from, to)
 	if from:getLostHp() > 1 then return end
 	local intention = -80
 	sgs.updateIntention(from, to, intention)
 end
 
-sgs.ai_choicemade_filter.skillChoice.yinghun = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillChoice.yinghun_sunjian = function(self, player, promptlist)
 	local to
 	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		if p:hasFlag("YinghunTarget") then
@@ -1192,7 +1192,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		if (friend:getLostHp() + dmg.damage > 1 and friend:isAlive()) then
 			if friend:isChained() and dmg.nature ~= sgs.DamageStruct_Normal and not self:isGoodChainTarget(friend, dmg.from, dmg.nature, dmg.damage, dmg.card) then
 			elseif friend:getHp() >= 2 and dmg.damage < 2
-					and (friend:hasShownSkills("yiji|buqu|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu")
+					and (friend:hasShownSkills("yiji|buqu|shuangxiong|zaiqi|yinghun_sunjian|yinghun_sunce|jianxiong|fangzhu")
 						or self:getDamagedEffects(friend, dmg.from or self.room:getCurrent())
 						or self:needToLoseHp(friend)
 						or (friend:getHandcardNum() < 3 and friend:hasShownSkill("rende"))) then
@@ -1242,7 +1242,7 @@ sgs.ai_card_intention.TianxiangCard = function(self, card, from, tos)
 	if self:getDamagedEffects(to) or self:needToLoseHp(to) then return end
 	local intention = 10
 	if hasBuquEffect(to) then intention = 0
-	elseif (to:getHp() >= 2 and to:hasShownSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu"))
+	elseif (to:getHp() >= 2 and to:hasShownSkills("yiji|shuangxiong|zaiqi|yinghun_sunjian|yinghun_sunce|jianxiong|fangzhu"))
 		or to:getHandcardNum() < 3 and to:hasShownSkill("rende") then
 		intention = -10
 	end
@@ -1468,7 +1468,7 @@ end
 sgs.ai_skill_invoke.haoshi = function(self, data)
 	self.haoshi_target = nil
 	local extra = 0
-	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1 }
+	local draw_skills = { ["yingzi_zhouyu"] = 1, ["yingzi_sunce"] = 1, ["luoyi"] = -1 }
 	for skill_name, n in ipairs(draw_skills) do
 		if self.player:hasSkill(skill_name) then
 			local skill = sgs.Sanguosha:getSkill(skill_name)

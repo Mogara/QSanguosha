@@ -783,7 +783,7 @@ function sgs.getDefense(player)
 		end
 	end
 
-	if player:hasShownSkill("yinghun") and player:getLostHp() > 0 then defense = defense + player:getLostHp() - 0.5 end
+	if player:hasShownSkills("yinghun_sunjian|yinghun_sunce") and player:getLostHp() > 0 then defense = defense + player:getLostHp() - 0.5 end
 	if player:hasShownSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
 	if player:hasShownSkill("buqu") then defense = defense + math.max(4 - player:getPile("buqu"):length(), 0) end
 	if player:hasShownSkill("guzheng") then defense = defense + 1 end
@@ -4577,7 +4577,7 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 			n = math.min(n, to:getMaxHp() - 1)
 		elseif to:hasShownSkill("hengzheng") and sgs.ai_skill_invoke.hengzheng(sgs.ais[to:objectName()]) then
 			n = math.min(n, to:getMaxHp() - 1)
-		elseif to:hasShownSkills("yinghun|zaiqi") then
+		elseif to:hasShownSkills("yinghun_sunjian|yinghun_sunce|zaiqi") then
 			n = math.min(n, to:getMaxHp() - 1)
 		end
 	end
@@ -4959,7 +4959,8 @@ function SmartAI:ImitateResult_DrawNCards(player, skills)
 			elseif skillname == "shuangxiong" then return 1
 			elseif skillname == "zaiqi" then return math.floor(player:getLostHp() * 3 / 4)
 			elseif skillname == "luoyi" then count = count - 1
-			elseif skillname == "yingzi" then count = count + 1
+			elseif skillname == "yingzi_sunce" then count = count + 1
+			elseif skillname == "yingzi_zhouyu" then count = count + 1
 			elseif skillname == "haoshi" then count = count + 2 end
 		end
 	end

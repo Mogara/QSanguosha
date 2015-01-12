@@ -159,8 +159,12 @@ public:
     }
 };
 
-Yingzi::Yingzi() : DrawCardsSkill("yingzi") {
+Yingzi::Yingzi(const QString &owner, bool can_preshow) : DrawCardsSkill("yingzi_" + owner), m_canPreshow(can_preshow) {
     frequency = Frequent;
+}
+
+bool Yingzi::canPreshow() const{
+    return m_canPreshow;
 }
 
 bool Yingzi::cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
@@ -498,7 +502,7 @@ public:
     }
 };
 
-Yinghun::Yinghun() : PhaseChangeSkill("yinghun") {
+Yinghun::Yinghun(const QString &owner) : PhaseChangeSkill("yinghun_" + owner) {
 }
 
 bool Yinghun::canPreshow() const {
