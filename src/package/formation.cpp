@@ -740,10 +740,9 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const {
-        room->notifySkillInvoked(ask_who, objectName());
+        room->sendCompulsoryTriggerLog(ask_who, objectName(), true);
         CardUseStruct use = data.value<CardUseStruct>();
         int x = use.to.indexOf(skill_target);
-        // log??
         QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
         if (jink_list.at(x).toInt() == 1)
             jink_list[x] = 2;
@@ -752,35 +751,6 @@ public:
         return false;
     }
 };
-/*
-class Niaoxiang : public BattleArraySkill {
-public:
-    Niaoxiang() : BattleArraySkill("niaoxiang", HegemonyMode::Siege) {
-        events << TargetChosen;
-    }
-
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (!player->hasShownSkill(this) || player->aliveCount() < 4) return QStringList();
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash")) {
-            for (int i = 0; i < use.to.length(); i++) {
-                ServerPlayer *victim = use.to.at(i);
-                if (use.from->inSiegeRelation(player, victim)) {
-                    room->notifySkillInvoked(player, objectName());
-                    room->broadcastSkillInvoke(objectName(), player);
-                    QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
-                    if (jink_list.at(i).toInt() == 1)
-                        jink_list.replace(i, QVariant(2));
-                    use.from->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
-                }
-            }
-        }
-
-        return QStringList();
-    }
-};
-*/
 
 class Yicheng : public TriggerSkill {
 public:
