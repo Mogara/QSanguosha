@@ -794,8 +794,9 @@ QianhuanCard::QianhuanCard(){
     handling_method = Card::MethodNone;
 }
 
-void QianhuanCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    source->tag["qianhuan_cancel"] = subcards.first();
+void QianhuanCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &) const{
+    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
+    room->throwCard(Sanguosha->getCard(subcards.first()), reason, NULL);
 }
 
 class QianhuanVS : public OneCardViewAsSkill{
@@ -865,13 +866,7 @@ public:
             prompt_list << use.to.first()->objectName();
             prompt_list << use.card->objectName();
             prompt = prompt_list.join(":");
-            yuji->tag.remove("qianhuan_cancel");
             if (room->askForUseCard(yuji, "@@qianhuan", prompt, -1, Card::MethodNone)) {
-                int id = yuji->tag["qianhuan_cancel"].toInt();
-                yuji->tag.remove("qianhuan_cancel");
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
-                room->throwCard(Sanguosha->getCard(id), reason, NULL);
-
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yuji->objectName(), use.to.first()->objectName());
                 invoke = true;
             }
