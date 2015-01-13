@@ -53,7 +53,7 @@ public:
         ZeroDamaged = 0x800
     };
 
-    void initialize(const QString &dir = QString());
+    void initialize(const QString &fileName = QString());
     PlayerRecordStruct *getPlayerRecord(const Player *player) const;
     QMap<QString, PlayerRecordStruct *> getRecordMap() const;
     QStringList getRecordPackages() const;

@@ -28,180 +28,262 @@
 
 using namespace QSanProtocol;
 
-Recorder::Recorder(QObject *parent)
-    : QObject(parent)
+Record::Record(QObject *parent)
+    :QObject(parent), mFormat(CompressedText)
 {
-    watch.start();
+}
+
+Record::Record(const QString &fileName, QObject *parent)
+    :QObject(parent), mFileName(fileName), mFormat(CompressedText)
+{
+}
+
+void Record::addCommand(int elapsed, const QByteArray &data)
+{
+    Command command;
+    command.elapsed = elapsed;
+    command.data = data;
+    addCommand(command);
+}
+
+bool Record::open()
+{
+    QIODevice *device = new QFile(mFileName);
+    if (!device->open(QFile::ReadOnly))
+        return false;
+
+    char header;
+    device->getChar(&header);
+    if (header == '\0') {
+        mFormat = CompressedText;
+        QByteArray content = device->readAll();
+        delete device;
+
+        QByteArray *data = new QByteArray(qUncompress(content));
+        device = new QBuffer(data);
+        device->open(QFile::ReadOnly);
+    } else {
+        mFormat = PlainText;
+        device->ungetChar(header);
+        device->seek(0);
+    }
+
+    mCommands.clear();
+    while (!device->atEnd()) {
+        QByteArray line = device->readLine();
+        int split = line.indexOf(' ');
+
+        Command command;
+        command.elapsed = line.left(split).toInt();
+        command.data = line.mid(split + 1);
+
+        mCommands << command;
+    }
+
+    return true;
+}
+
+bool Record::open(const QString &fileName)
+{
+    mFileName = fileName;
+    return open();
+}
+
+bool Record::save() const
+{
+    return saveAs(mFileName);
+}
+
+bool Record::saveAs(const QString &fileName) const
+{
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly))
+        return false;
+
+    switch (format()) {
+    case CompressedText:{
+        QByteArray data;
+        foreach (const Command &command, mCommands) {
+            data.append(QByteArray::number(command.elapsed));
+            data.append(' ');
+            data.append(command.data);
+            if (!command.data.endsWith('\n'))
+                data.append('\n');
+        }
+
+        file.putChar('\0');
+        file.write(qCompress(data));
+        break;
+    }
+    case PlainText:{
+        foreach (const Command &command, mCommands) {
+            file.write(QByteArray::number(command.elapsed));
+            file.putChar(' ');
+            file.write(command.data);
+            if (!command.data.endsWith('\n'))
+                file.putChar('\n');
+        }
+        break;
+    }
+    default:
+        return false;
+    }
+
+    file.close();
+    return true;
+}
+
+Recorder::Recorder(QObject *parent)
+    : QObject(parent), mRecord(new Record(this))
+{
+    mWatch.start();
+}
+
+Recorder::Recorder(Record *parent)
+    : QObject(parent), mRecord(parent)
+{
+    mWatch.start();
 }
 
 void Recorder::recordLine(const QByteArray &line) {
     if (line.isEmpty())
         return;
 
-    data.append(QString::number(watch.elapsed()));
-    data.append(' ');
-    data.append(line);
-    if (!line.endsWith('\n'))
-        data.append('\n');
+    mRecord->addCommand(mWatch.elapsed(), line);
 }
 
-bool Recorder::save(const QString &filename) const{
-    if (filename.endsWith(".qsgs")) {
-        QFile file(filename);
-        if (file.open(QIODevice::WriteOnly)) {
-            file.putChar('\0');
-            return file.write(qCompress(data)) != -1;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
-
-QList<QByteArray> Recorder::getRecords() const{
-    QList<QByteArray> records = data.split('\n');
-    return records;
-}
-
-Replayer::Replayer(const QString &filename, QObject *parent)
-    : QThread(parent),
-      filename(filename), speed(1.0), playing(true)
+QList<QByteArray> Recorder::getRecords() const
 {
-    QIODevice *device = NULL;
-    if (filename.endsWith(".qsgs")) {
-        QFile *file = new QFile(filename);
-        if (file->open(QFile::ReadOnly)) {
-            char header;
-            file->getChar(&header);
-            if (header == '\0') {
-                QByteArray content = file->readAll();
-                delete file;
+    QList<QByteArray> data;
+    foreach (const Record::Command &command, mRecord->commands())
+        data << command.data;
+    return data;
+}
 
-                QByteArray *data = new QByteArray(qUncompress(content));
-                device = new QBuffer(data);
-            } else {
-                file->close();
-                device = file;
-            }
-        }
-    }
+Replayer::Replayer(QObject *parent)
+    : QThread(parent), mRecord(NULL), mSpeed(1.0), mIsPlaying(true)
+{
+}
 
-    if (device == NULL)
+Replayer::Replayer(Record *record)
+    : QThread(record), mSpeed(1.0), mIsPlaying(true)
+{
+    setRecord(record);
+}
+
+Replayer::Replayer(const QString &fileName, QObject *parent)
+    : QThread(parent), mSpeed(1.0), mIsPlaying(true)
+{
+    Record *record = new Record(fileName, this);
+    if (record->open())
+        setRecord(record);
+}
+
+void Replayer::setRecord(Record *record)
+{
+    mRecord = record;
+    if (record == NULL)
         return;
 
-    if (!device->open(QIODevice::ReadOnly | QIODevice::Text))
+    const QList<Record::Command> &commands = mRecord->commands();
+    if (commands.isEmpty())
         return;
-
-    while (!device->atEnd()) {
-        QByteArray line = device->readLine();
-        int split = line.indexOf(' ');
-
-        Pair pair;
-        pair.elapsed = line.left(split).toInt();
-        pair.cmd = line.mid(split + 1);
-
-        pairs << pair;
-    }
-
-    delete device;
 
     int time_offset = 0;
-    pair_offset = 0;
-    foreach (const Pair &pair, pairs) {
+    mPairOffset = 0;
+    foreach (const Record::Command &command, commands) {
         Packet packet;
-        if (packet.parse(pair.cmd)) {
+        if (packet.parse(command.data)) {
             if (packet.getCommandType() == S_COMMAND_START_IN_X_SECONDS) {
-                time_offset = pair.elapsed;
+                time_offset = command.elapsed;
                 break;
             }
         }
-        pair_offset++;
+        mPairOffset++;
     }
-    duration = pairs.last().elapsed - time_offset;
+    mDuration = commands.last().elapsed - time_offset;
 }
 
 qreal Replayer::getSpeed() {
     qreal speed;
-    mutex.lock();
-    speed = this->speed;
-    mutex.unlock();
+    mMutex.lock();
+    speed = mSpeed;
+    mMutex.unlock();
     return speed;
 }
 
 void Replayer::uniform() {
-    mutex.lock();
+    mMutex.lock();
 
-    if (speed != 1.0) {
-        speed = 1.0;
-        emit speed_changed(1.0);
+    if (mSpeed != 1.0) {
+        mSpeed = 1.0;
+        emit speedChanged(1.0);
     }
 
-    mutex.unlock();
+    mMutex.unlock();
 }
 
 void Replayer::speedUp() {
-    mutex.lock();
+    mMutex.lock();
 
-    if (speed < 6.0) {
-        qreal inc = speed >= 2.0 ? 1.0 : 0.5;
-        speed += inc;
-        emit speed_changed(speed);
+    if (mSpeed < 6.0) {
+        qreal inc = mSpeed >= 2.0 ? 1.0 : 0.5;
+        mSpeed += inc;
+        emit speedChanged(mSpeed);
     }
 
-    mutex.unlock();
+    mMutex.unlock();
 }
 
 void Replayer::slowDown() {
-    mutex.lock();
+    mMutex.lock();
 
-    if (speed >= 1.0) {
-        qreal dec = speed > 2.0 ? 1.0 : 0.5;
-        speed -= dec;
-        emit speed_changed(speed);
+    if (mSpeed >= 1.0) {
+        qreal dec = mSpeed > 2.0 ? 1.0 : 0.5;
+        mSpeed -= dec;
+        emit speedChanged(mSpeed);
     }
 
-    mutex.unlock();
+    mMutex.unlock();
 }
 
 void Replayer::toggle() {
-    playing = !playing;
-    if (playing)
-        play_sem.release(); // to play
+    mIsPlaying = !mIsPlaying;
+    if (mIsPlaying)
+        mPlaySemaphore.release(); // to play
 }
 
 void Replayer::run() {
-    int i = 0;
-    const int pair_num = pairs.length();
+    const QList<Record::Command> &commands = mRecord->commands();
+    if (commands.isEmpty())
+        return;
 
-    while (i < pair_offset) {
-        const Pair &pair = pairs.at(i);
-        emit command_parsed(pair.cmd);
+    const int pair_num = commands.length();
+
+    int i = 0;
+    while (i < mPairOffset) {
+        const Record::Command &command = commands.at(i);
+        emit commandParsed(command.data);
         i++;
     }
 
     int last = 0;
-    const int time_offset = pairs.at(pair_offset).elapsed;
+    const int time_offset = commands.at(mPairOffset).elapsed;
     while (i < pair_num) {
-        const Pair &pair = pairs.at(i);
+        const Record::Command &command = commands.at(i);
 
-        int delay = qMax(0, qMin(pair.elapsed - last, 2500));
+        int delay = qMax(0, qMin(command.elapsed - last, 2500));
         delay /= getSpeed();
         msleep(delay);
 
-        emit elasped((pair.elapsed - time_offset) / 1000);
+        emit elasped((command.elapsed - time_offset) / 1000);
 
-        if (!playing)
-            play_sem.acquire();
+        if (!mIsPlaying)
+            mPlaySemaphore.acquire();
 
-        emit command_parsed(pair.cmd);
+        emit commandParsed(command.data);
 
-        last = pair.elapsed;
+        last = command.elapsed;
         i++;
     }
 }
-
-QString Replayer::getPath() const{
-    return filename;
-}
-

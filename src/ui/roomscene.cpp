@@ -711,7 +711,7 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard) {
     connect(slow_down, &QSanButton::clicked, replayer, &Replayer::slowDown);
     connect(speed_up, &QSanButton::clicked, replayer, &Replayer::speedUp);
     connect(replayer, &Replayer::elasped, this, &ReplayerControlBar::setTime);
-    connect(replayer, &Replayer::speed_changed, this, &ReplayerControlBar::setSpeed);
+    connect(replayer, &Replayer::speedChanged, this, &ReplayerControlBar::setSpeed);
 
     speed = replayer->getSpeed();
     setParentItem(dashboard);

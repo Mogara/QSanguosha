@@ -33,28 +33,20 @@ RecAnalysis::RecAnalysis(const QString &dir) : m_recordPlayers(0), m_currentPlay
     initialize(dir);
 }
 
-void RecAnalysis::initialize(const QString &dir) {
+void RecAnalysis::initialize(const QString &fileName) {
     QList<QByteArray> records_line;
-    if (dir.isEmpty()) {
+    if (fileName.isEmpty()) {
         records_line = ClientInstance->getRecords();
-    } else if (dir.endsWith(".qsgs")) {
-        QFile file(dir);
-        if (file.open(QIODevice::ReadOnly)) {
-            char header;
-            file.getChar(&header);
-            if (header == 0) {
-                QByteArray lines = file.readAll();
-                lines = qUncompress(lines);
-                records_line = lines.split('\n');
-            } else {
-                file.ungetChar(header);
-                while (!file.atEnd())
-                    records_line << file.readLine();
-            }
-        }
     } else {
-        QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
-        return;
+        Record record(fileName);
+        if (!record.open()) {
+            QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
+            return;
+        }
+
+        const QList<Record::Command> &commands = record.commands();
+        foreach (const Record::Command &command, commands)
+            records_line << command.data;
     }
     records_line.removeAll(QByteArray());
 

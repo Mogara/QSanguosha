@@ -1074,33 +1074,20 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
         return;
 
     foreach (const QString &filename, filenames) {
-        QFile file(filename);
-        if (file.open(QIODevice::ReadOnly)) {
+        Record record(filename);
+        if (record.open()) {
             QFileInfo info(filename);
-            QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
+            QString tosave = info.dir().absoluteFilePath(info.baseName());
 
-            char header;
-            file.getChar(&header);
-            if (header == '\0') {
-                QByteArray content = file.readAll();
-                content = qUncompress(content);
-
+            if (record.format() == Record::CompressedText) {
                 tosave.append("-uncompressed.qsgs");
-                QFile file(tosave);
-                if (file.open(QFile::WriteOnly | QFile::Text))
-                    file.write(content);
+                record.setFormat(Record::PlainText);
             } else {
-                file.ungetChar(header);
-                QByteArray content = file.readAll();
-                content = qCompress(content);
-
                 tosave.append("-compressed.qsgs");
-                QFile file(tosave);
-                if (file.open(QFile::WriteOnly)) {
-                    file.putChar('\0');
-                    file.write(content);
-                }
+                record.setFormat(Record::CompressedText);
             }
+
+            record.saveAs(tosave);
         }
     }
 }
