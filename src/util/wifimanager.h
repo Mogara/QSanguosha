@@ -19,7 +19,7 @@ public:
     QString currentServer() const;
 
 private:
-    QString mDeviceName;
+    QString m_deviceName;
     static const char *SSID_PREFIX;
 };
 

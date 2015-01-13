@@ -29,12 +29,12 @@
 using namespace QSanProtocol;
 
 Record::Record(QObject *parent)
-    :QObject(parent), mFormat(CompressedText)
+    :QObject(parent), m_format(CompressedText)
 {
 }
 
 Record::Record(const QString &fileName, QObject *parent)
-    :QObject(parent), mFileName(fileName), mFormat(CompressedText)
+    :QObject(parent), m_fileName(fileName), m_format(CompressedText)
 {
 }
 
@@ -48,14 +48,14 @@ void Record::addCommand(int elapsed, const QByteArray &data)
 
 bool Record::open()
 {
-    QIODevice *device = new QFile(mFileName);
+    QIODevice *device = new QFile(m_fileName);
     if (!device->open(QFile::ReadOnly))
         return false;
 
     char header;
     device->getChar(&header);
     if (header == '\0') {
-        mFormat = CompressedText;
+        m_format = CompressedText;
         QByteArray content = device->readAll();
         delete device;
 
@@ -63,12 +63,12 @@ bool Record::open()
         device = new QBuffer(data);
         device->open(QFile::ReadOnly);
     } else {
-        mFormat = PlainText;
+        m_format = PlainText;
         device->ungetChar(header);
         device->seek(0);
     }
 
-    mCommands.clear();
+    m_commands.clear();
     while (!device->atEnd()) {
         QByteArray line = device->readLine();
         int split = line.indexOf(' ');
@@ -77,7 +77,7 @@ bool Record::open()
         command.elapsed = line.left(split).toInt();
         command.data = line.mid(split + 1);
 
-        mCommands << command;
+        m_commands << command;
     }
 
     return true;
@@ -85,13 +85,13 @@ bool Record::open()
 
 bool Record::open(const QString &fileName)
 {
-    mFileName = fileName;
+    m_fileName = fileName;
     return open();
 }
 
 bool Record::save() const
 {
-    return saveAs(mFileName);
+    return saveAs(m_fileName);
 }
 
 bool Record::saveAs(const QString &fileName) const
@@ -103,7 +103,7 @@ bool Record::saveAs(const QString &fileName) const
     switch (format()) {
     case CompressedText:{
         QByteArray data;
-        foreach (const Command &command, mCommands) {
+        foreach (const Command &command, m_commands) {
             data.append(QByteArray::number(command.elapsed));
             data.append(' ');
             data.append(command.data);
@@ -116,7 +116,7 @@ bool Record::saveAs(const QString &fileName) const
         break;
     }
     case PlainText:{
-        foreach (const Command &command, mCommands) {
+        foreach (const Command &command, m_commands) {
             file.write(QByteArray::number(command.elapsed));
             file.putChar(' ');
             file.write(command.data);
@@ -134,37 +134,37 @@ bool Record::saveAs(const QString &fileName) const
 }
 
 Recorder::Recorder(QObject *parent)
-    : QObject(parent), mRecord(new Record(this))
+    : QObject(parent), m_record(new Record(this))
 {
-    mWatch.start();
+    m_watch.start();
 }
 
 Recorder::Recorder(Record *parent)
-    : QObject(parent), mRecord(parent)
+    : QObject(parent), m_record(parent)
 {
-    mWatch.start();
+    m_watch.start();
 }
 
 void Recorder::recordLine(const QByteArray &line) {
     if (line.isEmpty())
         return;
 
-    mRecord->addCommand(mWatch.elapsed(), line);
+    m_record->addCommand(m_watch.elapsed(), line);
 }
 
 Replayer::Replayer(QObject *parent)
-    : QThread(parent), mRecord(NULL), mSpeed(1.0), mIsPlaying(true)
+    : QThread(parent), m_record(NULL), m_speed(1.0), m_isPlaying(true)
 {
 }
 
 Replayer::Replayer(Record *record)
-    : QThread(record), mSpeed(1.0), mIsPlaying(true)
+    : QThread(record), m_speed(1.0), m_isPlaying(true)
 {
     setRecord(record);
 }
 
 Replayer::Replayer(const QString &fileName, QObject *parent)
-    : QThread(parent), mSpeed(1.0), mIsPlaying(true)
+    : QThread(parent), m_speed(1.0), m_isPlaying(true)
 {
     Record *record = new Record(fileName, this);
     if (record->open())
@@ -173,16 +173,16 @@ Replayer::Replayer(const QString &fileName, QObject *parent)
 
 void Replayer::setRecord(Record *record)
 {
-    mRecord = record;
+    m_record = record;
     if (record == NULL)
         return;
 
-    const QList<Record::Command> &commands = mRecord->commands();
+    const QList<Record::Command> &commands = m_record->commands();
     if (commands.isEmpty())
         return;
 
     int time_offset = 0;
-    mCommandOffset = 0;
+    m_commandOffset = 0;
     foreach (const Record::Command &command, commands) {
         Packet packet;
         if (packet.parse(command.data)) {
@@ -191,76 +191,76 @@ void Replayer::setRecord(Record *record)
                 break;
             }
         }
-        mCommandOffset++;
+        m_commandOffset++;
     }
-    mDuration = commands.last().elapsed - time_offset;
+    m_duration = commands.last().elapsed - time_offset;
 }
 
 qreal Replayer::getSpeed() {
     qreal speed;
-    mMutex.lock();
-    speed = mSpeed;
-    mMutex.unlock();
+    m_mutex.lock();
+    speed = m_speed;
+    m_mutex.unlock();
     return speed;
 }
 
 void Replayer::uniform() {
-    mMutex.lock();
+    m_mutex.lock();
 
-    if (mSpeed != 1.0) {
-        mSpeed = 1.0;
+    if (m_speed != 1.0) {
+        m_speed = 1.0;
         emit speedChanged(1.0);
     }
 
-    mMutex.unlock();
+    m_mutex.unlock();
 }
 
 void Replayer::speedUp() {
-    mMutex.lock();
+    m_mutex.lock();
 
-    if (mSpeed < 6.0) {
-        qreal inc = mSpeed >= 2.0 ? 1.0 : 0.5;
-        mSpeed += inc;
-        emit speedChanged(mSpeed);
+    if (m_speed < 6.0) {
+        qreal inc = m_speed >= 2.0 ? 1.0 : 0.5;
+        m_speed += inc;
+        emit speedChanged(m_speed);
     }
 
-    mMutex.unlock();
+    m_mutex.unlock();
 }
 
 void Replayer::slowDown() {
-    mMutex.lock();
+    m_mutex.lock();
 
-    if (mSpeed >= 1.0) {
-        qreal dec = mSpeed > 2.0 ? 1.0 : 0.5;
-        mSpeed -= dec;
-        emit speedChanged(mSpeed);
+    if (m_speed >= 1.0) {
+        qreal dec = m_speed > 2.0 ? 1.0 : 0.5;
+        m_speed -= dec;
+        emit speedChanged(m_speed);
     }
 
-    mMutex.unlock();
+    m_mutex.unlock();
 }
 
 void Replayer::toggle() {
-    mIsPlaying = !mIsPlaying;
-    if (mIsPlaying)
-        mPlaySemaphore.release(); // to play
+    m_isPlaying = !m_isPlaying;
+    if (m_isPlaying)
+        m_playSemaphore.release(); // to play
 }
 
 void Replayer::run() {
-    const QList<Record::Command> &commands = mRecord->commands();
+    const QList<Record::Command> &commands = m_record->commands();
     if (commands.isEmpty())
         return;
 
     const int pair_num = commands.length();
 
     int i = 0;
-    while (i < mCommandOffset) {
+    while (i < m_commandOffset) {
         const Record::Command &command = commands.at(i);
         emit commandParsed(command.data);
         i++;
     }
 
     int last = 0;
-    const int time_offset = commands.at(mCommandOffset).elapsed;
+    const int time_offset = commands.at(m_commandOffset).elapsed;
     while (i < pair_num) {
         const Record::Command &command = commands.at(i);
 
@@ -270,8 +270,8 @@ void Replayer::run() {
 
         emit elasped((command.elapsed - time_offset) / 1000);
 
-        if (!mIsPlaying)
-            mPlaySemaphore.acquire();
+        if (!m_isPlaying)
+            m_playSemaphore.acquire();
 
         emit commandParsed(command.data);
 

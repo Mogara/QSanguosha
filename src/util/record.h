@@ -46,15 +46,15 @@ public:
     explicit Record(QObject *parent = 0);
     explicit Record(const QString &fileName, QObject *parent = 0);
 
-    void setFormat(Format format) { mFormat = format; }
-    Format format() const { return mFormat; }
+    void setFormat(Format format) { m_format = format; }
+    Format format() const { return m_format; }
 
-    QString fileName() const { return mFileName; }
+    QString fileName() const { return m_fileName; }
 
 public slots:
     void addCommand(int elapsed, const QByteArray &data);
-    void addCommand(const Command &command) { mCommands.append(command); }
-    const QList<Command> &commands() const { return mCommands; }
+    void addCommand(const Command &command) { m_commands.append(command); }
+    const QList<Command> &commands() const { return m_commands; }
 
     bool open();
     bool open(const QString &fileName);
@@ -63,9 +63,9 @@ public slots:
     bool saveAs(const QString &fileName) const;
 
 private:
-    QList<Command> mCommands;
-    QString mFileName;
-    Format mFormat;
+    QList<Command> m_commands;
+    QString m_fileName;
+    Format m_format;
 };
 
 class Recorder : public QObject {
@@ -75,15 +75,15 @@ public:
     explicit Recorder(QObject *parent = 0);
     explicit Recorder(Record *parent);
 
-    bool save(const QString &fileName) const { return mRecord->saveAs(fileName); }
-    const Record *getRecord() const { return mRecord; }
+    bool save(const QString &fileName) const { return m_record->saveAs(fileName); }
+    const Record *getRecord() const { return m_record; }
 
 public slots:
     void recordLine(const QByteArray &line);
 
 private:
-    QTime mWatch;
-    Record *mRecord;
+    QTime m_watch;
+    Record *m_record;
 };
 
 class Replayer : public QThread {
@@ -95,11 +95,11 @@ public:
     explicit Replayer(const QString &fileName, QObject *parent);
 
     void setRecord(Record *record);
-    int getDuration() const { return mDuration / 1000; }
+    int getDuration() const { return m_duration / 1000; }
     qreal getSpeed();
 
-    QString getPath() const { return mRecord != NULL ? mRecord->fileName() : QString(); }
-    const Record *getRecord() const { return mRecord; }
+    QString getPath() const { return m_record != NULL ? m_record->fileName() : QString(); }
+    const Record *getRecord() const { return m_record; }
 
 public slots:
     void uniform();
@@ -111,18 +111,18 @@ protected:
     virtual void run();
 
 private:
-    Record *mRecord;
-    qreal mSpeed;
-    bool mIsPlaying;
-    QMutex mMutex;
-    QSemaphore mPlaySemaphore;
-    int mDuration;
-    int mCommandOffset;
+    Record *m_record;
+    qreal m_speed;
+    bool m_isPlaying;
+    QMutex m_mutex;
+    QSemaphore m_playSemaphore;
+    int m_duration;
+    int m_commandOffset;
 
 signals:
     void commandParsed(const QByteArray &cmd);
     void elasped(int secs);
-    void speedChanged(qreal mSpeed);
+    void speedChanged(qreal m_speed);
 };
 
 #endif

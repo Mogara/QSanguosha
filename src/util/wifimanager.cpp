@@ -12,7 +12,7 @@ static QAndroidJniObject manager = activity.callObjectMethod("getSystemService",
 #endif
 
 WifiManager::WifiManager(const QString &deviceName)
-    :mDeviceName(deviceName)
+    :m_deviceName(deviceName)
 {
 }
 
