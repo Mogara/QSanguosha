@@ -29,6 +29,8 @@ class QSanCommandProgressBar;
 
 class ChooseSuitBox : public GraphicsBox
 {
+    Q_OBJECT
+
 public:
     ChooseSuitBox();
 
