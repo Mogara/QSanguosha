@@ -24,7 +24,6 @@ SOURCES += \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
-    src/core/record-analysis.cpp \
     src/core/roomconfig.cpp \
     src/core/roomstate.cpp \
     src/core/settings.cpp \
@@ -121,7 +120,8 @@ SOURCES += \
     src/ui/choosesuitbox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
-    src/util/recorder.cpp \
+    src/util/record.cpp \
+    src/util/recordanalyzer.cpp \
     src/util/wifimanager.cpp \
     swig/sanguosha_wrap.cxx
 
@@ -140,7 +140,6 @@ HEADERS += \
     src/core/namespace.h \
     src/core/player.h \
     src/core/protocol.h \
-    src/core/record-analysis.h \
     src/core/roomconfig.h \
     src/core/roomstate.h \
     src/core/settings.h \
@@ -235,7 +234,8 @@ HEADERS += \
     src/ui/choosesuitbox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
-    src/util/recorder.h \
+    src/util/record.h \
+    src/util/recordanalyzer.h \
     src/util/socket.h \
     src/util/wifimanager.h
 

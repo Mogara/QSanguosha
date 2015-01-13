@@ -18,8 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _RECORD_ANALYSIS_H
-#define _RECORD_ANALYSIS_H
+#ifndef _RECORD_ANALYZER_H
+#define _RECORD_ANALYZER_H
 
 #include "client.h"
 #include "engine.h"
@@ -27,14 +27,16 @@
 
 #include <QObject>
 
+class Record;
 struct PlayerRecordStruct;
 
-class RecAnalysis : public QObject {
+class RecordAnalyzer : public QObject {
     Q_OBJECT
 
 public:
-    explicit RecAnalysis(const QString &dir = QString());
-    ~RecAnalysis();
+    explicit RecordAnalyzer(const QString &fileName);
+    explicit RecordAnalyzer(const Record *record);
+    ~RecordAnalyzer();
 
     static const unsigned int M_ALL_PLAYER = 0xFFFF;
     enum DesignationType {
@@ -53,7 +55,7 @@ public:
         ZeroDamaged = 0x800
     };
 
-    void initialize(const QString &fileName = QString());
+    void initialize(const Record *record);
     PlayerRecordStruct *getPlayerRecord(const Player *player) const;
     QMap<QString, PlayerRecordStruct *> getRecordMap() const;
     QStringList getRecordPackages() const;
@@ -112,7 +114,7 @@ struct PlayerRecordStruct {
     int m_kill;
     bool m_isAlive;
     QStringList m_designation;
-    QList<RecAnalysis::DesignationType> m_designEnum;
+    QList<RecordAnalyzer::DesignationType> m_designEnum;
 };
 
 #endif

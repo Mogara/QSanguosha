@@ -28,12 +28,12 @@
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
-#include "recorder.h"
+#include "record.h"
 #include "indicatoritem.h"
 #include "pixmapanimation.h"
 #include "audio.h"
 #include "skinbank.h"
-#include "record-analysis.h"
+#include "recordanalyzer.h"
 #include "choosegeneralbox.h"
 #include "chooseoptionsbox.h"
 #include "choosetriggerorderbox.h"
@@ -3290,7 +3290,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    RecAnalysis record(ClientInstance->getReplayPath());
+    RecordAnalyzer record(ClientInstance->getRecord());
     QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
 
     static QStringList labels;

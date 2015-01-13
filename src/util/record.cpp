@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "recorder.h"
+#include "record.h"
 #include "client.h"
 #include "protocol.h"
 
@@ -152,14 +152,6 @@ void Recorder::recordLine(const QByteArray &line) {
     mRecord->addCommand(mWatch.elapsed(), line);
 }
 
-QList<QByteArray> Recorder::getRecords() const
-{
-    QList<QByteArray> data;
-    foreach (const Record::Command &command, mRecord->commands())
-        data << command.data;
-    return data;
-}
-
 Replayer::Replayer(QObject *parent)
     : QThread(parent), mRecord(NULL), mSpeed(1.0), mIsPlaying(true)
 {
@@ -190,7 +182,7 @@ void Replayer::setRecord(Record *record)
         return;
 
     int time_offset = 0;
-    mPairOffset = 0;
+    mCommandOffset = 0;
     foreach (const Record::Command &command, commands) {
         Packet packet;
         if (packet.parse(command.data)) {
@@ -199,7 +191,7 @@ void Replayer::setRecord(Record *record)
                 break;
             }
         }
-        mPairOffset++;
+        mCommandOffset++;
     }
     mDuration = commands.last().elapsed - time_offset;
 }
@@ -261,14 +253,14 @@ void Replayer::run() {
     const int pair_num = commands.length();
 
     int i = 0;
-    while (i < mPairOffset) {
+    while (i < mCommandOffset) {
         const Record::Command &command = commands.at(i);
         emit commandParsed(command.data);
         i++;
     }
 
     int last = 0;
-    const int time_offset = commands.at(mPairOffset).elapsed;
+    const int time_offset = commands.at(mCommandOffset).elapsed;
     while (i < pair_num) {
         const Record::Command &command = commands.at(i);
 

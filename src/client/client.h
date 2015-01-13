@@ -28,6 +28,7 @@
 #include "protocol.h"
 #include "roomstate.h"
 
+class Record;
 class Recorder;
 class Replayer;
 class QTextDocument;
@@ -104,8 +105,7 @@ public:
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);
     bool save(const QString &filename) const;
-    QList<QByteArray> getRecords() const;
-    QString getReplayPath() const;
+    const Record *getRecord() const;
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
     QString getSkillNameToInvoke() const;

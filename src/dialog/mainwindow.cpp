@@ -29,10 +29,10 @@
 #include "ui_mainwindow.h"
 #include "rule-summary.h"
 #include "pixmapanimation.h"
-#include "record-analysis.h"
+#include "recordanalyzer.h"
 #include "aboutus.h"
 #include "updatechecker.h"
-#include "recorder.h"
+#include "record.h"
 #include "audio.h"
 #include "stylehelper.h"
 #include "uiutils.h"
@@ -1110,7 +1110,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->resize(800, 500);
     QTableWidget *table = new QTableWidget;
 
-    RecAnalysis record(filename);
+    RecordAnalyzer record(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
     table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());

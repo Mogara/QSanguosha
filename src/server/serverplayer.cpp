@@ -23,7 +23,7 @@
 #include "standard.h"
 #include "ai.h"
 #include "settings.h"
-#include "recorder.h"
+#include "record.h"
 #include "lua-wrapper.h"
 #include "json.h"
 #include "gamerule.h"

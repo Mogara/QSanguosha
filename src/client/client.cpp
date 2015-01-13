@@ -23,7 +23,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "nativesocket.h"
-#include "recorder.h"
+#include "record.h"
 #include "skinbank.h"
 #include "roomscene.h"
 
@@ -1283,18 +1283,13 @@ bool Client::save(const QString &filename) const{
         return false;
 }
 
-QList<QByteArray> Client::getRecords() const{
+const Record *Client::getRecord() const{
     if (recorder)
-        return recorder->getRecords();
+        return recorder->getRecord();
+    else if (replayer)
+        return replayer->getRecord();
     else
-        return QList<QByteArray>();
-}
-
-QString Client::getReplayPath() const{
-    if (replayer)
-        return replayer->getPath();
-    else
-        return QString();
+        return NULL;
 }
 
 QTextDocument *Client::getLinesDoc() const{

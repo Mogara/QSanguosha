@@ -18,8 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _RECORDER_H
-#define _RECORDER_H
+#ifndef _RECORD_H
+#define _RECORD_H
 
 #include <QTime>
 #include <QThread>
@@ -76,7 +76,7 @@ public:
     explicit Recorder(Record *parent);
 
     bool save(const QString &fileName) const { return mRecord->saveAs(fileName); }
-    QList<QByteArray> getRecords() const;
+    const Record *getRecord() const { return mRecord; }
 
 public slots:
     void recordLine(const QByteArray &line);
@@ -99,6 +99,7 @@ public:
     qreal getSpeed();
 
     QString getPath() const { return mRecord != NULL ? mRecord->fileName() : QString(); }
+    const Record *getRecord() const { return mRecord; }
 
 public slots:
     void uniform();
@@ -116,7 +117,7 @@ private:
     QMutex mMutex;
     QSemaphore mPlaySemaphore;
     int mDuration;
-    int mPairOffset;
+    int mCommandOffset;
 
 signals:
     void commandParsed(const QByteArray &cmd);
