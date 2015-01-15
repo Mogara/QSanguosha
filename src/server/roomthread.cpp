@@ -371,8 +371,12 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         }
 
                         if (name == "cancel") break;
-                        if (name.contains(":")) // "sgs1:xxxx" or "sgs1:xxxx*yyy"
-                            name = name.split("*").first().split(":").last(); // "xxxx"
+                        // "xxxx*yyy", "sgs1:xxxx" or "sgs1:xxxx*yyy"
+                        int split = -1;
+                        if ((split = name.indexOf('*')) != -1)
+                            name = name.left(split);
+                        if ((split = name.indexOf(':')) != -1)
+                            name = name.mid(split + 1); // "xxxx"
                         
                         ServerPlayer *skill_target = NULL;
                         const TriggerSkill *result_skill = NULL;
