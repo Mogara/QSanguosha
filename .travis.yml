@@ -1,0 +1,27 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+before_install:
+  - sudo apt-add-repository -y ppa:beineri/opt-qt540
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install qt54tools
+  - git submodule update --init --recursive
+before_script:
+  - wget http://prdownloads.sourceforge.net/swig/swig-3.0.4.tar.gz
+  - tar -xf swig-3.0.4.tar.gz
+  - cd swig-3.0.4/
+  - ./autogen.sh
+  - ./configure && make && sudo make install
+  - cd ../swig/
+  - swig -c++ -lua sanguosha.i
+script:
+  - cd ../
+  - source /opt/qt54/bin/qt54-env.sh && qmake && make
+  - lrelease QSanguosha.pro
+notifications:
+  email:
+    recipients:
+      - engineers@mogara.org
+    on_success: change
+    on_failure: always
