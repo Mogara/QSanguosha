@@ -4,6 +4,7 @@
 TARGET = QSanguosha
 QT += network widgets sql
 !winrt:QT += declarative
+android:QT += androidextras
 TEMPLATE = app
 CONFIG += audio
 
@@ -23,7 +24,6 @@ SOURCES += \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
-    src/core/record-analysis.cpp \
     src/core/roomconfig.cpp \
     src/core/roomstate.cpp \
     src/core/settings.cpp \
@@ -120,7 +120,9 @@ SOURCES += \
     src/ui/choosesuitbox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
-    src/util/recorder.cpp \
+    src/util/record.cpp \
+    src/util/recordanalyzer.cpp \
+    src/util/wifimanager.cpp \
     swig/sanguosha_wrap.cxx
 
 HEADERS += \
@@ -138,7 +140,6 @@ HEADERS += \
     src/core/namespace.h \
     src/core/player.h \
     src/core/protocol.h \
-    src/core/record-analysis.h \
     src/core/roomconfig.h \
     src/core/roomstate.h \
     src/core/settings.h \
@@ -233,8 +234,10 @@ HEADERS += \
     src/ui/choosesuitbox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
-    src/util/recorder.h \
-    src/util/socket.h
+    src/util/record.h \
+    src/util/recordanalyzer.h \
+    src/util/socket.h \
+    src/util/wifimanager.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -304,7 +307,13 @@ win32-g++{
 winrt{
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += WINRT
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    !winphone {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    } else {
+        DEFINES += WINPHONE
+        contains($$QMAKESPEC, arm): LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/arm"
+        else : LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
+    }
 }
 macx{
     DEFINES += MAC

@@ -233,7 +233,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if enemy:hasShownSkills(sgs.cardneed_skill .. "|tianxiang")
 			then value = value + 5
 		end
-		if enemy:hasShownSkills("yingzi|duoshi") then value = value + 1 end
+		if enemy:hasShownSkills("yingzi_zhouyu|yingzi_sunce|duoshi") then value = value + 1 end
 		if self:isWeak(enemy) then value = value + 5 end
 		if enemy:isLord() then value = value + 3 end
 

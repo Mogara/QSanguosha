@@ -42,18 +42,18 @@ BanListDialog::BanListDialog(QWidget *parent, bool view)
     layout->addWidget(tab);
     connect(tab, &QTabWidget::currentChanged, this, &BanListDialog::switchTo);
 
-    foreach(QString item, ban_list) {
+    foreach (const QString &item, ban_list) {
         QWidget *apage = new QWidget;
 
         list = new QListWidget;
         list->setObjectName(item);
 
         if (item == "Pairs") {
-            foreach(BanPair pair, BanPair::getBanPairSet().toList())
+            foreach (const BanPair &pair, BanPair::getBanPairSet().toList())
                 addPair(pair.first, pair.second);
         } else {
             QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
-            foreach(QString name, banlist)
+            foreach (const QString &name, banlist)
                 addGeneral(name);
         }
 
@@ -91,7 +91,7 @@ BanListDialog::BanListDialog(QWidget *parent, bool view)
 
     layout->addLayout(hlayout);
 
-    foreach(QListWidget *alist, lists) {
+    foreach (QListWidget *alist, lists) {
         if (alist->objectName() == "Pairs")
             continue;
         alist->setViewMode(QListView::IconMode);
@@ -109,7 +109,7 @@ void BanListDialog::addGeneral(const QString &name) {
         item->setData(Qt::UserRole, QVariant::fromValue(name));
         list->addItem(item);
     } else {
-        foreach(QString general_name, name.split("+")) {
+        foreach (const QString &general_name, name.split("+")) {
             if (banned_items[list->objectName()].contains(general_name)) continue;
             banned_items[list->objectName()].append(general_name);
             QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));

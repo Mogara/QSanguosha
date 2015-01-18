@@ -66,7 +66,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     prepareGeometryChange();
 
     const int buttonWidth = getButtonWidth();
-    foreach (QString option, options) {
+    foreach (const QString &option, options) {
         Button *button = new Button(translate(option), QSizeF(buttonWidth,
                                                       defaultButtonHeight));
         button->setObjectName(option);
@@ -160,7 +160,7 @@ void ChooseOptionsBox::clear()
         progressBar = NULL;
     }
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         button->deleteLater();
 
     buttons.clear();

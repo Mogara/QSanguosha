@@ -86,14 +86,14 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const{
     }
     else if (card->getSubcards().length() > 0) {
         if (!contain) {
-            foreach(int card_id, card->getSubcards()) {
+            foreach (int card_id, card->getSubcards()) {
                 if (!known_cards.contains(Sanguosha->getCard(card_id)))
                     return false;
             }
             return known_cards.length() == card->getSubcards().length();
         }
         else {
-            foreach(const Card *ncard, known_cards) {
+            foreach (const Card *ncard, known_cards) {
                 if (!card->getSubcards().contains(ncard->getEffectiveId()))
                     return false;
             }
@@ -131,7 +131,7 @@ QList<const Card *> ClientPlayer::getHandcards() const{
 
 void ClientPlayer::setCards(const QList<int> &card_ids) {
     known_cards.clear();
-    foreach(int cardId, card_ids)
+    foreach (int cardId, card_ids)
         known_cards.append(Sanguosha->getCard(cardId));
 }
 
@@ -154,7 +154,7 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
         }
     }
     else {
-        foreach(int card_id, card_ids) {
+        foreach (int card_id, card_ids) {
             if (piles[name].isEmpty()) break;
             if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
                 piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
@@ -289,7 +289,7 @@ QStringList ClientPlayer::getBigKingdoms(const QString &, MaxCardsType::MaxCards
     if (type == MaxCardsType::Max && hasLordSkill("hongfa") && !getPile("heavenly_army").isEmpty())
         kingdom_map["qun"] += getPile("heavenly_army").length();
     QStringList big_kingdoms;
-    foreach (QString key, kingdom_map.keys()) {
+    foreach (const QString &key, kingdom_map.keys()) {
         if (kingdom_map[key] == 0)
             continue;
         if (big_kingdoms.isEmpty()) {

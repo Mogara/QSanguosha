@@ -66,7 +66,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
     QList<int> card_ids;
-    foreach(QVariant card_id, ag_list)
+    foreach (QVariant card_id, ag_list)
         card_ids << card_id.toInt();
 
     int card_id = room->askForAG(effect.to, card_ids, false, objectName());
@@ -154,7 +154,7 @@ Collateral::Collateral(Card::Suit suit, int number)
 
 bool Collateral::isAvailable(const Player *player) const{
     bool canUse = false;
-    foreach(const Player *p, player->getAliveSiblings()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
         if (p->getWeapon()) {
             canUse = true;
             break;
@@ -180,7 +180,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
     else {
         if (!to_select->getWeapon() || to_select == Self)
             return false;
-        foreach(const Player *p, to_select->getAliveSiblings()) {
+        foreach (const Player *p, to_select->getAliveSiblings()) {
             if (to_select->canSlash(p))
                 return true;
         }
@@ -373,8 +373,8 @@ QStringList Duel::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -386,7 +386,7 @@ QStringList Duel::checkTargetModSkillShow(const CardUseStruct &use) const{
         int n = use.to.length() - 1;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -405,7 +405,7 @@ QStringList Duel::checkTargetModSkillShow(const CardUseStruct &use) const{
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -467,90 +467,86 @@ QStringList Snatch::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
         }
 
-        if (tarmods.isEmpty())
-            return QStringList();
+        if (!tarmods.isEmpty()) {
+            int n = use.to.length() - 1;
+            QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        int n = use.to.length() - 1;
-        QList<const TargetModSkill *> tarmods_copy = tarmods;
+            foreach (const TargetModSkill *tarmod, tarmods_copy) {
+                if (tarmod->getExtraTargetNum(from, use.card) == 0) {
+                    tarmods.removeOne(tarmod);
+                    continue;
+                }
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
-            if (tarmod->getExtraTargetNum(from, use.card) == 0) {
-                tarmods.removeOne(tarmod);
-                continue;
+                const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+                if (from->hasShownSkill(main_skill)) {
+                    tarmods.removeOne(tarmod);
+                    n -= tarmod->getExtraTargetNum(from, use.card);
+                }
             }
 
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            if (from->hasShownSkill(main_skill)){
-                tarmods.removeOne(tarmod);
-                n -= tarmod->getExtraTargetNum(from, use.card);
+            if (!(tarmods.isEmpty() || n <= 0)) {
+                tarmods_copy = tarmods;
+
+                foreach (const TargetModSkill *tarmod, tarmods_copy) {
+                    const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+                    show << main_skill->objectName();
+                }
             }
-        }
-
-        if (tarmods.isEmpty() || n <= 0)
-            return QStringList();
-
-        tarmods_copy = tarmods;
-
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            show << main_skill->objectName();
         }
     }
     int distance_max = 1;
-    foreach(ServerPlayer *p, use.to){
+    foreach (ServerPlayer *p, use.to) {
         distance_max = qMax(distance_max, use.from->distanceTo(p));
     }
-    if (distance_max > 1){
+    if (distance_max > 1) {
         const ServerPlayer *from = use.from;
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills) {
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")) {
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
         }
 
-        if (tarmods.isEmpty())
-            return QStringList();
+        if (!tarmods.isEmpty()) {
+            int n = distance_max - 1;
+            if (use.card->getSkillName() == "jixi") //dirty but important hack!!!!!!!!!!!!
+                ++n;
+            if (use.from && (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId())))
+                ++n;
 
-        int n = distance_max - 1;
-        if (use.card->getSkillName() == "jixi") //dirty but important hack!!!!!!!!!!!!
-            ++n;
-        if (use.from && (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId())))
-            ++n;
+            QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        QList<const TargetModSkill *> tarmods_copy = tarmods;
+            foreach (const TargetModSkill *tarmod, tarmods_copy) {
+                if (tarmod->getDistanceLimit(from, use.card) == 0) {
+                    tarmods.removeOne(tarmod);
+                    continue;
+                }
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
-            if (tarmod->getDistanceLimit(from, use.card) == 0) {
-                tarmods.removeOne(tarmod);
-                continue;
+                const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+                if (from->hasShownSkill(main_skill)) {
+                    tarmods.removeOne(tarmod);
+                    n -= tarmod->getDistanceLimit(from, use.card);
+                }
             }
 
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            if (from->hasShownSkill(main_skill)){
-                tarmods.removeOne(tarmod);
-                n -= tarmod->getDistanceLimit(from, use.card);
+            if (!(tarmods.isEmpty() || n <= 0)) {
+                tarmods_copy = tarmods;
+
+                foreach (const TargetModSkill *tarmod, tarmods_copy) {
+                    const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+                    show << main_skill->objectName();
+                }
             }
-        }
-
-        if (tarmods.isEmpty() || n <= 0)
-            return QStringList();
-
-        tarmods_copy = tarmods;
-
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
-            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
-            show << main_skill->objectName();
         }
     }
     return show.toList();
@@ -597,8 +593,8 @@ QStringList Dismantlement::checkTargetModSkillShow(const CardUseStruct &use) con
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -610,7 +606,7 @@ QStringList Dismantlement::checkTargetModSkillShow(const CardUseStruct &use) con
         int n = use.to.length() - 1;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -629,7 +625,7 @@ QStringList Dismantlement::checkTargetModSkillShow(const CardUseStruct &use) con
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -667,10 +663,15 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
     else
         sub << getEffectiveId();
     foreach (int id, sub) {
-        if (Self->getPile("wooden_ox").contains(id)) {
-            rec = false;
-            break;
+        foreach (const QString &pile,Self->getPileNames()){
+            if (pile.startsWith("&") || pile == "wooden_ox") {
+                if (Self->getPile(pile).contains(id)) {
+                    rec = false;
+                    break;
+                }
+            }
         }
+
     }
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
@@ -730,8 +731,8 @@ QStringList IronChain::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -743,7 +744,7 @@ QStringList IronChain::checkTargetModSkillShow(const CardUseStruct &use) const{
         int n = use.to.length() - 2;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -762,7 +763,7 @@ QStringList IronChain::checkTargetModSkillShow(const CardUseStruct &use) const{
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -786,7 +787,7 @@ bool AwaitExhausted::isAvailable(const Player *player) const{
         canUse = true;
     if (!canUse) {
         QList<const Player *> players = player->getAliveSiblings();
-        foreach(const Player *p, players) {
+        foreach (const Player *p, players) {
             if (player->isProhibited(p, this))
                 continue;
             if (player->isFriendWith(p)) {
@@ -803,7 +804,7 @@ void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct new_use = card_use;
     if (!card_use.from->isProhibited(card_use.from, this))
         new_use.to << new_use.from;
-    foreach(ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
+    foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
         if (p->isFriendWith(new_use.from)) {
             const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this);
             if (skill) {
@@ -830,7 +831,7 @@ void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
 void AwaitExhausted::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
@@ -841,7 +842,7 @@ void AwaitExhausted::use(Room *room, ServerPlayer *source, QList<ServerPlayer *>
         room->cardEffect(effect);
     }
 
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         if (target->hasFlag("AwaitExhaustedEffected")) {
             room->setPlayerFlag(target, "-AwaitExhaustedEffected");
             room->askForDiscard(target, objectName(), 2, 2, false, true);
@@ -979,7 +980,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
     else {
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         list.removeAt(choice == "head_general" ? 1 : 0);
-        foreach(QString name, list) {
+        foreach (const QString &name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
             log.from = effect.from;
@@ -1004,8 +1005,8 @@ QStringList KnownBoth::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1017,7 +1018,7 @@ QStringList KnownBoth::checkTargetModSkillShow(const CardUseStruct &use) const{
         int n = use.to.length() - 1;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -1036,7 +1037,7 @@ QStringList KnownBoth::checkTargetModSkillShow(const CardUseStruct &use) const{
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -1075,8 +1076,8 @@ QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use)
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1088,7 +1089,7 @@ QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use)
         int n = use.to.length() - 1;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -1107,7 +1108,7 @@ QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use)
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -1168,8 +1169,8 @@ QStringList FireAttack::checkTargetModSkillShow(const CardUseStruct &use) const{
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1181,7 +1182,7 @@ QStringList FireAttack::checkTargetModSkillShow(const CardUseStruct &use) const{
         int n = use.to.length() - 1;
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getExtraTargetNum(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -1200,7 +1201,7 @@ QStringList FireAttack::checkTargetModSkillShow(const CardUseStruct &use) const{
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }
@@ -1273,8 +1274,8 @@ QStringList SupplyShortage::checkTargetModSkillShow(const CardUseStruct &use) co
         QList<const Skill *> skills = from->getSkillList(false, false);
         QList<const TargetModSkill *> tarmods;
 
-        foreach(const Skill *skill, skills){
-            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")){
+        foreach (const Skill *skill, skills){
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")){
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1290,7 +1291,7 @@ QStringList SupplyShortage::checkTargetModSkillShow(const CardUseStruct &use) co
 
         QList<const TargetModSkill *> tarmods_copy = tarmods;
 
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             if (tarmod->getDistanceLimit(from, use.card) == 0) {
                 tarmods.removeOne(tarmod);
                 continue;
@@ -1309,7 +1310,7 @@ QStringList SupplyShortage::checkTargetModSkillShow(const CardUseStruct &use) co
         tarmods_copy = tarmods;
 
         QStringList shows;
-        foreach(const TargetModSkill *tarmod, tarmods_copy){
+        foreach (const TargetModSkill *tarmod, tarmods_copy){
             const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
             shows << main_skill->objectName();
         }

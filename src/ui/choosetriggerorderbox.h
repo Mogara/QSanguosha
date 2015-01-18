@@ -39,6 +39,10 @@ public:
 
 signals:
     void clicked();
+    void hovered(bool entering);
+
+public slots:
+    void needDisabled(bool disabled);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
@@ -50,6 +54,7 @@ protected:
 
 private:
     explicit TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width);
+    bool isPreferentialSkillOf(const TriggerOptionButton *other) const;
 
     QString getGeneralNameBySkill() const;
 

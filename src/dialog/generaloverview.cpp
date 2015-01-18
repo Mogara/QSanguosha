@@ -146,7 +146,7 @@ QWidget *GeneralSearch::createInfoTab() {
     kingdom_box->setLayout(kingdom_layout);
 
     int i = 0;
-    foreach(QString kingdom, Sanguosha->getKingdoms()) {
+    foreach (const QString &kingdom, Sanguosha->getKingdoms()) {
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(kingdom);
         checkbox->setIcon(QIcon(QString("image/kingdom/icon/%1.png").arg(kingdom)));
@@ -183,7 +183,7 @@ QWidget *GeneralSearch::createInfoTab() {
     QGridLayout *packages_layout = new QGridLayout;
 
     i = 0;
-    foreach(QString extension, extensions) {
+    foreach (const QString &extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if (package == NULL || package->getType() != Package::GeneralPack)
             continue;
@@ -232,17 +232,17 @@ void GeneralSearch::accept() {
     detail.include_hidden = include_hidden_checkbox->isChecked();
     detail.nickname = nickname_edit->text();
     detail.name = name_edit->text();
-    foreach(QAbstractButton *button, gender_buttons->buttons()) {
+    foreach (QAbstractButton *button, gender_buttons->buttons()) {
         if (button->isChecked())
             detail.genders << button->objectName();
     }
-    foreach(QAbstractButton *button, kingdom_buttons->buttons()) {
+    foreach (QAbstractButton *button, kingdom_buttons->buttons()) {
         if (button->isChecked())
             detail.kingdoms << button->objectName();
     }
     detail.lower = maxhp_lower_spinbox->value();
     detail.upper = qMax(detail.lower, maxhp_upper_spinbox->value());
-    foreach(QAbstractButton *button, package_buttons->buttons()) {
+    foreach (QAbstractButton *button, package_buttons->buttons()) {
         if (button->isChecked())
             detail.packages << button->objectName();
     }
@@ -254,23 +254,23 @@ void GeneralSearch::clearAll() {
     include_hidden_checkbox->setChecked(true);
     nickname_edit->clear();
     name_edit->clear();
-    foreach(QAbstractButton *button, gender_buttons->buttons())
+    foreach (QAbstractButton *button, gender_buttons->buttons())
         button->setChecked(false);
-    foreach(QAbstractButton *button, kingdom_buttons->buttons())
+    foreach (QAbstractButton *button, kingdom_buttons->buttons())
         button->setChecked(false);
     maxhp_lower_spinbox->setValue(0);
     maxhp_upper_spinbox->setValue(0);
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
 void GeneralSearch::selectAllPackages() {
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(true);
 }
 
 void GeneralSearch::unselectAllPackages() {
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
@@ -314,7 +314,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
 void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool init) {
     QList<const General *> generalsCopy = generals;
     QMap<const General *, int> tempGeneralMap;
-    foreach(const General *general, generalsCopy) {
+    foreach (const General *general, generalsCopy) {
         if (!general->isTotallyHidden()) {
             int skinId = 0;
             if (Self && Self->getGeneral()) {
@@ -396,7 +396,7 @@ QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
 QList<const Skill *> qsgs_allSkillsOf(const General *general)
 {
     QList<const Skill *> skills = general->getVisibleSkillList();
-    foreach(QString skill_name, general->getRelatedSkillNames()) {
+    foreach (const QString &skill_name, general->getRelatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && skill->isVisible()) skills << skill;
     }
@@ -551,7 +551,7 @@ void GeneralOverview::on_tableView_clicked(const QModelIndex &index)
 
     resetButtons();
 
-    foreach(const Skill *skill, qsgs_allSkillsOf(general))
+    foreach (const Skill *skill, qsgs_allSkillsOf(general))
         addLines(general, skill);
 
     addDeathLine(general);
@@ -617,7 +617,7 @@ void GeneralOverview::showNextSkin() {
     ui->cvLineEdit->setText(getCvInfo(generalName));
     ui->illustratorLineEdit->setText(getIllustratorInfo(generalName));
     resetButtons();
-    foreach(const Skill *skill, qsgs_allSkillsOf(general))
+    foreach (const Skill *skill, qsgs_allSkillsOf(general))
         addLines(general, skill);
 
     addDeathLine(general);
@@ -637,7 +637,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
         return;
 
     QList<const General *> generals;
-    foreach(const General *general, all_generals->keys()) {
+    foreach (const General *general, all_generals->keys()) {
         QString general_name = general->objectName();
         if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
             continue;

@@ -207,7 +207,7 @@ void PlayerCardBox::clear()
         progressBarItem->deleteLater();
     }
 
-    foreach(CardItem *item, items)
+    foreach (CardItem *item, items)
         item->deleteLater();
     items.clear();
 
@@ -243,7 +243,7 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
 void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
 {
     QList<CardItem *> areaItems;
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         CardItem *item = new CardItem(card);
         item->setAutoBack(false);
         item->setOuterGlowEffectEnabled(true);

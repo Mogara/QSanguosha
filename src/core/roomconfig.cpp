@@ -255,7 +255,7 @@ RoomInfoStruct::RoomInfoStruct(const QSqlRecord &record)
     Name = record.value("name").toString();
     GameMode = record.value("gamemode").toString();
     QStringList ban_packages = record.value("banpackages").toString().split('+');
-    foreach(const QString &package, ban_packages)
+    foreach (const QString &package, ban_packages)
         BanPackages.insert(package);
     OperationTimeout = record.value("operationtimeout").toInt();
     NullificationCountDown = record.value("nullificationcountdown").toInt();

@@ -60,7 +60,7 @@ void ChooseSuitBox::chooseSuit(const QStringList &suits)
     m_suits = suits;
     prepareGeometryChange();
 
-    foreach (QString suit, suits) {
+    foreach (const QString &suit, suits) {
         QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, suit);
         Button *button = new Button(icon, QSizeF(buttonWidth, buttonHeight));
         button->setObjectName(suit);
@@ -115,7 +115,7 @@ void ChooseSuitBox::clear()
         progressBar = NULL;
     }
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         button->deleteLater();
 
     buttons.clear();

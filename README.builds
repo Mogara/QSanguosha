@@ -193,10 +193,10 @@ To build QSanguosha targeting Android on Windows
 Notice: Android version is still not fully supported.
 
 1. You'll need the following packages.
-(1) Qt 5.3.2 for Android, including Qt Creator & MinGW 4.8.
+(1) Qt 5.4.0 for Android, including Qt Creator 3.3.0 & MinGW 4.8.
 (3) swig 3.0.2 for Windows.
-(4) Android SDK. (Android Development Tools is recommended, via which you can download and manage Android SDKs)
-(5) Android NDK
+(4) Android SDK (the latest version). (Android Development Tools is recommended, via which you can download and manage Android SDKs)
+(5) Android NDK (the latest version)
 (6) JDK 1.7
 (7) USB driver specified to your Android device. (optional, to deploy APK directly onto your device and debug)
 (8) Apache Ant 1.9, usually packed in ADT
@@ -211,16 +211,16 @@ Notice: Android version is still not fully supported.
 5. Open QSanguosha.pro with Qt Creator. Confirm the archtecture of your Android device (ARMv7 or x86) and select the corresponding kit.
 
 6. To deploy APK via USB, connect your Android device to your PC via USB. Enable debug mode. Click Run (Ctrl + R) and select your device in the popup window.
-   OR add two custom process steps to create an APK but do not deploy it to any device.
+   If your Qt Creator is lower than 3.3.0, you can add two custom process steps as follows to get the APK without deploying it to any device.
    (1) Command: < YOUR MinGW PATH >\mingw32-make.exe
        Arguments: install INSTALL_ROOT=android-build
        Working Directory: %{buildDir}
    (2) Command: < YOUR Qt library PATH >\bin\androiddeployqt.exe
-       Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-19
+       Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-20
        Working Directory: %{buildDir}
    Click build (Ctrl + B) and you'll get an APK in < YOUR build directory >/android-build/bin, and install the APK manually.
 
-7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.qsgsrara.qsanguosha
+7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.mogara.qsanguosha
    ai-selector
    audio
    diy
@@ -236,4 +236,4 @@ Notice: Android version is still not fully supported.
 
 8. (optional) Add the Chinese language pack.
    run lrelease QSanguosha.pro
-   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.qsgsrara.qsanguosha mentioned in step 7.
+   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.mogara.qsanguosha mentioned in step 7.

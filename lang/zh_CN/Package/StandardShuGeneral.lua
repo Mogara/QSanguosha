@@ -17,7 +17,7 @@ return {
 	["paoxiao"] = "咆哮",
 	[":paoxiao"] = "你使用【杀】无次数限制。",
 	["#paoxiao-null"] = "咆哮（无视防具）",
-	["paoxiao:armor_nullify"] = "场上有君刘备，你现在可以亮将发动【杀】的无视防具效果。" ,
+	["paoxiao:armor_nullify"] = "场上有君刘备，你现在可以亮将令【杀】无视 %src 的防具效果。" ,
 
 	["#zhugeliang"] = "迟暮的丞相",
 	["zhugeliang"] = "诸葛亮",

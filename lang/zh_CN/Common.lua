@@ -85,6 +85,7 @@ CommonTranslationTable = {
 	["drawPileTop"] = "牌堆顶",
 	["drawPileBottom"] = "牌堆底",
 
+	["times_mark"] = "×",
 	["use upon"] = "对",
 	["yourself"] = "你",
 

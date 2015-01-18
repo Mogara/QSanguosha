@@ -99,11 +99,17 @@ sgs.ai_skill_cardask["@multi-jink"] = sgs.ai_skill_cardask["@multi-jink-start"]
 
 sgs.ai_skill_invoke.wushuang = function(self, data)
 	if not self:willShowForAttack() then return false end
-	local use = data:toCardUse()
+	local use = player:getTag("WushuangData"):toCardUse()
+	local current_trigger = data:toPlayer()
+	local index = use.to:indexOf(current_trigger)
+	local left_trigger = sgs.SPlayerList()
+	for i = index, use.to:length(), 1 do
+		left_trigger:append(use.to:at(i))
+	end
 	if use.card then
 		if use.card:isKindOf("Duel") then
 			if use.from:objectName() == self.player:objectName() then
-				for _, p in sgs.qlist(use.to) do
+				for _, p in sgs.qlist(left_trigger) do
 					if p:getKingdom() == "qun" then return false end
 				end
 				return true
@@ -116,7 +122,7 @@ sgs.ai_skill_invoke.wushuang = function(self, data)
 				return false
 			end
 		end
-		for _, p in sgs.qlist(use.to) do
+		for _, p in sgs.qlist(left_trigger) do
 			if p:getKingdom() == "qun" then return false end
 		end
 		return true

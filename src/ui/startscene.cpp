@@ -126,7 +126,7 @@ void StartScene::switchToServer(Server *server) {
     group->addAnimation(yScale);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         button->hide();
 
     serverLog = new QTextEdit;
@@ -234,7 +234,7 @@ void StartScene::onSceneRectChanged(const QRectF &rect)
 
 void StartScene::printServerInfo() {
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach(const QHostAddress &address, addresses) {
+    foreach (const QHostAddress &address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
         if (!ipv4)
             continue;

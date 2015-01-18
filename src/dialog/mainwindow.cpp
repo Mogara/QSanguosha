@@ -29,10 +29,10 @@
 #include "ui_mainwindow.h"
 #include "rule-summary.h"
 #include "pixmapanimation.h"
-#include "record-analysis.h"
+#include "recordanalyzer.h"
 #include "aboutus.h"
 #include "updatechecker.h"
-#include "recorder.h"
+#include "record.h"
 #include "audio.h"
 #include "stylehelper.h"
 #include "uiutils.h"
@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent)
         << ui->actionCard_Overview
         << ui->actionAbout;
 
-    foreach(QAction *action, actions)
+    foreach (QAction *action, actions)
         start_scene->addButton(action);
 
 #if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
@@ -653,7 +653,7 @@ void MainWindow::on_actionReplay_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a reply file"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty())
         return;
@@ -679,7 +679,7 @@ void MainWindow::networkError(const QString &error_msg) {
 void BackLoader::preload() {
     QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
-    foreach(QString emotion, emotions) {
+    foreach (const QString &emotion, emotions) {
         int n = PixmapAnimation::GetFrameCount(emotion);
         for (int i = 0; i < n; i++) {
             QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
@@ -791,7 +791,7 @@ void MainWindow::exitScene() {
             << ui->actionCard_Overview
             << ui->actionAbout;
 
-        foreach(QAction *action, actions)
+        foreach (QAction *action, actions)
             start_scene->addButton(action);
 
         setCentralWidget(view);
@@ -899,7 +899,7 @@ void MainWindow::on_actionAbout_triggered() {
         const char *time = __TIME__;
         content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-        QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
+        QString project_url = "https://github.com/QSanguosha/QSanguosha";
         content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
         QString forum_url = "http://qsanguosha.org";
@@ -1065,35 +1065,29 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 }
 
 void MainWindow::on_actionReplay_file_convert_triggered() {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QStringList filenames = QFileDialog::getOpenFileNames(this,
         tr("Please select a replay file"),
         Config.value("LastReplayDir").toString(),
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
-    if (filename.isEmpty())
+    if (filenames.isEmpty())
         return;
 
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly)) {
-        QFileInfo info(filename);
-        QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
+    foreach (const QString &filename, filenames) {
+        Record record(filename);
+        if (record.open()) {
+            QFileInfo info(filename);
+            QString tosave = info.dir().absoluteFilePath(info.baseName());
 
-        if (filename.endsWith(".qsgs")) {
-            tosave.append(".png");
+            if (record.format() == Record::CompressedText) {
+                tosave.append("-uncompressed.qsgs");
+                record.setFormat(Record::PlainText);
+            } else {
+                tosave.append("-compressed.qsgs");
+                record.setFormat(Record::CompressedText);
+            }
 
-            // txt to png
-            Recorder::TXT2PNG(file.readAll()).save(tosave);
-
-        }
-        else if (filename.endsWith(".png")) {
-            tosave.append(".qsgs");
-
-            // png to txt
-            QByteArray data = Replayer::PNG2TXT(filename);
-
-            QFile tosave_file(tosave);
-            if (tosave_file.open(QIODevice::WriteOnly))
-                tosave_file.write(data);
+            record.saveAs(tosave);
         }
     }
 }
@@ -1107,7 +1101,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Load replay record"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty()) return;
 
@@ -1116,7 +1110,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->resize(800, 500);
     QTableWidget *table = new QTableWidget;
 
-    RecAnalysis record(filename);
+    RecordAnalyzer record(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
     table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());

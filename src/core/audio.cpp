@@ -110,7 +110,7 @@ void Audio::stop() {
         if (result == FMOD_OK) channels << channel;
     }
 
-    foreach(FMOD_CHANNEL *channel, channels)
+    foreach (FMOD_CHANNEL * const &channel, channels)
         FMOD_Channel_Stop(channel);
 
     stopBGM();

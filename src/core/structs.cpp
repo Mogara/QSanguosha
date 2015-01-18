@@ -97,7 +97,7 @@ LogMessage::LogMessage()
 
 QString LogMessage::toString() const{
     QStringList tos;
-    foreach(ServerPlayer *player, to)
+    foreach (ServerPlayer *player, to)
         if (player != NULL) tos << player->objectName();
 
     return QString("%1:%2->%3:%4:%5:%6")
@@ -109,7 +109,7 @@ QString LogMessage::toString() const{
 
 QVariant LogMessage::toVariant() const{
     QStringList tos;
-    foreach(ServerPlayer *player, to)
+    foreach (ServerPlayer *player, to)
         if (player != NULL) tos << player->objectName();
 
     QStringList log;
@@ -317,7 +317,7 @@ void CardUseStruct::parse(const QString &str, Room *room) {
 
     if (target_str != ".") {
         QStringList target_names = target_str.split("+");
-        foreach(QString target_name, target_names)
+        foreach (const QString &target_name, target_names)
             to << room->findChild<ServerPlayer *>(target_name);
     }
 }
