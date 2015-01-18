@@ -6,7 +6,6 @@ before_install:
   - sudo apt-add-repository -y ppa:beineri/opt-qt540
   - sudo apt-get -qq update
   - sudo apt-get -qq install qt54tools
-  - git submodule update --init --recursive
 before_script:
   - wget http://prdownloads.sourceforge.net/swig/swig-3.0.4.tar.gz
   - tar -xf swig-3.0.4.tar.gz
