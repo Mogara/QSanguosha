@@ -23,6 +23,7 @@
 #include "audio.h"
 #include "qsanselectableitem.h"
 #include "stylehelper.h"
+#include "tile.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -34,7 +35,7 @@
 #include <QPainter>
 
 StartScene::StartScene(QObject *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent), server(NULL)
 {
     // game logo
     QDate date = QDate::currentDate();
@@ -63,13 +64,16 @@ StartScene::StartScene(QObject *parent)
 
     setBackgroundBrush(QBrush(QPixmap(Config.BackgroundImage)));
 
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    connect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
 }
 
 void StartScene::addButton(QAction *action) {
-    Button *button = new Button(action->text());
+    Tile *button = new Tile(action->text());
+    QString icon = action->objectName();
+    icon.remove(0, 6);
+    button->setIcon(icon.toLower());
 
-    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+    connect(button, &Button::clicked, action, &QAction::trigger);
     addItem(button);
 
     QRectF rect = button->boundingRect();
@@ -122,7 +126,7 @@ void StartScene::switchToServer(Server *server) {
     group->addAnimation(yScale);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         button->hide();
 
     serverLog = new QTextEdit;
@@ -142,8 +146,9 @@ void StartScene::switchToServer(Server *server) {
     QScrollBar *bar = serverLog->verticalScrollBar();
     bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
+    this->server = server;
     printServerInfo();
-    connect(server, SIGNAL(server_message(QString)), serverLog, SLOT(append(QString)));
+    connect(server, &Server::serverMessage, serverLog, &QTextEdit::append);
     update();
 }
 
@@ -222,49 +227,48 @@ void StartScene::onSceneRectChanged(const QRectF &rect)
         newRect.setHeight(rect.height() * scale);
     }
     newRect.moveTopLeft(newRect.bottomRight() * -0.5);
-    disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    disconnect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
     setSceneRect(newRect);
-    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    connect(this, &StartScene::sceneRectChanged, this, &StartScene::onSceneRectChanged);
 }
 
 void StartScene::printServerInfo() {
-    QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach(QHostAddress address, addresses) {
+    foreach (const QHostAddress &address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
-        if (ipv4)
-            items << address.toString();
-    }
+        if (!ipv4)
+            continue;
 
-    items.sort();
-
-    foreach(QString item, items) {
-        if (item.startsWith("192.168.") || item.startsWith("10."))
-            serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
-        else if (item == "127.0.0.1")
-            serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
-        else if (item.startsWith("5.") || item.startsWith("25."))
-            serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
-        else if (!item.startsWith("169.254."))
-            serverLog->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
+        if ((ipv4 & 0xFF000000) == 0x0A000000 || (ipv4 & 0xFFF00000) == 0xAC100000 || (ipv4 & 0xFFFF0000) == 0xC0A80000)
+            serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(address.toString()));
+        else if ((ipv4 & 0xFF000000) == 0x7F000000)
+            serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(address.toString()));
+        else if ((ipv4 & 0xFF000000) == 0x05000000 || (ipv4 & 0xFF000000) == 0x19000000)
+            serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(address.toString()));
+        else if ((ipv4 & 0xFFFF0000) != 0xA9FE0000)
+            serverLog->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(address.toString()));
     }
 
     serverLog->append(tr("Binding port number is %1").arg(Config.ServerPort));
-    serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
-    serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
-    serverLog->append(Config.OperationNoLimit ?
-        tr("There is no time limit") :
-        tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
-    serverLog->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
-    if (Config.EnableCheat)
-        serverLog->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    if (Config.RewardTheFirstShowingPlayer)
-        serverLog->append(tr("The reward of showing general first is enabled"));
+    //Room Server only
+    if (server && server->getRole() == Server::RoomRole) {
+        serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
+        serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
+        serverLog->append(Config.OperationNoLimit ?
+            tr("There is no time limit") :
+            tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+        serverLog->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+        if (Config.EnableCheat)
+            serverLog->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    if (!Config.ForbidAddingRobot) {
-        serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    } else {
-        serverLog->append(tr("This server is AI disabled"));
+        if (Config.RewardTheFirstShowingPlayer)
+            serverLog->append(tr("The reward of showing general first is enabled"));
+
+        if (!Config.ForbidAddingRobot) {
+            serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
+        } else {
+            serverLog->append(tr("This server is AI disabled"));
+        }
     }
 }

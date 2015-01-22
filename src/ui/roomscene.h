@@ -44,19 +44,8 @@ class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class BubbleChatBox;
 class PlayerCardBox;
-class QQuickWindow;
-
+class ChooseSuitBox;
 struct RoomLayout;
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-class QQmlEngine;
-class QQmlContext;
-class QQmlComponent;
-#else
-class QDeclarativeEngine;
-class QDeclarativeContext;
-class QDeclarativeComponent;
-#endif
 
 #include <QGraphicsScene>
 #include <QTableWidget>
@@ -70,7 +59,11 @@ class QDeclarativeComponent;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-
+#ifndef Q_OS_WINRT
+#include <QDeclarativeEngine>
+#include <QDeclarativeContext>
+#include <QDeclarativeComponent>
+#endif
 class ScriptExecutor : public QDialog {
     Q_OBJECT
 
@@ -112,7 +105,7 @@ private:
     void fillComboBox(QComboBox *ComboBox);
 
 private slots:
-    void disableSource();
+    void disableSource(const QString &currentNature);
 };
 
 class ReplayerControlBar : public QGraphicsObject{
@@ -145,6 +138,7 @@ class RoomScene : public QGraphicsScene {
 public:
     RoomScene(QMainWindow *main_window);
     ~RoomScene();
+
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
@@ -170,14 +164,14 @@ public slots:
     void keepLoseCardLog(const CardsMoveStruct &move);
     void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
-    void chooseGeneral(const QStringList &generals, const bool single_result);
+    void chooseGeneral(const QStringList &generals, const bool single_result, const QSet<BanPair> &banned_pairs);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason,
         bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     //void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
-    void chooseRole(const QString &scheme, const QStringList &roles);
+    //void chooseRole(const QString &scheme, const QStringList &roles);
     //void chooseDirection();
     void chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional);
 
@@ -192,12 +186,14 @@ public slots:
     void setDashboardShadow(const QString &who);
     void showServerInformation();
     void surrender();
-    void saveReplayRecord(const bool auto_save = false, const bool network_only = false);
+    void saveReplayRecord();
+    void saveReplayRecord(const bool auto_save, const bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();
     void doScript();
     void viewGenerals(const QString &reason, const QStringList &names);
+    void viewDistance();
 
     void handleGameEvent(const QVariant &args);
 
@@ -210,6 +206,10 @@ public slots:
     inline QPointF tableCenterPos() { return m_tableCenterPos; }
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
+
+    void onTransferButtonActivated();
+    void onSkillDeactivated();
+    void trust();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -226,8 +226,10 @@ private:
     void _getSceneSizes(QSize &minSize, QSize &maxSize);
     bool _shouldIgnoreDisplayMove(CardsMoveStruct &movement);
     bool _processCardsMove(CardsMoveStruct &move, bool isLost);
-    bool _m_isInDragAndUseMode;
-    bool _m_superDragStarted;
+    bool m_isInDragAndUseMode;
+    bool m_superDragStarted;
+    bool m_mousePressed;
+
     const QSanRoomSkin::RoomLayout *_m_roomLayout;
     const QSanRoomSkin::PhotoLayout *_m_photoLayout;
     const QSanRoomSkin::CommonLayout *_m_commonLayout;
@@ -255,7 +257,7 @@ private:
     QGraphicsSimpleTextItem *pausing_text;
 
     QList<QGraphicsPixmapItem *> role_items;
-    CardContainer *card_container;
+    CardContainer *m_cardContainer;
 
     QList<QSanSkillButton *> m_skillButtons;
 
@@ -267,15 +269,17 @@ private:
 
     QList<const Player *> selected_targets;
 
-    GuanxingBox *guanxing_box;
+    GuanxingBox *m_guanxingBox;
 
-    ChooseGeneralBox *choose_general_box;
+    ChooseGeneralBox *m_chooseGeneralBox;
 
-    ChooseOptionsBox *choose_options_box;
+    ChooseOptionsBox *m_chooseOptionsBox;
 
-    ChooseTriggerOrderBox *chooseTriggerOrderBox;
+    ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
 
-    PlayerCardBox *playerCardBox;
+    PlayerCardBox *m_playerCardBox;
+
+    ChooseSuitBox *m_chooseSuitBox;
 
     QList<CardItem *> gongxin_items;
 
@@ -362,16 +366,11 @@ private:
 
     QRectF _m_infoPlane;
 
+#ifndef Q_OS_WINRT
     // for animation effects
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QDeclarativeEngine *_m_animationEngine;
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
-#else
-    QQmlEngine *_m_animationEngine;
-    QQmlContext *_m_animationContext;
-    QQmlComponent *_m_animationComponent;
-    QQuickWindow *m_animationWindow;
 #endif
 
     QSet<HeroSkinContainer *> m_heroSkinContainers;
@@ -384,8 +383,6 @@ private slots:
     void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
     void updateSelectedTargets();
     void onSkillActivated();
-    void onTransferButtonActivated();
-    void onSkillDeactivated();
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
@@ -404,7 +401,6 @@ private slots:
     void removeLightBox();
 
     void showCard(const QString &player_name, int card_id);
-    void viewDistance();
 
     void speak();
 
@@ -437,7 +433,6 @@ private slots:
     //void revealGeneral(bool self, const QString &general);
 
     //void skillStateChange(const QString &skill_name);
-    void trust();
 
 signals:
     void restart();

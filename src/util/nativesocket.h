@@ -24,19 +24,19 @@
 #include "socket.h"
 
 class QUdpSocket;
+class QTimer;
 
 class NativeServerSocket : public ServerSocket {
     Q_OBJECT
 
 public:
-    NativeServerSocket();
+    NativeServerSocket(QObject *parent = 0);
 
-    virtual bool listen();
-    virtual void daemonize();
+    virtual bool listen(const QHostAddress &address, ushort port = 0);
+    virtual ushort serverPort() const;
 
 private slots:
     void processNewConnection();
-    void processNewDatagram();
 
 private:
     QTcpServer *server;
@@ -48,11 +48,10 @@ class NativeClientSocket : public ClientSocket {
     Q_OBJECT
 
 public:
-    NativeClientSocket();
-    NativeClientSocket(QTcpSocket *socket);
+    NativeClientSocket(QObject *parent = 0);
+    NativeClientSocket(QTcpSocket *socket, QObject *parent = 0);
 
-    virtual void connectToHost();
-    virtual void connectToHost(const QHostAddress &address);
+    virtual void connectToHost(const QString &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
     virtual void send(const QByteArray &message);
@@ -64,11 +63,42 @@ public:
 private slots:
     void getMessage();
     void raiseError(QAbstractSocket::SocketError socket_error);
+    void keepAlive();
+    void checkConnectionState();
 
 private:
-    QTcpSocket *const socket;
+    enum PacketType{
+        UnknownPacket,
+        InlineTextPacket,       //Texts ended with '\n'
+        KeepAlivePacket,        //Checking the peer's state
+        AcknowledgePacket
+    };
 
     void init();
+
+    QTcpSocket *const socket;
+    bool is_alive;
+    QTimer *keep_alive_timer;
+
+    static const qint64 KEEP_ALIVE_INTERVAL;
+    static const qint64 TIMEOUT_LIMIT;
+};
+
+class NativeUdpSocket : public UdpSocket {
+    Q_OBJECT
+
+public:
+    NativeUdpSocket(QObject *parent = 0);
+
+    virtual void bind(const QHostAddress &address, ushort port);
+    virtual void writeDatagram(const QByteArray &data, const QString &to);
+    virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port);
+
+private slots:
+    void processNewDatagram();
+
+private:
+    QUdpSocket *socket;
 };
 
 #endif

@@ -1,7 +1,7 @@
 -- translation for StrategicAdvantage Package
 
 return {
-	["strategic_advantage"] = "势备篇",
+	["strategic_advantage"] = "君临天下·势备篇",
 
 	["transfer"] = "连横",
 
@@ -13,7 +13,7 @@ return {
 	["#HalberdUse"] = "%from 发动了【<font color=\"yellow\"><b>方天画戟</b></font>】效果",
 	["#HalberdNullified"] = "由于【%arg】的效果，%from 对 %to 使用的【%arg2】无效",
 	["@halberd_extra_targets"] = "你可以发动【方天画戟】为此【杀】选择额外目标",
-	["@halberd"] = "你发动了【方天画戟】，请选择本次使用【杀】的目标",
+	["@Halberd"] = "你发动了【方天画戟】，请选择本次使用【杀】的目标",
 
 	["Breastplate"] = "护心镜",
 	[":Breastplate"] = "装备牌·防具\n\n技能：每当你受到伤害时，若此伤害不小于你的体力值，你可以将此牌从装备区置入弃牌堆，防止此伤害。",
@@ -51,7 +51,7 @@ return {
 	["#lure_tiger-prohibit"] = "调虎离山",
 
 	["fight_together"] = "勠力同心",
-	[":fight_together"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有大势力角色或所有小势力角色。\n作用效果：若目标角色：不处于连环状态，其横置；处于连换状态，其摸一张牌。",
+	[":fight_together"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有大势力角色或所有小势力角色。\n作用效果：若目标角色：不处于连环状态，其横置；处于连环状态，其摸一张牌。\n◆此牌能重铸。",
 	["fight_together:big"] = "大势力",
 	["fight_together:small"] = "小势力",
 

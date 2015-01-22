@@ -306,9 +306,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\core\banpair.cpp" />
+    <ClCompile Include="..\..\src\core\exceptionhandler.cpp" />
     <ClCompile Include="..\..\src\core\json.cpp" />
     <ClCompile Include="..\..\src\core\protocol.cpp" />
     <ClCompile Include="..\..\src\core\record-analysis.cpp" />
+    <ClCompile Include="..\..\src\core\roomconfig.cpp" />
     <ClCompile Include="..\..\src\core\RoomState.cpp" />
     <ClCompile Include="..\..\src\core\structs.cpp" />
     <ClCompile Include="..\..\src\core\util.cpp" />
@@ -318,7 +320,6 @@
     <ClCompile Include="..\..\src\dialog\AvatarModel.cpp" />
     <ClCompile Include="..\..\src\dialog\banipdialog.cpp" />
     <ClCompile Include="..\..\src\dialog\banlistdialog.cpp" />
-    <ClCompile Include="..\..\src\dialog\cardbutton.cpp" />
     <ClCompile Include="..\..\src\dialog\FlatDialog.cpp" />
     <ClCompile Include="..\..\src\dialog\FreeChooseDialog.cpp" />
     <ClCompile Include="..\..\src\dialog\GeneralModel.cpp" />
@@ -337,6 +338,9 @@
     <ClCompile Include="..\..\src\package\standard-wu-generals.cpp" />
     <ClCompile Include="..\..\src\package\strategic-advantage.cpp" />
     <ClCompile Include="..\..\src\scenario\jiange-defense-scenario.cpp" />
+    <ClCompile Include="..\..\src\server\lobbyplayer.cpp" />
+    <ClCompile Include="..\..\src\server\server-lobby.cpp" />
+    <ClCompile Include="..\..\src\server\server-room.cpp" />
     <ClCompile Include="..\..\src\ui\BubbleChatBox.cpp" />
     <ClCompile Include="..\..\src\ui\choosegeneralbox.cpp" />
     <ClCompile Include="..\..\src\ui\ChooseOptionsBox.cpp" />
@@ -345,6 +349,7 @@
     <ClCompile Include="..\..\src\ui\GraphicsPixmapHoverItem.cpp" />
     <ClCompile Include="..\..\src\ui\GuanxingBox.cpp" />
     <ClCompile Include="..\..\src\ui\HeroSkinContainer.cpp" />
+    <ClCompile Include="..\..\src\ui\lobbyscene.cpp" />
     <ClCompile Include="..\..\src\ui\PlayerCardBox.cpp" />
     <ClCompile Include="..\..\src\ui\SkinItem.cpp" />
     <ClCompile Include="..\..\src\ui\StyleHelper.cpp" />
@@ -352,6 +357,7 @@
     <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp" />
     <ClCompile Include="..\..\src\ui\magatamasItem.cpp" />
     <ClCompile Include="..\..\src\ui\SkinBank.cpp" />
+    <ClCompile Include="..\..\src\ui\tile.cpp" />
     <ClCompile Include="..\..\src\ui\TimedProgressBar.cpp" />
     <ClCompile Include="..\..\src\ui\Title.cpp" />
     <ClCompile Include="..\..\src\ui\uiUtils.cpp" />
@@ -388,10 +394,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Debug\moc_card.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_cardbutton.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -535,6 +537,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Debug\moc_lobbyplayer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_lobbyscene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Debug\moc_lua-wrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -576,10 +586,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Debug\moc_PlayerCardBox.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_playercarddialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -703,6 +709,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Debug\moc_tile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Debug\moc_TimedProgressBar.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -761,10 +771,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Release\moc_card.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Release\moc_cardbutton.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -908,6 +914,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Release\moc_lobbyplayer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_lobbyscene.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Release\moc_lua-wrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -949,10 +963,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Release\moc_PlayerCardBox.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Release\moc_playercarddialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -1076,6 +1086,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Release\moc_tile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Release\moc_TimedProgressBar.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -1137,7 +1151,6 @@
     <ClCompile Include="..\..\src\ui\QSanSelectableItem.cpp" />
     <ClCompile Include="..\..\src\ui\pixmapanimation.cpp" />
     <ClCompile Include="..\..\src\core\player.cpp" />
-    <ClCompile Include="..\..\src\dialog\playercarddialog.cpp" />
     <ClCompile Include="..\..\src\util\recorder.cpp" />
     <ClCompile Include="..\..\src\ui\rolecombobox.cpp" />
     <ClCompile Include="..\..\src\server\room.cpp" />
@@ -1158,7 +1171,6 @@
     <ClCompile Include="..\..\src\ui\window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_mainwindow_nonwin.h" />
     <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -1197,6 +1209,7 @@
     </CustomBuild>
     <ClInclude Include="..\..\src\core\banpair.h" />
     <ClInclude Include="..\..\src\core\compiler-specific.h" />
+    <ClInclude Include="..\..\src\core\exceptionhandler.h" />
     <ClInclude Include="..\..\src\core\json.h" />
     <ClInclude Include="..\..\src\core\namespace.h" />
     <ClInclude Include="..\..\src\core\protocol.h" />
@@ -1284,6 +1297,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
     </CustomBuild>
+    <ClInclude Include="..\..\src\core\roomconfig.h" />
     <ClInclude Include="..\..\src\core\structs.h" />
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -1557,24 +1571,6 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
     </CustomBuild>
     <ClInclude Include="..\..\src\core\version.h" />
-    <CustomBuild Include="..\..\src\dialog\cardbutton.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing cardbutton.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing cardbutton.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing cardbutton.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing cardbutton.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\ChooseOptionsBox.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ChooseOptionsBox.h...</Message>
@@ -1899,6 +1895,42 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\server\lobbyplayer.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing lobbyplayer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing lobbyplayer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing lobbyplayer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing lobbyplayer.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\lobbyscene.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing lobbyscene.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing lobbyscene.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing lobbyscene.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing lobbyscene.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+    </CustomBuild>
     <ClInclude Include="..\..\src\ui\SkinBank.h" />
     <CustomBuild Include="..\..\src\ui\Title.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -1937,6 +1969,24 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
     </CustomBuild>
     <ClInclude Include="..\..\src\ui\StyleHelper.h" />
+    <CustomBuild Include="..\..\src\ui\tile.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing tile.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing tile.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing tile.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing tile.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
+    </CustomBuild>
     <ClInclude Include="..\..\src\ui\uiUtils.h" />
     <CustomBuild Include="..\..\src\server\generalselector.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2557,24 +2607,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\playercarddialog.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing playercarddialog.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing playercarddialog.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DVS2010 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\release" "-I.\..\Qt\4.8.1\mkspecs\default" "-I.\GeneratedFiles"</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing playercarddialog.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing playercarddialog.h...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\util\recorder.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -2884,25 +2916,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\dialog\mainwindow_nonwin.ui">
-      <FileType>Document</FileType>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Uic%27ing %(Identity)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic%27ing %(Identity)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Uic%27ing %(Identity)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic%27ing %(Identity)...</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-    </CustomBuild>
     <None Include="..\..\swig\ai.i" />
     <None Include="..\..\swig\card.i" />
     <None Include="..\..\swig\list.i" />

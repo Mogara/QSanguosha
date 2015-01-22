@@ -41,7 +41,7 @@ RuleSummary::RuleSummary(QWidget *parent)
     list->setMaximumWidth(100);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(closeButton, &QPushButton::clicked, this, &RuleSummary::reject);
 
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(list);
@@ -65,13 +65,13 @@ RuleSummary::RuleSummary(QWidget *parent)
     }
 
     names << "hegemony" << "rule1-card" << "rule2-wording" << "rule3-extras";
-    foreach(QString name, names) {
+    foreach (const QString &name, names) {
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, name);
     }
 
-    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(loadContent(int)));
+    connect(list, &QListWidget::currentRowChanged, this, &RuleSummary::loadContent);
 
     if (!names.isEmpty())
         loadContent(0);

@@ -20,116 +20,88 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
-   <property name="autoFillBackground">
-    <bool>true</bool>
-   </property>
-   <widget class="QMenu" name="menuSumMenu">
-    <property name="autoFillBackground">
-     <bool>true</bool>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <addaction name="actionStart_Game"/>
+    <addaction name="actionStart_Server"/>
+    <addaction name="actionStart_Lobby"/>
+    <addaction name="actionPC_Console_Start"/>
+    <addaction name="actionReplay"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionConfigure"/>
+    <addaction name="actionGeneral_Overview"/>
+    <addaction name="actionCard_Overview"/>
+    <addaction name="actionRule_Summary"/>
+    <addaction name="actionManage_Ban_IP"/>
+    <addaction name="actionBroadcast"/>
+    <addaction name="actionReplay_file_convert"/>
+    <addaction name="actionRecord_analysis"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnable_Hotkey"/>
+    <addaction name="actionNever_nullify_my_trick"/>
+    <addaction name="actionView_Discarded"/>
+    <addaction name="actionView_distance"/>
+    <addaction name="actionServerInformation"/>
+    <addaction name="actionSurrender"/>
+    <addaction name="actionSaveRecord"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Us"/>
+    <addaction name="actionAbout_Qt"/>
+    <addaction name="actionAbout_GPLv3"/>
+    <addaction name="actionAbout_Lua"/>
+    <addaction name="actionAbout_fmod"/>
+    <addaction name="separator"/>
+    <addaction name="actionAcknowledgement_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionCheckUpdate"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionShow_Hide_Menu"/>
+    <addaction name="actionFullscreen"/>
+    <addaction name="actionMinimize_to_system_tray"/>
+   </widget>
+   <widget class="QMenu" name="menuCheat">
+    <property name="enabled">
+     <bool>false</bool>
     </property>
     <property name="title">
-     <string>SumMenu</string>
+     <string>Cheat</string>
     </property>
-    <widget class="QMenu" name="menuGame">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>Game</string>
-     </property>
-     <addaction name="actionStart_Game"/>
-     <addaction name="actionStart_Server"/>
-     <addaction name="actionPC_Console_Start"/>
-     <addaction name="actionReplay"/>
-     <addaction name="actionExit"/>
-    </widget>
-    <widget class="QMenu" name="menuView">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>View</string>
-     </property>
-     <addaction name="actionFullscreen"/>
-     <addaction name="actionMinimize_to_system_tray"/>
-    </widget>
-    <widget class="QMenu" name="menuOptions">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>Tools</string>
-     </property>
-     <addaction name="actionConfigure"/>
-     <addaction name="actionGeneral_Overview"/>
-     <addaction name="actionCard_Overview"/>
-     <addaction name="actionRule_Summary"/>
-     <addaction name="actionManage_Ban_IP"/>
-     <addaction name="actionBroadcast"/>
-     <addaction name="actionReplay_file_convert"/>
-     <addaction name="actionRecord_analysis"/>
-     <addaction name="separator"/>
-     <addaction name="actionEnable_Hotkey"/>
-     <addaction name="actionNever_nullify_my_trick"/>
-     <addaction name="actionView_Discarded"/>
-     <addaction name="actionView_distance"/>
-     <addaction name="actionServerInformation"/>
-     <addaction name="actionSurrender"/>
-     <addaction name="actionSaveRecord"/>
-    </widget>
-    <widget class="QMenu" name="menuDIY">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>DIY</string>
-     </property>
-     <addaction name="actionCard_editor"/>
-    </widget>
-    <widget class="QMenu" name="menuCheat">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>Cheat</string>
-     </property>
-     <addaction name="actionDamage_maker"/>
-     <addaction name="actionDeath_note"/>
-     <addaction name="actionRevive_wand"/>
-     <addaction name="actionExecute_script_at_server_side"/>
-    </widget>
-    <widget class="QMenu" name="menuHelp">
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="title">
-      <string>Help</string>
-     </property>
-     <addaction name="actionAbout"/>
-     <addaction name="actionAbout_Us"/>
-     <addaction name="actionAbout_Qt"/>
-     <addaction name="actionAbout_GPLv3"/>
-     <addaction name="actionAbout_Lua"/>
-     <addaction name="actionAbout_fmod"/>
-     <addaction name="separator"/>
-     <addaction name="actionAcknowledgement_2"/>
-     <addaction name="separator"/>
-     <addaction name="actionCheckUpdate"/>
-    </widget>
-    <addaction name="menuGame"/>
-    <addaction name="menuView"/>
-    <addaction name="menuOptions"/>
-    <addaction name="menuDIY"/>
-    <addaction name="menuCheat"/>
-    <addaction name="menuHelp"/>
+    <addaction name="actionDamage_maker"/>
+    <addaction name="actionDeath_note"/>
+    <addaction name="actionRevive_wand"/>
+    <addaction name="actionExecute_script_at_server_side"/>
    </widget>
-   <addaction name="menuSumMenu"/>
+   <widget class="QMenu" name="menuDIY">
+    <property name="title">
+     <string>DIY</string>
+    </property>
+    <addaction name="actionCard_editor"/>
+   </widget>
+   <addaction name="menuGame"/>
+   <addaction name="menuView"/>
+   <addaction name="menuOptions"/>
+   <addaction name="menuDIY"/>
+   <addaction name="menuCheat"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -422,9 +394,9 @@
     <string>CheckUpdate</string>
    </property>
   </action>
-  <action name="actionSound_Test">
+  <action name="actionStart_Lobby">
    <property name="text">
-    <string>Sound Test</string>
+    <string>Start lobby</string>
    </property>
   </action>
  </widget>

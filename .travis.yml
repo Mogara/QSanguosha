@@ -1,0 +1,26 @@
+# Enable Travis CI again after we remove declarative module
+language: cpp
+compiler:
+  - gcc
+  - clang
+before_install:
+  - sudo apt-add-repository -y ppa:beineri/opt-qt532
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install qt53tools
+before_script:
+  - wget http://prdownloads.sourceforge.net/swig/swig-3.0.4.tar.gz
+  - tar -xf swig-3.0.4.tar.gz
+  - cd swig-3.0.4/
+  - ./autogen.sh
+  - ./configure && make && sudo make install
+  - cd ../swig/
+  - swig -c++ -lua sanguosha.i
+script:
+  - cd ../
+  - source /opt/qt53/bin/qt53-env.sh && qmake && make
+notifications:
+  email:
+    recipients:
+      - engineers@mogara.org
+    on_success: change
+    on_failure: always

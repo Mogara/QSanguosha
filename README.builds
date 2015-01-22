@@ -4,8 +4,8 @@ Tips: "~" stands for the folder where the repo is in.
 To build QSanguosha with VS2013
 
 1. Download the following packages:
-(1) QT libraries for Windows (Visual Studio 2013, 5.3.1) x86: http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-windows-x86-msvc2013-5.3.1.exe
-                                                         x64: http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-windows-x86-msvc2013_64-5.3.1.exe
+(1) QT libraries for Windows (Visual Studio 2013, 5.3.2) x86: http://download.qt-project.org/official_releases/qt/5.3/5.3.2/qt-opensource-windows-x86-msvc2013-5.3.2.exe
+                                                         x64: http://download.qt-project.org/official_releases/qt/5.3/5.3.2/qt-opensource-windows-x86-msvc2013_64-5.3.2.exe
 (2) QT Visual Studio Add-in (for Qt 5) http://download.qt-project.org/official_releases/vsaddin/qt-vs-addin-1.2.3-opensource.exe
    and then install them.
 
@@ -38,7 +38,7 @@ To build QSanguosha in Mac OS X
 
 1. Install XCode from App Store and enable the command tools.
 
-2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-mac-x64-clang-5.3.1.dmg
+2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.2/qt-opensource-mac-x64-clang-5.3.2.dmg
 
 3. Download the source code and install swig from http://sourceforge.net/projects/swig/files/swig/ and make sure the version of swig is 3.0.2 or later.
    Tips: unzip the source code tarball and open a terminal, type:
@@ -141,7 +141,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
 
 To build QSanguosha in Linux or using MinGW
 
-1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 5.3.1.
+1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 5.3.2.
    (I strongly recommand you download the libraries and Qt Creator from software sources in Linux, because the compliation causes a lot of time)
    (If you are using MinGW, make sure the version of MinGW is compatible with Qt Libraries)
 
@@ -193,10 +193,10 @@ To build QSanguosha targeting Android on Windows
 Notice: Android version is still not fully supported.
 
 1. You'll need the following packages.
-(1) Qt 5.3.1 for Android, including Qt Creator & MinGW 4.8.
+(1) Qt 5.4.0 for Android, including Qt Creator 3.3.0 & MinGW 4.8.
 (3) swig 3.0.2 for Windows.
-(4) Android SDK. (Android Development Tools is recommended, via which you can download and manage Android SDKs)
-(5) Android NDK
+(4) Android SDK (the latest version). (Android Development Tools is recommended, via which you can download and manage Android SDKs)
+(5) Android NDK (the latest version)
 (6) JDK 1.7
 (7) USB driver specified to your Android device. (optional, to deploy APK directly onto your device and debug)
 (8) Apache Ant 1.9, usually packed in ADT
@@ -211,16 +211,16 @@ Notice: Android version is still not fully supported.
 5. Open QSanguosha.pro with Qt Creator. Confirm the archtecture of your Android device (ARMv7 or x86) and select the corresponding kit.
 
 6. To deploy APK via USB, connect your Android device to your PC via USB. Enable debug mode. Click Run (Ctrl + R) and select your device in the popup window.
-   OR add two custom process steps to create an APK but do not deploy it to any device.
+   If your Qt Creator is lower than 3.3.0, you can add two custom process steps as follows to get the APK without deploying it to any device.
    (1) Command: < YOUR MinGW PATH >\mingw32-make.exe
        Arguments: install INSTALL_ROOT=android-build
        Working Directory: %{buildDir}
    (2) Command: < YOUR Qt library PATH >\bin\androiddeployqt.exe
-       Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-19
+       Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-20
        Working Directory: %{buildDir}
    Click build (Ctrl + B) and you'll get an APK in < YOUR build directory >/android-build/bin, and install the APK manually.
 
-7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.qsgsrara.qsanguosha
+7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.mogara.qsanguosha
    ai-selector
    audio
    diy
@@ -236,4 +236,4 @@ Notice: Android version is still not fully supported.
 
 8. (optional) Add the Chinese language pack.
    run lrelease QSanguosha.pro
-   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.qsgsrara.qsanguosha mentioned in step 7.
+   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.mogara.qsanguosha mentioned in step 7.

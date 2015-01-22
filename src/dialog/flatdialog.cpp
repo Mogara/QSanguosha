@@ -29,18 +29,19 @@
 #include <QPushButton>
 
 FlatDialog::FlatDialog(QWidget *parent, bool initialLayoutWithTitle)
-    : QDialog(parent), mousePressed(false)
+    : QDialog(parent)
 {
 #ifdef Q_OS_WIN
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+    mousePressed = false;
 
     if (initialLayoutWithTitle) {
         layout = new QVBoxLayout;
         title = new QLabel;
         title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
         title->setObjectName("window_title");
-        connect(this, SIGNAL(windowTitleChanged(QString)), title, SLOT(setText(QString)));
+        connect(this, &FlatDialog::windowTitleChanged, title, &QLabel::setText);
         layout->addWidget(title);
         setLayout(layout);
     }
@@ -71,7 +72,7 @@ bool FlatDialog::addCloseButton(QString name)
         name = tr("Close");
 
     QPushButton *closeButton = new QPushButton(name);
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(closeButton, &QPushButton::clicked, this, &FlatDialog::reject);
     layout->addWidget(closeButton);
     return true;
 }

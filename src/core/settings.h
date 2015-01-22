@@ -26,6 +26,7 @@
 #include <QRectF>
 #include <QPixmap>
 #include <QBrush>
+#include <QSet>
 
 class Settings : public QSettings {
     Q_OBJECT
@@ -82,18 +83,17 @@ public:
     int LuckCardLimitation;
     ushort ServerPort;
     bool DisableLua;
-
-    QStringList ExtraHiddenGenerals;
-    QStringList RemovedHiddenGenerals;
-
+    QString RoomPassword;
     bool RewardTheFirstShowingPlayer;
+    QSet<QString> BannedIp;
 
     // client side
+    QString LobbyAddress;
+    bool ConnectToLobby;
     QString HostAddress;
     QString UserName;
     QString UserAvatar;
     QStringList HistoryIPs;
-    ushort DetectorPort;
     int MaxCards;
 
     bool EnableHotKey;
@@ -104,7 +104,7 @@ public:
     bool EnableDoubleClick;
     bool EnableAutoSaveRecord;
     bool NetworkOnly;
-    bool EnableAutoPreshowInConsoleMode;
+    bool EnableAutoPreshow;
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;
@@ -115,7 +115,7 @@ public:
 
     QString BackgroundImage;
     QString TableBgImage;
-    QString RecordSavePaths;
+    QString RecordSavePath;
 
     int BubbleChatBoxKeepSeconds;
     bool IgnoreOthersSwitchesOfSkin;

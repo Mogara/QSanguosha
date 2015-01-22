@@ -26,15 +26,13 @@
 #include <QSequentialAnimationGroup>
 #include <QPainter>
 
-EffectAnimation::EffectAnimation()
-    : QObject()
+EffectAnimation::EffectAnimation(QObject *parent)
+    : QObject(parent)
 {
-    effects.clear();
-    registered.clear();
 }
 
 void EffectAnimation::fade(QGraphicsItem *map) {
-    QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
+    AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(map->graphicsEffect());
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
@@ -50,7 +48,7 @@ void EffectAnimation::fade(QGraphicsItem *map) {
 }
 
 void EffectAnimation::emphasize(QGraphicsItem *map, bool stay) {
-    QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
+    AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(map->graphicsEffect());
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
@@ -65,7 +63,7 @@ void EffectAnimation::emphasize(QGraphicsItem *map, bool stay) {
 }
 
 void EffectAnimation::sendBack(QGraphicsItem *map) {
-    QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
+    AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(map->graphicsEffect());
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
@@ -80,28 +78,30 @@ void EffectAnimation::sendBack(QGraphicsItem *map) {
 }
 
 void EffectAnimation::effectOut(QGraphicsItem *map) {
-    QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
+    AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(map->graphicsEffect());
     if (effect) {
+        connect(effect, &AnimatedEffect::loop_finished, this, (void (EffectAnimation::*)()) (&EffectAnimation::deleteEffect));
         effect->setStay(false);
-        connect(effect, SIGNAL(loop_finished()), this, SLOT(deleteEffect()));
     }
 
     effect = registered.value(map);
-    if (effect) effect->deleteLater();
+    if (effect)
+        effect->deleteLater();
+
     registered.insert(map, NULL);
 }
 
 void EffectAnimation::deleteEffect() {
-    QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(sender());
+    AnimatedEffect *effect = qobject_cast<AnimatedEffect *>(sender());
     deleteEffect(effect);
 }
 
-void EffectAnimation::deleteEffect(QAnimatedEffect *effect) {
+void EffectAnimation::deleteEffect(AnimatedEffect *effect) {
     if (!effect) return;
     effect->deleteLater();
     QGraphicsItem *pix = effects.key(effect);
     if (pix) {
-        QAnimatedEffect *effect = registered.value(pix);
+        AnimatedEffect *effect = registered.value(pix);
         if (effect) effect->reset();
         pix->setGraphicsEffect(registered.value(pix));
         effects.insert(pix, registered.value(pix));
@@ -115,7 +115,7 @@ EmphasizeEffect::EmphasizeEffect(bool stay, QObject *parent) {
     index = 0;
     this->stay = stay;
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &EmphasizeEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
@@ -148,15 +148,16 @@ QRectF EmphasizeEffect::boundingRectFor(const QRectF &sourceRect) const{
     return rect;
 }
 
-void QAnimatedEffect::setStay(bool stay) {
+void AnimatedEffect::setStay(bool stay) {
     this->stay = stay;
     if (!stay) {
         QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
         anim->setEndValue(0);
         anim->setDuration(index * 5);
 
-        connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
-        connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+        connect(anim, &QPropertyAnimation::finished, this, &AnimatedEffect::deleteLater);
+        connect(anim, &QPropertyAnimation::finished, this, &AnimatedEffect::loop_finished);
+        connect(anim, &QPropertyAnimation::valueChanged, this, &AnimatedEffect::update);
         anim->start(QAbstractAnimation::DeleteWhenStopped);
     }
 }
@@ -169,7 +170,7 @@ SentbackEffect::SentbackEffect(bool stay, QObject *parent) {
     this->stay = stay;
 
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &SentbackEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
@@ -229,7 +230,7 @@ FadeEffect::FadeEffect(bool stay, QObject *parent) {
     this->stay = stay;
 
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
-    connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
+    connect(anim, &QPropertyAnimation::valueChanged, this, &FadeEffect::update);
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);

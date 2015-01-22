@@ -26,69 +26,56 @@
 #include <QGraphicsObject>
 #include <QGraphicsRotation>
 
-class Title;
 class QGraphicsDropShadowEffect;
 
-class Button : public QGraphicsObject{
+class Button : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    explicit Button(const QString &label, qreal scale = 1.0, bool compact = false);
-    explicit Button(const QString &label, const QSizeF &size, bool compact = false);
-    void setFontName(const QString &name);
-    void setFontSize(const int &size);
-    inline void setText(const QString &text) { label = text; }
+    explicit Button(const QString &label, qreal scale = 1.0);
+    explicit Button(const QPixmap &pixmap, qreal scale = 1.0);
+    Button(const QString &label, const QSizeF &size);
+    Button(const QPixmap &pixmap, const QSizeF &size);
+
+    inline void setFontName(const QString &name) { this->font_name = name; }
+    inline void setFontSize(const int &size) { this->font_size = size; }
+    void setText(const QString &text);
 
     virtual QRectF boundingRect() const;
 
     static QFont defaultFont();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void init();
+    void initTextItems();
+    void prepareIcons();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mousePressEvent(QGraphicsSceneMouseEvent *) {}
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-private:
+    void setTextColorReversed(bool reversed);
+    void updateIconsPosition();
 
-    enum MouseArea {
-        Right,
-        Left,
-        Top,
-        Bottom,
-        Center,
-
-        Outside
-    };
+    virtual QColor edgeColor() const { return Qt::white; }
+    virtual QColor backgroundColor() const;
+    virtual int edgeWidth() const { return 2; }
 
     QString label;
     QSizeF size;
     QString font_name;
     int font_size;
-    bool compact;
-    bool down;
-    MouseArea mouse_area;
 
-    QGraphicsRotation *rotation;
-    QGraphicsScale *scale;
-    Title *title;
-
-    QGraphicsDropShadowEffect *frame;
-
-    QPixmap icon;
-
-    void init();
-    void doTransform(const QPointF &pos);
-    void reset();
-    MouseArea getMouseArea(const QPointF &pos) const;
+    QGraphicsPixmapItem *m_icon;
+    QGraphicsPixmapItem *m_colorReversedIcon;
 
 signals:
     void clicked();
 
 private slots:
     void onEnabledChanged();
+    void onVisibleChanged();
 
 };
 

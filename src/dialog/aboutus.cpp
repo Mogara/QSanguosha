@@ -43,7 +43,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     list->setMaximumWidth(150);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(closeButton, &QPushButton::clicked, this, &AboutUsDialog::reject);
 
     QVBoxLayout *vLayout = new QVBoxLayout;
     vLayout->addWidget(list);
@@ -62,12 +62,12 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     QStringList developers = GetValueFromLuaState(L, "about_us", "developers").toStringList();
 
-    foreach(QString name, developers) {
+    foreach (const QString &name, developers) {
         QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(name), list);
         item->setData(Qt::UserRole, name);
     }
 
-    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(loadContent(int)));
+    connect(list, &QListWidget::currentRowChanged, this, &AboutUsDialog::loadContent);
 
     if (!developers.isEmpty())
         loadContent(0);

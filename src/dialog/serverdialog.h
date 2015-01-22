@@ -131,6 +131,9 @@ private:
     QLabel *luck_card_label;
     QSpinBox *luck_card_spinbox;
     QCheckBox *disable_lua_checkbox;
+    QLineEdit *lobby_address_edit;
+    QCheckBox *connect_to_lobby_checkbox;
+    QLineEdit *room_password_edit;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
@@ -148,10 +151,6 @@ private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void editBanlist();
-
-    void doCustomAssign();
-
-    void updateButtonEnablility(QAbstractButton *button);
 };
 
 #endif // SERVERDIALOG_H

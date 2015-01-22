@@ -23,6 +23,7 @@
 
 #include <QMainWindow>
 #include <QDialog>
+#include <QStack>
 
 #include "version.h"
 
@@ -67,7 +68,7 @@ public:
     ~MainWindow();
     void fitBackgroundBrush();
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
@@ -111,6 +112,8 @@ private:
     QNetworkReply *versionInfomationReply;
     QNetworkReply *changeLogReply;
 
+    QStack<QString> sceneHistory;
+
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
     void fetchUpdateInformation();
@@ -142,18 +145,22 @@ private slots:
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
     void on_actionCheckUpdate_triggered();
+    void on_actionManage_Ban_IP_triggered();
+    void on_actionStart_Lobby_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);
     void enterRoom();
+    void enterLobby();
     void gotoScene(QGraphicsScene *scene);
-    void gotoStartScene();
+    void exitScene();
+    void restartGame();
     void startGameInAnotherInstance();
     void changeBackground();
-    void on_actionManage_Ban_IP_triggered();
 
     void onVersionInfomationGotten();
     void onChangeLogGotten();
+    void onCreateRoomClicked();
 
 signals:
     void about_to_close();

@@ -50,7 +50,7 @@ public:
     virtual bool isLastHandCard(const Card *card, bool contain = false) const;
     virtual void setMark(const QString &mark, int value);
 
-    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
+    virtual QStringList getBigKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
 
     virtual void setHeadSkinId(int id);
     virtual void setDeputySkinId(int id);

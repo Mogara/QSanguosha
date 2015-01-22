@@ -32,6 +32,7 @@ class General;
 class QCommandLinkButton;
 class Skill;
 class GeneralOverview;
+struct SearchDetails;
 
 class GeneralSearch : public FlatDialog {
     Q_OBJECT
@@ -54,8 +55,7 @@ private:
     QButtonGroup *package_buttons;
 
 signals:
-    void search(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-        const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+    void search(const SearchDetails &detail);
 
 protected:
     virtual void accept();
@@ -103,9 +103,8 @@ private:
     QString getIllustratorInfo(const QString &generalName);
 
 public slots:
-    void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-        const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
-
+    void startSearch(const SearchDetails &detail);
+    void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 private slots:
     void playAudioEffect();
     void copyLines();

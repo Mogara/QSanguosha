@@ -113,8 +113,7 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
-    }
-    else {
+    } else {
         bool invoke = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return invoke;
@@ -173,8 +172,7 @@ AI *Room::cloneAI(ServerPlayer *player) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         output(error_msg);
-    }
-    else {
+    } else {
         void *ai_ptr;
         int result = SWIG_ConvertPtr(L, -1, &ai_ptr, SWIGTYPE_p_AI, 0);
         lua_pop(L, 1);
@@ -197,7 +195,7 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, 
     lua_createtable(L, cards.length(), 0);
     lua_pushstring(L, reason.toLatin1());
 
-    for (int i = 0; i < cards.length(); i++) {
+    for (int i = 0; i < cards.length(); ++i) {
         int elem = cards.at(i);
         lua_pushnumber(L, elem);
         lua_rawseti(L, -3, i + 1);

@@ -48,7 +48,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 ServerDialog::ServerDialog(QWidget *parent)
     : FlatDialog(parent)
 {
-    setWindowTitle(tr("Start server"));
+    setWindowTitle(tr("Start room server"));
 
     QTabWidget *tab_widget = new QTabWidget;
     tab_widget->addTab(createBasicTab(), tr("Basic"));
@@ -75,11 +75,11 @@ QWidget *ServerDialog::createBasicTab() {
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
     timeout_spinbox->setDisabled(Config.OperationNoLimit);
-    connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
+    connect(nolimit_checkbox, &QCheckBox::toggled, timeout_spinbox, &QSpinBox::setDisabled);
 
     QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
     edit_button->setFixedWidth(100);
-    connect(edit_button, SIGNAL(clicked()), this, SLOT(editBanlist()));
+    connect(edit_button, &QPushButton::clicked, this, &ServerDialog::editBanlist);
 
     QFormLayout *form_layout = new QFormLayout;
     form_layout->addRow(tr("Server name"), server_name_edit);
@@ -116,7 +116,7 @@ QWidget *ServerDialog::createPackageTab() {
     int i = 0, j = 0;
     int row = 0, column = 0;
     const QList<const Package *> &packages = Sanguosha->getPackages();
-    foreach(const Package *package, packages) {
+    foreach (const Package *package, packages) {
         if (package->inherits("Scenario"))
             continue;
 
@@ -182,10 +182,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     free_choose_checkbox->setChecked(Config.FreeChoose);
     free_choose_checkbox->setVisible(Config.EnableCheat);
 
-    updateButtonEnablility(mode_group->checkedButton());
-    connect(mode_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(updateButtonEnablility(QAbstractButton *)));
-
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_choose_checkbox, SLOT(setVisible(bool)));
+    connect(enable_cheat_checkbox, &QCheckBox::toggled, free_choose_checkbox, &QCheckBox::setVisible);
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
     pile_swapping_label->setToolTip(tr("<font color=%1>-1 means no limitations</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
@@ -198,14 +195,33 @@ QWidget *ServerDialog::createAdvancedTab() {
     hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
+    room_password_edit = new QLineEdit;
+
+    lobby_address_edit = new QLineEdit;
+    lobby_address_edit->setText(Config.LobbyAddress);
+
+    connect_to_lobby_checkbox = new QCheckBox(tr("Connect"));
+    connect_to_lobby_checkbox->setChecked(Config.ConnectToLobby);
+
+    connect(connect_to_lobby_checkbox, &QCheckBox::toggled, lobby_address_edit, &QLineEdit::setEnabled);
+    lobby_address_edit->setEnabled(connect_to_lobby_checkbox->isChecked());
+
+    QLayout *lobby_layout = new QHBoxLayout;
+    lobby_layout->addWidget(new QLabel(tr("Lobby Address")));
+    lobby_layout->addWidget(lobby_address_edit);
+    lobby_layout->addWidget(connect_to_lobby_checkbox);
+
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
-#if QT_VERSION >= 0x040700
     address_edit->setPlaceholderText(tr("Public IP or domain"));
-#endif
 
-    QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
-    connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+    QPushButton *detect_button = new QPushButton(tr("Detect"));
+    connect(detect_button, &QPushButton::clicked, this, &ServerDialog::onDetectButtonClicked);
+
+    QLayout *address_layout = new QHBoxLayout;
+    address_layout->addWidget(new QLabel(tr("Address")));
+    address_layout->addWidget(address_edit);
+    address_layout->addWidget(detect_button);
 
     port_edit = new QLineEdit;
     port_edit->setText(QString::number(Config.ServerPort));
@@ -217,8 +233,9 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
-    layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
-    layout->addWidget(detect_button);
+    layout->addLayout(HLay(new QLabel(tr("Room Password")), room_password_edit));
+    layout->addLayout(lobby_layout);
+    layout->addLayout(address_layout);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
     layout->addStretch();
 
@@ -238,9 +255,9 @@ QWidget *ServerDialog::createConversionTab() {
     convert_ds_to_dp = new QCheckBox(tr("Convert DoubleSword to DragonPhoenix"));
     convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("DragonPhoenix") || enable_lord);
     convert_ds_to_dp->setDisabled(enable_lord);
-
-    connect(convert_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setChecked(bool)));
-    connect(convert_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setDisabled(bool)));
+    
+    connect(convert_lord, &QCheckBox::toggled, convert_ds_to_dp, &QCheckBox::setChecked);
+    connect(convert_lord, &QCheckBox::toggled, convert_ds_to_dp, &QCheckBox::setDisabled);
 
     QWidget *widget = new QWidget;
     layout->addWidget(convert_lord);
@@ -285,7 +302,7 @@ QWidget *ServerDialog::createMiscTab() {
     ai_chat_checkbox = new QCheckBox(tr("Enable AI chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
     ai_chat_checkbox->setDisabled(Config.ForbidAddingRobot);
-    connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_chat_checkbox, SLOT(setDisabled(bool)));
+    connect(forbid_adding_robot_checkbox, &QCheckBox::toggled, ai_chat_checkbox, &QCheckBox::setDisabled);
 
     ai_delay_spinbox = new QSpinBox;
     ai_delay_spinbox->setMinimum(0);
@@ -293,12 +310,12 @@ QWidget *ServerDialog::createMiscTab() {
     ai_delay_spinbox->setValue(Config.OriginAIDelay);
     ai_delay_spinbox->setSuffix(tr(" millisecond"));
     ai_delay_spinbox->setDisabled(Config.ForbidAddingRobot);
-    connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_spinbox, SLOT(setDisabled(bool)));
+    connect(forbid_adding_robot_checkbox, &QCheckBox::toggled, ai_delay_spinbox, &QSpinBox::setDisabled);
 
     ai_delay_altered_checkbox = new QCheckBox(tr("Alter AI Delay After Death"));
     ai_delay_altered_checkbox->setChecked(Config.AlterAIDelayAD);
     ai_delay_altered_checkbox->setDisabled(Config.ForbidAddingRobot);
-    connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_altered_checkbox, SLOT(setDisabled(bool)));
+    connect(forbid_adding_robot_checkbox, &QCheckBox::toggled, ai_delay_altered_checkbox, &QCheckBox::setDisabled);
 
     ai_delay_ad_spinbox = new QSpinBox;
     ai_delay_ad_spinbox->setMinimum(0);
@@ -307,8 +324,8 @@ QWidget *ServerDialog::createMiscTab() {
     ai_delay_ad_spinbox->setSuffix(tr(" millisecond"));
     ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
     ai_delay_ad_spinbox->setDisabled(Config.ForbidAddingRobot);
-    connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
-    connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setDisabled(bool)));
+    connect(ai_delay_altered_checkbox, &QCheckBox::toggled, ai_delay_ad_spinbox, &QSpinBox::setEnabled);
+    connect(forbid_adding_robot_checkbox, &QCheckBox::toggled, ai_delay_ad_spinbox, &QSpinBox::setDisabled);
 
     layout->addLayout(HLay(forbid_adding_robot_checkbox, ai_chat_checkbox));
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
@@ -329,16 +346,6 @@ QWidget *ServerDialog::createMiscTab() {
     QWidget *widget = new QWidget;
     widget->setLayout(tablayout);
     return widget;
-}
-
-void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
-    if (!button) return;
-
-    if (button->objectName().contains("scenario")) {
-        mini_scene_button->setEnabled(true);
-    } else {
-        mini_scene_button->setEnabled(false);
-    }
 }
 
 QGroupBox *ServerDialog::createGameModeBox() {
@@ -373,22 +380,6 @@ QGroupBox *ServerDialog::createGameModeBox() {
         jiange_defense->setChecked(true);
 
     item_list << jiange_defense;
-
-    //mini scenes
-    QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
-    mini_scenes->setObjectName("custom_scenario");
-    mode_group->addButton(mini_scenes);
-
-    if (Config.GameMode == "custom_scenario")
-        mini_scenes->setChecked(true);
-
-    mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
-    connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
-
-    mini_scene_button->setEnabled(mode_group->checkedButton() ? mode_group->checkedButton()->objectName() == "mini" : false);
-
-    item_list << mini_scenes;
-    item_list << mini_scene_button;
 
     // ============
 
@@ -432,9 +423,9 @@ QLayout *ServerDialog::createButtonLayout() {
 
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+   
+    connect(ok_button, &QPushButton::clicked, this, &ServerDialog::onOkButtonClicked);
+    connect(cancel_button, &QPushButton::clicked, this, &ServerDialog::reject);
 
     return button_layout;
 }
@@ -442,7 +433,7 @@ QLayout *ServerDialog::createButtonLayout() {
 void ServerDialog::onDetectButtonClicked() {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach(QHostAddress address, vAddressList) {
+    foreach (const QHostAddress &address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost
             && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
@@ -455,10 +446,6 @@ void ServerDialog::onOkButtonClicked() {
     accept();
 }
 
-void ServerDialog::doCustomAssign() {
-    CustomAssignDialog *dialog = new CustomAssignDialog(this);
-    dialog->exec();
-}
 
 bool ServerDialog::config() {
     exec();
@@ -488,6 +475,9 @@ bool ServerDialog::config() {
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
     Config.LuckCardLimitation = luck_card_spinbox->value();
+    Config.LobbyAddress = lobby_address_edit->text();
+    Config.ConnectToLobby = connect_to_lobby_checkbox->isChecked();
+    Config.RoomPassword = room_password_edit->text();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -518,10 +508,12 @@ bool ServerDialog::config() {
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
+    Config.setValue("LobbyAddress", Config.LobbyAddress);
+    Config.setValue("ConnectToLobby", Config.ConnectToLobby);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
-    foreach(QAbstractButton *checkbox, checkboxes) {
+    foreach (QAbstractButton *checkbox, checkboxes) {
         if (!checkbox->isChecked()) {
             QString package_name = checkbox->objectName();
             Sanguosha->addBanPackage(package_name);
@@ -531,6 +523,8 @@ bool ServerDialog::config() {
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
+
+    //QStringList general_conversions;
     Config.setValue("EnableLordConvertion", convert_lord->isChecked());
 
     QStringList card_conversions;

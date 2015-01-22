@@ -30,7 +30,8 @@ programmers = {
 	'takashiro',
 	'lrl026',
 	'Para',
-	'tangjs520'
+	'tangjs520',
+	'数字'
 }
 
 ai_designers = {
@@ -50,7 +51,8 @@ art_designers = {
 	'XXX',
 	'KenKic',
 	'洛神',
-	'祝家大少'
+	'祝家大少',
+	'女王受·虫'
 }
 
 assistants = {
@@ -67,7 +69,14 @@ audio_workers = {
 	'鱼梓酱',
 	'doublebit',
 	'尖子班的学生',
-	'琴音'
+	'琴音',
+	'黑冰',
+	'女王受·虫'
+}
+
+consultants = {
+	'太阳神上',
+	'蒋彩阳'
 }
 
 about_us.width = 900
@@ -219,14 +228,15 @@ function createHomePage()
 	table.insert(about_us.homepage, HTMLTable.encloseInTagsOfDivId(HTMLTable.encloseInTag("QSanguosha-Hegemony", "h1"), "header"))
 	local sectionbody = {}
 	table.insert(sectionbody, HTMLTable.createListingBlock("<br>简介",
-		"QSanguosha-Hegemony是一个基于太阳神三国杀V2的开源项目，为了实现游卡官方国战而努力。"))
+		"QSanguosha-Hegemony是Mogara.org旗下一个以桌面游戏三国杀·国战为蓝本的开源试验性项目"))
+	table.insert(sectionbody, HTMLTable.createListingBlock("<br>联系我们", "电子邮箱：dev@qsanguosha.org"))
 	table.insert(sectionbody, HTMLTable.createListingBlock("开发人员", "程序：" .. table.concat(programmers, " "),
 		"AI：" .. table.concat(ai_designers, " "), "美工：" .. table.concat(art_designers, " "), "助理: " .. table.concat(assistants, " "),
-		"配音工作人员:" .. table.concat(audio_workers, " ")))
+		"配音工作人员:" .. table.concat(audio_workers, " "), "技术顾问：" .. table.concat(consultants, " ")))
 	table.insert(sectionbody, HTMLTable.createListingBlock("特别鸣谢", getQunInfo("太阳神三国杀国战联机群",
 		"低调的付尼玛", "01112a97ee4545654e1a098850184a84a9eadd3d6c7dc570fdd883e461babfd4", "nini"),
 		getQunInfo("豚豚神杀游戏群", "洛神", "ffb10d7ef73fbdef7cf7da3f6a64b95b889c465fdc4e1662979434583357638b", "tuntun"),
-		getTextWithOptionalLink("结算顾问 凌天翼 问心云", "http://dadao.net/sgs/guo.html"),
+		getTextWithOptionalLink("结算顾问 凌天翼 问心云 半缘修道"),
 		getTextWithOptionalLink("AI战术顾问 叶落孤舟"),
 		getTextWithOptionalLink("太阳神三国杀论坛", "http://qsanguosha.org")))
 	sectionbody = HTMLTable.encloseInTagsOfDivClass(table.concat(sectionbody), "sectionbody")
@@ -238,9 +248,7 @@ end
 local pages = {
 	{
 		[0] = "Yanguam",
-		"程序员基因到我已经传了三代，爷爷爸爸和叔叔们都是程序员。好吧，我在技术上对不起这优良的血统。",
-		"暑期在一家投行旗下的火腿肠生产企业附属的房地产公司工作，大部分代码在上班时间完成。",
-		"为了发扬自由软件的文化而加入神杀。坚信程序可能因时间而没落，而传承的技术与思想永不消亡。"
+		"啦啦在下一盘很大很大很大很大很大很大很大很大很大很大很大很大的棋！"
 	},
 
 	{

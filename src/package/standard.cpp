@@ -22,6 +22,7 @@
 #include "room.h"
 #include "skill.h"
 #include "engine.h"
+#include "roomthread.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -126,14 +127,24 @@ void EquipCard::onInstall(ServerPlayer *player) const{
         } else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
+            if (trigger_skill->getViewAsSkill())
+                room->attachSkillToPlayer(player, this->objectName());
         }
     }
 }
 
 void EquipCard::onUninstall(ServerPlayer *player) const{
     Room *room = player->getRoom();
-    if (Sanguosha->getSkill(this) && Sanguosha->getSkill(this)->inherits("ViewAsSkill"))
-        room->detachSkillFromPlayer(player, this->objectName(), true);
+    const Skill *skill = Sanguosha->getSkill(this);
+    if (skill) {
+        if (skill->inherits("ViewAsSkill")) {
+            room->detachSkillFromPlayer(player, this->objectName(), true);
+        } else if (skill->inherits("TriggerSkill")) {
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            if (trigger_skill->getViewAsSkill())
+                room->detachSkillFromPlayer(player, this->objectName(), true);
+        }
+    }
 }
 
 QString GlobalEffect::getSubtype() const{
@@ -177,7 +188,7 @@ bool GlobalEffect::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
     players << player;
-    foreach(const Player *p, players) {
+    foreach (const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -195,7 +206,7 @@ QString AOE::getSubtype() const{
 bool AOE::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
-    foreach(const Player *p, players) {
+    foreach (const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -281,7 +292,9 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (targets.isEmpty()) {
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    if (all_nullified || targets.isEmpty()) {
         if (movable) {
             onNullified(source);
             if (room->getCardOwner(getEffectiveId()) != source) return;
@@ -349,7 +362,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
         ServerPlayer *p = NULL;
 
-        foreach(ServerPlayer *player, players) {
+        foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
 
@@ -380,9 +393,9 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 break;
             }
 
-            foreach(ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetChosen, room, p, data);
-            foreach(ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
@@ -436,13 +449,13 @@ Horse::Horse(Suit suit, int number, int correct)
 int Horse::getCorrect() const{
     return correct;
 }
-
+/*
 void Horse::onInstall(ServerPlayer *) const{
 }
 
 void Horse::onUninstall(ServerPlayer *) const{
 }
-
+*/
 QString Horse::getCommonEffectName() const{
     return "horse";
 }

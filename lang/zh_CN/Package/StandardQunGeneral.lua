@@ -128,6 +128,7 @@ return {
 	["kuangfu_equip:1"] = "防具牌",
 	["kuangfu_equip:2"] = "+1坐骑",
 	["kuangfu_equip:3"] = "-1坐骑",
+	["kuangfu_equip:4"] = "宝物牌",
 
 	["#zoushi"] = "惑心之魅",
 	["zoushi"] = "邹氏",

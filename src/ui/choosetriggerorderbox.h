@@ -34,8 +34,15 @@ class TriggerOptionButton : public QGraphicsObject {
 
     friend class ChooseTriggerOrderBox;
 
+public:
+    static QFont defaultFont();
+
 signals:
     void clicked();
+    void hovered(bool entering);
+
+public slots:
+    void needDisabled(bool disabled);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
@@ -47,6 +54,7 @@ protected:
 
 private:
     explicit TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width);
+    bool isPreferentialSkillOf(const TriggerOptionButton *other) const;
 
     QString getGeneralNameBySkill() const;
 
@@ -84,7 +92,6 @@ class ChooseTriggerOrderBox : public GraphicsBox {
 public:
     explicit ChooseTriggerOrderBox();
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QRectF boundingRect() const;
     void chooseOption(const QString &reason, const QStringList &options, const bool optional);
     void clear();
@@ -95,21 +102,22 @@ public slots:
 private:
     QList<TriggerOptionButton *> optionButtons;
     QList<GeneralButton *> generalButtons;
-    static const int top_dark_bar = 27;
-    static const int top_blank_width = 42;
-    static const int bottom_blank_width = 25;
-    static const int interval = 15;
-    static const int left_blank_width = 37;
+    static const int top_dark_bar;
+    static const int m_topBlankWidth;
+    static const int bottom_blank_width;
+    static const int interval;
+    static const int m_leftBlankWidth;
 
-    QString reason;
     QStringList options;
     bool optional;
+    int m_minimumWidth;
 
     Button *cancel;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progressBar;
 
     int getGeneralNum() const;
+    void storeMinimumWidth();
 };
 
 #endif // CHOOSETRIGGERORDERBOX_H

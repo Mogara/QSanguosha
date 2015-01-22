@@ -22,20 +22,17 @@
 #include "startscene.h"
 #include "roomscene.h"
 #include "server.h"
+#include "lobbyscene.h"
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
-#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
 #include "ui_mainwindow.h"
-#else
-#include "ui_mainwindow_nonwin.h"
-#endif
 #include "rule-summary.h"
 #include "pixmapanimation.h"
-#include "record-analysis.h"
+#include "recordanalyzer.h"
 #include "aboutus.h"
 #include "updatechecker.h"
-#include "recorder.h"
+#include "record.h"
 #include "audio.h"
 #include "stylehelper.h"
 #include "uiutils.h"
@@ -59,6 +56,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkInterface>
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -84,7 +82,7 @@ public:
 #endif
     }
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     virtual void mousePressEvent(QMouseEvent *event) {
         MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
         if (parent)
@@ -105,15 +103,6 @@ public:
             parent->mouseReleaseEvent(event);
         QGraphicsView::mouseReleaseEvent(event);
     }
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
-        MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
-        if (parent)
-            parent->mouseDoubleClickEvent(event);
-        QGraphicsView::mouseDoubleClickEvent(event);
-    }
-#endif
 #endif
 
     virtual void resizeEvent(QResizeEvent *event) {
@@ -148,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
 #endif
     setAttribute(Qt::WA_TranslucentBackground);
@@ -160,16 +149,16 @@ MainWindow::MainWindow(QWidget *parent)
     fetchUpdateInformation();
 
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
-    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
+    connect(ui->actionStart_Game, &QAction::triggered, connection_dialog, &ConnectionDialog::exec);
+    connect(connection_dialog, &ConnectionDialog::accepted, this, &MainWindow::startConnection);
 
     config_dialog = new ConfigDialog(this);
-    connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
-    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeBackground()));
+    connect(ui->actionConfigure, &QAction::triggered, config_dialog, &ConfigDialog::show);
+    connect(config_dialog, &ConfigDialog::bg_changed, this, &MainWindow::changeBackground);
+    connect(config_dialog, &ConfigDialog::tableBg_changed, this, &MainWindow::changeBackground);
 
-    connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
+    connect(ui->actionAbout_Qt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(ui->actionAcknowledgement_2, &QAction::triggered, this, &MainWindow::on_actionAcknowledgement_triggered);
 
     StartScene *start_scene = new StartScene(this);
 
@@ -183,11 +172,10 @@ MainWindow::MainWindow(QWidget *parent)
         << ui->actionCard_Overview
         << ui->actionAbout;
 
-    foreach(QAction *action, actions)
+    foreach (QAction *action, actions)
         start_scene->addButton(action);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
-    ui->menuSumMenu->setAttribute(Qt::WA_TranslucentBackground);
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     ui->menuGame->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuView->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuOptions->setAttribute(Qt::WA_TranslucentBackground);
@@ -208,15 +196,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     addAction(ui->actionFullscreen);
 
-#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
+#if defined(Q_OS_WIN) || defined(Q_OS_LINUX)
     menu = new QPushButton(this);
-    menu->setMenu(ui->menuSumMenu);
+    QMenu *sumMenu = new QMenu(menu);
+    sumMenu->addActions(menuBar()->actions());
+    menu->setMenu(sumMenu);
     menu->setProperty("control", true);
     StyleHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
     menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 #endif
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     minButton = new QPushButton(this);
     minButton->setProperty("control", true);
 
@@ -238,17 +228,17 @@ MainWindow::MainWindow(QWidget *parent)
     StyleHelper::getInstance()->setIcon(closeButton, QChar(0xf00d), 15);
 
     minButton->setToolTip(tr("<font color=%1>Minimize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-    connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
+    connect(minButton, &QPushButton::clicked, this, &MainWindow::showMinimized);
     maxButton->setToolTip(tr("<font color=%1>Maximize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-    connect(maxButton, SIGNAL(clicked()), this, SLOT(showMaximized()));
+    connect(maxButton, &QPushButton::clicked, this, &MainWindow::showMaximized);
     normalButton->setToolTip(tr("<font color=%1>Restore downward</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-    connect(normalButton, SIGNAL(clicked()), this, SLOT(showNormal()));
+    connect(normalButton, &QPushButton::clicked, this, &MainWindow::showNormal);
     closeButton->setToolTip(tr("<font color=%1>Close</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(closeButton, &QPushButton::clicked, this, &MainWindow::close);
 
     menuBar()->hide();
 #elif defined(Q_OS_ANDROID)
-    ui->menuSumMenu->removeAction(ui->menuView->menuAction());
+    menuBar()->removeAction(ui->menuView->menuAction());
 #endif
     repaintButtons();
 
@@ -266,7 +256,7 @@ MainWindow::MainWindow(QWidget *parent)
     systray = NULL;
 }
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))
@@ -396,10 +386,6 @@ void MainWindow::changeEvent(QEvent *event)
     if (event->type() == QEvent::WindowStateChange) {
         repaintButtons();
         roundCorners();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        if (view && view->viewport())
-            view->viewport()->repaint();
-#endif
     }
     QMainWindow::changeEvent(event);
 }
@@ -482,8 +468,8 @@ void MainWindow::fetchUpdateInformation()
     versionInfomationReply = mgr->get(QNetworkRequest(QUrl(URL1)));
     changeLogReply = mgr->get(QNetworkRequest(QUrl(URL2)));
 
-    connect(versionInfomationReply, SIGNAL(finished()), SLOT(onVersionInfomationGotten()));
-    connect(changeLogReply, SIGNAL(finished()), SLOT(onChangeLogGotten()));
+    connect(versionInfomationReply, &QNetworkReply::finished, this, &MainWindow::onVersionInfomationGotten);
+    connect(changeLogReply, &QNetworkReply::finished, this, &MainWindow::onChangeLogGotten);
 }
 
 void MainWindow::roundCorners()
@@ -509,7 +495,7 @@ void MainWindow::roundCorners()
 
 void MainWindow::repaintButtons()
 {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
@@ -563,6 +549,10 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
             about_window->deleteLater();
             about_window = NULL;
         }
+
+        QString parentScene = this->scene->metaObject()->className();
+        if (parentScene != scene->metaObject()->className())
+            sceneHistory.push(parentScene);
     }
 
     this->scene = scene;
@@ -590,10 +580,15 @@ void MainWindow::on_actionStart_Server_triggered() {
         return;
 
     server = new Server(this);
-    if (!server->listen()) {
+    if (!server->listen(QHostAddress::Any, Config.ServerPort)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        server = NULL;
         return;
     }
+
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
 
     server->daemonize();
 
@@ -601,7 +596,7 @@ void MainWindow::on_actionStart_Server_triggered() {
 #ifdef QT_NO_PROCESS
     ui->actionStart_Game->setEnabled(false);
 #else
-    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+    connect(ui->actionStart_Game, &QAction::triggered, this, &MainWindow::startGameInAnotherInstance);
 #endif
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if (start_scene) {
@@ -624,7 +619,8 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 
     if (server_version == client_version) {
         client->signup();
-        connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+        connect(client, &Client::roomServerConnected, this, &MainWindow::enterRoom);
+        connect(client, &Client::lobbyServerConnected, this, &MainWindow::enterLobby);
         return;
     }
 
@@ -644,16 +640,12 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 void MainWindow::startConnection() {
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
-    connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
+    connect(client, &Client::version_checked, this, &MainWindow::checkVersion);
+    connect(client, &Client::error_message, this, &MainWindow::networkError);
 }
 
 void MainWindow::on_actionReplay_triggered() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-#else
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-#endif
     QString last_dir = Config.value("LastReplayDir").toString();
     if (!last_dir.isEmpty())
         location = last_dir;
@@ -661,7 +653,7 @@ void MainWindow::on_actionReplay_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a reply file"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty())
         return;
@@ -671,7 +663,7 @@ void MainWindow::on_actionReplay_triggered() {
     Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
-    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+    connect(client, &Client::roomServerConnected, this, &MainWindow::enterRoom);
     client->signup();
 }
 
@@ -687,7 +679,7 @@ void MainWindow::networkError(const QString &error_msg) {
 void BackLoader::preload() {
     QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
-    foreach(QString emotion, emotions) {
+    foreach (const QString &emotion, emotions) {
         int n = PixmapAnimation::GetFrameCount(emotion);
         for (int i = 0; i < n; i++) {
             QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
@@ -714,22 +706,22 @@ void MainWindow::enterRoom() {
     ui->actionSurrender->setEnabled(true);
     ui->actionNever_nullify_my_trick->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
-
-    connect(ClientInstance, SIGNAL(surrender_enabled(bool)), ui->actionSurrender, SLOT(setEnabled(bool)));
-
-    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
-    connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
-    connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
-    connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
-    connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
+    
+    connect(ClientInstance, &Client::surrender_enabled, ui->actionSurrender, &QAction::setEnabled);
+    
+    connect(ui->actionView_Discarded, &QAction::triggered, room_scene, &RoomScene::toggleDiscards);
+    connect(ui->actionView_distance, &QAction::triggered, room_scene, &RoomScene::viewDistance);
+    connect(ui->actionServerInformation, &QAction::triggered, room_scene, &RoomScene::showServerInformation);
+    connect(ui->actionSurrender, &QAction::triggered, room_scene, &RoomScene::surrender);
+    connect(ui->actionSaveRecord, &QAction::triggered, room_scene, (void (RoomScene::*)())(&RoomScene::saveReplayRecord));
 
     if (ServerInfo.EnableCheat) {
         ui->menuCheat->setEnabled(true);
 
-        connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
-        connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
-        connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
-        connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
+        connect(ui->actionDeath_note, &QAction::triggered, room_scene, &RoomScene::makeKilling);
+        connect(ui->actionDamage_maker, &QAction::triggered, room_scene, &RoomScene::makeDamage);
+        connect(ui->actionRevive_wand, &QAction::triggered, room_scene, &RoomScene::makeReviving);
+        connect(ui->actionExecute_script_at_server_side, &QAction::triggered, room_scene, &RoomScene::doScript);
     }
     else {
         ui->menuCheat->setEnabled(false);
@@ -740,55 +732,99 @@ void MainWindow::enterRoom() {
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    connect(room_scene, &RoomScene::restart, this, &MainWindow::restartGame);
+    connect(room_scene, &RoomScene::return_to_start, this, &MainWindow::exitScene);
 
     gotoScene(room_scene);
 }
 
-void MainWindow::gotoStartScene() {
-    if (server != NULL){
-        server->deleteLater();
+void MainWindow::enterLobby() {
+    // add current ip to history
+    if (!Config.HistoryIPs.contains(Config.HostAddress)) {
+        Config.HistoryIPs << Config.HostAddress;
+        Config.HistoryIPs.sort();
+        Config.setValue("HistoryIPs", Config.HistoryIPs);
+    }
+
+    LobbyScene *scene = new LobbyScene(this);
+    connect(scene, &LobbyScene::createRoomClicked, this, &MainWindow::onCreateRoomClicked);
+    connect(scene, (void (LobbyScene::*)())(&LobbyScene::roomSelected), this, &MainWindow::startConnection);
+    connect(scene, &LobbyScene::exit, this, &MainWindow::exitScene);
+
+    gotoScene(scene);
+}
+
+void MainWindow::exitScene() {
+    if (server != NULL) {
+        delete server;
         server = NULL;
     }
 
-    if (Self) {
-        delete Self;
-        Self = NULL;
+    QString previousScene = sceneHistory.pop();
+    if (previousScene == "LobbyScene") {
+        //@todo: add a loading animation here
+        scene->deleteLater();
+        view->setScene(NULL);
+        scene = NULL;
+
+        if (ClientInstance) {
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
+            Self = NULL;
+        }
+
+        Config.HostAddress = Config.value("HostAddress").toString();
+        if (!Config.HostAddress.isEmpty()) {
+            startConnection();
+        }
+
+    } else {
+        StartScene *start_scene = new StartScene(this);
+
+        QList<QAction *> actions;
+        actions << ui->actionStart_Game
+            << ui->actionStart_Server
+            << ui->actionPC_Console_Start
+            << ui->actionReplay
+            << ui->actionConfigure
+            << ui->actionGeneral_Overview
+            << ui->actionCard_Overview
+            << ui->actionAbout;
+
+        foreach (QAction *action, actions)
+            start_scene->addButton(action);
+
+        setCentralWidget(view);
+
+        ui->menuCheat->setEnabled(false);
+        ui->actionDeath_note->disconnect();
+        ui->actionDamage_maker->disconnect();
+        ui->actionRevive_wand->disconnect();
+        ui->actionSend_lowlevel_command->disconnect();
+        ui->actionExecute_script_at_server_side->disconnect();
+        gotoScene(start_scene);
+
+        addAction(ui->actionShow_Hide_Menu);
+        addAction(ui->actionFullscreen);
+
+        if (ClientInstance) {
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
+            Self = NULL;
+        }
     }
-
-    StartScene *start_scene = new StartScene(this);
-
-    QList<QAction *> actions;
-    actions << ui->actionStart_Game
-        << ui->actionStart_Server
-        << ui->actionPC_Console_Start
-        << ui->actionReplay
-        << ui->actionConfigure
-        << ui->actionGeneral_Overview
-        << ui->actionCard_Overview
-        << ui->actionAbout;
-
-    foreach(QAction *action, actions)
-        start_scene->addButton(action);
-
-    setCentralWidget(view);
-
-    ui->menuCheat->setEnabled(false);
-    ui->actionDeath_note->disconnect();
-    ui->actionDamage_maker->disconnect();
-    ui->actionRevive_wand->disconnect();
-    ui->actionSend_lowlevel_command->disconnect();
-    ui->actionExecute_script_at_server_side->disconnect();
-    gotoScene(start_scene);
-
-    addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);
 
     delete systray;
     systray = NULL;
-    if (ClientInstance)
-        delete ClientInstance;
+}
+
+void MainWindow::restartGame()
+{
+    scene->deleteLater();
+    view->setScene(NULL);
+    scene = NULL;
+
+    ClientInstance->restart();
 }
 
 void MainWindow::startGameInAnotherInstance() {
@@ -863,7 +899,7 @@ void MainWindow::on_actionAbout_triggered() {
         const char *time = __TIME__;
         content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-        QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
+        QString project_url = "https://github.com/QSanguosha/QSanguosha";
         content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
         QString forum_url = "http://qsanguosha.org";
@@ -926,7 +962,8 @@ void MainWindow::on_actionMinimize_to_system_tray_triggered()
         systray = new QSystemTrayIcon(icon, this);
 
         QAction *appear = new QAction(tr("Show main window"), this);
-        connect(appear, SIGNAL(triggered()), this, SLOT(show()));
+        connect(appear, &QAction::triggered, this, &MainWindow::show);
+        connect(appear, &QAction::triggered, systray, &QSystemTrayIcon::hide);
 
         QMenu *menu = new QMenu;
         menu->addAction(appear);
@@ -937,12 +974,12 @@ void MainWindow::on_actionMinimize_to_system_tray_triggered()
         menu->addMenu(ui->menuHelp);
 
         systray->setContextMenu(menu);
-
-        systray->show();
-        systray->showMessage(windowTitle(), tr("Game is minimized"));
-
-        hide();
     }
+
+    systray->show();
+    systray->showMessage(windowTitle(), tr("Game is minimized"));
+
+    hide();
 }
 
 void MainWindow::on_actionRule_Summary_triggered()
@@ -952,7 +989,7 @@ void MainWindow::on_actionRule_Summary_triggered()
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
-    : QDialog(parent), server(server)
+    : QDialog(parent), server(server) //@Rara: FlatDialog????
 {
     setWindowTitle(tr("Broadcast"));
 
@@ -971,7 +1008,7 @@ BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
 
     setLayout(layout);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ok_button, &QPushButton::clicked, this, &BroadcastBox::accept);
 }
 
 void BroadcastBox::accept() {
@@ -1011,58 +1048,52 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
 
     server = new Server(this);
-    if (!server->listen()) {
+    ushort port = Config.ServerPort;
+    if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        server = NULL;
         return;
     }
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
 
     server->daemonize();
-    server->createNewRoom();
 
-    Config.HostAddress = "127.0.0.1";
+    Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
     startConnection();
 }
 
 void MainWindow::on_actionReplay_file_convert_triggered() {
-    QString filename = QFileDialog::getOpenFileName(this,
+    QStringList filenames = QFileDialog::getOpenFileNames(this,
         tr("Please select a replay file"),
         Config.value("LastReplayDir").toString(),
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
-    if (filename.isEmpty())
+    if (filenames.isEmpty())
         return;
 
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly)) {
-        QFileInfo info(filename);
-        QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
+    foreach (const QString &filename, filenames) {
+        Record record(filename);
+        if (record.open()) {
+            QFileInfo info(filename);
+            QString tosave = info.dir().absoluteFilePath(info.baseName());
 
-        if (filename.endsWith(".qsgs")) {
-            tosave.append(".png");
+            if (record.format() == Record::CompressedText) {
+                tosave.append("-uncompressed.qsgs");
+                record.setFormat(Record::PlainText);
+            } else {
+                tosave.append("-compressed.qsgs");
+                record.setFormat(Record::CompressedText);
+            }
 
-            // txt to png
-            Recorder::TXT2PNG(file.readAll()).save(tosave);
-
-        }
-        else if (filename.endsWith(".png")) {
-            tosave.append(".qsgs");
-
-            // png to txt
-            QByteArray data = Replayer::PNG2TXT(filename);
-
-            QFile tosave_file(tosave);
-            if (tosave_file.open(QIODevice::WriteOnly))
-                tosave_file.write(data);
+            record.saveAs(tosave);
         }
     }
 }
 
 void MainWindow::on_actionRecord_analysis_triggered() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-#else
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-#endif
     QString last_dir = Config.value("LastReplayDir").toString();
     if (!last_dir.isEmpty())
         location = last_dir;
@@ -1070,7 +1101,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Load replay record"),
         location,
-        tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
+        tr("QSanguosha Replay File(*.qsgs)"));
 
     if (filename.isEmpty()) return;
 
@@ -1079,7 +1110,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->resize(800, 500);
     QTableWidget *table = new QTableWidget;
 
-    RecAnalysis record(filename);
+    RecordAnalyzer record(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
     table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());
@@ -1253,10 +1284,6 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
 
 void MainWindow::on_actionManage_Ban_IP_triggered(){
     BanIpDialog *dlg = new BanIpDialog(this, server);
-    if (server) {
-        connect(server, SIGNAL(newPlayer(ServerPlayer*)), dlg, SLOT(addPlayer(ServerPlayer*)));
-    }
-
     dlg->show();
 }
 
@@ -1291,11 +1318,8 @@ void MainWindow::onVersionInfomationGotten()
                 setWindowTitle(tr("New Version Available") + "  " + windowTitle());
         } else if ("Address" == key) {
             updateInfomation.address = value;
-        } else if ("StrategicAdvantageKey" == key) {
-            Config.setValue(key, value);
         }
-        if (!updateInfomation.address.isNull()
-                && !updateInfomation.version_number.isNull())
+        if (!updateInfomation.address.isNull() && !updateInfomation.version_number.isNull())
             ui->actionCheckUpdate->setEnabled(true);
     }
     versionInfomationReply->deleteLater();
@@ -1338,4 +1362,71 @@ void MainWindow::on_actionCard_editor_triggered()
         editor = new CardEditor(this);
 
     editor->show();
+}
+
+void MainWindow::on_actionStart_Lobby_triggered()
+{
+    server = new Server(this, Server::LobbyRole);
+    if (!server->listen(QHostAddress::Any, Config.ServerPort)) {
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        server = NULL;
+        return;
+    }
+
+    server->daemonize();
+
+    ui->actionStart_Game->disconnect();
+#ifdef QT_NO_PROCESS
+    ui->actionStart_Game->setEnabled(false);
+#else
+    connect(ui->actionStart_Game, &QAction::triggered, this, &MainWindow::startGameInAnotherInstance);
+#endif
+    StartScene *start_scene = qobject_cast<StartScene *>(scene);
+    if (start_scene) {
+        start_scene->switchToServer(server);
+        if (Config.value("EnableMinimizeDialog", false).toBool())
+            this->on_actionMinimize_to_system_tray_triggered();
+    }
+}
+
+void MainWindow::onCreateRoomClicked()
+{
+    //@todo: Server address may be in the same local network
+    bool hasGlobalIp = false;
+    QList<QHostAddress> addresses(QNetworkInterface::allAddresses());
+    foreach (const QHostAddress &address, addresses) {
+        quint32 ip = address.toIPv4Address();
+        if (ip && ((ip & 0xFF000000) != 0x7F000000) && (ip & 0xFFFF0000) != 0xA9FE0000) {
+            if ((ip & 0xFF000000) != 0x0A000000 && (ip & 0xFFF00000) != 0xAC100000 && (ip & 0xFFFF0000) != 0xC0A80000) {
+                hasGlobalIp = true;
+                break;
+            }
+        }
+    }
+
+    ServerDialog *dialog = new ServerDialog(this);
+    if (!dialog->config())
+        return;
+
+    if (hasGlobalIp) {
+        server = new Server(this);
+        if (!server->listen(QHostAddress::Any, 0)) {
+            QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+            server->deleteLater();
+            server = NULL;
+            return;
+        }
+        server->daemonize();
+
+        if (ClientInstance)
+            ClientInstance->disconnectFromHost();
+        Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
+        startConnection();
+        server->connectToLobby();
+
+    } else {
+        if (ClientInstance)
+            ClientInstance->requestNewRoom();
+    }
 }

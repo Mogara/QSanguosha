@@ -85,6 +85,7 @@ CommonTranslationTable = {
 	["drawPileTop"] = "牌堆顶",
 	["drawPileBottom"] = "牌堆底",
 
+	["times_mark"] = "×",
 	["use upon"] = "对",
 	["yourself"] = "你",
 
@@ -135,6 +136,7 @@ CommonTranslationTable = {
 	["hegnul_single"] = "对单一角色生效" ,
 	["hegnul_all"] = "对该势力的全体剩余角色生效" ,
 	["#SkillAvoid"] = "受到“%arg”的影响，%from 不能被选择为此【%arg2】的目标",
+	["#CardNullified"] = "【%arg】对 %from 无效",
 	["#Transfigure"] = "%from 变身为 %arg",
 	["#TransfigureDual"] = "%from 的 %arg2 变身为 %arg",
 	["#AcquireSkill"] = "%from 获得了技能“%arg”",
@@ -146,7 +148,7 @@ CommonTranslationTable = {
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
 	["$TurnOver"] = "%from 展示了牌堆顶的 %card",
 	["$DiscardCard"] = "%from 弃置了 %card",
-	["$DiscardCardWithSkill"] = "%from 发动“%arg”弃置了 %card",
+	["$DiscardCardWithSkill"] = "%from 弃置了 %card 发动“%arg”",
 	["$DiscardCardByOther"] = "%from 弃置了 %to 的卡牌 %card",
 	["$EnterDiscardPile"] = "%card 被置入弃牌堆",
 	["$MoveToDiscardPile"] = "%from 将 %card 置入弃牌堆",

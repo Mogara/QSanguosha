@@ -26,6 +26,7 @@ caopi dianwei									22 22
 xiahoudun xiahouyuan							22 22
 caocao yuejin									22 22
 caocao xuhuang									22 22
+caocao lidian                                      21 21
 caocao dianwei									21 21
 caocao xuchu									21 21
 caoren simayi									21 21
@@ -122,6 +123,7 @@ panfeng jiling									21 21
 zhangliao zhanghe								5 5
 zhangliao xuchu									5 5
 zhangliao xiahouyuan							5 5
+zhangliao lidian                                  5 5
 zhenji caoren									5 4
 xunyu caoren									5 5
 guanyu zhaoyun									5 5

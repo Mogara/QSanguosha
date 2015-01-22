@@ -24,6 +24,7 @@
 #include "skill.h"
 #include "standard.h"
 
+
 struct lua_State;
 typedef int LuaFunction;
 
@@ -39,8 +40,7 @@ public:
 
     virtual int getPriority() const;
     virtual bool canPreshow() const;
-
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
@@ -62,7 +62,7 @@ public:
 
     virtual int getPriority() const;
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
@@ -82,6 +82,7 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
+
     void pushSelf(lua_State *L) const;
 
     LuaFunction view_filter;
@@ -94,6 +95,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
+
 };
 
 class LuaFilterSkill : public FilterSkill {
@@ -179,7 +181,8 @@ public:
     virtual QString toString(bool hidden = false) const;
 
     // these functions are defined at swig/luaskills.i
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
+        int &maxVotes) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;

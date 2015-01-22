@@ -36,6 +36,9 @@ public:
     virtual bool willThrow() const{
         return true;
     }
+    virtual QString getPatternString() const{
+        return QString();
+    }
 
     virtual ~CardPattern() {}
 };

@@ -61,7 +61,7 @@ void BanPair::loadBanPairs() {
     // special cases
     QStringList banlist = Config.value("Banlist/Pairs", "").toStringList();
 
-    foreach(QString line, banlist) {
+    foreach (const QString &line, banlist) {
         QStringList names = line.split("+");
         if (names.isEmpty())
             continue;
@@ -84,11 +84,11 @@ void BanPair::loadBanPairs() {
 
 void BanPair::saveBanPairs() {
     QStringList stream;
-    foreach(QString banned, AllBanSet)
+    foreach (const QString &banned, AllBanSet)
         stream << banned;
-    foreach(QString banned, SecondBanSet)
+    foreach (const QString &banned, SecondBanSet)
         stream << QString("+%1").arg(banned);
-    foreach(BanPair pair, BanPairSet)
+    foreach (const BanPair &pair, BanPairSet)
         stream << QString("%1+%2").arg(pair.first, pair.second);
     Config.setValue("Banlist/Pairs", stream);
 }

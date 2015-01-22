@@ -43,8 +43,14 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
 
     QList<const General *> all_generals = Sanguosha->getGeneralList();
     QMap<QString, QList<const General *> > map;
-    foreach(const General *general, all_generals) {
+    foreach (const General *general, all_generals) {
         if (general->isTotallyHidden())
+            continue;
+
+        if (general->isLord())
+            continue;
+
+        if (general->getPackage() == "jiange-defense")
             continue;
 
         map[general->getKingdom()] << general;
@@ -52,7 +58,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
 
     QStringList kingdoms = Sanguosha->getKingdoms();
 
-    foreach(QString kingdom, kingdoms) {
+    foreach (const QString &kingdom, kingdoms) {
         QList<const General *> generals = map[kingdom];
 
         if (!generals.isEmpty()) {
@@ -64,10 +70,10 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
     }
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
+    connect(ok_button, &QPushButton::clicked, this, &FreeChooseDialog::chooseGeneral);
 
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(cancel_button, &QPushButton::clicked, this, &FreeChooseDialog::reject);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -86,7 +92,7 @@ void FreeChooseDialog::chooseGeneral()
     if (type == Pair) {
         QList<QAbstractButton *> buttons = group->buttons();
         QString first, second;
-        foreach(QAbstractButton *button, buttons) {
+        foreach (QAbstractButton *button, buttons) {
             if (!button->isChecked())
                 continue;
 
@@ -104,7 +110,7 @@ void FreeChooseDialog::chooseGeneral()
         }
     } else if (type == Multi) {
         QStringList general_names;
-        foreach(QAbstractButton *button, group->buttons()) {
+        foreach (QAbstractButton *button, group->buttons()) {
             if (button->isChecked())
                 general_names << button->objectName();
         }
@@ -164,8 +170,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     tab->setLayout(tablayout);
 
     if (type == Pair) {
-        connect(group, SIGNAL(buttonClicked(QAbstractButton *)),
-            this, SLOT(disableButtons(QAbstractButton *)));
+        connect(group, (void (QButtonGroup::*)(QAbstractButton *))(&QButtonGroup::buttonClicked), this, &FreeChooseDialog::disableButtons);
     }
 
     return tab;
@@ -175,12 +180,12 @@ void FreeChooseDialog::disableButtons(QAbstractButton *)
 {
     QList<QAbstractButton *> buttons = group->buttons();
     QList<QAbstractButton *> checked;
-    foreach(QAbstractButton *btn, buttons){
+    foreach (QAbstractButton *btn, buttons){
         if (btn->isChecked())
             checked << btn;
     }
     if (checked.length() == 2){
-        foreach(QAbstractButton *btn, buttons){
+        foreach (QAbstractButton *btn, buttons){
             if (!btn->isChecked())
                 btn->setEnabled(false);
             else
@@ -188,12 +193,12 @@ void FreeChooseDialog::disableButtons(QAbstractButton *)
         }
     } else if (checked.length() == 1){
         QString checked_kingdom = Sanguosha->getGeneral(checked.first()->objectName())->getKingdom();
-        foreach(QAbstractButton *btn, buttons){
+        foreach (QAbstractButton *btn, buttons){
             QString btn_kingdom = Sanguosha->getGeneral(btn->objectName())->getKingdom();
             btn->setEnabled(checked_kingdom == btn_kingdom);
         }
     } else if (checked.length() == 0){
-        foreach(QAbstractButton *btn, buttons)
+        foreach (QAbstractButton *btn, buttons)
             btn->setEnabled(true);
     } else {
         Q_ASSERT(false);

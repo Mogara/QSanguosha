@@ -111,7 +111,7 @@ public:
 public slots:
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
-    void updatePhase();
+    virtual void updatePhase();
     void updateHp();
     void updateHandcardNum();
     void updateDrankState();
@@ -232,6 +232,7 @@ protected:
     QGraphicsPixmapItem *rightDisableShowLock;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame, *_m_selectedFrame2;
+    QGraphicsProxyWidget *_m_privatePileArea;
     QMap<QString, QGraphicsProxyWidget *> _m_privatePiles;
 
     // The frame that is maintained by roomscene. Items in this area has positions

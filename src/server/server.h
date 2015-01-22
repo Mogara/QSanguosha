@@ -21,55 +21,111 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <QObject>
-#include <QSet>
-#include <QStringList>
-
+#include "nativesocket.h"
 #include "protocol.h"
+#include "roomconfig.h"
+
+#include <QObject>
+#include <QStringList>
+#include <QMutex>
 
 class Room;
-class ClientSocket;
-class ServerSocket;
 class ServerPlayer;
+class LobbyPlayer;
 
 class Server : public QObject {
     Q_OBJECT
 
 public:
     friend class BanIpDialog;
+    enum Role{
+        LobbyRole,
+        RoomRole
+    };
 
-    explicit Server(QObject *parent);
+    explicit Server(QObject *parent, Role role = RoomRole);
 
+    Role getRole() const {return role;}
     void broadcastSystemMessage(const QString &msg);
 
-    bool listen();
+    bool listen(const QHostAddress &address, ushort port) { return server->listen(address, port); }
+    ushort serverPort() const {return server->serverPort(); }
+
     void daemonize();
 
-
-    Room *createNewRoom();
+    void connectToLobby();
+    Room *createNewRoom(const RoomConfig &config);
+    Room *getRoom(qlonglong room_id);
     void signupPlayer(ServerPlayer *player);
 
-private:
-    void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);
+    void broadcast(const QSanProtocol::AbstractPacket *packet);
 
-    void processClientRequest(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    QVariant getRoomList(int page = 0);
 
-    ServerSocket *server;
-    Room *current;
-    QSet<Room *> rooms;
-    QHash<QString, ServerPlayer *> players;
-    QStringList addresses;
-    QMultiHash<QString, QString> name2objname;
-
-private slots:
+protected slots:
     void processNewConnection(ClientSocket *socket);
-    void processRequest(const QByteArray &request);
     void cleanup();
-    void gameOver();
+
+    void processMessage(const QByteArray &message);
+    void cleanupRoom();
+    void cleanupLobbyPlayer();
+    void cleanupRemoteRoom();
+
+    void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
+
+protected:
+    void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void notifyLobby(QSanProtocol::CommandType command, const QVariant &data = QVariant());
+
+    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void processLobbyPacket(const QSanProtocol::Packet &packet);
+    void processRoomPacket(ClientSocket *socket, const QSanProtocol::Packet &packet);
+
+    //callbacks for lobby server
+    void checkVersion(const QVariant &server_version);
+    void forwardLobbyMessage(const QVariant &message);
+
+    //callbacks for room servers
+    void setupNewRemoteRoom(ClientSocket *socket, const QVariant &data);
+
+    //callbacks for daemon
+    void replyServerName(const QByteArray &, const QHostAddress &from, ushort port);
+    void replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port);
+
+    Role role;
+    ServerSocket *server;
+    QSet<QString> addresses;
+
+    typedef void (Server::*LobbyFunction)(const QVariant &);
+    static QHash<QSanProtocol::CommandType, LobbyFunction> lobbyFunctions;
+
+    typedef void (Server::*RoomFunction)(ClientSocket *socket, const QVariant &);
+    static QHash<QSanProtocol::CommandType, RoomFunction> roomFunctions;
+
+    typedef void (Server::*ServiceFunction)(const QByteArray &, const QHostAddress &, ushort);
+    static QHash<QSanProtocol::ServiceType, ServiceFunction> serviceFunctions;
+
+    Room *current;
+    QMutex currentRoomMutex;
+    QMap<qlonglong, Room *> rooms;
+    QHash<QString, ServerPlayer *> players;
+    QMultiHash<QString, QString> name2objname;
+    ClientSocket *lobby;
+
+    QList<LobbyPlayer *> lobbyPlayers;
+    QMap<ClientSocket *, unsigned> remoteRoomId;
+
+    UdpSocket *daemon;
+
+private:
+    void initLobbyFunctions();
+    void initRoomFunctions();
 
 signals:
-    void server_message(const QString &);
+    void serverMessage(const QString &);
     void newPlayer(ServerPlayer *player);
+    void newPlayer(LobbyPlayer *player);
 };
 
 #endif // SERVER_H

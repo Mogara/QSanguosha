@@ -1,11 +1,18 @@
 Open Source Sanguosha
 ==========
-[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
 
 | Homepage:      | http://qsanguosha.org                        |
 |----------------|-----------------------------------------------|
 | API reference: | http://gaodayihao.github.com/QSanguosha/api   |
 | Documentation: | https://github.com/gaodayihao/QSanguosha/wiki (Chinese) |
+
+Third party evaluations of development process
+---------
+[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
+
+[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/pr?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
+
+[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/issue?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
 
 Lisense
 ------------
@@ -86,7 +93,7 @@ VS2013(Windows)
 --------
 
 1. Download the following packages:
-(1) QT libraries for Windows (Visual Studio 2013, 5.3.0) http://download.qt-project.org/official_releases/qt/5.3/5.3.0/q
+(1) QT libraries for Windows (Visual Studio 2013, 5.3.2) http://download.qt-project.org/official_releases/qt/5.3/5.3.2/q
 
 3. Open Qsanguosha.sln right under ~/builds/vs2013, change the Configuration to Release Qt5|Win32.
 
@@ -115,7 +122,7 @@ Mac OS X
 
 1. Install XCode from App Store and enable the command tool
 
-2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.0/qt-opensource-mac-x64-clang-5.3.0.dmg
+2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.2/qt-opensource-mac-x64-clang-5.3.2.dmg
 
 3. Download the source code and install swig from http://sourceforge.net/projects/swig/files/swig/ and make sure the version of swig is 3.0.1 or later.
    Tips: unzip the source code tarball and open a terminal, type:
@@ -140,12 +147,12 @@ You'll see something like this:
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ./libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    libfreetype.1.dylib (compatibility version 1.0.0, current version 1.0.0)
-   (QtDir)/5.3/clang_64/lib/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.0, current version 5.3.0)
+   (QtDir)/5.3/clang_64/lib/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.2, current version 5.3.2)
    /System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL (compatibility version 1.0.0, current version 1.0.0)
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
@@ -163,14 +170,14 @@ if you see all the directories is absolute path, it should succeed. (~ stands fo
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ~/lib/mac/lib/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    ~/lib/mac/lib/libfreetype.dylib (compatibility version 1.0.0, current version 1.0.0)
-   (QtDir)/5.3/clang_64/lib/QtDeclarative.framework/Versions/5/QtDeclarative (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtXmlPatterns.framework/Versions/5/QtXmlPatterns (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtSql.framework/Versions/5/QtSql (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtScript.framework/Versions/5/QtScript (compatibility version 5.3.0, current version 5.3.0)
+   (QtDir)/5.3/clang_64/lib/QtDeclarative.framework/Versions/5/QtDeclarative (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtXmlPatterns.framework/Versions/5/QtXmlPatterns (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtSql.framework/Versions/5/QtSql (compatibility version 5.3.2, current version 5.3.2)
+   (QtDir)/5.3/clang_64/lib/QtScript.framework/Versions/5/QtScript (compatibility version 5.3.2, current version 5.3.2)
    /System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL (compatibility version 1.0.0, current version 1.0.0)
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
@@ -188,12 +195,12 @@ if you see all the non-system libraries is in @executable_path, it should succee
    QSanguosha.app/Contents/MacOS/QSanguosha:
    @executable_path/../Frameworks/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    @executable_path/../Frameworks/libfreetype.dylib (compatibility version 1.0.0, current version 1.0.0)
-   @executable_path/../Frameworks/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.0, current version 5.3.0)
+   @executable_path/../Frameworks/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.2, current version 5.3.2)
+   @executable_path/../Frameworks/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.2, current version 5.3.2)
+   @executable_path/../Frameworks/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.2, current version 5.3.2)
+   @executable_path/../Frameworks/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.2, current version 5.3.2)
+   @executable_path/../Frameworks/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.2, current version 5.3.2)
+   @executable_path/../Frameworks/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.2, current version 5.3.2)
    /System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL (compatibility version 1.0.0, current version 1.0.0)
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)

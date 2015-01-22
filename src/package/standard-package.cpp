@@ -67,6 +67,8 @@ TestPackage::TestPackage()
     new General(this, "sujiangf", "god", 5, false, true);
 
     new General(this, "anjiang", "god", 5, true, true, true);
+    new General(this, "anjiang_head", "god", 5, true, true, true);
+    new General(this, "anjiang_deputy", "god", 5, true, true, true);
 
     // developers
     new General(this, "slob", "programmer", 9, true, true, true);
@@ -82,7 +84,7 @@ StandardCardPackage::StandardCardPackage()
 
     cards << basicCards() << equipCards() << trickCards();
 
-    foreach(Card *card, cards)
+    foreach (Card *card, cards)
         card->setParent(this);
 
     addEquipSkills();

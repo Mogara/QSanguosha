@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>619</width>
-    <height>367</height>
+    <height>391</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,7 +31,7 @@
      <x>12</x>
      <y>30</y>
      <width>291</width>
-     <height>291</height>
+     <height>311</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -47,7 +47,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>124</y>
+      <y>144</y>
       <width>42</width>
       <height>16</height>
      </rect>
@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>15</x>
-      <y>143</y>
+      <y>163</y>
       <width>114</width>
       <height>136</height>
      </rect>
@@ -88,7 +88,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>250</y>
+      <y>270</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -101,7 +101,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>130</y>
+      <y>150</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -114,7 +114,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>170</y>
+      <y>190</y>
       <width>121</width>
       <height>30</height>
      </rect>
@@ -129,7 +129,7 @@
       <x>10</x>
       <y>17</y>
       <width>251</width>
-      <height>101</height>
+      <height>121</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -173,6 +173,29 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="passwordLabel">
+       <property name="text">
+        <string>Password:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="passwordEdit">
+       <property name="inputMethodHints">
+        <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
+       </property>
+       <property name="maxLength">
+        <number>8</number>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -182,7 +205,7 @@
      <x>311</x>
      <y>40</y>
      <width>301</width>
-     <height>321</height>
+     <height>341</height>
     </rect>
    </property>
    <property name="iconSize">
@@ -218,7 +241,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>330</y>
+     <y>350</y>
      <width>296</width>
      <height>32</height>
     </rect>

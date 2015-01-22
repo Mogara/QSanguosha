@@ -55,10 +55,10 @@ bool Skill::isAttachedLordSkill() const{
     return attached_lord_skill;
 }
 
-QString Skill::getDescription(bool inToolTip) const{
-    QString desc = "<br/>";
+QString Skill::getDescription(bool inToolTip) const {
+    QString desc;
     if (!canPreshow())
-        desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
+        desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
 
     QString skill_name = objectName();
 
@@ -69,7 +69,8 @@ QString Skill::getDescription(bool inToolTip) const{
     QString des_src = Sanguosha->translate(":" + skill_name);
     if (des_src == ":" + skill_name)
         return desc;
-    foreach(QString skill_type, Sanguosha->getSkillColorMap().keys()) {
+
+    foreach (const QString &skill_type, Sanguosha->getSkillColorMap().keys()) {
         QString to_replace = Sanguosha->translate(skill_type);
         if (to_replace == skill_type) continue;
         QString color_str = Sanguosha->getSkillColor(skill_type).name();
@@ -299,7 +300,13 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
             if (Self->isJilei(to_select)) return false;
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
-            pat.replace("hand", "hand,wooden_ox");
+            QStringList handlist;
+            handlist.append("hand");
+            foreach (const QString &pile,Self->getPileNames()) {
+                if (pile.startsWith("&") || pile == "wooden_ox")
+                    handlist.append(pile);
+            }
+            pat.replace("hand", handlist.join(","));
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);
@@ -337,8 +344,21 @@ int TriggerSkill::getPriority() const{
     return 3;
 }
 
-QMap<ServerPlayer *, QStringList> TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    QMap<ServerPlayer *, QStringList> skill_lists;
+/*!
+    You are expected to return a QMap<ServerPlayer *, QStringList> in TriggerSkill::triggerable.
+And the QStringList of QMap is expected to include some items as the examples below:
+    \list 1
+        \li Skill name, such as: "yiji", "fankui", etc.
+        \li Skill name combines someone's object name who is the owner of the skill, such as: "sgs1'songwei", "sgs10'baonue", etc.
+        \note must use a single quote mark to concatenate
+        \li Skill name combines multitargets' object names.
+  If you use this kind of type, it means the skill's trigger order of targets should be according to the order you write, such as: "tieqi->sgs4+sgs8+sgs1+sgs2"
+        \note must use a "->" to concatenate skill name to targets and "+" to concatenate targets' object names
+    \endlist
+*/
+
+TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    TriggerList skill_lists;
     if (objectName() == "game_rule") return skill_lists;
     ServerPlayer *ask_who = player;
     QStringList skill_list = triggerable(triggerEvent, room, player, data, ask_who);
@@ -442,6 +462,10 @@ BattleArraySkill::BattleArraySkill(const QString &name, const HegemonyMode::Arra
         view_as_skill = new ArraySummonSkill(objectName());
 }
 
+bool BattleArraySkill::triggerable(const ServerPlayer *player) const {
+    return TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
+}
+
 void BattleArraySkill::summonFriends(ServerPlayer *player) const {
     player->summonFriends(array_type);
 }
@@ -470,39 +494,40 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
         ArrayType type = skill->getArrayType();
         switch (type) {
         case Siege: {
-            if (player->isFriendWith(player->getNextAlive())
-                && player->isFriendWith(player->getLastAlive()))
-                return false;
-            if (!player->isFriendWith(player->getNextAlive()))
-                if (!player->getNextAlive(2)->hasShownOneGeneral())
-                    return true;
-            if (!player->isFriendWith(player->getLastAlive()))
-                return !player->getLastAlive(2)->hasShownOneGeneral();
-        }
-            break;
-        case Formation: {
-            int n = player->aliveCount(false);
-            int asked = n;
-            for (int i = 1; i < n; ++i) {
-                Player *target = player->getNextAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else if (!target->hasShownOneGeneral())
-                    return true;
-                else {
-                    asked = i;
-                    break;
+                if (player->willBeFriendWith(player->getNextAlive())
+                    && player->willBeFriendWith(player->getLastAlive()))
+                    return false;
+                if (!player->willBeFriendWith(player->getNextAlive())) {
+                    if (!player->getNextAlive(2)->hasShownOneGeneral() && player->getNextAlive()->hasShownOneGeneral())
+                        return true;
                 }
+                if (!player->willBeFriendWith(player->getLastAlive()))
+                    return !player->getLastAlive(2)->hasShownOneGeneral() && player->getLastAlive()->hasShownOneGeneral();
+                break;
             }
-            n -= asked;
-            for (int i = 1; i < n; ++i) {
-                Player *target = player->getLastAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else return !target->hasShownOneGeneral();
+        case Formation: {
+                int n = player->aliveCount(false);
+                int asked = n;
+                for (int i = 1; i < n; ++i) {
+                    Player *target = player->getNextAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else if (!target->hasShownOneGeneral())
+                        return true;
+                    else {
+                        asked = i;
+                        break;
+                    }
+                }
+                n -= asked;
+                for (int i = 1; i < n; ++i) {
+                    Player *target = player->getLastAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else return !target->hasShownOneGeneral();
+                }
+                break;
             }
-        }
-            break;
         }
     }
     return false;
@@ -594,7 +619,7 @@ QStringList FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *targe
 bool FakeMoveSkill::effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *) const{
     QString flag = QString("%1_InTempMoving").arg(name);
 
-    foreach(ServerPlayer *p, room->getAllPlayers())
+    foreach (ServerPlayer *p, room->getAllPlayers())
         if (p->hasFlag(flag)) return true;
 
     return false;

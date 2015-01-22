@@ -94,7 +94,6 @@ public:
     QMap<QString, QColor> getSkillColorMap() const;
     QColor getSkillColor(const QString &skill_type) const;
     QStringList getChattingEasyTexts() const;
-    QString getSetupString() const;
 
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
@@ -165,6 +164,7 @@ public:
     // March 17 2014
     //************************************
     QList<int> getRandomCards() const;
+    QList<const Card *> getCards() const;
     QString getRandomGeneralName() const;
     //************************************
     // Method:    getLimitedGeneralNames
@@ -256,6 +256,9 @@ private:
     QMultiMap<QString, QString> sp_convert_pairs;
 
     TransferSkill *transfer;
+
+    QStringList extraHiddenGenerals;
+    QStringList removedHiddenGenerals;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

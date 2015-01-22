@@ -87,6 +87,8 @@ public:
     virtual void setEnabled(bool enabled);
     bool isDown();
 
+    void setFirstState(bool isFirstState);
+
 public slots:
     void click();
 
@@ -110,7 +112,7 @@ protected:
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES * 2];
     //this property is designed for trust button.
     bool multi_state;
-    bool first_state;
+    bool m_isFirstState;
 
 signals:
     void clicked();

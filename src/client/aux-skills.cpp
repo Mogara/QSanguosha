@@ -88,8 +88,21 @@ void ResponseSkill::setRequest(const Card::HandlingMethod request) {
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const{
     if (request != Card::MethodNone && player->isCardLimited(card, request))
         return false;
-
-    return pattern && pattern->match(player, card);
+    if (pattern) {
+        QString pat = pattern->getPatternString();
+        if ((request == Card::MethodUse || request == Card::MethodResponse) && pat.contains("hand")) {
+            QStringList handlist;
+            handlist.append("hand");
+            foreach (const QString &pile, player->getPileNames()) {
+                if (pile.startsWith("&") || pile == "wooden_ox")
+                    handlist.append(pile);
+            }
+            pat.replace("hand", handlist.join(","));
+        }
+        ExpPattern exp_pattern(pat);
+        return exp_pattern.match(player, card);
+    }
+    return false;
 }
 
 bool ResponseSkill::viewFilter(const Card *card) const{

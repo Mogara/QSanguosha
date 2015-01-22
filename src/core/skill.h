@@ -138,6 +138,8 @@ public:
     FilterSkill(const QString &name);
 };
 
+typedef QMap<ServerPlayer *, QStringList> TriggerList;
+
 class TriggerSkill : public Skill {
     Q_OBJECT
 
@@ -149,7 +151,7 @@ public:
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 
-    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
@@ -226,6 +228,7 @@ class BattleArraySkill : public TriggerSkill {
 public:
 
     BattleArraySkill(const QString &name, const HegemonyMode::ArrayType type);
+    virtual bool triggerable(const ServerPlayer *player) const;
 
     virtual void summonFriends(ServerPlayer *player) const;
 

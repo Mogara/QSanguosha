@@ -2,7 +2,6 @@
 #include "skill.h"
 #include "engine.h"
 #include "room.h"
-#include "roomthread.h"
 
 class JiangeDefenseScenarioRule: public ScenarioRule {
 public:
@@ -36,7 +35,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
     QStringList wei_generals, shu_generals;
-    foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
+    foreach (const QString &general, Sanguosha->getLimitedGeneralNames()) {
         if (general.startsWith("lord_")) continue;
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
         if (kingdom == "wei")
@@ -52,7 +51,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     for (int i = 0; i < 8; i++) {
         if (players[i]->getState() == "online") {
             QStringList choices;
-            foreach (QString kingdom, roles.keys())
+            foreach (const QString &kingdom, roles.keys())
                 if (roles[kingdom].contains("human"))
                     choices << kingdom;
             QString choice = choices.at(qrand() % choices.length());
@@ -64,6 +63,10 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
                 for (int j = 0; j < 5; j++)
                     weijiangs << wei_generals.takeFirst();
                 QStringList answer = room->askForGeneral(players[i], weijiangs, QString(), false).split("+");
+                if (answer.size() < 2) {
+                    weijiangs.removeOne(answer.first());
+                    answer.append(weijiangs.at(qrand() % weijiangs.size()));
+                }
                 answer.prepend("wei");
                 human_map.insert(players[i], answer);
             } else if (choice == "shu") {
@@ -71,6 +74,10 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
                 for (int j = 0; j < 5; j++)
                     shujiangs << shu_generals.takeFirst();
                 QStringList answer = room->askForGeneral(players[i], shujiangs, QString(), false).split("+");
+                if (answer.size() < 2) {
+                    shujiangs.removeOne(answer.first());
+                    answer.append(shujiangs.at(qrand() % shujiangs.size()));
+                }
                 answer.prepend("shu");
                 human_map.insert(players[i], answer);
             }
@@ -85,7 +92,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
             generals2 << answer.takeFirst();
         } else {
             QStringList kingdom_choices;
-            foreach (QString kingdom, roles.keys())
+            foreach (const QString &kingdom, roles.keys())
                 if (!roles[kingdom].isEmpty())
                     kingdom_choices << kingdom;
             QString kingdom = kingdom_choices.at(qrand() % kingdom_choices.length());

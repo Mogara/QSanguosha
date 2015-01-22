@@ -337,7 +337,7 @@ public:
     virtual void setDeputySkinId(int id);
     int getDeputySkinId() const;
 
-    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
+    virtual QStringList getBigKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
 
     QVariantMap tag;
 

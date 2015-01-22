@@ -78,6 +78,7 @@ void GraphicsBox::moveToCenter(QGraphicsObject *target)
 void GraphicsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     paintGraphicsBoxStyle(painter, title, boundingRect());
+    paintLayout(painter);
 }
 
 void GraphicsBox::moveToCenter()

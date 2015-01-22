@@ -2,20 +2,14 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += qml quick widgets
-}
-else {
-    QT += declarative
-}
+QT += network widgets sql
+!winrt:QT += declarative
+android:QT += androidextras
 TEMPLATE = app
 CONFIG += audio
 
-android:DEFINES += "\"getlocaledecpoint()='.'\""
-
 CONFIG += lua
-#CONFIG += lua53alpha
+#CONFIG += lua53
 
 SOURCES += \
     src/main.cpp \
@@ -30,7 +24,7 @@ SOURCES += \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
-    src/core/record-analysis.cpp \
+    src/core/roomconfig.cpp \
     src/core/roomstate.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
@@ -82,8 +76,11 @@ SOURCES += \
     src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
-    src/server/server.cpp \
     src/server/serverplayer.cpp \
+    src/server/server.cpp \
+    src/server/server-lobby.cpp \
+    src/server/server-room.cpp \
+    src/server/lobbyplayer.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
@@ -118,9 +115,14 @@ SOURCES += \
     src/ui/graphicspixmaphoveritem.cpp \
     src/ui/heroskincontainer.cpp \
     src/ui/skinitem.cpp \
+    src/ui/lobbyscene.cpp \
+    src/ui/tile.cpp \
+    src/ui/choosesuitbox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
-    src/util/recorder.cpp \
+    src/util/record.cpp \
+    src/util/recordanalyzer.cpp \
+    src/util/wifimanager.cpp \
     swig/sanguosha_wrap.cxx
 
 HEADERS += \
@@ -138,7 +140,7 @@ HEADERS += \
     src/core/namespace.h \
     src/core/player.h \
     src/core/protocol.h \
-    src/core/record-analysis.h \
+    src/core/roomconfig.h \
     src/core/roomstate.h \
     src/core/settings.h \
     src/core/skill.h \
@@ -190,8 +192,9 @@ HEADERS += \
     src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
-    src/server/server.h \
     src/server/serverplayer.h \
+    src/server/server.h \
+    src/server/lobbyplayer.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \
     src/ui/carditem.h \
@@ -226,26 +229,22 @@ HEADERS += \
     src/ui/graphicspixmaphoveritem.h \
     src/ui/heroskincontainer.h \
     src/ui/skinitem.h \
+    src/ui/lobbyscene.h \
+    src/ui/tile.h \
+    src/ui/choosesuitbox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
-    src/util/recorder.h \
-    src/util/socket.h
+    src/util/record.h \
+    src/util/recordanalyzer.h \
+    src/util/socket.h \
+    src/util/wifimanager.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
     src/dialog/configdialog.ui \
     src/dialog/connectiondialog.ui \
-    src/dialog/generaloverview.ui
-
-win32 {
-    FORMS += src/dialog/mainwindow.ui
-}
-else: android {
-    FORMS += src/dialog/mainwindow.ui
-}
-else {
-    FORMS += src/dialog/mainwindow_nonwin.ui
-}
+    src/dialog/generaloverview.ui \
+    src/dialog/mainwindow.ui
 
 INCLUDEPATH += include
 INCLUDEPATH += src/client
@@ -256,29 +255,6 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
-
-lessThan(QT_MAJOR_VERSION, 5){
-    SOURCES += src/jsoncpp/src/json_writer.cpp \
-        src/jsoncpp/src/json_valueiterator.inl \
-        src/jsoncpp/src/json_value.cpp \
-        src/jsoncpp/src/json_reader.cpp \
-        src/jsoncpp/src/json_internalmap.inl \
-        src/jsoncpp/src/json_internalarray.inl
-
-    HEADERS += src/jsoncpp/src/json_tool.h \
-        src/jsoncpp/src/json_batchallocator.h \
-        src/jsoncpp/include/json/writer.h \
-        src/jsoncpp/include/json/value.h \
-        src/jsoncpp/include/json/reader.h \
-        src/jsoncpp/include/json/json.h \
-        src/jsoncpp/include/json/forwards.h \
-        src/jsoncpp/include/json/features.h \
-        src/jsoncpp/include/json/config.h \
-        src/jsoncpp/include/json/autolink.h \
-        src/jsoncpp/include/json/assertions.h
-
-    INCLUDEPATH += src/jsoncpp/include
-}
 
 win32{
     RC_FILE += resource/icon.rc
@@ -304,14 +280,16 @@ win32-msvc*{
         QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
         DEFINES += USE_BREAKPAD
 
-        SOURCES += src/breakpad/client/windows/crash_generation/client_info.cc \
+        SOURCES += src/core/exceptionhandler.cpp \
+            src/breakpad/client/windows/crash_generation/client_info.cc \
             src/breakpad/client/windows/crash_generation/crash_generation_client.cc \
             src/breakpad/client/windows/crash_generation/crash_generation_server.cc \
             src/breakpad/client/windows/crash_generation/minidump_generator.cc \
             src/breakpad/client/windows/handler/exception_handler.cc \
             src/breakpad/common/windows/guid_string.cc
 
-        HEADERS += src/breakpad/client/windows/crash_generation/client_info.h \
+        HEADERS += src/core/exceptionhandler.h \
+            src/breakpad/client/windows/crash_generation/client_info.h \
             src/breakpad/client/windows/crash_generation/crash_generation_client.h \
             src/breakpad/client/windows/crash_generation/crash_generation_server.h \
             src/breakpad/client/windows/crash_generation/minidump_generator.h \
@@ -319,7 +297,6 @@ win32-msvc*{
             src/breakpad/common/windows/guid_string.h
 
         INCLUDEPATH += src/breakpad
-        INCLUDEPATH += src/breakpad/client/windows
     }
 }
 win32-g++{
@@ -330,7 +307,13 @@ win32-g++{
 winrt{
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += WINRT
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    !winphone {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    } else {
+        DEFINES += WINPHONE
+        contains($$QMAKESPEC, arm): LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/arm"
+        else : LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
+    }
 }
 macx{
     DEFINES += MAC
@@ -346,10 +329,48 @@ ios{
     }
 }
 linux{
+    CONFIG(release, debug|release) {
+        SOURCES += src/core/exceptionhandler.cpp \
+            src/breakpad/client/linux/crash_generation/crash_generation_client.cc \
+            src/breakpad/client/linux/crash_generation/crash_generation_server.cc \
+            src/breakpad/client/linux/dump_writer_common/seccomp_unwinder.cc \
+            src/breakpad/client/linux/dump_writer_common/thread_info.cc \
+            src/breakpad/client/linux/dump_writer_common/ucontext_reader.cc \
+            src/breakpad/client/linux/handler/exception_handler.cc \
+            src/breakpad/client/linux/handler/minidump_descriptor.cc \
+            src/breakpad/client/linux/log/log.cc \
+            src/breakpad/client/linux/microdump_writer/microdump_writer.cc \
+            src/breakpad/client/linux/minidump_writer/linux_dumper.cc \
+            src/breakpad/client/linux/minidump_writer/linux_ptrace_dumper.cc \
+            src/breakpad/client/linux/minidump_writer/minidump_writer.cc \
+            src/breakpad/client/minidump_file_writer.cc \
+            src/breakpad/common/convert_UTF.c \
+            src/breakpad/common/md5.cc \
+            src/breakpad/common/string_conversion.cc \
+            src/breakpad/common/linux/elfutils.cc \
+            src/breakpad/common/linux/file_id.cc \
+            src/breakpad/common/linux/guid_creator.cc \
+            src/breakpad/common/linux/linux_libc_support.cc \
+            src/breakpad/common/linux/memory_mapped_file.cc \
+            src/breakpad/common/linux/safe_readlink.cc
+
+        HEADERS += src/core/exceptionhandler.h \
+            src/breakpad/client/linux/handler/exception_handler.h
+
+        QMAKE_CXXFLAGS += -g
+        DEFINES += USE_BREAKPAD
+        INCLUDEPATH += src/breakpad
+    }
+
     android{
         DEFINES += ANDROID
         ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
         LIBS += -L"$$ANDROID_LIBPATH"
+
+        CONFIG(release, debug|release) {
+            SOURCES += src/breakpad/common/android/breakpad_getcontext.S
+            INCLUDEPATH += src/breakpad/common/android/include
+        }
     }
     else {
         DEFINES += LINUX
@@ -375,7 +396,11 @@ CONFIG(audio){
     }
 }
 
+
 CONFIG(lua){
+
+android:DEFINES += "\"getlocaledecpoint()='.'\""
+
     SOURCES += \
         src/lua/lzio.c \
         src/lua/lvm.c \
@@ -438,68 +463,71 @@ CONFIG(lua){
     INCLUDEPATH += src/lua
 }
 
-CONFIG(lua53alpha){
+CONFIG(lua53){
+
+android:DEFINES += "\"l_getlocaledecpoint()='.'\""
+
     SOURCES += \
-        src/lua53alpha/lzio.c \
-        src/lua53alpha/lvm.c \
-        src/lua53alpha/lundump.c \
-        src/lua53alpha/ltm.c \
-        src/lua53alpha/ltablib.c \
-        src/lua53alpha/ltable.c \
-        src/lua53alpha/lstrlib.c \
-        src/lua53alpha/lstring.c \
-        src/lua53alpha/lstate.c \
-        src/lua53alpha/lparser.c \
-        src/lua53alpha/loslib.c \
-        src/lua53alpha/lopcodes.c \
-        src/lua53alpha/lobject.c \
-        src/lua53alpha/loadlib.c \
-        src/lua53alpha/lmem.c \
-        src/lua53alpha/lmathlib.c \
-        src/lua53alpha/llex.c \
-        src/lua53alpha/liolib.c \
-        src/lua53alpha/linit.c \
-        src/lua53alpha/lgc.c \
-        src/lua53alpha/lfunc.c \
-        src/lua53alpha/ldump.c \
-        src/lua53alpha/ldo.c \
-        src/lua53alpha/ldebug.c \
-        src/lua53alpha/ldblib.c \
-        src/lua53alpha/lctype.c \
-        src/lua53alpha/lcorolib.c \
-        src/lua53alpha/lcode.c \
-        src/lua53alpha/lbitlib.c \
-        src/lua53alpha/lbaselib.c \
-        src/lua53alpha/lauxlib.c \
-        src/lua53alpha/lapi.c \
-        src/lua53alpha/lutf8lib.c
+        src/lua53/lzio.c \
+        src/lua53/lvm.c \
+        src/lua53/lundump.c \
+        src/lua53/ltm.c \
+        src/lua53/ltablib.c \
+        src/lua53/ltable.c \
+        src/lua53/lstrlib.c \
+        src/lua53/lstring.c \
+        src/lua53/lstate.c \
+        src/lua53/lparser.c \
+        src/lua53/loslib.c \
+        src/lua53/lopcodes.c \
+        src/lua53/lobject.c \
+        src/lua53/loadlib.c \
+        src/lua53/lmem.c \
+        src/lua53/lmathlib.c \
+        src/lua53/llex.c \
+        src/lua53/liolib.c \
+        src/lua53/linit.c \
+        src/lua53/lgc.c \
+        src/lua53/lfunc.c \
+        src/lua53/ldump.c \
+        src/lua53/ldo.c \
+        src/lua53/ldebug.c \
+        src/lua53/ldblib.c \
+        src/lua53/lctype.c \
+        src/lua53/lcorolib.c \
+        src/lua53/lcode.c \
+        src/lua53/lbitlib.c \
+        src/lua53/lbaselib.c \
+        src/lua53/lauxlib.c \
+        src/lua53/lapi.c \
+        src/lua53/lutf8lib.c
     HEADERS += \
-        src/lua53alpha/lzio.h \
-        src/lua53alpha/lvm.h \
-        src/lua53alpha/lundump.h \
-        src/lua53alpha/lualib.h \
-        src/lua53alpha/luaconf.h \
-        src/lua53alpha/lua.hpp \
-        src/lua53alpha/lua.h \
-        src/lua53alpha/ltm.h \
-        src/lua53alpha/ltable.h \
-        src/lua53alpha/lstring.h \
-        src/lua53alpha/lstate.h \
-        src/lua53alpha/lparser.h \
-        src/lua53alpha/lopcodes.h \
-        src/lua53alpha/lobject.h \
-        src/lua53alpha/lmem.h \
-        src/lua53alpha/llimits.h \
-        src/lua53alpha/llex.h \
-        src/lua53alpha/lgc.h \
-        src/lua53alpha/lfunc.h \
-        src/lua53alpha/ldo.h \
-        src/lua53alpha/ldebug.h \
-        src/lua53alpha/lctype.h \
-        src/lua53alpha/lcode.h \
-        src/lua53alpha/lauxlib.h \
-        src/lua53alpha/lapi.h
-    INCLUDEPATH += src/lua53alpha
+        src/lua53/lzio.h \
+        src/lua53/lvm.h \
+        src/lua53/lundump.h \
+        src/lua53/lualib.h \
+        src/lua53/luaconf.h \
+        src/lua53/lua.hpp \
+        src/lua53/lua.h \
+        src/lua53/ltm.h \
+        src/lua53/ltable.h \
+        src/lua53/lstring.h \
+        src/lua53/lstate.h \
+        src/lua53/lparser.h \
+        src/lua53/lopcodes.h \
+        src/lua53/lobject.h \
+        src/lua53/lmem.h \
+        src/lua53/llimits.h \
+        src/lua53/llex.h \
+        src/lua53/lgc.h \
+        src/lua53/lfunc.h \
+        src/lua53/ldo.h \
+        src/lua53/ldebug.h \
+        src/lua53/lctype.h \
+        src/lua53/lcode.h \
+        src/lua53/lauxlib.h \
+        src/lua53/lapi.h
+    INCLUDEPATH += src/lua53
 }
 
 CONFIG(opengl){

@@ -155,7 +155,11 @@ namespace QSanProtocol {
         S_COMMAND_DISABLE_SHOW,
         S_COMMAND_TRIGGER_ORDER,
         S_COMMAND_MIRROR_GUANXING_STEP,
-        S_COMMAND_CHANGE_SKIN
+        S_COMMAND_CHANGE_SKIN,
+        S_COMMAND_ENTER_LOBBY,
+        S_COMMAND_ROOM_LIST,
+        S_COMMAND_CREATE_ROOM,
+        S_COMMAND_ENTER_ROOM
     };
 
     enum GameEventType {
@@ -203,9 +207,23 @@ namespace QSanProtocol {
         S_GUANXING_FINISH
     };
 
+    enum WarningType {
+        S_WARNING_INVALID_SIGNUP_STRING,
+        S_WARNING_GAME_OVER,
+        S_WARNING_LEVEL_LIMITATION,
+        S_WARNING_ROOM_IS_FULL,
+        S_WARNING_WRONG_PASSWORD,
+        S_WARNING_KICKED
+    };
+
+    enum ServiceType {
+        S_SERVICE_UNKNOWN,
+        S_SERVICE_DETECT_SERVER,
+        S_SERVICE_PLAYER_NUM
+    };
+
     //static consts
     extern const char *S_PLAYER_SELF_REFERENCE_ID;
-
     extern const int S_ALL_ALIVE_PLAYERS;
 
     class Countdown {
@@ -279,4 +297,3 @@ namespace QSanProtocol {
 }
 
 #endif
-

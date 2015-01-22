@@ -18,178 +18,243 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include <QCryptographicHash>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QFile>
+
 #include "server.h"
 #include "nativesocket.h"
 #include "clientstruct.h"
-#include "json.h"
-#include "room.h"
-#include "settings.h"
 #include "engine.h"
-#include "scenario.h"
-
-#include <QApplication>
+#include "settings.h"
+#include "lobbyplayer.h"
+#include "json.h"
 
 using namespace QSanProtocol;
 
-Server::Server(QObject *parent)
-    : QObject(parent)
+QHash<CommandType, Server::LobbyFunction> Server::lobbyFunctions;
+QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
+QHash<ServiceType, Server::ServiceFunction> Server::serviceFunctions;
+
+Server::Server(QObject *parent, Role role)
+    : QObject(parent),  role(role), server(new NativeServerSocket),
+      current(NULL), lobby(NULL), daemon(NULL)
 {
-    server = new NativeServerSocket;
     server->setParent(this);
 
-    //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
-    ServerInfo.parse(Sanguosha->getSetupString());
+    if (lobbyFunctions.isEmpty())
+        initLobbyFunctions();
 
-    current = NULL;
+    if (roomFunctions.isEmpty())
+        initRoomFunctions();
 
-    connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
-}
+    ServerInfo = RoomInfoStruct(SettingsInstance);
 
-void Server::broadcastSystemMessage(const QString &msg) {
-    JsonArray arg;
-    arg << ".";
-    arg << msg;
+    connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
 
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-    packet.setMessageBody(arg);
-
-    foreach(Room *room, rooms)
-        room->broadcast(&packet);
-}
-
-bool Server::listen() {
-    return server->listen();
-}
-
-void Server::daemonize() {
-    server->daemonize();
-}
-
-Room *Server::createNewRoom() {
-    Room *new_room = new Room(this, Config.GameMode);
-    current = new_room;
-    rooms.insert(current);
-
-    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
-    connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
-
-    return current;
-}
-
-void Server::processNewConnection(ClientSocket *socket) {
-    QString address = socket->peerAddress();
-    if (Config.ForbidSIMC) {
-        if (addresses.contains(address)) {
-            addresses.append(address);
-            socket->disconnectFromHost();
-            emit server_message(tr("Forbid the connection of address %1").arg(address));
-            return;
-        } else {
-            addresses.append(address);
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(":memory:");
+    if (db.open()) {
+        QFile sql("data/lobby.sql");
+        if (sql.open(QFile::ReadOnly)) {
+            db.exec(QString::fromUtf8(sql.readAll()));
+            sql.close();
         }
-    }
-
-    if (Config.value("BannedIP").toStringList().contains(address)){
-        socket->disconnectFromHost();
-        emit server_message(tr("Forbid the connection of address %1").arg(address));
-        return;
-    }
-
-    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-
-    notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
-    notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
-
-    emit server_message(tr("%1 connected").arg(socket->peerName()));
-
-    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processRequest(QByteArray)));
-}
-
-void Server::processRequest(const QByteArray &request)
-{
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
-
-    Packet packet;
-    if (!packet.parse(request)) {
-        emit server_message(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
-        return;
-    }
-
-    switch (packet.getPacketSource()) {
-    case S_SRC_CLIENT:
-        processClientRequest(socket, packet);
-        break;
-    default:
-        emit server_message(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+    } else {
+        qFatal("SQLite database can't be opened.");
     }
 }
 
-void Server::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
+void Server::daemonize()
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
-    packet.setMessageBody(arg);
-    socket->send(packet.toJson());
+    daemon = new NativeUdpSocket(this);
+    daemon->bind(QHostAddress::Any, serverPort());
+    connect(daemon, &UdpSocket::new_datagram, this, &Server::processDatagram);
 }
 
-void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
+void Server::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
 {
-    socket->disconnect(this, SLOT(processRequest(QByteArray)));
+    if (daemon) {
+        ServiceFunction func = serviceFunctions.value(static_cast<ServiceType>(data.at(0)));
+        if (func)
+            (this->*func)(data.mid(1), from, port);
+    }
+}
 
-    if (signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit server_message(tr("Invalid signup string: %1").arg(signup.toString()));
-        notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
-        socket->disconnectFromHost();
-        return;
+void Server::broadcastSystemMessage(const QString &message)
+{
+    JsonArray body;
+    body << ".";
+    body << message;
+
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT | S_DEST_ROOM, S_COMMAND_SPEAK);
+    packet.setMessageBody(body);
+    broadcast(&packet);
+}
+
+void Server::broadcastNotification(CommandType command, const QVariant &data, int destination)
+{
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | destination, command);
+    packet.setMessageBody(data);
+    broadcast(&packet);
+}
+
+void Server::broadcast(const AbstractPacket *packet)
+{
+    PacketDescription destination = packet->getPacketDestination();
+    if (destination & S_DEST_CLIENT) {
+        foreach (LobbyPlayer *player, lobbyPlayers)
+            player->unicast(packet->toJson());
     }
 
-    JsonArray body = signup.getMessageBody().value<JsonArray>();
-    bool is_reconnection = body[0].toBool();
-    QString screen_name = body[1].toString();
-    QString avatar = body[2].toString();
-
-    if (is_reconnection) {
-        foreach (QString objname, name2objname.values(screen_name)) {
-            ServerPlayer *player = players.value(objname);
-            if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
-                player->getRoom()->reconnect(player, socket);
-                return;
-            }
+    if (destination & S_DEST_ROOM) {
+        QMapIterator<ClientSocket *, unsigned> iter(remoteRoomId);
+        while (iter.hasNext()) {
+            iter.next();
+            ClientSocket *socket = iter.key();
+            socket->send(packet->toJson());
         }
-    }
 
-    if (current == NULL || current->isFull() || current->isFinished())
-        createNewRoom();
-
-    ServerPlayer *player = current->addSocket(socket);
-    current->signup(player, screen_name, avatar, false);
-    emit newPlayer(player);
-
-    if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
-        for (int i = 0; i < 4; ++i)
-            current->addRobotCommand(player, QVariant());
+        foreach (Room *room, rooms)
+            room->broadcast(packet);
     }
 }
 
 void Server::cleanup() {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (Config.ForbidSIMC)
-        addresses.removeOne(socket->peerAddress());
+        addresses.remove(socket->peerAddress());
 
     socket->deleteLater();
 }
 
-void Server::signupPlayer(ServerPlayer *player) {
-    name2objname.insert(player->screenName(), player->objectName());
-    players.insert(player->objectName(), player);
+void Server::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
+{
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(arg);
+    socket->send(packet.toJson());
 }
 
-void Server::gameOver() {
-    Room *room = qobject_cast<Room *>(sender());
-    rooms.remove(room);
+void Server::processNewConnection(ClientSocket *socket)
+{
+    QString address = socket->peerAddress();
+    if (Config.ForbidSIMC) {
+        if (addresses.contains(address)) {
+            socket->disconnectFromHost();
+            emit serverMessage(tr("Forbid the connection of address %1").arg(address));
+            return;
+        } else {
+            addresses.insert(address);
+        }
+    }
 
-    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
-        name2objname.remove(player->screenName(), player->objectName());
-        players.remove(player->objectName());
+    if (Config.BannedIp.contains(address)){
+        socket->disconnectFromHost();
+        emit serverMessage(tr("Forbid the connection of address %1").arg(address));
+        return;
+    }
+
+    connect(socket, &ClientSocket::disconnected, this, &Server::cleanup);
+    notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
+
+    emit serverMessage(tr("%1 connected").arg(socket->peerName()));
+    connect(socket, &ClientSocket::message_got, this, &Server::processMessage);
+}
+
+void Server::processMessage(const QByteArray &message)
+{
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    if (socket == NULL) return;
+
+    Packet packet;
+    if (!packet.parse(message)) {
+        emit serverMessage(tr("%1 Invalid message %2").arg(socket->peerName()).arg(QString::fromUtf8(message)));
+        return;
+    }
+
+    switch (packet.getPacketSource()) {
+    case S_SRC_CLIENT:
+        processClientSignup(socket, packet);
+        break;
+    case S_SRC_ROOM:
+        processRoomPacket(socket, packet);
+        break;
+    case S_SRC_LOBBY:
+        if (socket == lobby) {
+            processLobbyPacket(packet);
+        }
+        break;
+    default:
+        emit serverMessage(tr("%1 Packet %2 with an unknown source is discarded").arg(socket->peerName()).arg(QString::fromUtf8(message)));
+    }
+}
+
+void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
+{
+    disconnect(socket, &ClientSocket::message_got, this, &Server::processMessage);
+
+    if (signup.getCommandType() != S_COMMAND_SIGNUP) {
+        emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));
+        notifyClient(socket, S_COMMAND_WARN, S_WARNING_INVALID_SIGNUP_STRING);
+        socket->disconnectFromHost();
+        return;
+    }
+
+    JsonArray body = signup.getMessageBody().value<JsonArray>();
+    if (body.size() < 3)
+        return;
+    bool is_reconnection = body.at(0).toBool();
+    QString screen_name = body.at(1).toString();
+    QString avatar = body.at(2).toString();
+    if (screen_name.isEmpty() || avatar.isEmpty())
+        return;
+
+    if (is_reconnection) {
+        foreach (const QString &objname, name2objname.values(screen_name)) {
+            ServerPlayer *player = players.value(objname);
+            Room *room = player->getRoom();
+            if (player && player->getState() == "offline" && room && !room->isFinished()) {
+                room->reconnect(player, socket);
+                return;
+            }
+        }
+    }
+
+    if (role == RoomRole) {
+        if (!Config.RoomPassword.isEmpty()) {
+            QString password = body.size() < 4 ? QString() : body.at(3).toString();
+            if (password != Config.RoomPassword) {
+                notifyClient(socket, S_COMMAND_WARN, S_WARNING_WRONG_PASSWORD);
+                return;
+            }
+        }
+
+        currentRoomMutex.lock();
+        if (current == NULL || current->isFull() || current->isFinished())
+            current = createNewRoom(SettingsInstance);
+
+        ServerPlayer *player = current->addSocket(socket);
+        current->signup(player, screen_name, avatar, false);
+        currentRoomMutex.unlock();
+
+        emit newPlayer(player);
+
+    } else {
+        notifyClient(socket, S_COMMAND_ENTER_LOBBY);
+
+        LobbyPlayer *player = new LobbyPlayer(this);
+        player->setSocket(socket);
+        player->setScreenName(screen_name);
+        player->setAvatar(avatar);
+        lobbyPlayers << player;
+
+        connect(player, &LobbyPlayer::errorMessage, this, &Server::serverMessage);
+        connect(player, &LobbyPlayer::disconnected, this, &Server::cleanupLobbyPlayer);
+        emit newPlayer(player);
+
+        emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
+
+        player->notify(S_COMMAND_ROOM_LIST, getRoomList());
     }
 }

@@ -28,10 +28,6 @@ QTextEdit[description="true"] {
 	background-color: white;
 }
 
-QTextEdit#whatsnew {
-	background-image: url(image/system/simpleBg/whatsnew.png);
-}
-
 QLineEdit#chat_edit {
     background-color: rgba(0, 0, 0, 200);
     color: white;
@@ -111,4 +107,42 @@ QPushButton[control = true][bold = true] {
 
 #closeButton[control = true]:hover {
 	background-color: rgb(238, 44, 44);
+}
+
+#lobby_chat_box {
+    background: transparent;
+}
+
+#lobby_chat_box #chat_log {
+    border: 2px solid rgb(185, 195, 199);
+    min-height: 32px;
+    border-radius: 6px;
+    alignment: left center;
+    margin: 0;
+}
+
+#lobby_button_box {
+    background: transparent;
+}
+
+#lobby_button_box QPushButton {
+    color: white;
+    background-color: rgb(26, 188, 156);
+    border: transparent;
+    border-radius: 5px;
+    height: 80%;
+    font-size: 20px;
+}
+
+#lobby_button_box QPushButton:hover {
+    background-color: rgb(72, 201, 176);
+}
+
+#lobby_button_box QPushButton:disabled {
+    background-color: rgba(72, 201, 176, 52%);
+    color: rgba(255, 255, 255, 70%);
+}
+
+#lobby_button_box QPushButton:pressed {
+    background-color: rgb(22, 160, 133);
 }

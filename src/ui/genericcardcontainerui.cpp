@@ -41,7 +41,7 @@ QList<CardItem *> GenericCardContainer::cloneCardItems(QList<int> card_ids) {
 
 QList<CardItem *> GenericCardContainer::_createCards(QList<int> card_ids) {
     QList<CardItem *> result;
-    foreach(int card_id, card_ids) {
+    foreach (int card_id, card_ids) {
         CardItem *item = _createCard(card_id);
         result.append(item);
     }
@@ -106,19 +106,19 @@ void GenericCardContainer::_doUpdate() {
 
 void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards) {
     QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
-    foreach(CardItem *card_item, cards) {
+    foreach (CardItem *card_item, cards) {
         if (destroyCards)
-            connect(card_item, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
+            connect(card_item, &CardItem::movement_animation_finished, this, &GenericCardContainer::_destroyCard);
         animation->addAnimation(card_item->getGoBackAnimation(true));
     }
 
-    connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate()));
-    connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
-    animation->start();
+    connect(animation, &QParallelAnimationGroup::finished, this, &GenericCardContainer::_doUpdate);
+    connect(animation, &QParallelAnimationGroup::finished, this, &GenericCardContainer::onAnimationFinished);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) {
-    foreach(CardItem *card_item, card_items) {
+    foreach (CardItem *card_item, card_items) {
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
     }
@@ -370,7 +370,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         // retrieve menu and create a new pile if necessary
         QPushButton *button;
         if (!_m_privatePiles.contains(pile_name)) {
-            button = new QPushButton;
+            button = new QPushButton(_m_privatePileArea->widget());
             button->setObjectName(pile_name);
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
@@ -389,8 +389,8 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         if (pile.length() > 0)
              text.append(QString("(%1)").arg(pile.length()));
         button->setText(text);
-        disconnect(button, SIGNAL(clicked()), this, SLOT(showPile()));
-        connect(button, SIGNAL(clicked()), this, SLOT(showPile()));
+        disconnect(button, &QPushButton::clicked, this, &PlayerCardContainer::showPile);
+        connect(button, &QPushButton::clicked, this, &PlayerCardContainer::showPile);
     }
 
     QPoint start = _m_layout->m_privatePileStartPos;
@@ -566,28 +566,27 @@ void PlayerCardContainer::_createRoleComboBox() {
 void PlayerCardContainer::setPlayer(ClientPlayer *player) {
     this->m_player = player;
     if (player) {
-        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
-        connect(player, SIGNAL(kingdom_changed(QString)), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
-        connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
-        connect(player, SIGNAL(drank_changed()), this, SLOT(updateDrankState()));
-        connect(player, SIGNAL(action_taken()), this, SLOT(refresh()));
-        connect(player, SIGNAL(duanchang_invoked()), this, SLOT(refresh()));
-        connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
-        connect(player, SIGNAL(kingdom_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
-        connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
-        connect(player, SIGNAL(disable_show_changed()), this, SLOT(refresh()));
-        connect(player, SIGNAL(removedChanged()), this, SLOT(onRemovedChanged()));
+        connect(player, &ClientPlayer::general_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
+        connect(player, &ClientPlayer::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
+        connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
+        connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::duanchang_invoked, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
+        connect(player, &ClientPlayer::kingdom_changed, _m_roleComboBox, &RoleComboBox::fix);
+        connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
+        connect(player, &ClientPlayer::disable_show_changed, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
         _m_markItem->setDocument(textDoc);
-        connect(textDoc, SIGNAL(contentsChanged()), this, SLOT(updateMarks()));
-        connect(player, SIGNAL(headSkinIdChanged(QString)),
-                _m_avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-        connect(player, SIGNAL(deputySkinIdChanged(QString)),
-                _m_smallAvatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
+
+        connect(textDoc, &QTextDocument::contentsChanged, this, &PlayerCardContainer::updateMarks);
+        connect(player, &ClientPlayer::headSkinIdChanged, _m_avatarIcon, &GraphicsPixmapHoverItem::startChangeHeroSkinAnimation);
+        connect(player, &ClientPlayer::deputySkinIdChanged, _m_smallAvatarIcon, &GraphicsPixmapHoverItem::startChangeHeroSkinAnimation);
     }
     updateAvatar();
     refresh();
@@ -595,7 +594,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
 
 QList<CardItem *> PlayerCardContainer::removeDelayedTricks(const QList<int> &cardIds) {
     QList<CardItem *> result;
-    foreach(int card_id, cardIds) {
+    foreach (int card_id, cardIds) {
         CardItem *item = CardItem::FindItem(_m_judgeCards, card_id);
         Q_ASSERT(item != NULL);
         int index = _m_judgeCards.indexOf(item);
@@ -605,7 +604,9 @@ QList<CardItem *> PlayerCardContainer::removeDelayedTricks(const QList<int> &car
         item->setOpacity(0.0);
         item->setPos(start.center());
         _m_judgeCards.removeAt(index);
-        delete _m_judgeIcons.takeAt(index);
+        QGraphicsPixmapItem *icon = _m_judgeIcons.takeAt(index);
+        icon->setOpacity(0.0);
+        delete icon;
         result.append(item);
     }
     updateDelayedTricks();
@@ -623,7 +624,7 @@ void PlayerCardContainer::updateDelayedTricks() {
 }
 
 void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks) {
-    foreach(CardItem *trick, tricks) {
+    foreach (CardItem *trick, tricks) {
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem(_getDelayedTrickParent());
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
@@ -683,12 +684,12 @@ void PlayerCardContainer::setFloatingArea(QRect rect) {
 }
 
 void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
-    foreach(CardItem *equip, equips) {
+    foreach (CardItem *equip, equips) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == NULL);
         _m_equipCards[index] = equip;
-        connect(equip, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
+        connect(equip, &CardItem::mark_changed, this, &PlayerCardContainer::_onEquipSelectChanged);
         equip->setHomeOpacity(0.0);
         equip->setHomePos(_m_layout->m_equipAreas[index].center());
         _m_equipRegions[index]->setToolTip(equip_card->getDescription());
@@ -716,7 +717,7 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
 
 QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
     QList<CardItem *> result;
-    foreach(int card_id, cardIds) {
+    foreach (int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != NULL);
@@ -770,6 +771,11 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = _m_selectedFrame2 = NULL;
+    _m_privatePileArea = new QGraphicsProxyWidget(this);
+    QWidget *pileArea = new QWidget(NULL, Qt::Tool);//It currently needn't to be visible.
+    pileArea->setAttribute(Qt::WA_TranslucentBackground);
+    pileArea->resize(1, 1);
+    _m_privatePileArea->setWidget(pileArea);
 
     leftDisableShowLock = rightDisableShowLock = NULL;
 
@@ -837,7 +843,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_votesItem);
     foreach (QGraphicsItem *pile, _m_privatePiles)
         _layUnder(pile);
-    foreach(QGraphicsItem *judge, _m_judgeIcons)
+    foreach (QGraphicsItem *judge, _m_judgeIcons)
         _layUnder(judge);
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
