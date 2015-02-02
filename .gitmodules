@@ -1,0 +1,3 @@
+[submodule "Cardirector"]
+	path = Cardirector
+	url = https://github.com/Mogara/Cardirector.git
