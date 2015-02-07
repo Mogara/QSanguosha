@@ -26,6 +26,11 @@ win32-msvc2013 {
     CONFIG(debug, debug|release): copy(Cardirector/bin/win32-msvc2013/Cardirectord.dll, $$_PRO_FILE_PWD_/)
     else:copy(Cardirector/bin/win32-msvc2013/Cardirector.dll, $$_PRO_FILE_PWD_/)
 }
+win32-msvc2010 {
+    LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib/win32-msvc2010"
+    CONFIG(debug, debug|release): copy(Cardirector/bin/win32-msvc2010/Cardirectord.dll, $$_PRO_FILE_PWD_/)
+    else:copy(Cardirector/bin/win32-msvc2010/Cardirector.dll, $$_PRO_FILE_PWD_/)
+}
 
 CONFIG(debug, debug|release): LIBS += -lCardirectord
 else:LIBS += -lCardirector
