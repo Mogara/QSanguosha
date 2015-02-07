@@ -1,13 +1,13 @@
 #include <QGuiApplication>
-#include "cmainwindow.h"
+#include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QQuickView window;
-    window.setSource(QUrl(QStringLiteral("qrc:/main.qml")));
-    window.show();
+    QQmlApplicationEngine engine;
+    engine.addPluginPath("Cardirector/plugins");
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();
 }

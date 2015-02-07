@@ -1,19 +1,5 @@
-import QtQuick 2.4
+import Cardirector.Gui 1.0
 
-Rectangle {
-    visible: true
-    width: 360
-    height: 360
+MainWindow {
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            Qt.quit();
-        }
-    }
-
-    Text {
-        text: qsTr("Hello World")
-        anchors.centerIn: parent
-    }
 }
