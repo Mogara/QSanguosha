@@ -11,9 +11,9 @@ INCLUDEPATH += Cardirector/include
 defineTest(copy) {
     file = $$1
     path = $$2
-    !exists(file): return(false)
+    !exists($$file): return(false)
     win32 {
-        system("copy $$replace(file, /, \\) $$replace(path, /, \\)")
+        system("copy $$system_path($$file) $$system_path($$path)")
     }
     else {
         system("cp $$file $$path")
