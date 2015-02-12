@@ -17,7 +17,7 @@
     Mogara
     *********************************************************************/
 
-#include "cqmlapplicationengine.h"
+#include "cmainwindow.h"
 
 #include <QGuiApplication>
 
@@ -25,8 +25,16 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    CQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    app.setOrganizationName("Mogara");
+    app.setOrganizationDomain("mogara.org");
+    app.setApplicationName("QSanguosha");
+
+    CMainWindow window(QUrl(QStringLiteral("qrc:/main.qml")));
+    // Warning: DO NOT CALL window.show() HERE, USE QWindow::setVisible(true) INSTEAD
+    // show() is equivalent to calling showFullScreen(), showMaximized(), or
+    // showNormal(), depending on the platform's default behavior for the window type
+    // and flags. So the last state stored in CMainWindow will be ignored.
+    window.setVisible(true);
 
     return app.exec();
 }

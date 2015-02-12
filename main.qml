@@ -1,5 +1,6 @@
-import Cardirector.Gui 1.0
+import QtQuick 2.4
 
-MainWindow {
-    width: 1000
+Rectangle {
+    width: preferredSize.width
+    height: preferredSize.height
 }
