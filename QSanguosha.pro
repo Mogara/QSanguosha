@@ -27,6 +27,9 @@ win32 {
     CONFIG(debug, debug|release): copy(Cardirector/bin/Cardirectord.dll, $$_PRO_FILE_PWD_/)
     else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
 }
+android {
+    ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
+}
 
 CONFIG(debug, debug|release): LIBS += -lCardirectord
 else:LIBS += -lCardirector
