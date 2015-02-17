@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>ClientSettings.qml</file>
+        <file>src/main.qml</file>
+        <file>src/Client/ClientSettings.qml</file>
+        <file>src/Gui/Splash.qml</file>
+        <file>src/Gui/StartScene.qml</file>
     </qresource>
 </RCC>

@@ -2,9 +2,10 @@ TEMPLATE = app
 
 QT += qml quick
 
-SOURCES += main.cpp
+SOURCES += src/main.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    image.qrc
 
 INCLUDEPATH += Cardirector/include
 LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"

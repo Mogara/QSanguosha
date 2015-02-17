@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/mogara/logo.png</file>
+    </qresource>
+</RCC>

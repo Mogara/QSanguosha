@@ -29,12 +29,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
 
-    CMainWindow window(QUrl(QStringLiteral("qrc:/main.qml")));
-    // Warning: DO NOT CALL window.show() HERE, USE QWindow::setVisible(true) INSTEAD
-    // show() is equivalent to calling showFullScreen(), showMaximized(), or
-    // showNormal(), depending on the platform's default behavior for the window type
-    // and flags. So the last state stored in CMainWindow will be ignored.
-    window.setVisible(true);
+    CMainWindow window(QUrl(QStringLiteral("qrc:/src/main.qml")));
+    window.show();
 
     return app.exec();
 }
