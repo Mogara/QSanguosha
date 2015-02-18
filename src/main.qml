@@ -1,35 +1,60 @@
 import QtQuick 2.4
-//import Cardirector.Resource 1.0
-//import "Gui"
+import Cardirector.Resource 1.0
+import "Client"
 
-Rectangle {
+Item {
     id: root
-    width: 555
-    height: 666
+    width: preferredSize.width
+    height: preferredSize.height
 
-    color: "red"
+    ClientSettings {
+        id: config
+    }
 
-//    ImageProvider {
-//        providerId: "mogara"
+    ImageProvider {
+        providerId: "mogara"
 
-//        function imagePath(imageId, requestedSize)
-//        {
-//            return ":/image/mogara/logo.png";
-//        }
-//    }
+        function imagePath(imageId, requestedSize)
+        {
+            return ":/image/mogara/" + imageId + ".png";
+        }
+    }
 
-//    Loader {
-//        id: splashLoader
-//        source: "Gui/Splash.qml"
-//    }
+    ImageProvider {
+        providerId: "background"
 
-//    Loader {
-//        id: startSceneLoader
-//    }
+        function imagePath(imageId, requestedSize) {
+            // We prefer to using compact pictures as background to save storage space
+            // @todo: consider supporting more common image formats
+            return ":/image/background/" + imageId + ".jpg";
+        }
+    }
 
-//    Connections {
-//        target: splashLoader.item
-//        onDisappearing: startSceneLoader.source = "Gui/StartScene.qml"
-//        onDisappeared: splashLoader.source = ""
-//    }
+    ImageProvider {
+        providerId: "tileicon"
+
+        function imagePath(imageId, requestedSize) {
+            return ":/image/tileIcon/" + imageId + ".png"
+        }
+    }
+
+    Loader {
+        id: splashLoader
+        anchors.fill: parent
+        source: "Gui/Splash.qml"
+        z: 100
+    }
+
+    Loader {
+        id: startSceneLoader
+        anchors.fill: parent
+        asynchronous: true
+        visible: status == Loader.Ready
+    }
+
+    Connections {
+        target: splashLoader.item
+        onDisappearing: startSceneLoader.source = "Gui/StartScene.qml"
+        onDisappeared: splashLoader.source = ""
+    }
 }

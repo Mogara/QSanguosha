@@ -1,15 +1,17 @@
 import QtQuick 2.4
+import Cardirector.Gui 1.0
+import "../Client"
 
 Image {
     id: startScene
-    source: "file:///" + Config.BackgroundImage
+    source: config.backgroundImage
     anchors.fill: parent
 
     property bool isFeteDay: isInFeteDays()
 
     Image {
         id: logo
-        source: "../image/logo/logo" + (isFeteDay ? "-moxuan" : "") + ".png"
+        source: "image://mogara/logo" + (isFeteDay ? "-moxuan" : "")
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: -parent.width / 4
         opacity: 0
@@ -58,7 +60,7 @@ Image {
 
         TileButton {
             text: name
-            iconSource: icon
+            iconSource: "image://tileicon/" + icon
         }
     }
 

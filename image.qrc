@@ -1,5 +1,16 @@
 <RCC>
     <qresource prefix="/">
         <file>image/mogara/logo.png</file>
+        <file>image/mogara/logo-moxuan.png</file>
+        <file>image/background/bg.jpg</file>
+        <file>image/tileIcon/about.png</file>
+        <file>image/tileIcon/card_overview.png</file>
+        <file>image/tileIcon/configure.png</file>
+        <file>image/tileIcon/general_overview.png</file>
+        <file>image/tileIcon/pc_console_start.png</file>
+        <file>image/tileIcon/replay.png</file>
+        <file>image/tileIcon/rule_summary.png</file>
+        <file>image/tileIcon/start_game.png</file>
+        <file>image/tileIcon/start_server.png</file>
     </qresource>
 </RCC>

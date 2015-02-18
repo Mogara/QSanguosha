@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
 
-    CMainWindow window(QUrl(QStringLiteral("qrc:/src/main.qml")));
+    CMainWindow window;
+    window.setSource(QUrl(QStringLiteral("qrc:/src/main.qml")));
     window.show();
 
     return app.exec();

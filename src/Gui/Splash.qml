@@ -12,147 +12,147 @@ Rectangle {
     signal disappearing
     signal disappeared
 
-//    //---------------Logo-------------------
-//    Image {
-//        id: logo
-//        anchors.centerIn: parent
-//        source: "image://mogara/logo"
-//    }
+    //---------------Logo-------------------
+    Image {
+        id: logo
+        anchors.centerIn: parent
+        source: "image://mogara/logo"
+    }
 
-//    //--------------Text-------------
-//    Text {
-//        id: qsan
-//        text: qsTr("QSanguosha")
-//        color: "#ffffff"
-//        font.family: "微软雅黑"
-//        font.pointSize: 30
-//        anchors.left: logo.right
-//        anchors.leftMargin: 30
-//        anchors.verticalCenter: parent.verticalCenter
-//        anchors.verticalCenterOffset: -20
-//        opacity: 0
-//    }
+    //--------------Text-------------
+    Text {
+        id: qsan
+        text: qsTr("QSanguosha")
+        color: "#ffffff"
+        font.family: "微软雅黑"
+        font.pointSize: 30
+        anchors.left: logo.right
+        anchors.leftMargin: 30
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -20
+        opacity: 0
+    }
 
-//    Row {
-//        height: childrenRect.height
-//        width: childrenRect.width
-//        anchors.horizontalCenter: qsan.horizontalCenter
-//        anchors.verticalCenter: parent.verticalCenter
-//        anchors.verticalCenterOffset: 20
-//        spacing: 8
+    Row {
+        height: childrenRect.height
+        width: childrenRect.width
+        anchors.horizontalCenter: qsan.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: 20
+        spacing: 8
 
-//        Text {
-//            id: free
-//            text: qsTr("Free")
-//            color: "#ffffff"
-//            font.family: "微软雅黑"
-//            font.pointSize: 15
-//            opacity: 0
-//        }
+        Text {
+            id: free
+            text: qsTr("Free")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
 
-//        Text {
-//            id: open
-//            text: qsTr("Open")
-//            color: "#ffffff"
-//            font.family: "微软雅黑"
-//            font.pointSize: 15
-//            opacity: 0
-//        }
+        Text {
+            id: open
+            text: qsTr("Open")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
 
-//        Text {
-//            id: flexible
-//            text: qsTr("Flexible")
-//            color: "#ffffff"
-//            font.family: "微软雅黑"
-//            font.pointSize: 15
-//            opacity: 0
-//        }
-//    }
+        Text {
+            id: flexible
+            text: qsTr("Flexible")
+            color: "#ffffff"
+            font.family: "微软雅黑"
+            font.pointSize: 15
+            opacity: 0
+        }
+    }
 
-//    Text {
-//        id: text
-//        text: qsTr("Press Any Key...")
-//        color: "#ffffff"
-//        opacity: 0
-//        font.family: "微软雅黑"
-//        font.pointSize: 15
-//        horizontalAlignment: Text.AlignHCenter
-//        anchors.bottom: parent.bottom
-//        anchors.bottomMargin: 150
-//        anchors.horizontalCenter: parent.horizontalCenter
-//        SequentialAnimation on opacity {
-//            id: textAni
-//            running: false
-//            loops: Animation.Infinite
-//            NumberAnimation { from: 0; to: 1; duration: 1600; easing.type: Easing.InOutQuad; }
-//            NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutQuad; }
-//        }
-//    }
+    Text {
+        id: text
+        text: qsTr("Press Any Key...")
+        color: "#ffffff"
+        opacity: 0
+        font.family: "微软雅黑"
+        font.pointSize: 15
+        horizontalAlignment: Text.AlignHCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 150
+        anchors.horizontalCenter: parent.horizontalCenter
+        SequentialAnimation on opacity {
+            id: textAni
+            running: false
+            loops: Animation.Infinite
+            NumberAnimation { from: 0; to: 1; duration: 1600; easing.type: Easing.InOutQuad; }
+            NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutQuad; }
+        }
+    }
 
-//    SequentialAnimation {
-//        running: true
-//        NumberAnimation {
-//            target: logo
-//            property: "anchors.horizontalCenterOffset"
-//            to: -parent.width / 4
-//            duration: 1000
-//            easing.type: Easing.InOutQuad
-//        }
+    SequentialAnimation {
+        running: true
+        NumberAnimation {
+            target: logo
+            property: "anchors.horizontalCenterOffset"
+            to: -splash.width / 4
+            duration: 1000
+            easing.type: Easing.InOutQuad
+        }
 
-//        NumberAnimation {
-//            target: qsan
-//            property: "opacity"
-//            duration: 500
-//            easing.type: Easing.InOutQuad
-//            to: 1
-//        }
+        NumberAnimation {
+            target: qsan
+            property: "opacity"
+            duration: 500
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
 
-//        NumberAnimation {
-//            target: free
-//            property: "opacity"
-//            duration: 400
-//            easing.type: Easing.InOutQuad
-//            to: 1
-//        }
+        NumberAnimation {
+            target: free
+            property: "opacity"
+            duration: 400
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
 
-//        NumberAnimation {
-//            target: open
-//            property: "opacity"
-//            duration: 400
-//            easing.type: Easing.InOutQuad
-//            to: 1
-//        }
+        NumberAnimation {
+            target: open
+            property: "opacity"
+            duration: 400
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
 
-//        NumberAnimation {
-//            target: flexible
-//            property: "opacity"
-//            duration: 400
-//            easing.type: Easing.InOutQuad
-//            to: 1
-//        }
+        NumberAnimation {
+            target: flexible
+            property: "opacity"
+            duration: 400
+            easing.type: Easing.InOutQuad
+            to: 1
+        }
 
 
-//        ScriptAction { script: textAni.start(); }
+        ScriptAction { script: textAni.start(); }
 
-//        PropertyAction { target: splash; property: "loading"; value: false }
-//    }
+        PropertyAction { target: splash; property: "loading"; value: false }
+    }
 
-//    Text {
-//        text: qsTr("Powered by Mogara")
-//        color: "#f39292"
-//        font.family: "Segoe Script"
-//        font.pointSize: 8
-//        anchors.bottom: parent.bottom
-//        anchors.right: parent.right
-//    }
+    Text {
+        text: qsTr("Powered by Mogara")
+        color: "#f39292"
+        font.family: "Segoe Script"
+        font.pointSize: 8
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+    }
 
-//    //--------------------Disappear--------------
-//    Behavior on opacity {
-//        SequentialAnimation {
-//            NumberAnimation { duration: 2000; easing.type: Easing.InOutQuad }
-//            ScriptAction { script: disappeared() }
-//        }
-//    }
+    //--------------------Disappear--------------
+    Behavior on opacity {
+        SequentialAnimation {
+            NumberAnimation { duration: 2000; easing.type: Easing.InOutQuad }
+            ScriptAction { script: disappeared() }
+        }
+    }
     MouseArea {
         acceptedButtons: Qt.AllButtons
         anchors.fill: parent
@@ -168,20 +168,21 @@ Rectangle {
             disappear();
             event.accepted = true
         }
+        console.log("xxx")
     }
 
-//    NumberAnimation {
-//        id: logoMover
-//        target: logo
-//        property: "anchors.horizontalCenterOffset"
-//        to: -parent.width
-//        duration: 1000
-//        easing.type: Easing.InOutQuad
-//    }
+    NumberAnimation {
+        id: logoMover
+        target: logo
+        property: "anchors.horizontalCenterOffset"
+        to: -splash.width
+        duration: 1000
+        easing.type: Easing.InOutQuad
+    }
 
     function disappear() {
         disappearing();
-//        logoMover.start();
+        logoMover.start();
         opacity = 0;
     }
 }
