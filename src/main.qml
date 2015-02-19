@@ -12,6 +12,7 @@ Item {
     }
 
     ImageProvider {
+        id: mogaraImage
         providerId: "mogara"
 
         function imagePath(imageId, requestedSize)
@@ -41,20 +42,19 @@ Item {
     Loader {
         id: splashLoader
         anchors.fill: parent
-        source: "Gui/Splash.qml"
+        source: mogaraImage ? "Gui/Splash.qml" : ""
         z: 100
+        focus: true
+
+        Connections {
+            target: splashLoader.item
+            onDisappearing: startSceneLoader.source = "Gui/StartScene.qml"
+            onDisappeared: splashLoader.source = ""
+        }
     }
 
     Loader {
         id: startSceneLoader
         anchors.fill: parent
-        asynchronous: true
-        visible: status == Loader.Ready
-    }
-
-    Connections {
-        target: splashLoader.item
-        onDisappearing: startSceneLoader.source = "Gui/StartScene.qml"
-        onDisappeared: splashLoader.source = ""
     }
 }

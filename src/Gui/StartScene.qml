@@ -27,21 +27,7 @@ Image {
         property: "opacity"
         duration: 1000
         to: 1
-        onStopped: {
-            var btns = [
-                        {"name": qsTr("start_game"), "icon": "start_game"},
-                        {"name": qsTr("start_server"), "icon": "start_server"},
-                        {"name": qsTr("pc_console_start"), "icon": "pc_console_start"},
-                        {"name": qsTr("replay"), "icon": "replay"},
-                        {"name": qsTr("configure"), "icon": "configure"},
-                        {"name": qsTr("general_overview"), "icon": "general_overview"},
-                        {"name": qsTr("card_overview"), "icon": "card_overview"},
-                        {"name": qsTr("about"), "icon": "about"}
-                    ];
-            for (var i = 0; i < btns.length; ++ i) {
-                buttons.append(btns[i]);
-            }
-        }
+        onStopped: grid.model = buttons;
     }
 
     GridView {
@@ -52,7 +38,6 @@ Image {
         cellHeight: 162; cellWidth: 162
         height: cellHeight * 4; width: cellWidth * 2
         delegate: buttonDelegate
-        model: buttons
     }
 
     Component {
@@ -66,6 +51,14 @@ Image {
 
     ListModel {
         id: buttons
+        ListElement { name: qsTr("start_game"); icon: "start_game" }
+        ListElement { name: qsTr("start_server"); icon: "start_server" }
+        ListElement { name: qsTr("pc_console_start"); icon: "pc_console_start" }
+        ListElement { name: qsTr("replay"); icon: "replay" }
+        ListElement { name: qsTr("configure"); icon: "configure" }
+        ListElement { name: qsTr("general_overview"); icon: "general_overview" }
+        ListElement { name: qsTr("card_overview"); icon: "card_overview" }
+        ListElement { name: qsTr("about"); icon: "about" }
     }
 
     Timer {

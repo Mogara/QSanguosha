@@ -168,7 +168,6 @@ Rectangle {
             disappear();
             event.accepted = true
         }
-        console.log("xxx")
     }
 
     NumberAnimation {
