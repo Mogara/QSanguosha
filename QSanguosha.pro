@@ -27,6 +27,12 @@ defineTest(copy) {
 win32 {
     CONFIG(debug, debug|release): copy(Cardirector/bin/Cardirectord.dll, $$_PRO_FILE_PWD_/)
     else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
+
+    RC_FILE = icons/icon.rc
+}
+
+macx {
+    ICON = icons/icon.icns
 }
 
 CONFIG(debug, debug|release): LIBS += -lCardirectord
