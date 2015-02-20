@@ -32,6 +32,7 @@ Image {
 
     GridView {
         id: grid
+        interactive: false
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: parent.width / 4
         flow: GridView.FlowTopToBottom
