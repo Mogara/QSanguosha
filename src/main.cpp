@@ -20,6 +20,8 @@
 #include "cmainwindow.h"
 
 #include <QGuiApplication>
+#include <QLocale>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -28,6 +30,10 @@ int main(int argc, char *argv[])
     app.setOrganizationName("Mogara");
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
+
+    QTranslator translator;
+    translator.load(QLocale::system().name(), QStringLiteral("translations"));
+    app.installTranslator(&translator);
 
     CMainWindow window;
     window.setSource(QUrl(QStringLiteral("qrc:/src/main.qml")));

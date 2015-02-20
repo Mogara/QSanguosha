@@ -4,8 +4,7 @@ QT += qml quick
 
 SOURCES += src/main.cpp
 
-RESOURCES += qml.qrc \
-    image.qrc
+RESOURCES += image.qrc
 
 INCLUDEPATH += Cardirector/include
 LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"
@@ -40,6 +39,38 @@ else:LIBS += -lCardirector
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD
+
+QML_FILES = src/Client/ClientSettings.qml \
+            src/Gui/Splash.qml \
+            src/Gui/StartScene.qml \
+            src/main.qml
+
+# Create the resource file
+GENERATED_RESOURCE_FILE = qml.qrc
+
+INCLUDED_RESOURCE_FILES = $$QML_FILES
+
+RESOURCE_CONTENT = \
+    "<RCC>" \
+    "    <qresource prefix=\"/\">"
+
+for(resourcefile, INCLUDED_RESOURCE_FILES) {
+    RESOURCE_CONTENT += "        <file>$$resourcefile</file>"
+}
+
+RESOURCE_CONTENT += \
+    "    </qresource>" \
+    "</RCC>"
+
+write_file($$GENERATED_RESOURCE_FILE, RESOURCE_CONTENT)|error("Aborting.")
+
+RESOURCES += $$GENERATED_RESOURCE_FILE
+
+lupdate_only {
+    SOURCES += $$QML_FILES
+}
+
+TRANSLATIONS += translations/zh_CN.ts
 
 # Default rules for deployment.
 include(deployment.pri)

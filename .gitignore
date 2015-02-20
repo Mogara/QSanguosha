@@ -74,3 +74,5 @@ QtQuick.2/
 /hero-skin
 Cardirector*.dll
 build-Cardirector*/
+qml.qrc
+translations/*.qm
