@@ -33,6 +33,9 @@ win32 {
 macx {
     ICON = icons/icon.icns
 }
+android {
+    ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
+}
 
 CONFIG(debug, debug|release): LIBS += -lCardirectord
 else:LIBS += -lCardirector
