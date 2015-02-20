@@ -20,6 +20,8 @@
 #include "cmainwindow.h"
 
 #include <QGuiApplication>
+#include <QLocale>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -29,12 +31,13 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
 
-    CMainWindow window(QUrl(QStringLiteral("qrc:/main.qml")));
-    // Warning: DO NOT CALL window.show() HERE, USE QWindow::setVisible(true) INSTEAD
-    // show() is equivalent to calling showFullScreen(), showMaximized(), or
-    // showNormal(), depending on the platform's default behavior for the window type
-    // and flags. So the last state stored in CMainWindow will be ignored.
-    window.setVisible(true);
+    QTranslator translator;
+    translator.load(QLocale::system().name(), QStringLiteral("translations"));
+    app.installTranslator(&translator);
+
+    CMainWindow window;
+    window.setSource(QUrl(QStringLiteral("qrc:/src/main.qml")));
+    window.show();
 
     return app.exec();
 }
