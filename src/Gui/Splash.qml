@@ -1,4 +1,6 @@
 import QtQuick 2.4
+import Cardirector.Gui 1.0
+import Cardirector.Device 1.0
 
 Rectangle {
     id: splash
@@ -27,9 +29,9 @@ Rectangle {
         font.family: "微软雅黑"
         font.pointSize: 30
         anchors.left: logo.right
-        anchors.leftMargin: 30
+        anchors.leftMargin: Device.gu(30)
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -20
+        anchors.verticalCenterOffset: -Device.gu(20)
         opacity: 0
     }
 
@@ -37,9 +39,9 @@ Rectangle {
         height: childrenRect.height
         width: childrenRect.width
         anchors.horizontalCenter: qsan.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 20
-        spacing: 8
+        anchors.top: qsan.bottom
+        anchors.verticalCenterOffset: Device.gu(40)
+        spacing: Device.gu(8)
 
         Text {
             id: free
@@ -77,8 +79,8 @@ Rectangle {
         font.family: "微软雅黑"
         font.pointSize: 15
         horizontalAlignment: Text.AlignHCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 150
+        anchors.top: logo.bottom
+        anchors.topMargin: Device.gu(65)
         anchors.horizontalCenter: parent.horizontalCenter
         SequentialAnimation on opacity {
             id: textAni
@@ -94,7 +96,7 @@ Rectangle {
         NumberAnimation {
             target: logo
             property: "anchors.horizontalCenterOffset"
-            to: -splash.width / 4
+            to: -splash.width / 8
             duration: 1000
             easing.type: Easing.InOutQuad
         }

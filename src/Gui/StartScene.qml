@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import Cardirector.Gui 1.0
+import Cardirector.Device 1.0
 import "../Client"
 
 Image {
@@ -36,7 +37,7 @@ Image {
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: parent.width / 4
         flow: GridView.FlowTopToBottom
-        cellHeight: 162; cellWidth: 162
+        cellHeight: Device.gu(162); cellWidth: Device.gu(162)
         height: cellHeight * 4; width: cellWidth * 2
         delegate: buttonDelegate
     }
