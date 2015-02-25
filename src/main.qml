@@ -40,15 +40,31 @@ Item {
     }
 
     Loader {
-        id: splashLoader
+        id: mSplashLoader
+        source: "Gui/McdSplash.qml"
         anchors.fill: parent
-        source: mogaraImage ? "Gui/Splash.qml" : ""
-        z: 100
+        z: 1000
         focus: true
 
         Connections {
+            target: mSplashLoader.item
+            onDisappearing: {
+                mSplashLoader.source = "";
+                splashLoader.item.animationRunning = true;
+            }
+        }
+    }
+
+    Loader {
+        id: splashLoader
+        anchors.fill: parent
+        z: 100
+        focus: true
+        source: "Gui/Splash.qml"
+
+        Connections {
             target: splashLoader.item
-            onDisappearing: startSceneLoader.source = "Gui/StartScene.qml"
+            onDisappearing: startSceneLoader.source = "Gui/StartScene.qml";
             onDisappeared: splashLoader.source = ""
         }
     }
@@ -56,5 +72,12 @@ Item {
     Loader {
         id: startSceneLoader
         anchors.fill: parent
+    }
+
+    Loader {
+        id: dialogLoader
+        z: 100
+        width: parent.width
+        height: parent.height
     }
 }

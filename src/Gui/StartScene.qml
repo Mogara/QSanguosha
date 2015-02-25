@@ -48,6 +48,14 @@ Image {
         TileButton {
             text: name
             iconSource: "image://tileicon/" + icon
+
+            Component {
+                id:dialog
+
+                Dialog {  }
+            }
+
+            onClicked: dialogLoader.sourceComponent = dialog
         }
     }
 

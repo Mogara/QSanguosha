@@ -10,6 +10,7 @@ Rectangle {
     z: 100
 
     property bool loading: true
+    property alias animationRunning: animation.running
 
     signal disappearing
     signal disappeared
@@ -92,7 +93,7 @@ Rectangle {
     }
 
     SequentialAnimation {
-        running: true
+        id: animation
         NumberAnimation {
             target: logo
             property: "anchors.horizontalCenterOffset"
