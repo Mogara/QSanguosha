@@ -8,7 +8,6 @@ Open Source Sanguosha
 
 Third party evaluations of development process
 ---------
-[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
 
 [![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/pr?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
 
