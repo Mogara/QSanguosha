@@ -27,7 +27,6 @@ ServerSocket::ServerSocket(QObject *parent)
 {
     setParent(parent);
     m_server = new QTcpServer(this);
-    m_detectee = NULL;
     connect(m_server, &QTcpServer::newConnection, this, &ServerSocket::processNewConnection);
 }
 
