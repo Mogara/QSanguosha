@@ -72,3 +72,4 @@ libGLESv2.dll
 OGLdpf.log
 QtQuick.2/
 /hero-skin
+build-*/*

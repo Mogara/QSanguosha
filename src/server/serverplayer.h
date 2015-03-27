@@ -24,7 +24,7 @@
 class Room;
 class AI;
 class Recorder;
-class ClientSocket;
+class AbstractClientSocket;
 class CardMoveReason;
 struct PhaseStruct;
 struct PindianStruct;
@@ -57,8 +57,8 @@ public:
     explicit ServerPlayer(Room *room);
     ~ServerPlayer();
 
-    void setSocket(ClientSocket *socket);
-    ClientSocket *takeSocket();
+    void setSocket(AbstractClientSocket *socket);
+    AbstractClientSocket *takeSocket();
     void unicast(const QSanProtocol::AbstractPacket *packet);
     void notify(QSanProtocol::CommandType type, const QVariant &arg = QVariant());
     void kick();
@@ -214,7 +214,7 @@ protected:
 #endif
 
 private:
-    ClientSocket *socket;
+    AbstractClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
     AI *ai;

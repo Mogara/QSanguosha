@@ -70,6 +70,7 @@ bool WifiManager::setWifiEnabled(bool enabled)
 #ifdef Q_OS_ANDROID
     return manager.callMethod<jboolean>("setWifiEnabled", "(Z)Z", enabled);
 #else
+    Q_UNUSED(enabled)
     return false;
 #endif
 }

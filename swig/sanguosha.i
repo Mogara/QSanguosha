@@ -1478,7 +1478,7 @@ public:
     ServerPlayer *getOwner() const;
     void updateStateItem();
 
-    void reconnect(ServerPlayer *player, ClientSocket *socket);
+    void reconnect(ServerPlayer *player, AbstractClientSocket *socket);
     void marshal(ServerPlayer *player);
 
     void sortByActionOrder(QList<ServerPlayer *> &players);

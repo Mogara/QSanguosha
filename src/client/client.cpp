@@ -18,11 +18,12 @@
     QSanguosha-Rara
     *********************************************************************/
 
+#include "udpsocket.h"
 #include "client.h"
 #include "settings.h"
 #include "engine.h"
 #include "standard.h"
-#include "nativesocket.h"
+#include "clientsocket.h"
 #include "record.h"
 #include "skinbank.h"
 #include "roomscene.h"
@@ -164,9 +165,9 @@ Client::Client(QObject *parent, const QString &filename)
         replayer = new Replayer(filename, this);
         connect(replayer, &Replayer::commandParsed, this, &Client::processServerPacket);
     } else {
-        socket = new NativeClientSocket(this);
-        connect(socket, &NativeClientSocket::message_got, this, &Client::processServerPacket);
-        connect(socket, &NativeClientSocket::error_message, this, &Client::error_message);
+        socket = new ClientSocket(this);
+        connect(socket, &ClientSocket::messageGot, this, &Client::processServerPacket);
+        connect(socket, &ClientSocket::errorMessage, this, &Client::error_message);
 
         QHostAddress address(QHostAddress::LocalHost);
         ushort port = 9527u;
@@ -194,8 +195,8 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc->setDefaultFont(QFont("SimHei"));
 #endif
 
-    detector = new NativeUdpSocket(this);
-    connect(detector, &UdpSocket::new_datagram, this, &Client::processDatagram);
+    detector = new UdpSocket(this);
+    connect(detector, &AbstractUdpSocket::newDatagram, this, &Client::processDatagram);
 }
 
 Client::~Client() {

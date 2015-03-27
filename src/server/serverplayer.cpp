@@ -27,7 +27,7 @@
 #include "lua-wrapper.h"
 #include "json.h"
 #include "gamerule.h"
-#include "socket.h"
+#include "abstractclientsocket.h"
 #include "roomthread.h"
 
 using namespace QSanProtocol;
@@ -279,10 +279,10 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
     return qMax(num, 0);
 }
 
-void ServerPlayer::setSocket(ClientSocket *socket) {
+void ServerPlayer::setSocket(AbstractClientSocket *socket) {
     if (socket) {
-        connect(socket, &ClientSocket::disconnected, this, &ServerPlayer::disconnected);
-        connect(socket, &ClientSocket::message_got, this, &ServerPlayer::getMessage);
+        connect(socket, &AbstractClientSocket::disconnected, this, &ServerPlayer::disconnected);
+        connect(socket, &AbstractClientSocket::messageGot, this, &ServerPlayer::getMessage);
         connect(this, &ServerPlayer::message_ready, this, &ServerPlayer::sendMessage);
     } else {
         if (this->socket) {
@@ -299,7 +299,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     this->socket = socket;
 }
 
-ClientSocket *ServerPlayer::takeSocket()
+AbstractClientSocket *ServerPlayer::takeSocket()
 {
     if (socket == NULL)
         return NULL;
@@ -307,7 +307,7 @@ ClientSocket *ServerPlayer::takeSocket()
     socket->disconnect(this);
     this->disconnect(socket);
 
-    ClientSocket *result = socket;
+    AbstractClientSocket *result = socket;
     socket = NULL;
     return result;
 }

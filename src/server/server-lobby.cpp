@@ -33,7 +33,7 @@ void Server::initRoomFunctions()
     roomFunctions[S_COMMAND_SETUP] = &Server::setupNewRemoteRoom;
 }
 
-void Server::processRoomPacket(ClientSocket *socket, const Packet &packet)
+void Server::processRoomPacket(AbstractClientSocket *socket, const Packet &packet)
 {
     RoomFunction func = roomFunctions.value(packet.getCommandType());
     if (func) {
@@ -55,7 +55,7 @@ void Server::cleanupLobbyPlayer()
     lobbyPlayers.removeOne(player);
 }
 
-void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
+void Server::setupNewRemoteRoom(AbstractClientSocket *from, const QVariant &data)
 {
     RoomInfoStruct config;
     if (!config.parse(data)) {
@@ -74,14 +74,14 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
         config.HostAddress = QString("%1:%2").arg(from->peerAddress()).arg(hostPort);
         remoteRoomId[from] = config.save();
 
-        connect(from, &ClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
+        connect(from, &AbstractClientSocket::disconnected, this, &Server::cleanupRemoteRoom);
     }
 }
 
 void Server::cleanupRemoteRoom()
 {
     //no need to delete the socket for it's deleted in cleanup()
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    AbstractClientSocket *socket = qobject_cast<AbstractClientSocket *>(sender());
     if (socket == NULL) return;
 
     emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));

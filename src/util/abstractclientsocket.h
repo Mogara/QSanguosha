@@ -18,27 +18,14 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _SOCKET_H
-#define _SOCKET_H
+#ifndef ABSTRACTCLIENTSOCKET_H
+#define ABSTRACTCLIENTSOCKET_H
 
+#include <QHostAddress>
 #include <QObject>
-#include <QTcpSocket>
-#include <QTcpServer>
 
-class ClientSocket;
-
-class ServerSocket : public QObject {
-    Q_OBJECT
-
-public:
-    virtual bool listen(const QHostAddress &address, ushort port = 0) = 0;
-    virtual ushort serverPort() const = 0;
-
-signals:
-    void new_connection(ClientSocket *connection);
-};
-
-class ClientSocket : public QObject {
+class AbstractClientSocket : public QObject
+{
     Q_OBJECT
 
 public:
@@ -52,23 +39,11 @@ public:
     virtual ushort peerPort() const = 0;
 
 signals:
-    void message_got(const QByteArray &msg);
-    void error_message(const QString &msg);
+    void messageGot(const QByteArray &msg);
+    void errorMessage(const QString &msg);
     void disconnected();
     void connected();
 };
 
-class UdpSocket : public QObject {
-    Q_OBJECT
-
-public:
-    virtual void bind(const QHostAddress &address, ushort port) = 0;
-    virtual void writeDatagram(const QByteArray &data, const QString &to) = 0;
-    virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port) = 0;
-
-signals:
-    void new_datagram(const QByteArray &data, const QHostAddress &from, ushort port);
-};
-
-#endif
+#endif // ABSTRACTCLIENTSOCKET_H
 

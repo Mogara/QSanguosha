@@ -119,11 +119,13 @@ SOURCES += \
     src/ui/tile.cpp \
     src/ui/choosesuitbox.cpp \
     src/util/detector.cpp \
-    src/util/nativesocket.cpp \
     src/util/record.cpp \
     src/util/recordanalyzer.cpp \
     src/util/wifimanager.cpp \
-    swig/sanguosha_wrap.cxx
+    swig/sanguosha_wrap.cxx \
+    src/util/serversocket.cpp \
+    src/util/clientsocket.cpp \
+    src/util/udpsocket.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -233,11 +235,15 @@ HEADERS += \
     src/ui/tile.h \
     src/ui/choosesuitbox.h \
     src/util/detector.h \
-    src/util/nativesocket.h \
     src/util/record.h \
     src/util/recordanalyzer.h \
-    src/util/socket.h \
-    src/util/wifimanager.h
+    src/util/wifimanager.h \
+    src/util/abstractclientsocket.h \
+    src/util/abstractserversocket.h \
+    src/util/abstractudpsocket.h \
+    src/util/serversocket.h \
+    src/util/clientsocket.h \
+    src/util/udpsocket.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

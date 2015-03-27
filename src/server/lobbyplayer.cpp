@@ -42,7 +42,7 @@ LobbyPlayer::LobbyPlayer(Server *parent) :
     }
 }
 
-void LobbyPlayer::setSocket(ClientSocket *new_socket)
+void LobbyPlayer::setSocket(AbstractClientSocket *new_socket)
 {
     if (socket != NULL) {
         socket->disconnect(this);
@@ -52,8 +52,8 @@ void LobbyPlayer::setSocket(ClientSocket *new_socket)
 
     if (new_socket) {
         socket = new_socket;
-        connect(socket, &ClientSocket::disconnected, this, &LobbyPlayer::disconnected);
-        connect(socket, &ClientSocket::message_got, this, &LobbyPlayer::processMessage);
+        connect(socket, &AbstractClientSocket::disconnected, this, &LobbyPlayer::disconnected);
+        connect(socket, &AbstractClientSocket::messageGot, this, &LobbyPlayer::processMessage);
     }
 }
 

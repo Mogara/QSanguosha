@@ -58,7 +58,7 @@ public:
     explicit Room(QObject *parent, const RoomConfig &config = RoomConfig());
     ~Room();
 
-    ServerPlayer *addSocket(ClientSocket *socket);
+    ServerPlayer *addSocket(AbstractClientSocket *socket);
     inline qlonglong getId() const{ return _m_Id; }
     bool isFull() const;
     bool isFinished() const;
@@ -297,7 +297,7 @@ public:
     ServerPlayer *getOwner() const;
     void updateStateItem();
 
-    void reconnect(ServerPlayer *player, ClientSocket *socket);
+    void reconnect(ServerPlayer *player, AbstractClientSocket *socket);
     void marshal(ServerPlayer *player);
 
     void sortByActionOrder(QList<ServerPlayer *> &players);

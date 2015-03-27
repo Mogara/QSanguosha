@@ -19,10 +19,12 @@
     *********************************************************************/
 
 #include "server.h"
-#include "settings.h"
-#include "room.h"
+#include "abstractudpsocket.h"
+#include "clientsocket.h"
 #include "engine.h"
 #include "json.h"
+#include "room.h"
+#include "settings.h"
 
 using namespace QSanProtocol;
 
@@ -40,8 +42,8 @@ void Server::connectToLobby()
     if (Config.LobbyAddress.isEmpty())
         return;
 
-    lobby = new NativeClientSocket(this);
-    connect(lobby, &NativeClientSocket::message_got, this, &Server::processMessage);
+    lobby = new ClientSocket(this);
+    connect(lobby, &ClientSocket::messageGot, this, &Server::processMessage);
     //@todo: handle disconnection from lobby
 
     lobby->connectToHost(Config.LobbyAddress);
@@ -99,7 +101,7 @@ void Server::cleanupRoom() {
     if (someone_stays) {
         Room *new_room = createNewRoom(room->getConfig());
         foreach (ServerPlayer *player, room_players) {
-            ClientSocket *socket = player->takeSocket();
+            AbstractClientSocket *socket = player->takeSocket();
             if (socket) {
                 ServerPlayer *new_player = new_room->addSocket(socket);
                 new_player->setObjectName(player->objectName());

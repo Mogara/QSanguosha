@@ -18,18 +18,20 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include <QCryptographicHash>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QFile>
-
 #include "server.h"
-#include "nativesocket.h"
+#include "abstractclientsocket.h"
 #include "clientstruct.h"
 #include "engine.h"
-#include "settings.h"
-#include "lobbyplayer.h"
 #include "json.h"
+#include "lobbyplayer.h"
+#include "serversocket.h"
+#include "settings.h"
+#include "udpsocket.h"
+
+#include <QCryptographicHash>
+#include <QFile>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 using namespace QSanProtocol;
 
@@ -38,7 +40,7 @@ QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
 QHash<ServiceType, Server::ServiceFunction> Server::serviceFunctions;
 
 Server::Server(QObject *parent, Role role)
-    : QObject(parent),  role(role), server(new NativeServerSocket),
+    : QObject(parent),  role(role), server(new ServerSocket),
       current(NULL), lobby(NULL), daemon(NULL)
 {
     server->setParent(this);
@@ -51,7 +53,7 @@ Server::Server(QObject *parent, Role role)
 
     ServerInfo = RoomInfoStruct(SettingsInstance);
 
-    connect(server, &NativeServerSocket::new_connection, this, &Server::processNewConnection);
+    connect(server, &ServerSocket::newConnection, this, &Server::processNewConnection);
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(":memory:");
@@ -68,9 +70,9 @@ Server::Server(QObject *parent, Role role)
 
 void Server::daemonize()
 {
-    daemon = new NativeUdpSocket(this);
+    daemon = new UdpSocket(this);
     daemon->bind(QHostAddress::Any, serverPort());
-    connect(daemon, &UdpSocket::new_datagram, this, &Server::processDatagram);
+    connect(daemon, &AbstractUdpSocket::newDatagram, this, &Server::processDatagram);
 }
 
 void Server::processDatagram(const QByteArray &data, const QHostAddress &from, ushort port)
@@ -109,10 +111,10 @@ void Server::broadcast(const AbstractPacket *packet)
     }
 
     if (destination & S_DEST_ROOM) {
-        QMapIterator<ClientSocket *, unsigned> iter(remoteRoomId);
+        QMapIterator<AbstractClientSocket *, unsigned> iter(remoteRoomId);
         while (iter.hasNext()) {
             iter.next();
-            ClientSocket *socket = iter.key();
+            AbstractClientSocket *socket = iter.key();
             socket->send(packet->toJson());
         }
 
@@ -122,21 +124,21 @@ void Server::broadcast(const AbstractPacket *packet)
 }
 
 void Server::cleanup() {
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    AbstractClientSocket *socket = qobject_cast<AbstractClientSocket *>(sender());
     if (Config.ForbidSIMC)
         addresses.remove(socket->peerAddress());
 
     socket->deleteLater();
 }
 
-void Server::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
+void Server::notifyClient(AbstractClientSocket *socket, CommandType command, const QVariant &arg)
 {
     Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     socket->send(packet.toJson());
 }
 
-void Server::processNewConnection(ClientSocket *socket)
+void Server::processNewConnection(AbstractClientSocket *socket)
 {
     QString address = socket->peerAddress();
     if (Config.ForbidSIMC) {
@@ -155,16 +157,16 @@ void Server::processNewConnection(ClientSocket *socket)
         return;
     }
 
-    connect(socket, &ClientSocket::disconnected, this, &Server::cleanup);
+    connect(socket, &AbstractClientSocket::disconnected, this, &Server::cleanup);
     notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
 
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
-    connect(socket, &ClientSocket::message_got, this, &Server::processMessage);
+    connect(socket, &AbstractClientSocket::messageGot, this, &Server::processMessage);
 }
 
 void Server::processMessage(const QByteArray &message)
 {
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    AbstractClientSocket *socket = qobject_cast<AbstractClientSocket *>(sender());
     if (socket == NULL) return;
 
     Packet packet;
@@ -190,9 +192,9 @@ void Server::processMessage(const QByteArray &message)
     }
 }
 
-void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
+void Server::processClientSignup(AbstractClientSocket *socket, const Packet &signup)
 {
-    disconnect(socket, &ClientSocket::message_got, this, &Server::processMessage);
+    disconnect(socket, &AbstractClientSocket::messageGot, this, &Server::processMessage);
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));

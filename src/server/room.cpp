@@ -1977,7 +1977,7 @@ void Room::clearCardFlag(int card_id, ServerPlayer *who) {
         doBroadcastNotify(S_COMMAND_CARD_FLAG, arg);
 }
 
-ServerPlayer *Room::addSocket(ClientSocket *socket) {
+ServerPlayer *Room::addSocket(AbstractClientSocket *socket) {
     signupMutex.lock();
     if (isFull())
         return NULL;
@@ -3519,7 +3519,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
         return b;
 }
 
-void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
+void Room::reconnect(ServerPlayer *player, AbstractClientSocket *socket) {
     player->notify(S_COMMAND_SETUP, RoomInfoStruct(config).toQVariant());
     player->setSocket(socket);
     player->setState("online");

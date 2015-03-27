@@ -18,38 +18,21 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _NATIVESOCKET_H
-#define _NATIVESOCKET_H
+#ifndef CLIENTSOCKET_H
+#define CLIENTSOCKET_H
 
-#include "socket.h"
+#include "abstractclientsocket.h"
 
-class QUdpSocket;
+class QTcpSocket;
 class QTimer;
 
-class NativeServerSocket : public ServerSocket {
+class ClientSocket : public AbstractClientSocket
+{
     Q_OBJECT
 
 public:
-    NativeServerSocket(QObject *parent = 0);
-
-    virtual bool listen(const QHostAddress &address, ushort port = 0);
-    virtual ushort serverPort() const;
-
-private slots:
-    void processNewConnection();
-
-private:
-    QTcpServer *server;
-    QUdpSocket *daemon;
-};
-
-
-class NativeClientSocket : public ClientSocket {
-    Q_OBJECT
-
-public:
-    NativeClientSocket(QObject *parent = 0);
-    NativeClientSocket(QTcpSocket *socket, QObject *parent = 0);
+    ClientSocket(QObject *parent = 0);
+    ClientSocket(QTcpSocket *socket, QObject *parent = 0);
 
     virtual void connectToHost(const QString &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
@@ -62,44 +45,26 @@ public:
 
 private slots:
     void getMessage();
-    void raiseError(QAbstractSocket::SocketError socket_error);
+    void raiseError(QAbstractSocket::SocketError socketError);
     void keepAlive();
     void checkConnectionState();
 
 private:
-    enum PacketType{
+    enum PacketType {
         UnknownPacket,
-        InlineTextPacket,       //Texts ended with '\n'
-        KeepAlivePacket,        //Checking the peer's state
+        InlineTextPacket,       // Texts ended with '\n'
+        KeepAlivePacket,        // Checking the peer's state
         AcknowledgePacket
     };
 
     void init();
 
-    QTcpSocket *const socket;
-    bool is_alive;
-    QTimer *keep_alive_timer;
+    QTcpSocket *const m_socket;
+    bool m_isAlive;
+    QTimer *m_keepAliveTimer;
 
     static const qint64 KEEP_ALIVE_INTERVAL;
     static const qint64 TIMEOUT_LIMIT;
 };
 
-class NativeUdpSocket : public UdpSocket {
-    Q_OBJECT
-
-public:
-    NativeUdpSocket(QObject *parent = 0);
-
-    virtual void bind(const QHostAddress &address, ushort port);
-    virtual void writeDatagram(const QByteArray &data, const QString &to);
-    virtual void writeDatagram(const QByteArray &data, const QHostAddress &to, ushort port);
-
-private slots:
-    void processNewDatagram();
-
-private:
-    QUdpSocket *socket;
-};
-
-#endif
-
+#endif // CLIENTSOCKET_H

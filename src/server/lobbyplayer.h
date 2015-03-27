@@ -22,9 +22,9 @@
 #define LOBBYPLAYER_H
 
 #include "protocol.h"
-#include "nativesocket.h"
+#include "abstractclientsocket.h"
 
-class ClientSocket;
+class AbstractClientSocket;
 class Server;
 
 #include <QObject>
@@ -39,7 +39,7 @@ public:
 
     explicit LobbyPlayer(Server *parent = 0);
 
-    void setSocket(ClientSocket *new_socket);
+    void setSocket(AbstractClientSocket *new_socket);
     QString getIp() const { return socket != NULL ? socket->peerAddress() : QString(); }
     QString getSocketName() const { return socket != NULL ? socket->peerName() : QString(); }
 
@@ -72,7 +72,7 @@ protected:
     Server *server;
     QString screenName;
     QString avatar;
-    ClientSocket *socket;
+    AbstractClientSocket *socket;
 
     typedef void (LobbyPlayer::*Callback)(const QVariant &data);
     static QHash<QSanProtocol::CommandType, Callback> callbacks;

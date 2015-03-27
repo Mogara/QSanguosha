@@ -32,7 +32,7 @@ class Record;
 class Recorder;
 class Replayer;
 class QTextDocument;
-class UdpSocket;
+class AbstractUdpSocket;
 
 class Client : public QObject {
     Q_OBJECT
@@ -271,7 +271,7 @@ protected:
     RoomState _m_roomState;
 
 private:
-    ClientSocket *socket;
+    AbstractClientSocket *socket;
     bool m_isGameOver;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
@@ -281,7 +281,7 @@ private:
     int pile_num;
     QString skill_to_invoke;
     QList<int> available_cards;
-    UdpSocket *detector;
+    AbstractUdpSocket *detector;
     QList<RoomInfoStruct> rooms;
 
     unsigned int _m_lastServerSerial;

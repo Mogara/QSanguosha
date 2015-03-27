@@ -21,14 +21,17 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "nativesocket.h"
+#include "abstractserversocket.h"
 #include "protocol.h"
 #include "roomconfig.h"
 
 #include <QObject>
 #include <QStringList>
 #include <QMutex>
+#include <QHostAddress>
 
+class AbstractClientSocket;
+class AbstractUdpSocket;
 class Room;
 class ServerPlayer;
 class LobbyPlayer;
@@ -38,7 +41,7 @@ class Server : public QObject {
 
 public:
     friend class BanIpDialog;
-    enum Role{
+    enum Role {
         LobbyRole,
         RoomRole
     };
@@ -64,7 +67,7 @@ public:
     QVariant getRoomList(int page = 0);
 
 protected slots:
-    void processNewConnection(ClientSocket *socket);
+    void processNewConnection(AbstractClientSocket *socket);
     void cleanup();
 
     void processMessage(const QByteArray &message);
@@ -75,32 +78,32 @@ protected slots:
     void processDatagram(const QByteArray &data, const QHostAddress &from, ushort port);
 
 protected:
-    void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void notifyClient(AbstractClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void notifyLobby(QSanProtocol::CommandType command, const QVariant &data = QVariant());
 
-    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void processClientSignup(AbstractClientSocket *socket, const QSanProtocol::Packet &signup);
     void processLobbyPacket(const QSanProtocol::Packet &packet);
-    void processRoomPacket(ClientSocket *socket, const QSanProtocol::Packet &packet);
+    void processRoomPacket(AbstractClientSocket *socket, const QSanProtocol::Packet &packet);
 
     //callbacks for lobby server
     void checkVersion(const QVariant &server_version);
     void forwardLobbyMessage(const QVariant &message);
 
     //callbacks for room servers
-    void setupNewRemoteRoom(ClientSocket *socket, const QVariant &data);
+    void setupNewRemoteRoom(AbstractClientSocket *socket, const QVariant &data);
 
     //callbacks for daemon
     void replyServerName(const QByteArray &, const QHostAddress &from, ushort port);
     void replyPlayerNum(const QByteArray &, const QHostAddress &from, ushort port);
 
     Role role;
-    ServerSocket *server;
+    AbstractServerSocket *server;
     QSet<QString> addresses;
 
     typedef void (Server::*LobbyFunction)(const QVariant &);
     static QHash<QSanProtocol::CommandType, LobbyFunction> lobbyFunctions;
 
-    typedef void (Server::*RoomFunction)(ClientSocket *socket, const QVariant &);
+    typedef void (Server::*RoomFunction)(AbstractClientSocket *socket, const QVariant &);
     static QHash<QSanProtocol::CommandType, RoomFunction> roomFunctions;
 
     typedef void (Server::*ServiceFunction)(const QByteArray &, const QHostAddress &, ushort);
@@ -111,12 +114,12 @@ protected:
     QMap<qlonglong, Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;
-    ClientSocket *lobby;
+    AbstractClientSocket *lobby;
 
     QList<LobbyPlayer *> lobbyPlayers;
-    QMap<ClientSocket *, unsigned> remoteRoomId;
+    QMap<AbstractClientSocket *, unsigned> remoteRoomId;
 
-    UdpSocket *daemon;
+    AbstractUdpSocket *daemon;
 
 private:
     void initLobbyFunctions();
