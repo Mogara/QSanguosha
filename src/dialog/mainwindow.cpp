@@ -865,22 +865,13 @@ void MainWindow::on_actionAbout_triggered() {
 
     if (about_window == NULL) {
         // Cao Cao's pixmap
-        QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
+        QString content = "<center><img src='image/logo/logo.png' height=100> <br /> </center>";
 
-        // Cao Cao' poem
-        QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
-        content.append(QString("<p align='right'><i>%1</i></p>").arg(poem));
-
-        // Cao Cao's signature
-        QString signature = tr("\"A Short Song\" by Cao Cao");
-        content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
-
-        QString email = "moligaloo@gmail.com";
-        content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
+        QString email = "qsanguosha@mogara.com";
+        content.append(tr("This is an open source game base on the popular <b>Sanguosha</b> game,"
                           "totally written in C++ Qt GUI framework <br />"
-                          "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
-                          "My QQ: 365840793 <br/>"
-                          "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
+                          "Our Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
+                          "Our blog: http://mogara.org <br/>").arg(email));
 
         QString config;
 
@@ -899,7 +890,7 @@ void MainWindow::on_actionAbout_triggered() {
         const char *time = __TIME__;
         content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-        QString project_url = "https://github.com/QSanguosha/QSanguosha";
+        QString project_url = "https://github.com/Mogara/QSanguosha";
         content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
         QString forum_url = "http://qsanguosha.org";
