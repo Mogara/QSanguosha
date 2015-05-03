@@ -23,8 +23,12 @@
 #include <QLocale>
 #include <QTranslator>
 
+#include <cexceptionhandler.h>
+
 int main(int argc, char *argv[])
 {
+    CExceptionHandler eh("./dmp");
+
     QGuiApplication app(argc, argv);
 
     app.setOrganizationName("Mogara");

@@ -28,6 +28,8 @@ win32 {
     else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
 
     RC_FILE = icons/icon.rc
+
+    QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 }
 
 macx {
