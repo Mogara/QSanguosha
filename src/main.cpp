@@ -17,13 +17,13 @@
     Mogara
     *********************************************************************/
 
-#include "cmainwindow.h"
-
 #include <QGuiApplication>
 #include <QLocale>
 #include <QTranslator>
 
+#include <cmainwindow.h>
 #include <cexceptionhandler.h>
+#include <cnetwork.h>
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +42,8 @@ int main(int argc, char *argv[])
     CMainWindow window;
     window.setSource(QUrl(QStringLiteral("qrc:/src/main.qml")));
     window.show();
+
+    cRegisterUrlScheme(window.title());
 
     return app.exec();
 }
