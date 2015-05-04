@@ -13,12 +13,7 @@ defineTest(copy) {
     file = $$1
     path = $$2
     !exists($$file): return(false)
-    win32 {
-        system("copy $$system_path($$file) $$system_path($$path)")
-    }
-    else {
-        system("cp $$file $$path")
-    }
+    system("$$QMAKE_COPY $$system_path($$file) $$system_path($$path)")
 
     return(true)
 }
@@ -35,12 +30,12 @@ win32 {
 macx {
     ICON = icons/icon.icns
 }
+
 android {
     ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }
 
-CONFIG(debug, debug|release): LIBS += -lCardirectord
-else:LIBS += -lCardirector
+LIBS += -l$$qtLibraryTarget(Cardirector)
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD
