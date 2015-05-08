@@ -32,6 +32,7 @@ macx {
 }
 
 android {
+    QT += androidextras
     ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }
 
@@ -72,6 +73,10 @@ lupdate_only {
 }
 
 TRANSLATIONS += translations/zh_CN.ts
+
+OTHER_FILES += android/AndroidManifest.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 # Default rules for deployment.
 include(deployment.pri)
