@@ -84,8 +84,8 @@ Rectangle {
             id: textAni
             running: false
             loops: Animation.Infinite
-            NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutQuad; }
             NumberAnimation { from: 0; to: 1; duration: 1600; easing.type: Easing.InOutQuad; }
+            NumberAnimation { from: 1; to: 0; duration: 1600; easing.type: Easing.InOutQuad; }
         }
     }
 
@@ -110,7 +110,7 @@ Rectangle {
         NumberAnimation {
             target: free
             property: "opacity"
-            duration: 200
+            duration: 400
             easing.type: Easing.InOutQuad
             to: 1
         }
@@ -118,7 +118,7 @@ Rectangle {
         NumberAnimation {
             target: open
             property: "opacity"
-            duration: 200
+            duration: 400
             easing.type: Easing.InOutQuad
             to: 1
         }
@@ -126,7 +126,7 @@ Rectangle {
         NumberAnimation {
             target: flexible
             property: "opacity"
-            duration: 200
+            duration: 400
             easing.type: Easing.InOutQuad
             to: 1
         }
@@ -138,10 +138,10 @@ Rectangle {
     }
 
     Text {
-        text: qsTr("Powered by qsanguosha.org")
-        color: "#ffffff"
-        font.family: "微软雅黑"
-        font.pointSize: 15
+        text: qsTr("Powered by Mogara")
+        color: "#f39292"
+        font.family: "Segoe Script"
+        font.pointSize: 8
         anchors.bottom: parent.bottom
         anchors.right: parent.right
     }
@@ -154,6 +154,7 @@ Rectangle {
         }
     }
     MouseArea {
+        acceptedButtons: Qt.AllButtons
         anchors.fill: parent
         onClicked: {
             if (!loading) {
@@ -168,7 +169,6 @@ Rectangle {
             event.accepted = true
         }
     }
-
 
     NumberAnimation {
         id: logoMover
