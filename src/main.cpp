@@ -31,6 +31,7 @@
 #include <QMessageBox>
 #include <QQuickView>
 #include <QQmlContext>
+#include <QQuickItem>
 
 #include "server.h"
 #include "settings.h"
@@ -118,6 +119,7 @@ int main(int argc, char *argv[]) {
     context->setContextProperty("Config", &Config);
     window.setSource(QUrl::fromLocalFile("ui-script/main.qml"));
     window.setResizeMode(QQuickView::SizeRootObjectToView);
+    context->setContextProperty("Root", QVariant::fromValue(window.rootObject()));
 
     //The following two commented lines seemed not work normally
     //window.setWindowState((Qt::WindowState) Config.value("WindowState", 0).toInt());

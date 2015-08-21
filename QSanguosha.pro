@@ -556,4 +556,6 @@ DISTFILES += \
     ui-script/StartScene.qml \
     ui-script/main.qml \
     ui-script/Splash.qml \
-    ui-script/functions.js
+    ui-script/functions.js \
+    ui-script/ToolTip.qml \
+    ui-script/ToolTipArea.qml
