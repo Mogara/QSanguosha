@@ -6,16 +6,9 @@ Open Source Sanguosha
 | API reference: | http://gaodayihao.github.com/QSanguosha/api   |
 | Documentation: | https://github.com/gaodayihao/QSanguosha/wiki (Chinese) |
 
-Third party evaluations of development process
----------
-
-[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/pr?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
-
-[![Issue Stats](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony/badge/issue?style=flat)](http://issuestats.com/github/QSanguosha/QSanguosha-For-Hegemony)
-
 Lisense
 ------------
-###Code
+### Code
 This game is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 3.0
@@ -28,7 +21,7 @@ General Public License for more details.
 
 See the LICENSE file for more details.
 
-###Material
+### Material
 Our Materials are under the terms of the Creative Commons
 Attribution-NonCommercial-NoDerivatives 4.0 International (CC
 BY-NC-ND 4.0)
@@ -140,9 +133,12 @@ Mac OS X
 
 7. This step is the most important and difficult one. Please pay a lot of attention to read this step.
    Open a terminal here, type:
+```
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
+```
 
 You'll see something like this:
+```
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ./libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    libfreetype.1.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -156,16 +152,25 @@ You'll see something like this:
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
+```
 
 Pay attention to the 2 lines contains libfmodex.dylib or libfreetype.1.dylib.
 using install_name_tool to change the path of the 2 library files to their absolute paths, like this:
+
+```
    install_name_tool -change ./libfmodex.dylib ~/lib/mac/lib/libfmodex.dylib QSanguosha.app/Contents/MacOS/QSanguosha
    install_name_tool -change libfreetype.1.dylib ~/lib/mac/lib/libfreetype.dylib  QSanguosha.app/Contents/MacOS/QSanguosha
+```
 
 Type:
+
+```
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
+```
 
 if you see all the directories is absolute path, it should succeed. (~ stands for the project dir)
+
+```
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ~/lib/mac/lib/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    ~/lib/mac/lib/libfreetype.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -181,16 +186,25 @@ if you see all the directories is absolute path, it should succeed. (~ stands fo
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
+```
 
 Type:
+
+```
    macdeployqt QSanguosha.app/
+```
 
 Some times the macdeployqt is not in the system directories, in this case you should go to the Qt Install Dir and find this file.
 
 Type:
+
+```
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
+```
 
 if you see all the non-system libraries is in @executable_path, it should succeed.
+
+```
    QSanguosha.app/Contents/MacOS/QSanguosha:
    @executable_path/../Frameworks/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    @executable_path/../Frameworks/libfreetype.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -204,8 +218,11 @@ if you see all the non-system libraries is in @executable_path, it should succee
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
+```
 
 8.copy the following folders and files to QSanguosha.app/Contents/MacOS/, they are listed below:
+
+```
    ai-selector/
    audio/
    developers/
@@ -219,6 +236,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    ui-script/
    qt_zh_CN.qm
    sanguosha.qss
+```
 
 8.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to QSanguosha.app/Contents/MacOS.
 
@@ -232,41 +250,51 @@ Linux or MinGW(Windows)
    (If you are using MinGW, make sure the version of MinGW is compatible with Qt Libraries)
 
 2. Install SWIG
-(Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.1 or later.
+   (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.1 or later.
 
-(MinGW)Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
+   (MinGW)Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
    Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
 3. Open a terminal here, type:
-(Linux)
+   (Linux)
+```
    cd swig
    swig -c++ -lua sanguosha.i
    cd ../lib/linux
    (x86)cd x86 (or) (x64)cd x64
    sudo cp libfmodex*.so /usr/lib (root password required)
    sudo ldconfig
+```
 
-(MinGW)
+   (MinGW)
+```
    cd swig
    ..\tools\swig\swig.exe -c++ -lua sanguosha.i
+```
 
 4. Open QSanguosha.pro, configure the project and make sure the project is compiled with g++. Change the configuration to Release.
 
-4.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to ~.
+5. (optional) select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to ~.
 
-5. You are now able to build the solution. When compilation succeeded, the (MinGW)QSanguosha.exe or (Linux)QSanguosha is in ~/../Build-QSanguosha-**/ folder. You should move this file to ~ folder.
+6. You are now able to build the solution. When compilation succeeded, the (MinGW)QSanguosha.exe or (Linux)QSanguosha is in ~/../Build-QSanguosha-**/ folder. You should move this file to ~ folder.
 
-6. (MinGW only)Copy 8 files from Qt libraries to ~, they are listed below:
+7. (MinGW only) Copy 8 files from Qt libraries to ~, they are listed below:
+
+```
    Qt5Core.dll
    Qt5Gui.dll
    Qt5Network.dll
    Qt5Qml.dll
    Qt5Quick.dll
    Qt5Widgets.dll
+```
 
-   (MinGW only)Copy 3 files from MinGW bin folder to ~, they are listed below:
+   (MinGW only) Copy 3 files from MinGW bin folder to ~, they are listed below:
+   
+```
    libgcc_s_dw2-1.dll
    libstdc++-6.dll
    libwinpthread-1.dll
+```
 
 
